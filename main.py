@@ -1,4 +1,4 @@
-description = """A bot for the PKSM server to make people shut up about USUM"""
+description = """PKSM server helper bot. Don't make me angry"""
 
 # import dependencies
 import os
@@ -152,6 +152,11 @@ async def restart(ctx):
         sys.exit(0)
     else:
         await ctx.send("You don't have permission to do that!")
+
+@bot.command()
+async def wait(ctx):
+    """Returns how long it's gonna take"""
+    await ctx.send("It's gonna be {} more weeks till Ultra Sun and Ultra Moon is supported 🙂".format(bot.tally))
         
         
 # Execute
