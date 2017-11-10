@@ -109,7 +109,8 @@ async def on_ready():
 addons = [
     'addons.events',
     'addons.count',
-    'addons.utility'
+    'addons.utility',
+    'addons.info'
 ]
 
 failed_addons = []
