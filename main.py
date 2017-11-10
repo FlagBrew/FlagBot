@@ -118,7 +118,7 @@ for extension in addons:
 @bot.command()
 async def pull(ctx):
     """Pull git changes, owner only."""
-    if ctx.author == ctx.guild.owner:
+    if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
         await ctx.send("Pulling changes from Github")
         git.pull()
         await ctx.send("Changes pulled!")
@@ -128,7 +128,7 @@ async def pull(ctx):
 @bot.command()
 async def reload(ctx):
     """Reloads an addon."""
-    if ctx.author == ctx.guild.owner:
+    if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
         errors = ""
         for addon in os.listdir("addons"):
             if ".py" in addon:
@@ -148,7 +148,7 @@ async def reload(ctx):
 @bot.command()
 async def restart(ctx):
     """Restarts the bot, obviously"""
-    if ctx.author == ctx.guild.owner:
+    if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
         await ctx.send("Restarting...")
         sys.exit(0)
     else:
