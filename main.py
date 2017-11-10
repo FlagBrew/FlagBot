@@ -102,8 +102,7 @@ async def on_ready():
     
 # loads extensions
 addons = [
-    'addons.events',
-    'addons.tally'
+    'addons.events'
 ]
 
 failed_addons = []
