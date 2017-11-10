@@ -111,7 +111,8 @@ async def on_ready():
 # loads extensions
 addons = [
     'addons.events',
-    'addons.count'
+    'addons.count',
+    'addons.utility'
 ]
 
 failed_addons = []
@@ -122,49 +123,10 @@ for extension in addons:
     except Exception as e:
         print('{} failed to load.\n{}: {}'.format(extension, type(e).__name__, e))
         failed_addons.append([extension, type(e).__name__, e])
+if not failed_addons:
+    print('All addons loaded!')
         
         
-@bot.command()
-async def pull(ctx):
-    """Pull git changes, owner only."""
-    if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
-        await ctx.send("Pulling changes from Github")
-        git.pull()
-        await ctx.send("Changes pulled!")
-    else:
-        await ctx.send("You don't have permission to do that!")
-        
-@bot.command()
-async def reload(ctx):
-    """Reloads an addon."""
-    if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
-        errors = ""
-        for addon in os.listdir("addons"):
-            if ".py" in addon:
-                addon = addon.replace('.py', '')
-                try:
-                    bot.unload_extension("addons.{}".format(addon))
-                    bot.load_extension("addons.{}".format(addon))
-                except Exception as e:
-                    errors += 'Failed to load addon: `{}.py` due to `{}: {}`\n'.format(addon, type(e).__name__, e)
-        if not errors:
-            await ctx.send(':white_check_mark: Extensions reloaded.')
-        else:
-            await ctx.send(errors)
-    else:
-        await ctx.send("You don't have permission to do that!")
-        
-@bot.command()
-async def restart(ctx):
-    """Restarts the bot, obviously"""
-    if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
-        await ctx.send("Restarting...")
-        with open("restart.txt", "w+") as f:
-            f.write(str(ctx.message.channel.id))
-            f.close()
-        sys.exit(0)
-    else:
-        await ctx.send("You don't have permission to do that!")
         
 # Execute
 print('Bot directory: ', dir_path)
