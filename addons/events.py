@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 stop_message = """
-Ultra Sun and Ultra Moon support for PKSM is expected in **{}** weeks 🙃
+Ultra Sun and Ultra Moon support for PKSM is expected in **{}** weeks :upside_down:
 """
 usum = [
     'us',
@@ -15,7 +15,8 @@ support = [
     'updated',
     'available',
     'working',
-    'compatible'
+    'compatible',
+    'compatibility'
 ]
 
 class Events:

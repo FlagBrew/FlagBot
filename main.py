@@ -93,7 +93,15 @@ async def on_ready():
         bot.guild = guild
         if bot.all_ready:
             break
-
+        try:
+            with open("restart.txt") as f:
+                channel = bot.get_channel(int(f.readline()))
+                f.close()
+            await channel.send("Restarted!")
+            os.remove("restart.txt")
+        except:
+            pass
+        
         print("Initialized on {}.".format(guild.name))
         
         bot.all_ready = True
@@ -102,7 +110,8 @@ async def on_ready():
     
 # loads extensions
 addons = [
-    'addons.events'
+    'addons.events',
+    'addons.count'
 ]
 
 failed_addons = []
@@ -150,17 +159,12 @@ async def restart(ctx):
     """Restarts the bot, obviously"""
     if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
         await ctx.send("Restarting...")
+        with open("restart.txt", "w+") as f:
+            f.write(str(ctx.message.channel.id))
+            f.close()
         sys.exit(0)
     else:
         await ctx.send("You don't have permission to do that!")
-
-@bot.command()
-async def wait(ctx):
-    """Returns how long it's gonna take"""
-    with open("tally.txt") as f:
-            tally = f.read()
-    await ctx.send("It's gonna be **{}** more weeks till Ultra Sun and Ultra Moon is supported 🙂".format(tally))
-        
         
 # Execute
 print('Bot directory: ', dir_path)
