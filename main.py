@@ -14,13 +14,10 @@ import os
 import re
 import json
 import ast
-import git
 
 # sets working directory to bot's folder
 dir_path = os.path.dirname(os.path.realpath(__file__))
 os.chdir(dir_path)
-
-git = git.cmd.Git(".")
 
 prefix = ['!', '.']
 bot = commands.Bot(command_prefix=prefix, description=description)
@@ -126,7 +123,15 @@ for extension in addons:
 if not failed_addons:
     print('All addons loaded!')
         
-        
+@bot.command(hidden=True)
+async def load(ctx, *, module):
+    """Loads an addon"""
+    try:
+        bot.load_extension("addons.{}".format(module))
+    except Exception as e:
+        await ctx.send(':anger: Failed!\n```\n{}: {}\n```'.format(type(e).__name__, e))
+    else:
+        await ctx.send(':white_check_mark: Extension loaded.')
         
 # Execute
 print('Bot directory: ', dir_path)

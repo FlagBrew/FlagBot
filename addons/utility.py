@@ -1,5 +1,8 @@
 import discord
 from discord.ext import commands
+import sys
+import os
+import git
 
 class Utility:
 
@@ -7,10 +10,12 @@ class Utility:
         self.bot = bot
         print('Addon "{}" loaded'.format(self.__class__.__name__))
         
+        
     @commands.command()
     async def pull(self, ctx):
         """Pull git changes, owner only."""
         if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
+            git = git.cmd.Git(".")
             await ctx.send("Pulling changes from Github")
             git.pull()
             await ctx.send("Changes pulled!")
