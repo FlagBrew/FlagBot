@@ -93,6 +93,7 @@ async def on_ready():
         bot.guild = guild
         if bot.all_ready:
             break
+
         print("Initialized on {}.".format(guild.name))
         
         bot.all_ready = True
@@ -156,7 +157,9 @@ async def restart(ctx):
 @bot.command()
 async def wait(ctx):
     """Returns how long it's gonna take"""
-    await ctx.send("It's gonna be {} more weeks till Ultra Sun and Ultra Moon is supported 🙂".format(bot.tally))
+    with open("tally.txt") as f:
+            tally = f.read()
+    await ctx.send("It's gonna be {} more weeks till Ultra Sun and Ultra Moon is supported 🙂".format(tally))
         
         
 # Execute
