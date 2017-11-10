@@ -2,8 +2,21 @@ import discord
 from discord.ext import commands
 
 stop_message = """
-Ultra Sun and Ultra Moon support for PKSM is expected in {} weeks
+Ultra Sun and Ultra Moon support for PKSM is expected in **{}** weeks 🙃
 """
+usum = [
+    'us',
+    'um',
+    'ultra moon',
+    'ultra sun',
+]
+support = [
+    'support',
+    'updated',
+    'available',
+    'working',
+    'compatible'
+]
 
 class Events:
 
@@ -13,7 +26,14 @@ class Events:
 
 
     async def on_message(self, message):
-        if "usum" in message.content.lower() and "support" in message.content.lower():
+        bad = False
+        if not message.author.name == self.bot.user.name:
+            for x in usum:
+                for y in support:
+                    if x in message.content.lower() and y in message.content.lower():
+                        bad = True
+                        break
+        if bad == True:
             with open("tally.txt") as f:
                 tally = f.read()
                 f.close()
@@ -22,6 +42,9 @@ class Events:
                 f.write(str(tally))
                 f.close()
             await message.channel.send(stop_message.format(tally))
+            bad = False
+        else:
+            pass
 
 def setup(bot):
     bot.add_cog(Events(bot))

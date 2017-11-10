@@ -159,7 +159,7 @@ async def wait(ctx):
     """Returns how long it's gonna take"""
     with open("tally.txt") as f:
             tally = f.read()
-    await ctx.send("It's gonna be {} more weeks till Ultra Sun and Ultra Moon is supported 🙂".format(tally))
+    await ctx.send("It's gonna be **{}** more weeks till Ultra Sun and Ultra Moon is supported 🙂".format(tally))
         
         
 # Execute
