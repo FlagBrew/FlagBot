@@ -24,6 +24,12 @@ bot = commands.Bot(command_prefix=prefix, description=description)
 
 config = configparser.ConfigParser()
 config.read("config.ini")
+try:
+    token = os.environ['TOKEN']
+    heroku = True
+except KeyError:
+    token = config['Main']['token']
+    heroku = False
 
 # http://stackoverflow.com/questions/3411771/multiple-character-replace-with-python
 def escape_name(name):
@@ -137,4 +143,4 @@ async def load(ctx, *, module):
         
 # Execute
 print('Bot directory: ', dir_path)
-bot.run(config['Main']['token'])
+bot.run(token)
