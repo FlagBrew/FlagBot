@@ -16,9 +16,8 @@ class Utility:
     async def push(self, ctx):
         """Pull git changes, owner only."""
         if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
-            g = git.cmd.Git(working_dir=os.getcwd())
             await ctx.send("Pulling changes...")
-            p = Popen("update.bat", cwd=r"\"")
+            p = Popen("update.bat", cwd=rself.bot.dir_path)
             await ctx.send("Changes pulled!")
         else:
             await ctx.send("You don't have permission to do that!")
