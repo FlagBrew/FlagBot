@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import sys
 import os
-from subprocess import Popen
+import subprocess
 
 class Utility:
 
@@ -17,7 +17,7 @@ class Utility:
         if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
             await ctx.send("Pulling changes...")
             path = "{}\update.bat".format(self.bot.dir_path)
-            p = Popen("update.bat", cwd=path)
+            p = subprocess.Popen(path, shell=True, stdout = subprocess.PIPE)
             stdout, stderr = p.communicate()
             await ctx.send("Changes pulled!")
         else:
