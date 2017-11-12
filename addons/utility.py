@@ -12,18 +12,6 @@ class Utility:
         
         
     @commands.command()
-    async def push(self, ctx):
-        """Pull git changes, owner only."""
-        if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
-            await ctx.send("Pulling changes...")
-            path = "{}\update.bat".format(self.bot.dir_path)
-            p = subprocess.Popen(path, shell=True, stdout = subprocess.PIPE)
-            stdout, stderr = p.communicate()
-            await ctx.send("Changes pulled!")
-        else:
-            await ctx.send("You don't have permission to do that!")
-            
-    @commands.command()
     async def reload(self, ctx):
         """Reloads an addon."""
         if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
