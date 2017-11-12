@@ -22,6 +22,8 @@ os.chdir(dir_path)
 prefix = ['!', '.']
 bot = commands.Bot(command_prefix=prefix, description=description)
 
+bot.dir_path = os.path.dirname(os.path.realpath(__file__))
+
 config = configparser.ConfigParser()
 config.read("config.ini")
 try:
@@ -69,6 +71,7 @@ async def on_command_error(ctx, error):
         tb = traceback.format_exception(type(error), error, error.__traceback__)
         error_trace = "".join(tb)
         print(error_trace)
+        await bot.general.send(error_trace)
 
 @bot.event
 async def on_error(event_method, *args, **kwargs):
@@ -96,6 +99,8 @@ async def on_ready():
         bot.guild = guild
         if bot.all_ready:
             break
+        bot.general = discord.utils.get(guild.channels, name="general")    
+        
         try:
             with open("restart.txt") as f:
                 channel = bot.get_channel(int(f.readline()))
