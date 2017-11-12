@@ -15,9 +15,9 @@ class Utility:
     async def pull(self, ctx):
         """Pull git changes, owner only."""
         if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
-            git = git.cmd.Git(".")
+            git = git.cmd.Git(working_dir=os.getcwd())
             await ctx.send("Pulling changes from Github")
-            git.pull()
+            git.execute(['git', 'pull', 'origin', 'master'])
             await ctx.send("Changes pulled!")
         else:
             await ctx.send("You don't have permission to do that!")
