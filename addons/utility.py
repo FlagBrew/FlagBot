@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import sys
 import os
-import git
+from subprocess import Popen
 
 class Utility:
 
@@ -12,12 +12,11 @@ class Utility:
         
         
     @commands.command()
-    async def pull(self, ctx):
+    async def push(self, ctx):
         """Pull git changes, owner only."""
         if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
-            git = git.cmd.Git(".")
-            await ctx.send("Pulling changes from Github")
-            git.pull()
+            await ctx.send("Pulling changes...")
+            p = Popen("update.bat", cwd=self.bot.dir_path"\update.bat")
             await ctx.send("Changes pulled!")
         else:
             await ctx.send("You don't have permission to do that!")

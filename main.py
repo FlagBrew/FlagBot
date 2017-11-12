@@ -22,6 +22,8 @@ os.chdir(dir_path)
 prefix = ['!', '.']
 bot = commands.Bot(command_prefix=prefix, description=description)
 
+bot.dir_path = os.path.dirname(os.path.realpath(__file__))
+
 config = configparser.ConfigParser()
 config.read("config.ini")
 try:
