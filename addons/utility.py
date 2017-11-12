@@ -16,7 +16,7 @@ class Utility:
         """Pull git changes, owner only."""
         if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
             await ctx.send("Pulling changes...")
-            path = self.bot.dir_path + "\update.bat"
+            path = "{}\update.bat".format(self.bot.dir_path)
             p = Popen("update.bat", cwd=path)
             stdout, stderr = p.communicate()
             await ctx.send("Changes pulled!")
