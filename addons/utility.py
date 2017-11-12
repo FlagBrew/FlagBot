@@ -3,6 +3,7 @@ from discord.ext import commands
 import sys
 import os
 import git
+from subprocess import Popen
 
 class Utility:
 
@@ -12,20 +13,13 @@ class Utility:
         
         
     @commands.command()
-    async def pull(self, ctx):
+    async def push(self, ctx):
         """Pull git changes, owner only."""
         if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
             g = git.cmd.Git(working_dir=os.getcwd())
-            await ctx.send("Pulling changes from Github")
-            g.execute(['git', 'pull', 'origin', 'master'])
+            await ctx.send("Pulling changes...")
+            p = Popen("update.bat", cwd=r"\"")
             await ctx.send("Changes pulled!")
-            try:
-                g.execute(['git', 'add', '.'])
-                g.execute(['git', 'commit', '-am', 'Command Update'])
-                g.execute(['git', 'push', 'heroku', 'master'])
-                await ctx.send("Updated Heroku branch")
-            except:
-                await ctx.send("Failed to update Heroku.")
         else:
             await ctx.send("You don't have permission to do that!")
             
