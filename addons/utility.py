@@ -2,10 +2,6 @@ import discord
 from discord.ext import commands
 import sys
 import os
-<<<<<<< HEAD
-=======
-import git
->>>>>>> be5e151f2fcbcfbd6488990e50900541cb383f1f
 from subprocess import Popen
 
 class Utility:
