@@ -15,10 +15,17 @@ class Utility:
     async def pull(self, ctx):
         """Pull git changes, owner only."""
         if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
-            g = git.cmd.Git(".")
+            g = git.cmd.Git(working_dir=os.getcwd())
             await ctx.send("Pulling changes from Github")
-            g.pull()
+            g.execute(['git', 'pull', 'origin', 'master'])
             await ctx.send("Changes pulled!")
+            try:
+                g.execute(['git', 'add', '.'])
+                g.execute(['git', 'commit', '-am', 'Command Update'])
+                g.execute(['git', 'push', 'heroku', 'master'])
+                await ctx.send("Updated Heroku branch")
+            except:
+                await ctx.send("Failed to update Heroku.")
         else:
             await ctx.send("You don't have permission to do that!")
             
