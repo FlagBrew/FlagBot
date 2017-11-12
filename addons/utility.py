@@ -17,7 +17,7 @@ class Utility:
         if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
             g = git.cmd.Git(".")
             await ctx.send("Pulling changes from Github")
-            git.pull()
+            g.pull()
             await ctx.send("Changes pulled!")
         else:
             await ctx.send("You don't have permission to do that!")
