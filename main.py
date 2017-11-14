@@ -65,7 +65,7 @@ async def on_command_error(ctx, error):
         formatter = commands.formatter.HelpFormatter()
         await ctx.send("You are missing required arguments.\n{}".format(formatter.format_help_for(ctx, ctx.command)[0]))
     elif isinstance(error, discord.ext.commands.errors.CommandOnCooldown):
-        if not ctx.channel.id == 379201279479513100:
+        if ctx.channel.id == 379201279479513100:
             await ctx.send("This command is on cooldown, don't you dare try it again.", delete_after=10)
         else:
             return
