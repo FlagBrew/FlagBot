@@ -64,6 +64,8 @@ async def on_command_error(ctx, error):
     elif isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
         formatter = commands.formatter.HelpFormatter()
         await ctx.send("You are missing required arguments.\n{}".format(formatter.format_help_for(ctx, ctx.command)[0]))
+    elif isinstance(error, discord.ext.commands.errors.CommandOnCooldown):
+        await ctx.send("This command is on cooldown, don't you dare try it again.", delete_after=10)
     else:
         if ctx.command:
             await ctx.send("An error occurred while processing the `{}` command.".format(ctx.command.name))
