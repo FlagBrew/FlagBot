@@ -8,8 +8,15 @@ class Count:
         print('Addon "{}" loaded'.format(self.__class__.__name__))
         
     @commands.command()
+    @commands.cooldown(rate=1, per=210.0, type=commands.BucketType.channel)
     async def wait(self, ctx):
         """Returns how long it's gonna take"""
+        if not ctx.channel.id == 379201279479513100:
+            ctx.command.reset_cooldown(ctx)
+            try:
+                return await ctx.author.send("This command is restricted to <#379201279479513100>. Please try again there.")
+            except:
+                return await ctx.send("This command is restricted to <#379201279479513100>. Please try again there.")
         with open("tally.txt") as f:
             tally = f.read()
         await ctx.send("It's gonna be **{}** more {} till Ultra Sun and Ultra Moon is supported :slight_smile:".format(tally, "weeks" if tally != 1 else "week"))
