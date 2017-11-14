@@ -11,7 +11,7 @@ class Count:
     @commands.cooldown(rate=1, per=210.0, type=commands.BucketType.channel)
     async def wait(self, ctx):
         """Returns how long it's gonna take"""
-        if not ctx.channel.id == 379201279479513100:
+        if not ctx.channel.id == 379201279479513100 and ctx.guild.id == 278222834633801728:
             ctx.command.reset_cooldown(ctx)
             try:
                 return await ctx.author.send("This command is restricted to <#379201279479513100>. Please try again there.")
