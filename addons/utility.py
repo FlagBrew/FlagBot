@@ -26,8 +26,6 @@ class Utility:
             await ctx.send(':white_check_mark: Extensions reloaded.')
         else:
             await ctx.send(errors)
-    else:
-        await ctx.send("You don't have permission to do that!")
             
     @commands.has_permissions(ban_members=True) 
     @commands.command()
@@ -38,8 +36,6 @@ class Utility:
             f.write(str(ctx.message.channel.id))
             f.close()
         sys.exit(0)
-    else:
-        await ctx.send("You don't have permission to do that!")
             
 def setup(bot):
     bot.add_cog(Utility(bot))
