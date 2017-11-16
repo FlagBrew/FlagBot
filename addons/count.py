@@ -25,7 +25,7 @@ class Count:
     @commands.command()
     async def modify(self, ctx, amount=0):
         """Modify the timer"""
-        if ctx.author == ctx.guild.owner or ctx.author.name == "bernardogiordano":
+        if ctx.author == ctx.guild.owner:
             with open("tally.txt") as f:
                 tally = f.read()
                 f.close()
