@@ -145,12 +145,15 @@ if not failed_addons:
 @bot.command(hidden=True)
 async def load(ctx, *, module):
     """Loads an addon"""
-    try:
-        bot.load_extension("addons.{}".format(module))
-    except Exception as e:
-        await ctx.send(':anger: Failed!\n```\n{}: {}\n```'.format(type(e).__name__, e))
+    if ctx.author == ctx.guild.owner:
+        try:
+            bot.load_extension("addons.{}".format(module))
+        except Exception as e:
+            await ctx.send(':anger: Failed!\n```\n{}: {}\n```'.format(type(e).__name__, e))
+        else:
+            await ctx.send(':white_check_mark: Extension loaded.')
     else:
-        await ctx.send(':white_check_mark: Extension loaded.')
+        await ctx.send("You don't have permission to do that!")
         
 # Execute
 print('Bot directory: ', dir_path)
