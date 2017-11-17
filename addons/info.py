@@ -35,6 +35,17 @@ class Info:
     async def about(self, ctx):
         """Information about the bot"""
         await ctx.send("This is a bot coded in python for use in the PKSM server, made by Griffin#2329. You can view the source code here: <https://github.com/GriffinG1/PKSMBot>.")
+        
+    @commands.command()
+    async def readme(self, ctx):
+        """PKSM Readme"""
+        embed = discord.Embed(description="You can read the readme for PKSM [here](https://github.com/BernardoGiordano/PKSM/blob/master/README.md).")
+        await ctx.send(embed=embed)
+		
+    @commands.command()
+    async def storage(self, ctx):
+        """Storage from 5.0.0+"""
+        await ctx.send("If you can't see your storage correctly anymore, make sure you read what changed here: https://github.com/BernardoGiordano/PKSM#storage-changes-from-500")
     
     @commands.command(hidden=True)
     async def why(self, ctx):
