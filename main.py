@@ -12,7 +12,6 @@ import traceback
 import sys
 import os
 import re
-import json
 import ast
 
 # sets working directory to bot's folder
@@ -33,17 +32,6 @@ except KeyError:
     token = config['Main']['token']
     heroku = False
 
-# http://stackoverflow.com/questions/3411771/multiple-character-replace-with-python
-def escape_name(name):
-    chars = "\\`*_<>#@:~"
-    name = str(name)
-    for c in chars:
-        if c in name:
-            name = name.replace(c, "\\" + c)
-    return name.replace("@", "@\u200b")  # prevent mentions
-
-
-bot.escape_name = escape_name
 bot.pruning = False  # used to disable leave logs if pruning, maybe.
 bot.escape_trans = str.maketrans({
     "*": "\*",
@@ -77,7 +65,6 @@ async def on_command_error(ctx, error):
         tb = traceback.format_exception(type(error), error, error.__traceback__)
         error_trace = "".join(tb)
         print(error_trace)
-        await bot.general.send(error_trace)
 
 @bot.event
 async def on_error(event_method, *args, **kwargs):
@@ -104,8 +91,7 @@ async def on_ready():
     for guild in bot.guilds:
         bot.guild = guild
         if bot.all_ready:
-            break
-        bot.general = discord.utils.get(guild.channels, name="general")    
+            break   
         
         try:
             with open("restart.txt") as f:
