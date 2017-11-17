@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import discord
 from discord.ext import commands
 import os
@@ -31,7 +33,7 @@ class Moderation:
         """Kick a member."""
         found_member = self.find_user(member, ctx)
         if found_member == ctx.message.author:
-            return await ctx.send("You can't kick yourself, you absolute fucking dumbass.")
+            return await ctx.send("You can't kick yourself, obviously")
         elif not found_member:
             await ctx.send("That user could not be found.")
         else:
@@ -44,7 +46,7 @@ class Moderation:
         """Ban a member."""
         found_member = self.find_user(member, ctx)
         if found_member == ctx.message.author:
-            return await ctx.send("You can't ban yourself, you fuckwad.")
+            return await ctx.send("You can't ban yourself, obviously")
         if not found_member:
             await ctx.send("That user could not be found.")
         else:

@@ -1,5 +1,13 @@
+#!/usr/bin/env python3
+
 import discord
 from discord.ext import commands
+
+desc = "You can get the latest release of {}."
+desc_pksm = "PKSM [here](https://github.com/BernardoGiordano/PKSM/releases/latest)"
+desc_checkpoint = "Checkpoint [here](https://github.com/BernardoGiordano/Checkpoint/releases/latest)"
+desc_pickr = "Pickr3DS [here](https://github.com/BernardoGiordano/Pickr3DS/releases/latest)"
+desc_tools = "PKSM-Tools [here](https://github.com/BernardoGiordano/PKSM-Tools/releases/latest)"
 
 class Info:
 
@@ -10,13 +18,17 @@ class Info:
         
     @commands.command(aliases=['releases'])
     async def release(self, ctx, app = ""):
-        """Gives the latest releases for PKSM and Checkpoint"""
+        """Returns the latest releases for Bernardo's Projects"""
         if app.lower() == "pksm":
-            embed = discord.Embed(description="You can get the latest release of PKSM [here](https://github.com/BernardoGiordano/PKSM/releases/latest).")
+            embed = discord.Embed(description=desc.format(desc_pksm))
         elif app.lower() == "checkpoint":
-            embed = discord.Embed(description="You can get the latest release of Checkpoint [here](https://github.com/BernardoGiordano/Checkpoint/releases/latest).")
+            embed = discord.Embed(description=desc.format(desc_checkpoint))
+        elif app.lower() == "pksm-tools":
+            embed = discord.Embed(description=desc.format(desc_tools))
+        elif app.lower() == "pickr":
+            embed = discord.Embed(description=desc.format(desc_pickr))
         else:
-            embed = discord.Embed(description="You can get the latest release of PKSM [here](https://github.com/BernardoGiordano/PKSM/releases/latest)\nYou can get the latest release of Checkpoint [here](https://github.com/BernardoGiordano/Checkpoint/releases/latest)")
+            embed = discord.Embed(description=desc.format(desc_pksm)\ndesc.format(desc_checkpoint)\ndesc.format(desc_tools)\ndesc.format(desc_pickr))
         await ctx.send(embed=embed)
         
     @commands.command()
@@ -24,10 +36,11 @@ class Info:
         """Information about the bot"""
         await ctx.send("This is a bot coded in python for use in the PKSM server, made by Griffin#2329. You can view the source code here: <https://github.com/GriffinG1/PKSMBot>.")
     
-    @commands.command()
+    @commands.command(hidden=True)
     async def why(self, ctx):
         """Why the wait?"""
-        await ctx.send("The wait is for two reasons.\n**1.** Bernardo wants to enjoy the game first. Sun and Moon wasn't enjoyable because PKSM was updated right away.\n**2.** People keep asking, when it'll be released, refusing to let Bernardo have a break.")
+        if self.bot.counter:
+            await ctx.send("The wait is for two reasons.\n**1.** Bernardo wants to enjoy the game first. Sun and Moon wasn't enjoyable because PKSM was updated right away.\n**2.** People keep asking, when it'll be released, refusing to let Bernardo have a break.")
         
     @commands.command()
     async def patreon(self, ctx):

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 description = """PKSM server helper bot. Don't make me angry"""
 
 # import dependencies
@@ -40,6 +42,8 @@ bot.escape_trans = str.maketrans({
     "`": "\`",
     "\\": "\\\\"
 })  # used to escape a string
+
+bot.counter = False # Disables the tally
 
 
 # mostly taken from https://github.com/Rapptz/discord.py/blob/async/discord/ext/commands/bot.py

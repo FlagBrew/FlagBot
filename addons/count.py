@@ -7,25 +7,26 @@ class Count:
         self.bot = bot
         print('Addon "{}" loaded'.format(self.__class__.__name__))
         
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.cooldown(rate=1, per=210.0, type=commands.BucketType.channel)
     async def wait(self, ctx):
         """Returns how long it's gonna take"""
-        if not ctx.channel.id == 379201279479513100 and ctx.guild.id == 278222834633801728:
-            await ctx.message.delete()
-            ctx.command.reset_cooldown(ctx)
-            try:
-                return await ctx.author.send("This command is restricted to <#379201279479513100>. Please try again there.")
-            except:
-                return await ctx.send("This command is restricted to <#379201279479513100>. Please try again there.")
-        with open("tally.txt") as f:
-            tally = f.read()
-        await ctx.send("It's gonna be **{}** more {} till Ultra Sun and Ultra Moon is supported :slight_smile:".format(tally, "weeks" if tally != 1 else "week"))
+        if self.bot.counter:
+            if not ctx.channel.id == 379201279479513100 and ctx.guild.id == 278222834633801728:
+                await ctx.message.delete()
+                ctx.command.reset_cooldown(ctx)
+                try:
+                    return await ctx.author.send("This command is restricted to <#379201279479513100>. Please try again there.")
+                except:
+                    return await ctx.send("This command is restricted to <#379201279479513100>. Please try again there.")
+            with open("tally.txt") as f:
+                tally = f.read()
+            await ctx.send("It's gonna be **{}** more {} till Ultra Sun and Ultra Moon is supported :slight_smile:".format(tally, "weeks" if tally != 1 else "week"))
             
-    @commands.command()
+    @commands.command(hidden=True)
     async def modify(self, ctx, amount=0):
         """Modify the timer"""
-        if ctx.author == ctx.guild.owner:
+        if ctx.author == ctx.guild.owner and self.bot.counter:
             with open("tally.txt") as f:
                 tally = f.read()
                 f.close()
