@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-description = """PKSM server helper bot. Don't make me angry"""
+description = """PKSM server helper bot. Don't make it angry"""
 
 # import dependencies
 import os
