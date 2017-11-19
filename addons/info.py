@@ -28,7 +28,7 @@ class Info:
         elif app.lower() == "pickr":
             embed = discord.Embed(description=desc.format(desc_pickr))
         else:
-            embed = discord.Embed(description=desc.format(desc_pksm)\ndesc.format(desc_checkpoint)\ndesc.format(desc_tools)\ndesc.format(desc_pickr))
+            embed = discord.Embed(description="{}\n{}\n{}\n{}.format(desc.format(desc_pksm), desc.format(desc_checkpoint), desc.format(desc_tools), desc.format(desc_pickr))
         await ctx.send(embed=embed)
         
     @commands.command()
