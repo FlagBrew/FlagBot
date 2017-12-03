@@ -20,13 +20,18 @@ import ast
 dir_path = os.path.dirname(os.path.realpath(__file__))
 os.chdir(dir_path)
 
-prefix = ['!', '.']
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+try:
+    prefix = config['Main']['prefix']
+except KeyError:
+    prefix = ['!', '.']
+
 bot = commands.Bot(command_prefix=prefix, description=description)
 
 bot.dir_path = os.path.dirname(os.path.realpath(__file__))
 
-config = configparser.ConfigParser()
-config.read("config.ini")
 try:
     token = os.environ['TOKEN']
     heroku = True

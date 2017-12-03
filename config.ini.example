@@ -1,2 +1,3 @@
 [Main]
 token = <TOKEN HERE>
+prefix = <PREFIX HERE (defaults to '!' and '.' if left empty)>
