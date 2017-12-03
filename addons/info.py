@@ -16,10 +16,10 @@ class Info:
         print('Addon "{}" loaded'.format(self.__class__.__name__))
         
         
-    @commands.command(aliases=['releases'])
+    @commands.command(aliases=['releases', 'latest'])
     async def release(self, ctx, app = ""):
         """Returns the latest releases for Bernardo's Projects"""
-        if app.lower() == "pksm":
+        if app.lower() == "pksm" or ctx.invoked_with == "latest":
             embed = discord.Embed(description=desc.format(desc_pksm))
         elif app.lower() == "checkpoint":
             embed = discord.Embed(description=desc.format(desc_checkpoint))
