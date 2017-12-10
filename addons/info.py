@@ -21,6 +21,7 @@ class Info:
         """Returns the latest releases for Bernardo's Projects"""
         if app.lower() == "pksm" or ctx.invoked_with == "latest":
             embed = discord.Embed(description=desc.format(desc_pksm))
+            embed.set_image(url="")
         elif app.lower() == "checkpoint":
             embed = discord.Embed(description=desc.format(desc_checkpoint))
         elif app.lower() == "pksm-tools":
