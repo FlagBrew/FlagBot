@@ -32,7 +32,7 @@ class Info:
             for asset in releases[0]['assets']:
                 if asset['name'] == "Checkpoint.cia":
                     embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
-        elif app.lower() == "pksm-tools":
+        elif app.lower() == "pksm-tools" or app.lower() == "tools":
             embed = discord.Embed(description=desc.format(desc_tools))
         elif app.lower() == "pickr":
             embed = discord.Embed(description=desc.format(desc_pickr))
