@@ -69,7 +69,7 @@ class Info:
     async def faq(self, ctx):
         """Answer commonly asked questions"""
         questions = "**When will Virtual Console games be supported?**\nNever.\n\n"
-        questions += "**Will support be added for editing your backpackand items?**\nNot planned, but feel free to make a contribution to the project and start working on it yourself.\n\n"
+        questions += "**Will support be added for editing your backpack and items?**\nNot planned, but feel free to make a contribution to the project and start working on it yourself.\n\n"
         questions += "**Will we be able to do more than just inject events into the DS games?**\nNot planned, but feel free to make a contribution to the project and start working on it yourself.\n\n"
         questions += "**Why can't I gen Zeraora in PKSM?**\nWait until it is officially released. PKSM won't support it before that time."
         embed = discord.Embed(description=questions)
