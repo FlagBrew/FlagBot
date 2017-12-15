@@ -47,7 +47,7 @@ class Info:
     @commands.command()
     async def about(self, ctx):
         """Information about the bot"""
-        await ctx.send("This is a bot coded in python for use in the PKSM server, made by Griffin#2329. You can view the current source code here: <https://github.com/BernardoGiordano/PKSMBot>.")
+        await ctx.send("This is a bot coded in python for use in the PKSM server, made by Griffin#2329. You can view the source code here: <https://github.com/GriffinG1/PKSMBot>.")
         
     @commands.command()
     async def readme(self, ctx):
