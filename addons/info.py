@@ -64,6 +64,16 @@ class Info:
     async def patreon(self, ctx):
         """Support here"""
         await ctx.send("You can support Bernardo on Patreon here: <https://www.patreon.com/bernardogiordano>.")
-        
+
+    @commands.command()
+    async def faq(self, ctx):
+        """Answer commonly asked questions"""
+        questions = "**When will Virtual Console games be supported?**\nNever.\n\n"
+        questions += "**Will support be added for editing your backpackand items?**\nNot planned, but feel free to make a contribution to the project and start working on it yourself.\n\n"
+        questions += "**Will we be able to do more than just inject events into the DS games?**\nNot planned, but feel free to make a contribution to the project and start working on it yourself.\n\n"
+        questions += "**Why can't I gen Zeraora in PKSM?**\nWait until it is officially released. PKSM won't support it before that time."
+        embed = discord.Embed(description=questions)
+        await ctx.send(embed=embed)
+
 def setup(bot):
     bot.add_cog(Info(bot))
