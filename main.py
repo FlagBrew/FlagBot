@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-description = """PKSM server helper bot. Don't make it angry"""
+description = """PKSM server helper bot."""
 
 # import dependencies
 import os
@@ -47,9 +47,6 @@ bot.escape_trans = str.maketrans({
     "`": "\`",
     "\\": "\\\\"
 })  # used to escape a string
-
-bot.counter = False # Disables the tally
-
 
 # mostly taken from https://github.com/Rapptz/discord.py/blob/async/discord/ext/commands/bot.py
 @bot.event
@@ -119,8 +116,6 @@ async def on_ready():
     
 # loads extensions
 addons = [
-    'addons.events',
-    'addons.count',
     'addons.utility',
     'addons.info',
     'addons.mod'
