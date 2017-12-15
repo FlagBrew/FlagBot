@@ -71,5 +71,15 @@ class Info:
         """Donate here"""
         await ctx.send("You can donate to Bernardo on Patreon here: <https://www.patreon.com/bernardogiordano>.")
         
+    @commands.command()
+    async def faq(self, ctx):
+        """Frequently Asked Questions"""
+        embed = discord.Embed(title="Frequently Asked Questions")
+        embed.add_field(name="When will Virtual Console games be supported?", value="Never.")
+        embed.add_field(name="When will support be added for editing your backpack and items?", value="Currently never, unless someone decides to make a contribution and develop it.")
+        embed.add_field(name="When will we be able to do more than just inject events into the DS games?", value="See last answer.")
+        embed.add_field(name="Why can't Zeroara be generated?", value="Zeroara has not been officially released yet, and will not be supported by PKSM until then.")
+        await ctx.send(embed=embed)
+        
 def setup(bot):
     bot.add_cog(Info(bot))
