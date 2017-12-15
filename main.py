@@ -39,15 +39,6 @@ except KeyError:
     token = config['Main']['token']
     heroku = False
 
-bot.pruning = False  # used to disable leave logs if pruning, maybe.
-bot.escape_trans = str.maketrans({
-    "*": "\*",
-    "_": "\_",
-    "~": "\~",
-    "`": "\`",
-    "\\": "\\\\"
-})  # used to escape a string
-
 bot.counter = False # Disables the tally
 
 
