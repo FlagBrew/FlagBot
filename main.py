@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-description = """PKSM server helper bot."""
+description = """PKSM server helper bot by GriffinG1"""
 
 # import dependencies
 import os
@@ -39,14 +39,8 @@ except KeyError:
     token = config['Main']['token']
     heroku = False
 
-bot.pruning = False  # used to disable leave logs if pruning, maybe.
-bot.escape_trans = str.maketrans({
-    "*": "\*",
-    "_": "\_",
-    "~": "\~",
-    "`": "\`",
-    "\\": "\\\\"
-})  # used to escape a string
+bot.counter = False # Disables the tally
+
 
 # mostly taken from https://github.com/Rapptz/discord.py/blob/async/discord/ext/commands/bot.py
 @bot.event

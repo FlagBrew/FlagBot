@@ -32,7 +32,7 @@ class Info:
             for asset in releases[0]['assets']:
                 if asset['name'] == "Checkpoint.cia":
                     embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
-        elif app.lower() == "pksm-tools":
+        elif app.lower() == "pksm-tools" or app.lower() == "tools":
             embed = discord.Embed(description=desc.format(desc_tools))
         elif app.lower() == "pickr":
             embed = discord.Embed(description=desc.format(desc_pickr))
@@ -47,7 +47,7 @@ class Info:
     @commands.command()
     async def about(self, ctx):
         """Information about the bot"""
-        await ctx.send("This is a bot coded in python for use in the PKSM server, made by Griffin#2329. You can view the current source code here: <https://github.com/BernardoGiordano/PKSMBot>.")
+        await ctx.send("This is a bot coded in python for use in the PKSM server, made by Griffin#2329. You can view the source code here: <https://github.com/GriffinG1/PKSMBot>.")
         
     @commands.command()
     async def readme(self, ctx):
@@ -62,18 +62,18 @@ class Info:
         
     @commands.command(aliases=['patron'])
     async def patreon(self, ctx):
-        """Support here"""
-        await ctx.send("You can support Bernardo on Patreon here: <https://www.patreon.com/bernardogiordano>.")
-
+        """Donate here"""
+        await ctx.send("You can donate to Bernardo on Patreon here: <https://www.patreon.com/bernardogiordano>.")
+        
     @commands.command()
     async def faq(self, ctx):
-        """Answer commonly asked questions"""
-        questions = "**When will Virtual Console games be supported?**\nNever.\n\n"
-        questions += "**Will support be added for editing your backpack and items?**\nNot planned, but feel free to make a contribution to the project and start working on it yourself.\n\n"
-        questions += "**Will we be able to do more than just inject events into the DS games?**\nNot planned, but feel free to make a contribution to the project and start working on it yourself.\n\n"
-        questions += "**Why can't I gen Zeraora in PKSM?**\nWait until it is officially released. PKSM won't support it before that time."
-        embed = discord.Embed(description=questions)
+        """Frequently Asked Questions"""
+        embed = discord.Embed(title="Frequently Asked Questions")
+        embed.add_field(name="When will Virtual Console games be supported?", value="Never.")
+        embed.add_field(name="When will support be added for editing your backpack and items?", value="Currently never, unless someone decides to make a contribution and develop it.")
+        embed.add_field(name="When will we be able to do more than just inject events into the DS games?", value="See last answer.")
+        embed.add_field(name="Why can't Zeroara be generated?", value="Zeroara has not been officially released yet, and will not be supported by PKSM until then.")
         await ctx.send(embed=embed)
-
+        
 def setup(bot):
     bot.add_cog(Info(bot))

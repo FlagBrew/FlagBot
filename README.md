@@ -1,6 +1,5 @@
 # PKSMBot
-
-PKSM server helper bot made by GriffinG1.
+PKSM server helper bot.
 
 # Credits
 
