@@ -1,3 +1,4 @@
 [Main]
 token = <TOKEN HERE>
-prefix = <PREFIX HERE (defaults to '!' and '.' if left empty)>
+prefix = <PREFIX HERE>
+;Prefix defaults to '!' and '.' if left empty
