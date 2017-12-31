@@ -89,30 +89,44 @@ bot.wait_until_all_ready = wait_until_all_ready
 async def on_ready():
     # this bot should only ever be in one server anyway
     for guild in bot.guilds:
-        bot.guild = guild
-        if bot.all_ready:
-            break   
-        
-        try:
-            with open("restart.txt") as f:
-                channel = bot.get_channel(int(f.readline()))
-                f.close()
-            await channel.send("Restarted!")
-            os.remove("restart.txt")
-        except:
-            pass
-        
-        print("Initialized on {}.".format(guild.name))
-        
-        bot.all_ready = True
-        bot._is_all_ready.set()
+        if guild.id == 378420595190267915 or guild.id == 278222834633801728:
+            bot.guild = guild
+            if bot.all_ready:
+                break   
+            
+            try:
+                with open("restart.txt") as f:
+                    channel = bot.get_channel(int(f.readline()))
+                    f.close()
+                await channel.send("Restarted!")
+                os.remove("restart.txt")
+            except:
+                pass
+            
+            bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
+            
+            print("Initialized on {}.".format(guild.name))
+            
+            bot.all_ready = True
+            bot._is_all_ready.set()
+        else:
+            try:
+                await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
+            except discord.Forbidden:
+                for channel in guild.channels:
+                   if guild.me.permissions_in(channel).send_messages and isinstance(channel, discord.TextChannel):
+                        await channel.send("Left your server, as this bot should only be used on the PKSM server under this token.")
+                        break
+            finally:
+                await guild.leave()
 
     
 # loads extensions
 addons = [
     'addons.utility',
     'addons.info',
-    'addons.mod'
+    'addons.mod',
+    'addons.events'
 ]
 
 failed_addons = []
