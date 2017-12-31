@@ -39,8 +39,6 @@ except KeyError:
     token = config['Main']['token']
     heroku = False
 
-bot.counter = False # Disables the tally
-
 
 # mostly taken from https://github.com/Rapptz/discord.py/blob/async/discord/ext/commands/bot.py
 @bot.event
