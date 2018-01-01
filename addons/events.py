@@ -30,8 +30,7 @@ class Events:
             embed = discord.Embed(description=message.content)
             await message.delete()
             await message.author.ban()
-            await message.channel.send("{} was banned for trying to spam ping users.".format(message.author))
-            await self.bot.logs_channnel.send("{} was banned for trying to spam ping users.".format(message.author), embed=embed)
+            await message.channel.send("{} was banned for attempting to spam user mentions.".format(message.author))
             
             
     async def on_message_delete(self, message):
