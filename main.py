@@ -39,7 +39,6 @@ except KeyError:
     token = config['Main']['token']
     heroku = False
 
-
 # mostly taken from https://github.com/Rapptz/discord.py/blob/async/discord/ext/commands/bot.py
 @bot.event
 async def on_command_error(ctx, error):
