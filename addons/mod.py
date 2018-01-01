@@ -53,5 +53,16 @@ class Moderation:
             await self.bot.guild.ban(found_member, delete_message_days=0, reason=reason)
             await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(found_member))
             
+    @commands.has_permissions(ban_members=True)
+    @commands.command()
+    async def purge(self, ctx, amount=0):
+        """Purge x amount of messages"""
+        await ctx.message.delete()
+        asyncio.sleep(2)
+        if amount > 0:
+            await ctx.channel.purge(limit=amount)
+        else:
+            await ctx.send("Why would you wanna purge no messages?", delete_after=10)
+            
 def setup(bot):
     bot.add_cog(Moderation(bot))
