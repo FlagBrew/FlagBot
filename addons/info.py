@@ -70,9 +70,10 @@ class Info:
         """Frequently Asked Questions"""
         embed = discord.Embed(title="Frequently Asked Questions")
         embed.add_field(name="When will Virtual Console games be supported?", value="Never.")
-        embed.add_field(name="When will support be added for editing your backpack and items?", value="Currently never, unless someone decides to make a contribution and develop it.")
-        embed.add_field(name="When will we be able to do more than just inject events into the DS games?", value="See last answer.")
-        embed.add_field(name="Why can't Zeroara be generated?", value="Zeroara has not been officially released yet, and will not be supported by PKSM until then.")
+        embed.add_field(name="Are flashcards supported? If not, when will support for them be added?", value="Flashcards are not supported and never will be.")
+        embed.add_field(name="When will support for Storage and Editor be added for DS games?", value="Currently never, unless someone decides to make a contribution and develop it.")
+        embed.add_field(name="When will support be added for editing your backpack and items?", value="Limited editing is possible with scripts. Full editing won't happen unless someone decides to make a contribution and develop it.")
+        embed.add_field(name="Why can't Zeraora be generated?", value="Zeraora has not been officially released yet, and will not be supported by PKSM until then.")
         await ctx.send(embed=embed)
         
 def setup(bot):
