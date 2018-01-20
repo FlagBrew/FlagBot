@@ -9,6 +9,7 @@ desc_pksm = "PKSM [here](https://github.com/BernardoGiordano/PKSM/releases/lates
 desc_checkpoint = "Checkpoint [here](https://github.com/BernardoGiordano/Checkpoint/releases/latest)"
 desc_pickr = "Pickr3DS [here](https://github.com/BernardoGiordano/Pickr3DS/releases/latest)"
 desc_tools = "PKSM-Tools [here](https://github.com/BernardoGiordano/PKSM-Tools/releases/latest)"
+desc_lasagna = "Lasagna [here](https://github.com/BernardoGiordano/Lasagna/releases)"
 
 class Info:
 
@@ -39,6 +40,12 @@ class Info:
             releases = requests.get("https://api.github.com/repos/BernardoGiordano/Pickr3DS/releases").json()
             for asset in releases[0]['assets']:
                 if asset['name'] == "Pickr3DS.cia":
+                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+        elif app.lower() == "lasagna":
+            embed = discord.Embed(description=desc.format(desc_lasagna))
+            releases = requests.get("https://api.github.com/repos/BernardoGiordano/Lasagna/releases").json()
+            for asset in releases[0]['assets']:
+                if asset['name'] == "Lasagna.cia":
                     embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
         else:
             embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_tools) + "\n" + desc.format(desc_pickr))
