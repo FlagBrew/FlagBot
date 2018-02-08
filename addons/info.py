@@ -85,9 +85,15 @@ class Info:
 
     @commands.command()
     async def date(self, ctx):
-        """How to change PKSM's default date"""
-        embed = discord.Embed()
-        embed.add_field(name="How to change PKSM's default date", value="Select your game, then select options.\n0x22 is the day, 0x23 is the month, and 0x24 is the year.\nKeep in mind that all numbers are in hexadecimal.\nMove your cursor to the byte you want to change.\nTap the plus button to increase the value of those bytes and minus to decrease.\nOnce you've made your changes, just press B.")
+        """How to Change PKSM's Default Met Date"""
+        embed = discord.Embed(title="How to Change PKSM's Default Met Date")
+        embed.description = ("1. Select your game\n"
+                             "2. Select options\n"
+                             "3. Move your cursor to the byte you want to change.\n"
+                             "\t\t\u2022 0x22 is the day, 0x23 is the month, and 0x24 is the year.\n"
+                             "\t\t\u2022 Keep in mind that all numbers are hexadecimals.\n"
+                             "4. Tap the plus button to increase the value of those bytes and minus to decrease.\n"
+                             "5. Once you've made your changes, press B to exit/")
         await ctx.send(embed=embed)
         
 def setup(bot):
