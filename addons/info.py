@@ -8,7 +8,7 @@ desc = "You can get the latest release of {}."
 desc_pksm = "PKSM [here](https://github.com/BernardoGiordano/PKSM/releases/latest)"
 desc_checkpoint = "Checkpoint [here](https://github.com/BernardoGiordano/Checkpoint/releases/latest)"
 desc_pickr = "Pickr3DS [here](https://github.com/BernardoGiordano/Pickr3DS/releases/latest)"
-desc_tools = "PKSM-Tools [here](https://github.com/BernardoGiordano/PKSM-Tools/releases/latest)"
+desc_tools = "PKSM-Tools [here](https://github.com/BernardoGiordano/PKSM-Tools/releases)"
 desc_lasagna = "Lasagna [here](https://github.com/BernardoGiordano/Lasagna/releases/latest)"
 
 class Info:
