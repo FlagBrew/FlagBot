@@ -82,6 +82,19 @@ class Info:
         embed.add_field(name="When will support be added for editing your backpack and items?", value="Limited editing is possible with scripts. Full editing won't be possible unless someone decides to make a contribution and develop it.")
         embed.add_field(name="Why can't Zeraora be generated?", value="Zeraora has not been officially released yet, and will not be supported by PKSM until then.")
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def date(self, ctx):
+        """How to Change PKSM's Default Met Date"""
+        embed = discord.Embed(title="How to Change PKSM's Default Met Date")
+        embed.description = ("1. Select your game\n"
+                             "2. Select options\n"
+                             "3. Move your cursor to the byte you want to change.\n"
+                             "\t\t\u2022 0x22 is the day, 0x23 is the month, and 0x24 is the year.\n"
+                             "\t\t\u2022 Keep in mind that all numbers are hexadecimals.\n"
+                             "4. Tap the plus button to increase the value of those bytes and minus to decrease.\n"
+                             "5. Once you've made your changes, press B to exit/")
+        await ctx.send(embed=embed)
         
 def setup(bot):
     bot.add_cog(Info(bot))
