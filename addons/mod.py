@@ -37,6 +37,7 @@ class Moderation:
         elif not found_member:
             await ctx.send("That user could not be found.")
         else:
+            await found_member.send("You were kicked from PKSM for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY".format(reason))
             await found_member.kick(reason=reason)
             await ctx.send("Successfully kicked user {0.name}#{0.discriminator}!".format(found_member))
     
@@ -47,9 +48,10 @@ class Moderation:
         found_member = self.find_user(member, ctx)
         if found_member == ctx.message.author:
             return await ctx.send("You can't ban yourself, obviously")
-        if not found_member:
+        elif not found_member:
             await ctx.send("That user could not be found.")
         else:
+            await found_member.send("You were banned from PKSM for:\n\n`{}`\n\nIf you believe this to be in error, please reach out to Bernardo here on Discord at `bernardogiordano#0012`".format(reason))
             await self.bot.guild.ban(found_member, delete_message_days=0, reason=reason)
             await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(found_member))
             
