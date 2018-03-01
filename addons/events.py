@@ -12,7 +12,7 @@ class Events:
         
     async def on_guild_join(self, guild):
         # Don't let the bot be used elsewhere with the same token
-        if guild.id != 378420595190267915 or guild.id != 278222834633801728:
+        if guild.id != 378420595190267915 and guild.id != 278222834633801728 and guild.id != 418291144850669569:
             try:
                 await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
             except discord.Forbidden:
