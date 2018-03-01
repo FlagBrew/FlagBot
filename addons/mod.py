@@ -37,7 +37,10 @@ class Moderation:
         elif not found_member:
             await ctx.send("That user could not be found.")
         else:
-            await found_member.send("You were kicked from PKSM for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY".format(reason))
+            try:
+                await found_member.send("You were kicked from  for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY".format(ctx.guild.name, reason))
+            except discord.Forbidden:
+                pass # bot blocked or not accepting DMs
             await found_member.kick(reason=reason)
             await ctx.send("Successfully kicked user {0.name}#{0.discriminator}!".format(found_member))
     
@@ -51,8 +54,17 @@ class Moderation:
         elif not found_member:
             await ctx.send("That user could not be found.")
         else:
-            await found_member.send("You were banned from PKSM for:\n\n`{}`\n\nIf you believe this to be in error, please reach out to Bernardo here on Discord at `bernardogiordano#0012`".format(reason))
-            await self.bot.guild.ban(found_member, delete_message_days=0, reason=reason)
+            try:
+                await found_member.send("You were banned from {} for:\n\n`{}`\n\nIf you believe this to be in error, please join the appeals server here: https://discord.gg/5Wg4AEb".format(ctx.guild.name, reason))
+            except:
+                pass # bot blocked or not accepting DMs
+            try:
+                await found_member.ban(reason=reason)
+            except discord.Forbidden: # i have no clue
+                try:
+                    await self.bot.get_guild(278222834633801728).ban(found_member, delete_message_days=0, reason=reason)
+                except discord.Forbidden: # none at all
+                    return await ctx.send("I don't have permission. Why don't I have permission.")
             await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(found_member))
             
     @commands.has_permissions(ban_members=True)
@@ -65,6 +77,26 @@ class Moderation:
             await ctx.channel.purge(limit=amount)
         else:
             await ctx.send("Why would you wanna purge no messages?", delete_after=10)
+            
+    @commands.has_permissions(ban_members=True)
+    @commands.command()
+    async def unban(self, ctx, member):
+        """Unban command, only works on the appeals server"""
+        await ctx.message.delete()
+        if not ctx.guild.id == 418291144850669569:
+            return await ctx.send("This command is for the appeals server only.", delete_after(10))
+        found_member = self.find_user(member, ctx)
+        if found_member == ctx.message.author:
+            return await found_member.send("How did you possibly ban yourself? Go ask someone else to unban you.")
+        elif not found_member:
+            return await ctx.send("That user could not be found.", delete_after(10))
+        else:
+            try:
+                await found_member.send("You were unbanned from PKSM! Thank you for appealing. Here's an invite to rejoin: https://discord.gg/bGKEyfY")
+            except discord.Forbidden:
+                pass # bot blocked or not accepting DMs
+            await self.bot.get_guild(278222834633801728).unban(found_member)
+            await found_member.kick()
             
 def setup(bot):
     bot.add_cog(Moderation(bot))

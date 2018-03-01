@@ -72,24 +72,13 @@ async def on_error(event_method, *args, **kwargs):
     error_trace = "".join(tb)
     print(error_trace)
 
-bot.all_ready = False
-bot._is_all_ready = asyncio.Event(loop=bot.loop)
-
-
-async def wait_until_all_ready():
-    """Wait until the entire bot is ready."""
-    await bot._is_all_ready.wait()
-bot.wait_until_all_ready = wait_until_all_ready
-
 
 @bot.event
 async def on_ready():
     # this bot should only ever be in one server anyway
     for guild in bot.guilds:
-        if guild.id == 378420595190267915 or guild.id == 278222834633801728:
+        if guild.id == 378420595190267915 or guild.id == 278222834633801728 or guild.id == 418291144850669569:
             bot.guild = guild
-            if bot.all_ready:
-                break   
             
             try:
                 with open("restart.txt") as f:
@@ -100,12 +89,8 @@ async def on_ready():
             except:
                 pass
             
-            bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
-            
-            print("Initialized on {}.".format(guild.name))
-            
-            bot.all_ready = True
-            bot._is_all_ready.set()
+            if guild.id == 278222834633801728:
+                bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
         else:
             try:
                 await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
@@ -116,6 +101,8 @@ async def on_ready():
                         break
             finally:
                 await guild.leave()
+            
+        print("Initialized on {}.".format(guild.name))
 
     
 # loads extensions
