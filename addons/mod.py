@@ -37,6 +37,10 @@ class Moderation:
         elif not found_member:
             await ctx.send("That user could not be found.")
         else:
+            embed = discord.Embed(title="{} kicked".format(found_member))
+            embed.description = "{}#{} was kicked by {} for:\n\n{}".format(found_member.name, found_member.discriminator, ctx.message.author, reason)
+            if ctx.guild.id == 278222834633801728:
+                await self.bot.logs_channel.send(embed=embed)
             try:
                 await found_member.send("You were kicked from  for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY".format(ctx.guild.name, reason))
             except discord.Forbidden:
