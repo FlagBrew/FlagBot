@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+
+# 278222834633801728 - PKSM Server
+# 378420595190267915 - Testing Server
+# 418291144850669569 - Appeals Server
+
 description = """PKSM server helper bot by GriffinG1"""
 
 # import dependencies
@@ -77,32 +82,39 @@ async def on_error(event_method, *args, **kwargs):
 async def on_ready():
     # this bot should only ever be in one server anyway
     for guild in bot.guilds:
-        if guild.id == 378420595190267915 or guild.id == 278222834633801728 or guild.id == 418291144850669569:
-            bot.guild = guild
-            
-            try:
-                with open("restart.txt") as f:
-                    channel = bot.get_channel(int(f.readline()))
-                    f.close()
-                await channel.send("Restarted!")
-                os.remove("restart.txt")
-            except:
-                pass
-            
-            if guild.id == 278222834633801728:
-                bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
-        else:
-            try:
-                await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
-            except discord.Forbidden:
-                for channel in guild.channels:
-                   if guild.me.permissions_in(channel).send_messages and isinstance(channel, discord.TextChannel):
-                        await channel.send("Left your server, as this bot should only be used on the PKSM server under this token.")
-                        break
-            finally:
-                await guild.leave()
-            
-        print("Initialized on {}.".format(guild.name))
+        try:
+            if guild.id == 378420595190267915 or guild.id == 278222834633801728 or guild.id == 418291144850669569:
+                bot.guild = guild
+                
+                try:
+                    with open("restart.txt") as f:
+                        channel = bot.get_channel(int(f.readline()))
+                        f.close()
+                    await channel.send("Restarted!")
+                    os.remove("restart.txt")
+                except:
+                    pass
+                try:
+                    bot.mute_role = discord.utils.get(guild.roles, id="424736115879313418")
+                except:
+                    pass
+                
+                if guild.id == 278222834633801728:
+                    bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
+            else:
+                try:
+                    await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
+                except discord.Forbidden:
+                    for channel in guild.channels:
+                       if guild.me.permissions_in(channel).send_messages and isinstance(channel, discord.TextChannel):
+                            await channel.send("Left your server, as this bot should only be used on the PKSM server under this token.")
+                            break
+                finally:
+                    await guild.leave()
+                
+            print("Initialized on {}.".format(guild.name))
+        except:
+            print("Failed to initialize on {}".format(guild.name))
 
     
 # loads extensions
