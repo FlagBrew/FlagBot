@@ -23,6 +23,26 @@ class Events:
             finally:
                 await guild.leave()
                 
+    async def on_member_join(self, member):
+        embed = discord.Embed(title="New member!")
+        embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
+        if member.guild.id == 278222834633801728:
+            await self.bot.logs_channel.send(embed=embed)
+        elif member.guild.id == 418291144850669569:
+            await member.guild.get_channel(418680841900785664).send(embed=embed)
+        else:
+            return
+            
+    async def on_member_remove(self, member):
+        embed = discord.Embed(title="Member left :(")
+        embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
+        if member.guild.id == 278222834633801728:
+            await self.bot.logs_channel.send(embed=embed)
+        elif member.guild.id == 418291144850669569:
+            await member.guild.get_channel(418680841900785664).send(embed=embed)
+        else:
+            return
+                
                 
     async def on_message(self, message):
         # auto ban on 15+ pings
