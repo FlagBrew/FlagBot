@@ -107,10 +107,11 @@ class Moderation:
                 await self.bot.get_guild(278222834633801728).unban(found_member)
             except discord.NotFound:
                 return await ctx.send("{} is not banned!".format(found_member.mention))
-            embed = discord.Embed(title="{} unbanned")
+            embed = discord.Embed(title="{}#{} unbanned"format(found_member.name, found_member.discriminator))
             embed.description = "{}#{} was unbanned from PKSM by {}".format(found_member.name, found_member.discriminator, ctx.message.author)
             await ctx.guild.get_channel(430164418345566208).send(embed=embed)
             await found_member.kick()
+            await ctx.send("Unbanned {}#{}!".format(found_member.name, found_member.discriminator))
             
     @commands.has_permissions(ban_members=True)    
     @commands.command()
