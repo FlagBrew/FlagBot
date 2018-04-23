@@ -42,7 +42,7 @@ class Moderation:
             if ctx.guild.id == 278222834633801728:
                 await self.bot.logs_channel.send(embed=embed)
             try:
-                await found_member.send("You were kicked from  for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY".format(ctx.guild.name, reason))
+                await found_member.send("You were kicked from {} for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: {}".format(ctx.guild.name, reason, "https://discord.gg/bGKEyfY" if ctx.guild.id == 278222834633801728 else "https://discord.gg/5Wg4AEb"))
             except discord.Forbidden:
                 pass # bot blocked or not accepting DMs
             await found_member.kick(reason=reason)
@@ -107,7 +107,7 @@ class Moderation:
                 await self.bot.get_guild(278222834633801728).unban(found_member)
             except discord.NotFound:
                 return await ctx.send("{} is not banned!".format(found_member.mention))
-            embed = discord.Embed(title="{}#{} unbanned"format(found_member.name, found_member.discriminator))
+            embed = discord.Embed(title="{}#{} unbanned".format(found_member.name, found_member.discriminator))
             embed.description = "{}#{} was unbanned from PKSM by {}".format(found_member.name, found_member.discriminator, ctx.message.author)
             await ctx.guild.get_channel(430164418345566208).send(embed=embed)
             await found_member.kick()
