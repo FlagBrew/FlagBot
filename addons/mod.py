@@ -42,7 +42,7 @@ class Moderation:
             if ctx.guild.id == 278222834633801728:
                 await self.bot.logs_channel.send(embed=embed)
             try:
-                await found_member.send("You were kicked from  for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY".format(ctx.guild.name, reason))
+                await found_member.send("You were kicked from {} for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: {}".format(ctx.guild.name, reason, "https://discord.gg/bGKEyfY" if ctx.guild.id == 278222834633801728 else "https://discord.gg/5Wg4AEb"))
             except discord.Forbidden:
                 pass # bot blocked or not accepting DMs
             await found_member.kick(reason=reason)
@@ -107,10 +107,49 @@ class Moderation:
                 await self.bot.get_guild(278222834633801728).unban(found_member)
             except discord.NotFound:
                 return await ctx.send("{} is not banned!".format(found_member.mention))
-            embed = discord.Embed(title="{} unbanned")
+            embed = discord.Embed(title="{}#{} unbanned".format(found_member.name, found_member.discriminator))
             embed.description = "{}#{} was unbanned from PKSM by {}".format(found_member.name, found_member.discriminator, ctx.message.author)
             await ctx.guild.get_channel(430164418345566208).send(embed=embed)
             await found_member.kick()
+            await ctx.send("Unbanned {}#{}!".format(found_member.name, found_member.discriminator))
+            
+    @commands.has_permissions(ban_members=True)    
+    @commands.command()
+    async def mute(self, ctx, member, *, reason=""):
+        """Mute a member."""
+        found_member = self.find_user(member, ctx)
+        if found_member == ctx.message.author:
+            return await ctx.send("Why are you trying to mute yourself? Stop that.")
+        elif not found_member:
+            await ctx.send("That user could not be found.")
+        else:
+            audit_reason = "{} This action was done by: {}".format(reason, ctx.message.author.name)
+            await found_member.add_roles(self.bot.mute_role, reason=audit_reason)
+            await ctx.send("Successfully muted user {0.name}#{0.discriminator}!".format(found_member))
+            try:
+                await found_member.send("You have been muted for:\n{}\nIf you feel that you did not deserve this mute, send a direct message to one of the online staff.".format(reason_msg))
+            except discord.Forbidden:
+                pass # why did you block me? I ONLY WANTED TO SEND YOU MEMES
+            
+    @commands.has_permissions(ban_members=True)    
+    @commands.command()
+    async def unmute(self, ctx, *, member):
+        """Unmute a member."""
+        found_member = self.find_user(member, ctx)
+        if found_member == ctx.message.author:
+            await ctx.send("How did you manage to mute yourself...")
+        if not found_member:
+            await ctx.send("That user could not be found.")
+        else:
+            if self.bot.mute_role in found_member.roles:
+                await found_member.remove_roles(self.bot.mute_role)
+                try:
+                    await found_member.send("You have been unmuted on {}.".format(ctx.guild.name))
+                except discord.Forbidden:
+                    pass # booo
+                await ctx.send("Successfully unmuted user {0.name}#{0.discriminator}!".format(found_member))
+            else:
+                await ctx.send("That user isn't muted!")
             
     @commands.has_permissions(ban_members=True)    
     @commands.command()
