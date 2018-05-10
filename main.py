@@ -101,6 +101,9 @@ async def on_ready():
                 
                 if guild.id == 278222834633801728:
                     bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
+                    
+                bot.creator = discord.utils.get(guild.members, id=177939404243992578)
+                    
             else:
                 try:
                     await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
