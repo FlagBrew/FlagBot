@@ -54,8 +54,7 @@ class Info:
     @commands.command()
     async def about(self, ctx):
         """Information about the bot"""
-        await ctx.send("This is a bot coded in python for use in the PKSM server, made by Griffin#2329. You can view the source code here: <https://github.com/GriffinG1/PKSMBot>.")
-        
+        await ctx.send("This is a bot coded in python for use in the PKSM server, made by {}#{}. You can view the source code here: <https://github.com/GriffinG1/PKSMBot>.".format(self.bot.creator.name, self.bot.creator.discriminator))    
     @commands.command()
     async def readme(self, ctx):
         """PKSM Readme"""
@@ -94,6 +93,13 @@ class Info:
                              "\t\t\u2022 Keep in mind that all numbers are hexadecimals.\n"
                              "4. Tap the plus button to increase the value of those bytes and minus to decrease.\n"
                              "5. Once you've made your changes, press B to exit/")
+        await ctx.send(embed=embed)
+        
+    @commands.command(aliases=['qr', 'qrcodes'])
+    async def qrcode(self, ctx):
+        """REEE WHY CANT I GET MY QR CODES AHH"""
+        embed = discord.Embed(title="What Happened to the QR Codes?")
+        embed.description = "QR codes are gone for the forseeable future due to changes to GitHub. If you would like more information, you can read about it [here](https://www.reddit.com/r/3dshacks/comments/7zof0c/reminder_github_has_dropped_tlsv111_support_as_of/)."
         await ctx.send(embed=embed)
         
 def setup(bot):
