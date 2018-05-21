@@ -9,7 +9,7 @@ desc_pksm = "PKSM [here](https://github.com/BernardoGiordano/PKSM/releases/lates
 desc_checkpoint = "Checkpoint [here](https://github.com/BernardoGiordano/Checkpoint/releases/latest)"
 desc_pickr = "Pickr3DS [here](https://github.com/BernardoGiordano/Pickr3DS/releases/latest)"
 desc_tools = "PKSM-Tools [here](https://github.com/BernardoGiordano/PKSM-Tools/releases)"
-desc_lasagna = "Lasagna [here](https://github.com/BernardoGiordano/Lasagna/releases/latest)"
+desc_qraken = "QRaken [here](https://github.com/BernardoGiordano/QRaken/releases/latest)"
 
 class Info:
 
@@ -23,32 +23,32 @@ class Info:
         """Returns the latest release for Bernardo's projects"""
         if app.lower() == "pksm" or ctx.invoked_with == "latest":
             embed = discord.Embed(description=desc.format(desc_pksm))
-            # releases = requests.get("https://api.github.com/repos/BernardoGiordano/PKSM/releases").json()
-            # for asset in releases[0]['assets']:
-                # if asset['name'] == "PKSM.cia":
-                    # embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+            releases = requests.get("https://api.github.com/repos/BernardoGiordano/PKSM/releases").json()
+            for asset in releases[0]['assets']:
+                if asset['name'] == "PKSM.cia":
+                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
         elif app.lower() == "checkpoint":
             embed = discord.Embed(description=desc.format(desc_checkpoint))
-            # releases = requests.get("https://api.github.com/repos/BernardoGiordano/Checkpoint/releases").json()
-            # for asset in releases[0]['assets']:
-                # if asset['name'] == "Checkpoint.cia":
-                    # embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+            releases = requests.get("https://api.github.com/repos/BernardoGiordano/Checkpoint/releases").json()
+            for asset in releases[0]['assets']:
+                if asset['name'] == "Checkpoint.cia":
+                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
         elif app.lower() == "pksm-tools" or app.lower() == "tools":
             embed = discord.Embed(description=desc.format(desc_tools))
         elif app.lower() == "pickr":
             embed = discord.Embed(description=desc.format(desc_pickr))
-            # releases = requests.get("https://api.github.com/repos/BernardoGiordano/Pickr3DS/releases").json()
-            # for asset in releases[0]['assets']:
-                # if asset['name'] == "Pickr3DS.cia":
-                    # embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
-        elif app.lower() == "lasagna":
-            embed = discord.Embed(description=desc.format(desc_lasagna))
-            # releases = requests.get("https://api.github.com/repos/BernardoGiordano/Lasagna/releases").json()
-            # for asset in releases[0]['assets']:
-                # if asset['name'] == "Lasagna.cia":
-                    # embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+            releases = requests.get("https://api.github.com/repos/BernardoGiordano/Pickr3DS/releases").json()
+            for asset in releases[0]['assets']:
+                if asset['name'] == "Pickr3DS.cia":
+                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+        elif app.lower() == "qraken":
+            embed = discord.Embed(description=desc.format(desc_qraken))
+            releases = requests.get("https://api.github.com/repos/BernardoGiordano/QRaken/releases").json()
+            for asset in releases[0]['assets']:
+                if asset['name'] == "QRaken.cia":
+                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
         else:
-            embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_tools) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_lasagna))
+            embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_tools) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_qraken))
         await ctx.send(embed=embed)
         
     @commands.command()
@@ -94,6 +94,7 @@ class Info:
                              "4. Tap the plus button to increase the value of those bytes and minus to decrease.\n"
                              "5. Once you've made your changes, press B to exit/")
         await ctx.send(embed=embed)
+	
         
     @commands.command(aliases=['qr', 'qrcodes'])
     async def qrcode(self, ctx):
