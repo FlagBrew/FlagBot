@@ -94,13 +94,11 @@ async def on_ready():
                     os.remove("restart.txt")
                 except:
                     pass
-                try:
-                    bot.mute_role = discord.utils.get(guild.roles, id="424736115879313418")
-                except:
-                    pass
                 
                 if guild.id == 278222834633801728:
                     bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
+                    bot.patron_role = discord.utils.get(guild.roles, id=330078911704727552)
+                    bot.stream_role = discord.utils.get(guild.roles, id=449552215586111499)
                     
                 bot.creator = discord.utils.get(guild.members, id=177939404243992578)
                     

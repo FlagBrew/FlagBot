@@ -113,43 +113,5 @@ class Moderation:
             await found_member.kick()
             await ctx.send("Unbanned {}#{}!".format(found_member.name, found_member.discriminator))
             
-    @commands.has_permissions(ban_members=True)    
-    @commands.command()
-    async def mute(self, ctx, member, *, reason=""):
-        """Mute a member."""
-        found_member = self.find_user(member, ctx)
-        if found_member == ctx.message.author:
-            return await ctx.send("Why are you trying to mute yourself? Stop that.")
-        elif not found_member:
-            await ctx.send("That user could not be found.")
-        else:
-            audit_reason = "{} This action was done by: {}".format(reason, ctx.message.author.name)
-            await found_member.add_roles(self.bot.mute_role, reason=audit_reason)
-            await ctx.send("Successfully muted user {0.name}#{0.discriminator}!".format(found_member))
-            try:
-                await found_member.send("You have been muted for:\n{}\nIf you feel that you did not deserve this mute, send a direct message to one of the online staff.".format(reason_msg))
-            except discord.Forbidden:
-                pass # why did you block me? I ONLY WANTED TO SEND YOU MEMES
-            
-    @commands.has_permissions(ban_members=True)    
-    @commands.command()
-    async def unmute(self, ctx, *, member):
-        """Unmute a member."""
-        found_member = self.find_user(member, ctx)
-        if found_member == ctx.message.author:
-            await ctx.send("How did you manage to mute yourself...")
-        if not found_member:
-            await ctx.send("That user could not be found.")
-        else:
-            if self.bot.mute_role in found_member.roles:
-                await found_member.remove_roles(self.bot.mute_role)
-                try:
-                    await found_member.send("You have been unmuted on {}.".format(ctx.guild.name))
-                except discord.Forbidden:
-                    pass # booo
-                await ctx.send("Successfully unmuted user {0.name}#{0.discriminator}!".format(found_member))
-            else:
-                await ctx.send("That user isn't muted!")
-            
 def setup(bot):
     bot.add_cog(Moderation(bot))

@@ -38,6 +38,23 @@ class Utility:
             f.write(str(ctx.message.channel.id))
             f.close()
         sys.exit(0)
+        
+    @commands.command()
+    async def togglestream(self, ctx):
+        """Allows a patron user to toggle the stream role"""
+        await ctx.message.delete()
+        author_roles = ctx.message.author.roles[1:]
+        if not self.bot.patron_role in author_roles:
+            return await ctx.send("Sorry! This command is restricted to patrons! You can find out how to become a patron with `.patron`.")
+        else:
+            if not self.bot.stream_role in ctx.author.roles:
+                await ctx.author.add_roles(self.bot.stream_role)
+                await ctx.author.send("Added the stream role!")
+                await self.bot.logs_channel.send("{0.name}#{0.discriminator} added the stream role.".format(ctx.author))
+            else:
+                await ctx.author.remove_roles(self.bot.stream_role)
+                await ctx.author.send("Removed the stream role!")
+                await self.bot.logs_channel.send("{0.name}#{0.discriminator} removed the stream role.".format(ctx.author))
             
 def setup(bot):
     bot.add_cog(Utility(bot))
