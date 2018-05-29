@@ -33,20 +33,16 @@ class Info:
             for asset in releases[0]['assets']:
                 if asset['name'] == "Checkpoint.cia":
                     embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
-        elif app.lower() == "pksm-tools" or app.lower() == "tools":
-            embed = discord.Embed(description=desc.format(desc_tools))
         elif app.lower() == "pickr":
             embed = discord.Embed(description=desc.format(desc_pickr))
             releases = requests.get("https://api.github.com/repos/BernardoGiordano/Pickr3DS/releases").json()
             for asset in releases[0]['assets']:
                 if asset['name'] == "Pickr3DS.cia":
                     embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+        elif app.lower() == "pksm-tools" or app.lower() == "tools":
+            embed = discord.Embed(description=desc.format(desc_tools))
         elif app.lower() == "qraken":
             embed = discord.Embed(description=desc.format(desc_qraken))
-            releases = requests.get("https://api.github.com/repos/BernardoGiordano/QRaken/releases").json()
-            for asset in releases[0]['assets']:
-                if asset['name'] == "QRaken.cia":
-                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
         else:
             embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_tools) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_qraken))
         await ctx.send(embed=embed)
@@ -95,6 +91,13 @@ class Info:
                              "5. Once you've made your changes, press B to exit/")
         await ctx.send(embed=embed)
 	
+        
+    @commands.command(aliases=['qr', 'qrcodes'])
+    async def qrcode(self, ctx):
+        """REEE WHY CANT I GET MY QR CODES AHH"""
+        embed = discord.Embed(title="What Happened to the QR Codes?")
+        embed.description = "QR codes are gone for the forseeable future due to changes to GitHub. If you would like more information, you can read about it [here](https://www.reddit.com/r/3dshacks/comments/7zof0c/reminder_github_has_dropped_tlsv111_support_as_of/)."
+        await ctx.send(embed=embed)
         
 def setup(bot):
     bot.add_cog(Info(bot))
