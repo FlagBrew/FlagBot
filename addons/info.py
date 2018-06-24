@@ -52,9 +52,16 @@ class Info:
         """Information about the bot"""
         await ctx.send("This is a bot coded in python for use in the PKSM server, made by {}#{}. You can view the source code here: <https://github.com/GriffinG1/PKSMBot>.".format(self.bot.creator.name, self.bot.creator.discriminator))    
     @commands.command()
-    async def readme(self, ctx):
-        """PKSM Readme"""
-        embed = discord.Embed(description="You can read PKSM's readme [here](https://github.com/BernardoGiordano/PKSM/blob/master/README.md).")
+    async def readme(self, ctx, app = ""):
+        """Here are the readmes you should read"""
+        if app.lower() == "script" or app.lower() == "pksmscript":
+            embed = discord.Embed(description="You can read about PKSM scripts [here](https://github.com/BernardoGiordano/PKSM-Tools/blob/master/PKSMScript/README.md).")
+        elif app.lower() == "servelegality" or app.lower() == "legality":
+            embed = discord.Embed(description="You can read serveLegality's readme [here](https://github.com/BernardoGiordano/PKSM-Tools/blob/master/serveLegality/README.md).")
+        elif app.lower() == "sharkive":
+            embed = discord.Embed(description="You can read Sharkive's readme [here](https://github.com/BernardoGiordano/Sharkive/blob/master/README.md).")
+        else:
+            embed = discord.Embed(description="You can read PKSM's readme [here](https://github.com/BernardoGiordano/PKSM/blob/master/README.md).")
         await ctx.send(embed=embed)
 		
     @commands.command()
