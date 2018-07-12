@@ -103,7 +103,7 @@ class Info:
     async def qrcode(self, ctx):
         """REEE WHY CANT I GET MY QR CODES AHH"""
         embed = discord.Embed(title="What Happened to the QR Codes?")
-        embed.description = "QR codes are gone for the forseeable future due to changes to GitHub. If you would like more information, you can read about it [here](https://www.reddit.com/r/3dshacks/comments/7zof0c/reminder_github_has_dropped_tlsv111_support_as_of/)."
+        embed.description = "Due to changes in how [GitHub](https://www.reddit.com/r/3dshacks/comments/7zof0c/reminder_github_has_dropped_tlsv111_support_as_of/) works, QR codes can no longer be scanned using FBI. You can use [QRaken](https://github.com/BernardoGiordano/QRaken/releases) to download apps using QR codes."
         await ctx.send(embed=embed)
         
 def setup(bot):
