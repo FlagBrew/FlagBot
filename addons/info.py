@@ -52,9 +52,16 @@ class Info:
         """Information about the bot"""
         await ctx.send("This is a bot coded in python for use in the PKSM server, made by {}#{}. You can view the source code here: <https://github.com/GriffinG1/PKSMBot>.".format(self.bot.creator.name, self.bot.creator.discriminator))    
     @commands.command()
-    async def readme(self, ctx):
-        """PKSM Readme"""
-        embed = discord.Embed(description="You can read PKSM's readme [here](https://github.com/BernardoGiordano/PKSM/blob/master/README.md).")
+    async def readme(self, ctx, app = ""):
+        """Here are the readmes you should read"""
+        if app.lower() == "script" or app.lower() == "pksmscript":
+            embed = discord.Embed(description="You can read about PKSM scripts [here](https://github.com/BernardoGiordano/PKSM-Tools/blob/master/PKSMScript/README.md).")
+        elif app.lower() == "servelegality" or app.lower() == "legality":
+            embed = discord.Embed(description="You can read serveLegality's readme [here](https://github.com/BernardoGiordano/PKSM-Tools/blob/master/serveLegality/README.md).")
+        elif app.lower() == "sharkive":
+            embed = discord.Embed(description="You can read Sharkive's readme [here](https://github.com/BernardoGiordano/Sharkive/blob/master/README.md).")
+        else:
+            embed = discord.Embed(description="You can read PKSM's readme [here](https://github.com/BernardoGiordano/PKSM/blob/master/README.md).")
         await ctx.send(embed=embed)
 		
     @commands.command()
@@ -75,7 +82,7 @@ class Info:
         embed.add_field(name="Are flashcards supported? If not, when will support for them be added?", value="Flashcards are not supported and never will be.")
         embed.add_field(name="When will support for Storage and Editor be added for DS games?", value="Currently never, unless someone decides to make a contribution and develop it.")
         embed.add_field(name="When will support be added for editing your backpack and items?", value="Limited editing is possible with scripts. Full editing won't be possible unless someone decides to make a contribution and develop it.")
-        embed.add_field(name="Why can't Zeraora be generated?", value="Zeraora has not been officially released yet, and will not be supported by PKSM until then.")
+        embed.add_field(name="Why do I have to wait so long for new releases?", value="A) because you think you're entitled to everything. B) PKSM is currently being rewritten and as such no new releases will be coming until that is finished.")
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -96,7 +103,7 @@ class Info:
     async def qrcode(self, ctx):
         """REEE WHY CANT I GET MY QR CODES AHH"""
         embed = discord.Embed(title="What Happened to the QR Codes?")
-        embed.description = "QR codes are gone for the forseeable future due to changes to GitHub. If you would like more information, you can read about it [here](https://www.reddit.com/r/3dshacks/comments/7zof0c/reminder_github_has_dropped_tlsv111_support_as_of/)."
+        embed.description = "Due to changes in how [GitHub](https://www.reddit.com/r/3dshacks/comments/7zof0c/reminder_github_has_dropped_tlsv111_support_as_of/) works, QR codes can no longer be scanned using FBI. You can use [QRaken](https://github.com/BernardoGiordano/QRaken/releases) to download apps using QR codes."
         await ctx.send(embed=embed)
         
 def setup(bot):
