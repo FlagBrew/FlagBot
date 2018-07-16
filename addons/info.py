@@ -106,5 +106,15 @@ class Info:
         embed.description = "Due to changes in how [GitHub](https://www.reddit.com/r/3dshacks/comments/7zof0c/reminder_github_has_dropped_tlsv111_support_as_of/) works, QR codes can no longer be scanned using FBI. You can use [QRaken](https://github.com/BernardoGiordano/QRaken/releases) to download apps using QR codes."
         await ctx.send(embed=embed)
         
+    @commands.command()
+    async def titledb(self, ctx):
+        """Why you shouldn't download from TitleDB"""
+        await ctx.send("TitleDB is in no way condoned by Bernardo for downloading any of his projects. Please download them from official sources, such as his GitHub.")
+        
+    @commands.command()
+    async def fbi(self, ctx):
+        """This is not an FBI support server!!!!!"""
+        await ctx.send("This server is not meant for FBI troubleshooting, nor is Bernardo a developer of FBI. If you have issues scanning QR codes with FBI, that's an FBI issue. **Don't ask for help with it here.**")
+        
 def setup(bot):
     bot.add_cog(Info(bot))
