@@ -67,6 +67,8 @@ async def on_command_error(ctx, error):
         tb = traceback.format_exception(type(error), error, error.__traceback__)
         error_trace = "".join(tb)
         print(error_trace)
+        embed = discord.Embed(description=error_trace)
+        await bot.err_logs_channel.send("An error occurred while processing the `{}` command in channel `{}`.".format(ctx.command.name, ctx.message.channel), embed=embed)
 
 @bot.event
 async def on_error(event_method, *args, **kwargs):
@@ -76,6 +78,9 @@ async def on_error(event_method, *args, **kwargs):
     tb = traceback.format_exc()
     error_trace = "".join(tb)
     print(error_trace)
+    embed = discord.Embed(description=error_trace.translate(bot.escape_trans))
+    await bot.err_logs_channel.send("An error occurred while processing `{}`.".format(event_method), embed=embed)
+    
 
 
 @bot.event
@@ -102,6 +107,9 @@ async def on_ready():
                     bot.pksm_update_role = discord.utils.get(guild.roles, id=467719280163684352)
                     bot.checkpoint_update_role = discord.utils.get(guild.roles, id=467719471746777088)
                     bot.general_update_role = discord.utils.get(guild.roles, id=467719755822792730)
+                    
+                if guild.id == 378420595190267915:
+                    bot.err_logs_channel = discord.utils.get(guild.channels, id=468877079023321089)
                     
                 bot.creator = discord.utils.get(guild.members, id=177939404243992578)
                     
