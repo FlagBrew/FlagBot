@@ -109,7 +109,7 @@ async def on_ready():
                     bot.general_update_role = discord.utils.get(guild.roles, id=467719755822792730)
                     
                 if guild.id == 378420595190267915:
-                    bot.err_logs_channel = discord.utils.get(guild.channels, id=468877079023321089)
+                    bot.err_logs_channel = discord.utils.get(guild.channels, id=468877079023321089)\
                     
                 bot.creator = discord.utils.get(guild.members, id=177939404243992578)
                     
