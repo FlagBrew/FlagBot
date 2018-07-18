@@ -95,7 +95,7 @@ class Info:
                              "\t\t\u2022 0x22 is the day, 0x23 is the month, and 0x24 is the year.\n"
                              "\t\t\u2022 Keep in mind that all numbers are hexadecimals.\n"
                              "4. Tap the plus button to increase the value of those bytes and minus to decrease.\n"
-                             "5. Once you've made your changes, press B to exit/")
+                             "5. Once you've made your changes, press B to exit")
         await ctx.send(embed=embed)
 	
         
@@ -115,6 +115,15 @@ class Info:
     async def fbi(self, ctx):
         """This is not an FBI support server!!!!!"""
         await ctx.send("This server is not meant for FBI troubleshooting, nor is Bernardo a developer of FBI. If you have issues scanning QR codes with FBI, that's an FBI issue. **Don't ask for help with it here.**")
+        
+    @commands.command() # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
+    async def vguides(self, ctx):
+        """Information about video guides relating to custom firmware"""
+        embed = discord.Embed(title="Why you shouldn't use video guides")
+        embed.description = ('"Video guides" are not recommended for use. Their contents generally become outdated very quickly for them to be of any use, and they are harder to update unlike a written guide.\n\n'
+                            'When this happens, video guides become more complicated than current methods, having users do certain tasks which may not be required anymore.\n\n'
+                            'There is also a risk of the uploader spreading misinformation or including potentially harmful files, sometimes unintentionally.')
+        await ctx.send(embed=embed)
         
 def setup(bot):
     bot.add_cog(Info(bot))

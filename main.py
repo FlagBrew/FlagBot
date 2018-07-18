@@ -78,7 +78,7 @@ async def on_error(event_method, *args, **kwargs):
     tb = traceback.format_exc()
     error_trace = "".join(tb)
     print(error_trace)
-    embed = discord.Embed(description=error_trace.translate(bot.escape_trans))
+    embed = discord.Embed(description=error_trace)
     await bot.err_logs_channel.send("An error occurred while processing `{}`.".format(event_method), embed=embed)
     
 
