@@ -66,7 +66,7 @@ class Utility:
                 await self.bot.logs_channel.send("{0.name}#{0.discriminator} removed the stream role.".format(ctx.author))
                 
     @commands.command()
-    async def togglerole(self, ctx, role=""):
+    async def togglerole(self, ctx, *, role=""):
         """Allows user to toggle update roles. You can use .masstoggle to apply all roles at once.
         Available roles: PKSM, Checkpoint, General"""
         await ctx.message.delete()
@@ -74,21 +74,39 @@ class Utility:
         if role.lower() == "pksm":
             had_role = await self.toggleroles(ctx, self.bot.pksm_update_role, user)
             if not had_role:
-                await ctx.author.send("You will now recieve pings for PKSM updates!")
+                try:
+                    await ctx.author.send("You will now recieve pings for PKSM updates!")
+                except discord.errors.Forbidden:
+                    await ctx.send("{} You will now recieve pings for PKSM updates!".format(ctx.author.mention), delete_after=5)
             else:
-                await ctx.author.send("You will no longer be pinged for PKSM updates.")
+                try:
+                    await ctx.author.send("You will no longer be pinged for PKSM updates.")
+                except discord.errors.Forbidden:
+                    await ctx.send("{} You will no longer be pinged for PKSM updates.".format(ctx.author.mention), delete_after=5)
         elif role.lower() == "checkpoint":
             had_role = await self.toggleroles(ctx, self.bot.checkpoint_update_role, user)
             if not had_role:
-                await ctx.author.send("You will now recieve pings for Checkpoint updates!")
+                try:
+                    await ctx.author.send("You will now recieve pings for Checkpoint updates!")
+                except discord.errors.Forbidden:
+                    await ctx.send("{} You will now recieve pings for Checkpoint updates!".format(ctx.author.mention), delete_after=5)
             else:
-                await ctx.author.send("You will no longer be pinged for Checkpoint updates.")
+                try:
+                    await ctx.author.send("You will no longer be pinged for Checkpoint updates.")
+                except discord.errors.Forbidden:
+                    await ctx.send("{} You will no longer be pinged for Checkpoint updates.".format(ctx.author.mention), delete_after=5)
         elif role.lower() == "general":
             had_role = await self.toggleroles(ctx, self.bot.general_update_role, user)
             if not had_role:
-                await ctx.author.send("You will now recieve pings for general updates!")
+                try:
+                    await ctx.author.send("You will now recieve pings for general updates!")
+                except discord.errors.Forbidden:
+                    await ctx.send("{} You will now recieve pings for general updates!".format(ctx.author.mention), delete_after=5)
             else:
-                await ctx.author.send("You will no longer be pinged for general updates.")
+                try:
+                    await ctx.author.send("You will no longer be pinged for general updates.")
+                except discord.errors.Forbidden:
+                    await ctx.send("{} You will no longer be pinged for general updates.".format(ctx.author.mention), delete_after=5)
         elif not role:
             await ctx.send("You need to input a role to toggle! Do `.help togglerole` to see all available roles", delete_after=5)
         else:
@@ -102,7 +120,10 @@ class Utility:
         await self.toggleroles(ctx, self.bot.pksm_update_role, user)
         await self.toggleroles(ctx, self.bot.checkpoint_update_role, user)
         await self.toggleroles(ctx, self.bot.general_update_role, user)
-        await user.send("Successfully toggled all possible roles.")
+        try:
+            await user.send("Successfully toggled all possible roles.")
+        except discord.errors.Forbidden:
+            await ctx.send("{} Successfully toggled all possible roles.".format(ctx.author.mention), delete_after=5)
             
 def setup(bot):
     bot.add_cog(Utility(bot))
