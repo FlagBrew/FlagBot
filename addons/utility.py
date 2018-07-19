@@ -71,46 +71,36 @@ class Utility:
         Available roles: PKSM, Checkpoint, General"""
         await ctx.message.delete()
         user = ctx.message.author
+        if not role:
+            await ctx.send("You need to input a role to toggle! Do `.help togglerole` to see all available roles", delete_after=5)
+            return  # prevents execution of the below try statement
         if role.lower() == "pksm":
             had_role = await self.toggleroles(ctx, self.bot.pksm_update_role, user)
-            if not had_role:
-                try:
-                    await ctx.author.send("You will now recieve pings for PKSM updates!")
-                except discord.errors.Forbidden:
-                    await ctx.send("{} You will now recieve pings for PKSM updates!".format(ctx.author.mention), delete_after=5)
+            if had_role:
+                info_string = "You will no longer be pinged for PKSM updates."
             else:
-                try:
-                    await ctx.author.send("You will no longer be pinged for PKSM updates.")
-                except discord.errors.Forbidden:
-                    await ctx.send("{} You will no longer be pinged for PKSM updates.".format(ctx.author.mention), delete_after=5)
+                info_string = "You will now receive pings for PKSM updates!"
         elif role.lower() == "checkpoint":
             had_role = await self.toggleroles(ctx, self.bot.checkpoint_update_role, user)
-            if not had_role:
-                try:
-                    await ctx.author.send("You will now recieve pings for Checkpoint updates!")
-                except discord.errors.Forbidden:
-                    await ctx.send("{} You will now recieve pings for Checkpoint updates!".format(ctx.author.mention), delete_after=5)
+            if had_role:
+                info_string = "You will no longer be pinged for Checkpoint updates."
             else:
-                try:
-                    await ctx.author.send("You will no longer be pinged for Checkpoint updates.")
-                except discord.errors.Forbidden:
-                    await ctx.send("{} You will no longer be pinged for Checkpoint updates.".format(ctx.author.mention), delete_after=5)
+                info_string = "You will now receive pings for Checkpoint updates!"        
         elif role.lower() == "general":
             had_role = await self.toggleroles(ctx, self.bot.general_update_role, user)
-            if not had_role:
-                try:
-                    await ctx.author.send("You will now recieve pings for general updates!")
-                except discord.errors.Forbidden:
-                    await ctx.send("{} You will now recieve pings for general updates!".format(ctx.author.mention), delete_after=5)
+            if had_role:
+                info_string = "You will no longer be pinged for general updates."
             else:
-                try:
-                    await ctx.author.send("You will no longer be pinged for general updates.")
-                except discord.errors.Forbidden:
-                    await ctx.send("{} You will no longer be pinged for general updates.".format(ctx.author.mention), delete_after=5)
-        elif not role:
-            await ctx.send("You need to input a role to toggle! Do `.help togglerole` to see all available roles", delete_after=5)
+                info_string = "You will now recieve pings for general updates!"
         else:
             await ctx.send("Invalid entry! Do `.help togglerole` for available roles.", delete_after=5)
+            return  # prevents execution of the below try statement
+
+        # should only trigger if one of the role.lower() conditions is met
+        try:
+            await ctx.author.send(info_string)
+        except discord.errors.Forbidden:
+            await ctx.send(ctx.author.mention + ' ' + info_string, delete_after=5)
             
     @commands.command()
     async def masstoggle(self, ctx):
