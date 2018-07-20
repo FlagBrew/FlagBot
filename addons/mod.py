@@ -42,7 +42,7 @@ class Moderation:
             if ctx.guild.id == 278222834633801728:
                 await self.bot.logs_channel.send(embed=embed)
             try:
-                await found_member.send("You were kicked from {} for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: {}".format(ctx.guild.name, reason, "https://discord.gg/bGKEyfY" if ctx.guild.id == 278222834633801728 else "https://discord.gg/5Wg4AEb"))
+                await found_member.kick("You were kicked from {} for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: {}".format(ctx.guild.name, reason, "https://discord.gg/bGKEyfY" if ctx.guild.id == 278222834633801728 else "https://discord.gg/5Wg4AEb"))
             except discord.Forbidden:
                 pass # bot blocked or not accepting DMs
             await found_member.kick(reason=reason)
@@ -63,8 +63,12 @@ class Moderation:
             if ctx.guild.id == 278222834633801728:
                 await self.bot.get_guild(418291144850669569).get_channel(430164418345566208).send("On the PKSM server, the following action occurred: ", embed=embed) # Appeals logging
                 await self.bot.logs_channel.send(embed=embed)
+            elif ctx.guild.id == 418291144850669569:
+                await self.bot.get_channel(430164418345566208).send(embed=embed)
+                await found_member.ban(reason=reason)
+                return await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(found_member))
             try:
-                await found_member.send("You were banned from {} for:\n\n`{}`\n\nIf you believe this to be in error, please join the appeals server here: https://discord.gg/5Wg4AEb".format(ctx.guild.name, reason))
+                await found_member.send("You were banned from {} for:\n\n`{}`{}".format(ctx.guild.name, reason, "\n\nIf you believe this to be in error, please join the appeals server here: https://discord.gg/5Wg4AEb" if ctx.guild == 278222834633801728 else ""))
             except:
                 pass # bot blocked or not accepting DMs
             try:
@@ -77,7 +81,7 @@ class Moderation:
             await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(found_member))
             
     @commands.has_permissions(ban_members=True)
-    @commands.command()
+    @commands.command(aliases=['p'])
     async def purge(self, ctx, amount=0):
         """Purge x amount of messages"""
         await ctx.message.delete()
