@@ -42,7 +42,7 @@ class Moderation:
             if ctx.guild.id == 278222834633801728:
                 await self.bot.logs_channel.send(embed=embed)
             try:
-                await found_member.kick("You were kicked from {} for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: {}".format(ctx.guild.name, reason, "https://discord.gg/bGKEyfY" if ctx.guild.id == 278222834633801728 else "https://discord.gg/5Wg4AEb"))
+                await found_member.send("You were kicked from {} for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: {}".format(ctx.guild.name, reason, "https://discord.gg/bGKEyfY" if ctx.guild.id == 278222834633801728 else "https://discord.gg/5Wg4AEb"))
             except discord.Forbidden:
                 pass # bot blocked or not accepting DMs
             await found_member.kick(reason=reason)
