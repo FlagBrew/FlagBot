@@ -43,23 +43,27 @@ try:
 except KeyError:
     token = config['Main']['token']
     heroku = False
+    
+@bot.check # taken and modified from https://discordpy.readthedocs.io/en/rewrite/ext/commands/commands.html#global-checks
+async def globally_block_dms(ctx):
+    if ctx.guild is None:
+        raise discord.ext.commands.NoPrivateMessage('test')
+        return False
+    return True
+        
 
 # mostly taken from https://github.com/Rapptz/discord.py/blob/async/discord/ext/commands/bot.py
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         pass  # ...don't need to know if commands don't exist
-    elif isinstance(error, discord.ext.commands.errors.CheckFailure):
-        await ctx.send("You don't have permission to use this command.")
     elif isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
         formatter = commands.formatter.HelpFormatter()
         await ctx.send("You are missing required arguments.\n{}".format(formatter.format_help_for(ctx, ctx.command)[0]))
-    elif isinstance(error, discord.ext.commands.errors.CommandOnCooldown):
-        await ctx.message.delete()
-        if ctx.channel.id == 379201279479513100:
-            await ctx.send("This command is on cooldown, don't you dare try it again.", delete_after=10)
-        else:
-            return
+    elif isinstance(error, discord.ext.commands.NoPrivateMessage):
+        await ctx.send("You cannot use this command in DMs! Please go to <#379201279479513100>")
+    elif isinstance(error, discord.ext.commands.errors.CheckFailure):
+        await ctx.send("You don't have permission to use this command.")
     else:
         if ctx.command:
             await ctx.send("An error occurred while processing the `{}` command.".format(ctx.command.name))
