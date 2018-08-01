@@ -10,6 +10,7 @@ desc_checkpoint = "Checkpoint [here](https://github.com/BernardoGiordano/Checkpo
 desc_pickr = "Pickr3DS [here](https://github.com/BernardoGiordano/Pickr3DS/releases/latest)"
 desc_tools = "PKSM-Tools [here](https://github.com/BernardoGiordano/PKSM-Tools/releases)"
 desc_qraken = "QRaken [here](https://github.com/BernardoGiordano/QRaken/releases/latest)"
+desc_sharkive = "Sharkive [here](https://github.com/BernardoGiordano/Sharkive/releases/latest)"
 
 class Info:
 
@@ -38,6 +39,12 @@ class Info:
             releases = requests.get("https://api.github.com/repos/BernardoGiordano/Pickr3DS/releases").json()
             for asset in releases[0]['assets']:
                 if asset['name'] == "Pickr3DS.cia":
+                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+        elif app.lower() == "sharkive":
+            embed = discord.Embed(description=desc.format(desc_sharkive))
+            releases = requests.get("https://api.github.com/repos/BernardoGiordano/Sharkive/releases").json()
+            for asset in releases[0]['assets']:
+                if asset['name'] == "Sharkive.cia":
                     embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
         elif app.lower() == "pksm-tools" or app.lower() == "tools":
             embed = discord.Embed(description=desc.format(desc_tools))
