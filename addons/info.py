@@ -57,18 +57,24 @@ class Info:
     @commands.command()
     async def about(self, ctx):
         """Information about the bot"""
-        await ctx.send("This is a bot coded in python for use in the PKSM server, made by {}#{}. You can view the source code here: <https://github.com/GriffinG1/PKSMBot>.".format(self.bot.creator.name, self.bot.creator.discriminator))    
+        await ctx.send("This is a bot coded in python for use in the PKSM server, made by {}#{}. You can view the source code here: <https://github.com/GriffinG1/PKSMBot>.".format(self.bot.creator.name, self.bot.creator.discriminator))   
+        
     @commands.command()
     async def readme(self, ctx, app = ""):
-        """Here are the readmes you should read"""
-        if app.lower() == "script" or app.lower() == "pksmscript":
+        """READMEs for Bernardo's projects. Available: Scripts, ServeLegality, Sharkive, and PKSM"""
+        if app.lower() == "script" or app.lower() == "pksmscript" or app.lower() == "scripts" or app.lower() == "tools":
             embed = discord.Embed(description="You can read about PKSM scripts [here](https://github.com/BernardoGiordano/PKSM-Tools/blob/master/PKSMScript/README.md).")
         elif app.lower() == "servelegality" or app.lower() == "legality":
-            embed = discord.Embed(description="You can read serveLegality's readme [here](https://github.com/BernardoGiordano/PKSM-Tools/blob/master/serveLegality/README.md).")
+            embed = discord.Embed(description="You can read serveLegality's README [here](https://github.com/BernardoGiordano/PKSM-Tools/blob/master/serveLegality/README.md).")
         elif app.lower() == "sharkive":
-            embed = discord.Embed(description="You can read Sharkive's readme [here](https://github.com/BernardoGiordano/Sharkive/blob/master/README.md).")
-        else:
-            embed = discord.Embed(description="You can read PKSM's readme [here](https://github.com/BernardoGiordano/PKSM/blob/master/README.md).")
+            embed = discord.Embed(description="You can read Sharkive's README [here](https://github.com/BernardoGiordano/Sharkive/blob/master/README.md).")
+        elif app.lower() == 'servepkx':
+            embed = discord.Embed(title="Servepkx READMEs")
+            embed.add_field(name="Servepkx-Browser", value="You can read servepkx's README [here](https://github.com/BernardoGiordano/PKSM-Tools/blob/master/servepkx/servepkx-browser/README.md).", inline=False)
+            embed.add_field(name="Servepkx-Go", value="You can read servepkx-go's README [here](https://github.com/BernardoGiordano/PKSM-Tools/blob/master/servepkx/servepkx-go/README.md).", inline=False)
+            embed.add_field(name="Servepkx-GUI", value="You can read servepkx-gui's README [here](https://github.com/BernardoGiordano/PKSM-Tools/blob/master/servepkx/servepkx-gui/README.md).", inline=False)
+        elif not app or app.lower() == "pksm":
+            embed = discord.Embed(description="You can read PKSM's README [here](https://github.com/BernardoGiordano/PKSM/blob/master/README.md).")
         await ctx.send(embed=embed)
 		
     @commands.command()
@@ -86,7 +92,7 @@ class Info:
         """Frequently Asked Questions"""
         embed = discord.Embed(title="Frequently Asked Questions")
         embed.add_field(name="When will Virtual Console games be supported?", value="Never.")
-        embed.add_field(name="Are flashcards supported? If not, when will support for them be added?", value="Flashcards are not supported and never will be.")
+        embed.add_field(name="Are flashcards supported? If not, when will support for them be added?", value="Flashcards are not supported and never will be. This extends to applications such as DSiMenu++ and TWLoader.")
         embed.add_field(name="When will support for Storage and Editor be added for DS games?", value="Currently never, unless someone decides to make a contribution and develop it.")
         embed.add_field(name="When will support be added for editing your backpack and items?", value="Limited editing is possible with scripts. Full editing won't be possible unless someone decides to make a contribution and develop it.")
         embed.add_field(name="Why do I have to wait so long for new releases?", value="A) because you think you're entitled to everything. B) PKSM is currently being rewritten and as such no new releases will be coming until that is finished.")
