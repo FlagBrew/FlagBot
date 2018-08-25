@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 
-
-# 278222834633801728 - PKSM Server
-# 378420595190267915 - Testing Server
-# 418291144850669569 - Appeals Server
-
-description = """PKSM server helper bot by GriffinG1"""
+description = """FlagBot server helper bot by GriffinG1"""
 
 # import dependencies
 import os
@@ -36,6 +31,10 @@ except KeyError:
 bot = commands.Bot(command_prefix=prefix, description=description)
 
 bot.dir_path = os.path.dirname(os.path.realpath(__file__))
+
+bot.flagbrew_id = 278222834633801728
+bot.testing_id = 378420595190267915
+bot.appeals_id = 418291144850669569
 
 try:
     token = os.environ['TOKEN']
@@ -92,7 +91,7 @@ async def on_ready():
     # this bot should only ever be in one server anyway
     for guild in bot.guilds:
         try:
-            if guild.id == 378420595190267915 or guild.id == 278222834633801728 or guild.id == 418291144850669569:
+            if guild.id == bot.testing_id or guild.id == bot.flagbrew_id or guild.id == bot.appeals_id:
                 bot.guild = guild
                 
                 try:
@@ -104,7 +103,7 @@ async def on_ready():
                 except:
                     pass
                 
-                if guild.id == 278222834633801728:
+                if guild.id == bot.flagbrew_id:
                     bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
                     bot.patron_role = discord.utils.get(guild.roles, id=330078911704727552)
                     bot.stream_role = discord.utils.get(guild.roles, id=449552215586111499)
@@ -112,7 +111,7 @@ async def on_ready():
                     bot.checkpoint_update_role = discord.utils.get(guild.roles, id=467719471746777088)
                     bot.general_update_role = discord.utils.get(guild.roles, id=467719755822792730)
                     
-                if guild.id == 378420595190267915:
+                if guild.id == bot.testing_id:
                     bot.err_logs_channel = discord.utils.get(guild.channels, id=468877079023321089)
                     
                 bot.creator = discord.utils.get(guild.members, id=177939404243992578)

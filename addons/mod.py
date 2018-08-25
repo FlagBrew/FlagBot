@@ -39,10 +39,10 @@ class Moderation:
         else:
             embed = discord.Embed(title="{} kicked".format(found_member))
             embed.description = "{}#{} was kicked by {} for:\n\n{}".format(found_member.name, found_member.discriminator, ctx.message.author, reason)
-            if ctx.guild.id == 278222834633801728:
+            if ctx.guild.id == self.bot.flagbrew_id:
                 await self.bot.logs_channel.send(embed=embed)
             try:
-                await found_member.send("You were kicked from {} for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: {}".format(ctx.guild.name, reason, "https://discord.gg/bGKEyfY" if ctx.guild.id == 278222834633801728 else "https://discord.gg/5Wg4AEb"))
+                await found_member.send("You were kicked from {} for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: {}".format(ctx.guild.name, reason, "https://discord.gg/bGKEyfY" if ctx.guild.id == self.bot.flagbrew_id else "https://discord.gg/5Wg4AEb"))
             except discord.Forbidden:
                 pass # bot blocked or not accepting DMs
             await found_member.kick(reason=reason)
@@ -60,22 +60,22 @@ class Moderation:
         else:
             embed = discord.Embed(title="{} banned".format(found_member))
             embed.description = "{}#{} was banned by {} for:\n\n{}".format(found_member.name, found_member.discriminator, ctx.message.author, reason)
-            if ctx.guild.id == 278222834633801728:
-                await self.bot.get_guild(418291144850669569).get_channel(430164418345566208).send("On the PKSM server, the following action occurred: ", embed=embed) # Appeals logging
+            if ctx.guild.id == self.bot.flagbrew_id:
+                await self.bot.get_guild(self.bot.appeals_id).get_channel(430164418345566208).send("On the PKSM server, the following action occurred: ", embed=embed) # Appeals logging
                 await self.bot.logs_channel.send(embed=embed)
-            elif ctx.guild.id == 418291144850669569:
+            elif ctx.guild.id == self.bot.appeals_id:
                 await self.bot.get_channel(430164418345566208).send(embed=embed)
                 await found_member.ban(reason=reason)
                 return await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(found_member))
             try:
-                await found_member.send("You were banned from {} for:\n\n`{}`{}".format(ctx.guild.name, reason, "\n\nIf you believe this to be in error, please join the appeals server here: https://discord.gg/5Wg4AEb" if ctx.guild == 278222834633801728 else ""))
+                await found_member.send("You were banned from {} for:\n\n`{}`{}".format(ctx.guild.name, reason, "\n\nIf you believe this to be in error, please join the appeals server here: https://discord.gg/5Wg4AEb" if ctx.guild == self.bot.flagbrew_id else ""))
             except:
                 pass # bot blocked or not accepting DMs
             try:
                 await found_member.ban(reason=reason)
             except discord.Forbidden: # i have no clue
                 try:
-                    await self.bot.get_guild(278222834633801728).ban(found_member, delete_message_days=0, reason=reason)
+                    await self.bot.get_guild(self.bot.flagbrew_id).ban(found_member, delete_message_days=0, reason=reason)
                 except discord.Forbidden: # none at all
                     return await ctx.send("I don't have permission. Why don't I have permission.")
             await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(found_member))
@@ -95,7 +95,7 @@ class Moderation:
     @commands.command()
     async def unban(self, ctx, member):
         """Unban command, only works on the appeals server"""
-        if not ctx.guild.id == 418291144850669569:
+        if not ctx.guild.id == self.bot.appeals_id:
             return await ctx.send("This command is for the appeals server only.", delete_after(10))
         found_member = self.find_user(member, ctx)
         if found_member == ctx.message.author:
@@ -108,7 +108,7 @@ class Moderation:
             except discord.Forbidden:
                 pass # bot blocked or not accepting DMs
             try:
-                await self.bot.get_guild(278222834633801728).unban(found_member)
+                await self.bot.get_guild(self.bot.flagbrew_id).unban(found_member)
             except discord.NotFound:
                 return await ctx.send("{} is not banned!".format(found_member.mention))
             embed = discord.Embed(title="{}#{} unbanned".format(found_member.name, found_member.discriminator))

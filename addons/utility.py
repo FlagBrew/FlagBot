@@ -52,22 +52,6 @@ class Utility:
         
         
     @commands.command()
-    async def togglestream(self, ctx):
-        """Allows a patron user to toggle the stream role"""
-        await ctx.message.delete()
-        user = ctx.message.author
-        if not self.bot.patron_role in author_roles:
-            return await ctx.send("Sorry! This command is restricted to patrons! You can find out how to become a patron with `.patron`.")
-        else:
-            had_role = await self.toggleroles(ctx, self.bot.stream_role, user)
-            if not had_role:
-                await ctx.author.send("Added the stream role!")
-                await self.bot.logs_channel.send("{0.name}#{0.discriminator} added the stream role.".format(ctx.author))
-            else:
-                await ctx.author.send("Removed the stream role!")
-                await self.bot.logs_channel.send("{0.name}#{0.discriminator} removed the stream role.".format(ctx.author))
-                
-    @commands.command()
     async def togglerole(self, ctx, *, role=""):
         """Allows user to toggle update roles. You can use .masstoggle to apply all roles at once.
         Available roles: PKSM, Checkpoint, General"""

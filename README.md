@@ -1,5 +1,5 @@
-# PKSMBot
-PKSM server helper bot.
+# FlagBot
+FlagBrew server helper bot.
 
 # Credits
 

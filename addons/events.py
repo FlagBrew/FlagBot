@@ -12,7 +12,7 @@ class Events:
         
     async def on_guild_join(self, guild):
         # Don't let the bot be used elsewhere with the same token
-        if guild.id != 378420595190267915 and guild.id != 278222834633801728 and guild.id != 418291144850669569:
+        if guild.id != self.bot.testing_id and guild.id != self.bot.flagbrew_id and guild.id != self.bot.appeals_id:
             try:
                 await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
             except discord.Forbidden:
@@ -26,9 +26,9 @@ class Events:
     async def on_member_join(self, member):
         embed = discord.Embed(title="New member!")
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
-        if member.guild.id == 278222834633801728:
+        if member.guild.id == self.bot.flagbrew_id:
             await self.bot.logs_channel.send(embed=embed)
-        elif member.guild.id == 418291144850669569:
+        elif member.guild.id == self.bot.appeals_id:
             await member.guild.get_channel(418680841900785664).send(embed=embed)
         else:
             return
@@ -36,9 +36,9 @@ class Events:
     async def on_member_remove(self, member):
         embed = discord.Embed(title="Member left :(")
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
-        if member.guild.id == 278222834633801728:
+        if member.guild.id == self.bot.flagbrew_id:
             await self.bot.logs_channel.send(embed=embed)
-        elif member.guild.id == 418291144850669569:
+        elif member.guild.id == self.bot.appeals_id:
             await member.guild.get_channel(418680841900785664).send(embed=embed)
         else:
             return
@@ -54,7 +54,7 @@ class Events:
             
             
     async def on_message_delete(self, message):
-        if isinstance(message.channel, discord.abc.GuildChannel) and message.author.id != self.bot.user.id and message.guild.id == 278222834633801728:
+        if isinstance(message.channel, discord.abc.GuildChannel) and message.author.id != self.bot.user.id and message.guild.id == self.bot.flagbrew_id:
             if message.channel != self.bot.logs_channel:
                 embed = discord.Embed(description=message.content)
                 if message.attachments:
