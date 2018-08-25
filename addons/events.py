@@ -12,7 +12,7 @@ class Events:
         
     async def on_guild_join(self, guild):
         # Don't let the bot be used elsewhere with the same token
-        if guild.id != self.bot.testing_id and guild.id != self.bot.flagbrew_id and guild.id != self.bot.appeals_id:
+        if guild.id != self.bot.testing_id and guild.id != self.bot.flagbrew_id:
             try:
                 await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
             except discord.Forbidden:
@@ -28,20 +28,12 @@ class Events:
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
         if member.guild.id == self.bot.flagbrew_id:
             await self.bot.logs_channel.send(embed=embed)
-        elif member.guild.id == self.bot.appeals_id:
-            await member.guild.get_channel(418680841900785664).send(embed=embed)
-        else:
-            return
             
     async def on_member_remove(self, member):
         embed = discord.Embed(title="Member left :(")
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
         if member.guild.id == self.bot.flagbrew_id:
             await self.bot.logs_channel.send(embed=embed)
-        elif member.guild.id == self.bot.appeals_id:
-            await member.guild.get_channel(418680841900785664).send(embed=embed)
-        else:
-            return
                 
                 
     async def on_message(self, message):

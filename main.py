@@ -34,7 +34,6 @@ bot.dir_path = os.path.dirname(os.path.realpath(__file__))
 
 bot.flagbrew_id = 278222834633801728
 bot.testing_id = 378420595190267915
-bot.appeals_id = 418291144850669569
 
 try:
     token = os.environ['TOKEN']
@@ -91,7 +90,7 @@ async def on_ready():
     # this bot should only ever be in one server anyway
     for guild in bot.guilds:
         try:
-            if guild.id == bot.testing_id or guild.id == bot.flagbrew_id or guild.id == bot.appeals_id:
+            if guild.id == bot.testing_id or guild.id == bot.flagbrew_id:
                 bot.guild = guild
                 
                 try:

@@ -42,7 +42,7 @@ class Moderation:
             if ctx.guild.id == self.bot.flagbrew_id:
                 await self.bot.logs_channel.send(embed=embed)
             try:
-                await found_member.send("You were kicked from {} for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: {}".format(ctx.guild.name, reason, "https://discord.gg/bGKEyfY" if ctx.guild.id == self.bot.flagbrew_id else "https://discord.gg/5Wg4AEb"))
+                await found_member.send("You were kicked from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY".format(reason))
             except discord.Forbidden:
                 pass # bot blocked or not accepting DMs
             await found_member.kick(reason=reason)
@@ -60,15 +60,8 @@ class Moderation:
         else:
             embed = discord.Embed(title="{} banned".format(found_member))
             embed.description = "{}#{} was banned by {} for:\n\n{}".format(found_member.name, found_member.discriminator, ctx.message.author, reason)
-            if ctx.guild.id == self.bot.flagbrew_id:
-                await self.bot.get_guild(self.bot.appeals_id).get_channel(430164418345566208).send("On the PKSM server, the following action occurred: ", embed=embed) # Appeals logging
-                await self.bot.logs_channel.send(embed=embed)
-            elif ctx.guild.id == self.bot.appeals_id:
-                await self.bot.get_channel(430164418345566208).send(embed=embed)
-                await found_member.ban(reason=reason)
-                return await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(found_member))
             try:
-                await found_member.send("You were banned from {} for:\n\n`{}`{}".format(ctx.guild.name, reason, "\n\nIf you believe this to be in error, please join the appeals server here: https://discord.gg/5Wg4AEb" if ctx.guild == self.bot.flagbrew_id else ""))
+                await found_member.send("You were banned from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, please contact a staff member".format(reason))
             except:
                 pass # bot blocked or not accepting DMs
             try:
@@ -90,32 +83,6 @@ class Moderation:
             await ctx.channel.purge(limit=amount)
         else:
             await ctx.send("Why would you wanna purge no messages?", delete_after=10)
-            
-    @commands.has_permissions(ban_members=True)
-    @commands.command()
-    async def unban(self, ctx, member):
-        """Unban command, only works on the appeals server"""
-        if not ctx.guild.id == self.bot.appeals_id:
-            return await ctx.send("This command is for the appeals server only.", delete_after(10))
-        found_member = self.find_user(member, ctx)
-        if found_member == ctx.message.author:
-            return await found_member.send("How did you possibly ban yourself? Go ask someone else to unban you.")
-        elif not found_member:
-            return await ctx.send("That user could not be found.", delete_after(10))
-        else:
-            try:
-                await found_member.send("You were unbanned from PKSM! Thank you for appealing. Here's an invite to rejoin: https://discord.gg/bGKEyfY")
-            except discord.Forbidden:
-                pass # bot blocked or not accepting DMs
-            try:
-                await self.bot.get_guild(self.bot.flagbrew_id).unban(found_member)
-            except discord.NotFound:
-                return await ctx.send("{} is not banned!".format(found_member.mention))
-            embed = discord.Embed(title="{}#{} unbanned".format(found_member.name, found_member.discriminator))
-            embed.description = "{}#{} was unbanned from PKSM by {}".format(found_member.name, found_member.discriminator, ctx.message.author)
-            await ctx.guild.get_channel(430164418345566208).send(embed=embed)
-            await found_member.kick()
-            await ctx.send("Unbanned {}#{}!".format(found_member.name, found_member.discriminator))
             
 def setup(bot):
     bot.add_cog(Moderation(bot))
