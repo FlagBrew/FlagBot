@@ -109,7 +109,7 @@ class Info:
     @commands.command()
     async def storage(self, ctx):
         """Storage from 5.0.0+"""
-        await ctx.send("If you can't find your storage after updating PKSM, make sure you read what changed here: <https://github.com/FlagBrew/PKSM#storage-changes-from-500")
+        await ctx.send("If you can't find your storage after updating PKSM, make sure you read what changed here: <https://github.com/FlagBrew/PKSM#storage-changes-from-500>")
         
     @commands.command(aliases=['patron'])
     async def patreon(self, ctx):

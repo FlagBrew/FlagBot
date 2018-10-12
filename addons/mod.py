@@ -65,10 +65,10 @@ class Moderation:
             except:
                 pass # bot blocked or not accepting DMs
             try:
-                await found_member.ban(reason=reason)
+                await ctx.guild.ban(found_member, delete_message_days=0, reason=reason)
             except discord.Forbidden: # i have no clue
                 try:
-                    await self.bot.get_guild(self.bot.flagbrew_id).ban(found_member, delete_message_days=0, reason=reason)
+                    await found_member.ban(reason=reason)
                 except discord.Forbidden: # none at all
                     return await ctx.send("I don't have permission. Why don't I have permission.")
             await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(found_member))
