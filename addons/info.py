@@ -15,6 +15,7 @@ desc_sharkive = "Sharkive [here](https://github.com/FlagBrew/Sharkive/releases/l
 desc_servelegality = "serveLegality [here](https://github.com/FlagBrew/serveLegality/releases/latest)"
 desc_servepkx = "servepkx [here](https://github.com/FlagBrew/servepkx/releases/latest)"
 desc_teamlist = "TeamListFiller [here](https://github.com/FlagBrew/TeamListFiller/releases/latest)"
+desc_jedecheck = "JEDECheck [here](https://github.com/FlagBrew/JEDECheck/releases/latest)"
 
 class Info:
 
@@ -66,9 +67,12 @@ class Info:
             embed = discord.Embed(description=desc.format(desc_servepkx))
         elif app.lower() == "qraken":
             embed = discord.Embed(description=desc.format(desc_qraken))
+        elif app.lower() == "jedecheck" or app.lower() == "jede":
+            embed = discord.Embed(description=desc.format(desc_jedecheck))
         else:
             embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_sharkive) + "\n" + desc.format(desc_teamlist) + "\n" +
-                                              desc.format(desc_scripts) + "\n" + desc.format(desc_servelegality) + "\n" + desc.format(desc_2048) + "\n" + desc.format(desc_servepkx) + "\n" + desc.format(desc_qraken))
+                                              desc.format(desc_scripts) + "\n" + desc.format(desc_servelegality) + "\n" + desc.format(desc_2048) + "\n" + desc.format(desc_servepkx) + "\n" + desc.format(desc_qraken) + "\m" +
+                                              desc.format(desc_jedecheck))
         await ctx.send(embed=embed)
         
     @commands.command()
@@ -102,8 +106,10 @@ class Info:
             embed = discord.Embed(description="You can read Checkpoint's README [here](https://github.com/FlagBrew/Checkpoint/blob/master/README.md).")
         elif app.lower() == "pksm":
             embed = discord.Embed(description="You can read PKSM's README [here](https://github.com/FlagBrew/PKSM/blob/master/README.md).")
+        elif app.lower() == "jedecheck" or app.lower() == "jede":
+            embed = discord.Embed(description="You can read JEDECheck's README [here](https://github.com/FlagBrew/JEDECheck/blob/master/README.md).")
         else:
-            return await ctx.send("Input not given or recognized. Available READMEs: `pksmscript`, `servelegality`, `sharkive`, `servepkx`, `teamlistfiller`, `qraken`, `2048`, `pickr`, `checkpoint`, `pksm`.")
+            return await ctx.send("Input not given or recognized. Available READMEs: `pksmscript`, `servelegality`, `sharkive`, `servepkx`, `teamlistfiller`, `qraken`, `2048`, `pickr`, `checkpoint`, `pksm`, 'jedecheck'.")
         await ctx.send(embed=embed)
 		
     @commands.command()
@@ -156,7 +162,7 @@ class Info:
     @commands.command()
     async def fbi(self, ctx):
         """This is not an FBI support server!"""
-        await ctx.send("This server is not meant for FBI troubleshooting, nor is FlagBrew related FBI. If you have issues scanning QR codes with FBI, that's an FBI issue. **Don't ask for help with it here.**")
+        await ctx.send("This server is not meant for FBI troubleshooting, nor is FlagBrew related to FBI. If you have issues scanning QR codes with FBI, that's an FBI issue. **Don't ask for help with it here.**")
         
     @commands.command() # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
     async def vguides(self, ctx):
