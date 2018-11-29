@@ -24,54 +24,68 @@ class Info:
         print('Addon "{}" loaded'.format(self.__class__.__name__))
         
         
+    def checkpoint_embed(self, ctx, app):
+        embed = discord.Embed(description=desc.format(desc_checkpoint))
+        str_list = app.lower().split()
+        if "switch" in str_list:
+            return embed
+        releases = requests.get("https://api.github.com/repos/FlagBrew/Checkpoint/releases").json()
+        for asset in releases[0]['assets']:
+            if asset['name'] == "Checkpoint.cia":
+                embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+        return embed
+        
+    def pickr_embed(self, ctx, app):
+        embed = discord.Embed(description=desc.format(desc_pickr))
+        str_list = app.lower().split()
+        if "switch" in str_list:
+            return embed
+        releases = requests.get("https://api.github.com/repos/FlagBrew/Pickr/releases").json()
+        for asset in releases[0]['assets']:
+            if asset['name'] == "Pickr.cia":
+                embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+        return embed
+        
     @commands.command(aliases=['releases', 'latest'])
-    async def release(self, ctx, app = ""):
-        """Returns the latest release for FlagBrew's projects"""
-        if app.lower() == "pksm":
+    async def release(self, ctx, *, app = ""):
+        """Returns the latest release for FlagBrew's projects. If pulling checkpoint release, you can add "switch" to the end to get one without a qr code for ease of assistance"""
+        if app.lower().startswith("pksm"):
             embed = discord.Embed(description=desc.format(desc_pksm))
             releases = requests.get("https://api.github.com/repos/FlagBrew/PKSM/releases").json()
             for asset in releases[0]['assets']:
                 if asset['name'] == "PKSM.cia":
                     embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
-        elif app.lower() == "checkpoint":
-            embed = discord.Embed(description=desc.format(desc_checkpoint))
-            releases = requests.get("https://api.github.com/repos/FlagBrew/Checkpoint/releases").json()
-            for asset in releases[0]['assets']:
-                if asset['name'] == "Checkpoint.cia":
-                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
-        elif app.lower() == "pickr":
-            embed = discord.Embed(description=desc.format(desc_pickr))
-            releases = requests.get("https://api.github.com/repos/FlagBrew/Pickr/releases").json()
-            for asset in releases[0]['assets']:
-                if asset['name'] == "Pickr.cia":
-                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
-        elif app.lower() == "sharkive":
+        elif app.lower().startswith("checkpoint"):
+            embed = self.checkpoint_embed(self, app)
+        elif app.lower().startswith("pickr"):
+            embed = self.pickr_embed(self, app)
+        elif app.lower().startswith("sharkive"):
             embed = discord.Embed(description=desc.format(desc_sharkive))
             releases = requests.get("https://api.github.com/repos/FlagBrew/Sharkive/releases").json()
             for asset in releases[0]['assets']:
                 if asset['name'] == "Sharkive.cia":
                     embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
-        elif app.lower() == "teamlist" or app.lower()=="teamlistfiller" or app.lower() == "tl":
+        elif app.lower().startswith("teamlist") or app.lower().startswith("teamlistfiller") or app.lower().startswith("tl"):
             embed = discord.Embed(description=desc.format(desc_teamlist))
             # releases = requests.get("https://api.github.com/repos/FlagBrew/TeamListFiller/releases").json() #No releases yet, errors out.
             # for asset in releases[0]['assets']:
                 # if asset['name'] == "TeamListFiller.cia":
                     # embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
-        elif app.lower() == "pksm-scripts" or app.lower() == "scripts" or app.lower() == "script":
+        elif app.lower().startswith("pksm-scripts") or app.lower().startswith("scripts") or app.lower().startswith("script") or app.lower().startswith("pksmscripts"):
             embed = discord.Embed(description=desc.format(desc_scripts))
-        elif app.lower() == "legality" or app.lower() == "servelegality":
+        elif app.lower().startswith("legality") or app.lower().startswith("servelegality"):
             embed = discord.Embed(description=desc.format(desc_servelegality))
-        elif app.lower() == "2048":
+        elif app.lower().startswith("2048"):
             embed = discord.Embed(description=desc.format(desc_2048))
-        elif app.lower() == "servepkx":
+        elif app.lower().startswith("servepkx"):
             embed = discord.Embed(description=desc.format(desc_servepkx))
-        elif app.lower() == "qraken":
+        elif app.lower().startswith("qraken"):
             embed = discord.Embed(description=desc.format(desc_qraken))
-        elif app.lower() == "jedecheck" or app.lower() == "jede" or app.lower() == "jedec":
+        elif app.lower().startswith("jedecheck") or app.lower().startswith("jede") or app.lower().startswith("jedec"):
             embed = discord.Embed(description=desc.format(desc_jedecheck))
         else:
             embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_sharkive) + "\n" + desc.format(desc_teamlist) + "\n" +
-                                              desc.format(desc_scripts) + "\n" + desc.format(desc_servelegality) + "\n" + desc.format(desc_2048) + "\n" + desc.format(desc_servepkx) + "\n" + desc.format(desc_qraken) + "\m" +
+                                              desc.format(desc_scripts) + "\n" + desc.format(desc_servelegality) + "\n" + desc.format(desc_2048) + "\n" + desc.format(desc_servepkx) + "\n" + desc.format(desc_qraken) + "\n" +
                                               desc.format(desc_jedecheck))
         await ctx.send(embed=embed)
         
