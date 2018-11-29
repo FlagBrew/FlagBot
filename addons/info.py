@@ -35,6 +35,17 @@ class Info:
                 embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
         return embed
         
+    def pickr_embed(self, ctx, app):
+        embed = discord.Embed(description=desc.format(desc_pickr))
+        str_list = app.lower().split()
+        if "switch" in str_list:
+            return embed
+        releases = requests.get("https://api.github.com/repos/FlagBrew/Pickr/releases").json()
+        for asset in releases[0]['assets']:
+            if asset['name'] == "Pickr.cia":
+                embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+        return embed
+        
     @commands.command(aliases=['releases', 'latest'])
     async def release(self, ctx, *, app = ""):
         """Returns the latest release for FlagBrew's projects. If pulling checkpoint release, you can add "switch" to the end to get one without a qr code for ease of assistance"""
@@ -45,14 +56,9 @@ class Info:
                 if asset['name'] == "PKSM.cia":
                     embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
         elif app.lower().startswith("checkpoint"):
-            print(app)
             embed = self.checkpoint_embed(self, app)
         elif app.lower().startswith("pickr"):
-            embed = discord.Embed(description=desc.format(desc_pickr))
-            releases = requests.get("https://api.github.com/repos/FlagBrew/Pickr/releases").json()
-            for asset in releases[0]['assets']:
-                if asset['name'] == "Pickr.cia":
-                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+            embed = self.pickr_embed(self, app)
         elif app.lower().startswith("sharkive"):
             embed = discord.Embed(description=desc.format(desc_sharkive))
             releases = requests.get("https://api.github.com/repos/FlagBrew/Sharkive/releases").json()
