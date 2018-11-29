@@ -57,7 +57,7 @@ class Info:
             # for asset in releases[0]['assets']:
                 # if asset['name'] == "TeamListFiller.cia":
                     # embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
-        elif app.lower() == "pksm-scripts" or app.lower() == "scripts" or app.lower() == "script":
+        elif app.lower() == "pksm-scripts" or app.lower() == "scripts" or app.lower() == "script" or app.lower() == "pksmscripts":
             embed = discord.Embed(description=desc.format(desc_scripts))
         elif app.lower() == "legality" or app.lower() == "servelegality":
             embed = discord.Embed(description=desc.format(desc_servelegality))
@@ -71,7 +71,7 @@ class Info:
             embed = discord.Embed(description=desc.format(desc_jedecheck))
         else:
             embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_sharkive) + "\n" + desc.format(desc_teamlist) + "\n" +
-                                              desc.format(desc_scripts) + "\n" + desc.format(desc_servelegality) + "\n" + desc.format(desc_2048) + "\n" + desc.format(desc_servepkx) + "\n" + desc.format(desc_qraken) + "\m" +
+                                              desc.format(desc_scripts) + "\n" + desc.format(desc_servelegality) + "\n" + desc.format(desc_2048) + "\n" + desc.format(desc_servepkx) + "\n" + desc.format(desc_qraken) + "\n" +
                                               desc.format(desc_jedecheck))
         await ctx.send(embed=embed)
         
