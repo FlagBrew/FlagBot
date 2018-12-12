@@ -23,6 +23,19 @@ class Events:
             finally:
                 await guild.leave()
                 
+    async def on_member_ban(self, guild, user):
+        async for ban in guild.audit_logs(limit=20, action=discord.AuditLogAction.ban): # 20 to handle multiple staff bans in quick succession
+            if ban.target == user:
+                if ban.reason:
+                    reason = ban.reason
+                else:
+                    reason = "No reason was given. Please do that in the future!"
+                admin = ban.user
+                break
+        embed = discord.Embed(title="{} banned".format(user))
+        embed.description = "{} was banned by {} for:\n\n{}".format(user, admin, reason)
+        await self.bot.logs_channel.send(embed=embed)
+                
     async def on_member_join(self, member):
         embed = discord.Embed(title="New member!")
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)

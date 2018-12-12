@@ -58,8 +58,6 @@ class Moderation:
         elif not found_member:
             await ctx.send("That user could not be found.")
         else:
-            embed = discord.Embed(title="{} banned".format(found_member))
-            embed.description = "{}#{} was banned by {} for:\n\n{}".format(found_member.name, found_member.discriminator, ctx.message.author, reason)
             try:
                 await found_member.send("You were banned from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, please contact a staff member".format(reason))
             except:
