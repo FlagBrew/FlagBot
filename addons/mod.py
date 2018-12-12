@@ -17,7 +17,6 @@ class Moderation:
     @commands.command(pass_context=True)
     async def kick(self, ctx, member:discord.Member, *, reason="No reason was given."):
         """Kick a member."""
-        member = self.find_user(member, ctx)
         if member == ctx.message.author:
             return await ctx.send("You can't kick yourself, obviously")
         elif not member:
@@ -38,7 +37,6 @@ class Moderation:
     @commands.command(pass_context=True)
     async def ban(self, ctx, member:discord.Member, *, reason="No reason was given."):
         """Ban a member."""
-        member = self.find_user(member, ctx)
         if member == ctx.message.author:
             return await ctx.send("You can't ban yourself, obviously")
         elif not member:
