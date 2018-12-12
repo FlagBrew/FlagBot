@@ -19,8 +19,6 @@ class Moderation:
         """Kick a member."""
         if member == ctx.message.author:
             return await ctx.send("You can't kick yourself, obviously")
-        elif not member:
-            await ctx.send("That user could not be found.")
         else:
             embed = discord.Embed(title="{} kicked".format(member))
             embed.description = "{}#{} was kicked by {} for:\n\n{}".format(member.name, member.discriminator, ctx.message.author, reason)
@@ -39,8 +37,6 @@ class Moderation:
         """Ban a member."""
         if member == ctx.message.author:
             return await ctx.send("You can't ban yourself, obviously")
-        elif not member:
-            await ctx.send("That user could not be found.")
         else:
             try:
                 await member.send("You were banned from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, please contact a staff member".format(reason))
