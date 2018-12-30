@@ -49,7 +49,9 @@ class Moderation:
                     await member.ban(reason=reason)
                 except discord.Forbidden: # none at all
                     return await ctx.send("I don't have permission. Why don't I have permission.")
-            await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(member))
+            embed = discord.Embed()
+            embed.set_image(url="https://i.imgur.com/tEBrxUF.jpg")
+            await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(member), embed=embed)
             
     @commands.has_permissions(ban_members=True)
     @commands.command(aliases=['p'])
