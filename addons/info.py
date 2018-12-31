@@ -157,7 +157,7 @@ class Info:
         await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, as little as they may seem, aswell as assisting materials. Asking to ask wont expedite your process, and may delay assistance.")
         
     @commands.command()
-    async def wiki(self, ctx):
+    async def wiki(self, ctx, option):
         """Sends wiki link. extrasaves as option."""
         if option == "extrasaves":
             await ctx.send("You can read PKSM's wiki entry for extra saves here: <{}/Configuration#extra-saves>".format(wiki_link))
