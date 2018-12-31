@@ -156,7 +156,7 @@ class Info:
         """Reminder for those who won't just ask their question"""
         await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, as little as they may seem, aswell as assisting materials. Asking to ask wont expedite your process, and may delay assistance.")
         
-    @group.commands()
+    @commands.command()
     async def wiki(self, ctx):
         """Sends wiki link. extrasaves as option."""
         if option == "extrasaves":
