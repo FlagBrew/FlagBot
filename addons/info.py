@@ -125,11 +125,6 @@ class Info:
         else:
             return await ctx.send("Input not given or recognized. Available READMEs: `pksmscript`, `servelegality`, `sharkive`, `servepkx`, `teamlistfiller`, `qraken`, `2048`, `pickr`, `checkpoint`, `pksm`, 'jedecheck'.")
         await ctx.send(embed=embed)
-		
-    @commands.command()
-    async def storage(self, ctx):
-        """Storage from 5.0.0+"""
-        await ctx.send("If you can't find your storage after updating PKSM, make sure you read what changed here: <https://github.com/FlagBrew/PKSM#storage-changes-from-500>")
         
     @commands.command(aliases=['patron'])
     async def patreon(self, ctx):
@@ -141,38 +136,10 @@ class Info:
         """Frequently Asked Questions"""
         embed = discord.Embed(title="Frequently Asked Questions")
         embed.add_field(name="When will Virtual Console games be supported?", value="Never.")
-        embed.add_field(name="Are flashcards supported? If not, when will support for them be added?", value="Flashcards are not supported and never will be. This extends to applications such as DSiMenu++ and TWLoader.")
-        embed.add_field(name="When will support for storage and editor be added for DS games?", value="They will be supported in the next major update. This does not give you permission to harass Bernardo.")
-        embed.add_field(name="When will support be added for editing your backpack and items?", value="Limited editing is possible with scripts. Full editing won't be possible unless someone decides to make a contribution and develop it.")
-        embed.add_field(name="Why do I have to wait so long for new releases?", value="A) Because you think you're entitled to everything.\nB) PKSM is currently being rewritten and as such no new releases will be coming until that is finished.")
+        embed.add_field(name="Why do I have to wait so long for new releases?", value="Because you think you're entitled to everything.")
+        embed.add_field(name="Why can't I scan this QR code?", value="FBI currently does not work with QR codes due to [changes to GitHub](https://www.reddit.com/r/3dshacks/comments/7zof0c/reminder_github_has_dropped_tlsv111_support_as_of/). You can use [QRaken](https://github.com/FlagBrew/QRaken/releases) to download via QR codes.")
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def date(self, ctx):
-        """How to Change PKSM's Default Met Date"""
-        embed = discord.Embed(title="How to Change PKSM's Default Met Date")
-        embed.description = ("1. Select your game\n"
-                             "2. Select options\n"
-                             "3. Move your cursor to the byte you want to change.\n"
-                             "\t\t\u2022 0x22 is the day, 0x23 is the month, and 0x24 is the year.\n"
-                             "\t\t\u2022 Keep in mind that all numbers are hexadecimals.\n"
-                             "4. Tap the plus button to increase the value of those bytes and minus to decrease.\n"
-                             "5. Once you've made your changes, press B to exit")
-        await ctx.send(embed=embed)
-	
-        
-    @commands.command(aliases=['qr', 'qrcodes'])
-    async def qrcode(self, ctx):
-        """Broken QRs"""
-        embed = discord.Embed(title="What Happened to the QR Codes?")
-        embed.description = "Due to changes in how [GitHub](https://www.reddit.com/r/3dshacks/comments/7zof0c/reminder_github_has_dropped_tlsv111_support_as_of/) works, QR codes can no longer be scanned using FBI. You can use [QRaken](https://github.com/FlagBrew/QRaken/releases) to download apps using QR codes."
-        await ctx.send(embed=embed)
-        
-    @commands.command()
-    async def titledb(self, ctx):
-        """Why you shouldn't download from TitleDB"""
-        await ctx.send("TitleDB is in no way condoned by FlagBrew for downloading any of their projects. Please download them from official sources, such as their GitHub, https://github.com/Flagbrew.")
-        
     @commands.command() # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
     async def vguides(self, ctx):
         """Information about video guides relating to custom firmware"""
@@ -181,6 +148,11 @@ class Info:
                             'When this happens, video guides become more complicated than current methods, having users do certain tasks which may not be required anymore.\n\n'
                             'There is also a risk of the uploader spreading misinformation or including potentially harmful files, sometimes unintentionally.')
         await ctx.send(embed=embed)
+        
+    @commands.command()
+    async def question(self, ctx):
+        """Reminder for those who won't just ask their question"""
+        await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, as little as they may seem, aswell as assisting materials. Asking to ask wont expedite your process, and may delay assistance.")
         
 def setup(bot):
     bot.add_cog(Info(bot))
