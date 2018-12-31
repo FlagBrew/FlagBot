@@ -16,6 +16,8 @@ desc_servelegality = "serveLegality [here](https://github.com/FlagBrew/serveLega
 desc_servepkx = "servepkx [here](https://github.com/FlagBrew/servepkx/releases/latest)"
 desc_teamlist = "TeamListFiller [here](https://github.com/FlagBrew/TeamListFiller/releases/latest)"
 desc_jedecheck = "JEDECheck [here](https://github.com/FlagBrew/JEDECheck/releases/latest)"
+wiki_link = "https://github.com/FlagBrew/PKSM/wiki"
+
 
 class Info:
 
@@ -153,6 +155,14 @@ class Info:
     async def question(self, ctx):
         """Reminder for those who won't just ask their question"""
         await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, as little as they may seem, aswell as assisting materials. Asking to ask wont expedite your process, and may delay assistance.")
+        
+    @group.commands()
+    async def wiki(self, ctx):
+        """Sends wiki link. extrasaves as option."""
+        if option == "extrasaves":
+            await ctx.send("You can read PKSM's wiki entry for extra saves here: <{}/Configuration#extra-saves>".format(wiki_link))
+        else:
+            await ctx.send("You can read PKSM's wiki here: <{}>".format(wiki_link))
         
 def setup(bot):
     bot.add_cog(Info(bot))
