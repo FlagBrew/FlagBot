@@ -22,7 +22,7 @@ class Info:
 
     def __init__(self, bot):
         self.bot = bot
-        print('Addon "{}" loaded'.format(self.__class__.__name__))
+        print("Addon \"{}\" loaded".format(self.__class__.__name__))
         
         
     def checkpoint_embed(self, ctx, app):
@@ -31,9 +31,9 @@ class Info:
         if "switch" in str_list:
             return embed
         releases = requests.get("https://api.github.com/repos/FlagBrew/Checkpoint/releases").json()
-        for asset in releases[0]['assets']:
-            if asset['name'] == "Checkpoint.cia":
-                embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+        for asset in releases[0]["assets"]:
+            if asset["name"] == "Checkpoint.cia":
+                embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset["browser_download_url"] + "&choe=UTF-8.png")
         return embed
         
     def pickr_embed(self, ctx, app):
@@ -42,20 +42,20 @@ class Info:
         if "switch" in str_list:
             return embed
         releases = requests.get("https://api.github.com/repos/FlagBrew/Pickr/releases").json()
-        for asset in releases[0]['assets']:
-            if asset['name'] == "Pickr.cia":
-                embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+        for asset in releases[0]["assets"]:
+            if asset["name"] == "Pickr.cia":
+                embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset["browser_download_url"] + "&choe=UTF-8.png")
         return embed
         
-    @commands.command(aliases=['releases', 'latest'])
+    @commands.command(aliases=["releases", "latest"])
     async def release(self, ctx, *, app = ""):
-        """Returns the latest release for FlagBrew's projects. If pulling checkpoint release, you can add "switch" to the end to get one without a qr code for ease of assistance"""
+        """Returns the latest release for FlagBrew"s projects. If pulling checkpoint release, you can add "switch" to the end to get one without a qr code for ease of assistance"""
         if app.lower().startswith("pksm"):
             embed = discord.Embed(description=desc.format(desc_pksm))
             releases = requests.get("https://api.github.com/repos/FlagBrew/PKSM/releases").json()
-            for asset in releases[0]['assets']:
-                if asset['name'] == "PKSM.cia":
-                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+            for asset in releases[0]["assets"]:
+                if asset["name"] == "PKSM.cia":
+                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset["browser_download_url"] + "&choe=UTF-8.png")
         elif app.lower().startswith("checkpoint"):
             embed = self.checkpoint_embed(self, app)
         elif app.lower().startswith("pickr"):
@@ -63,15 +63,15 @@ class Info:
         elif app.lower().startswith("sharkive"):
             embed = discord.Embed(description=desc.format(desc_sharkive))
             releases = requests.get("https://api.github.com/repos/FlagBrew/Sharkive/releases").json()
-            for asset in releases[0]['assets']:
-                if asset['name'] == "Sharkive.cia":
-                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+            for asset in releases[0]["assets"]:
+                if asset["name"] == "Sharkive.cia":
+                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset["browser_download_url"] + "&choe=UTF-8.png")
         elif app.lower().startswith("teamlist") or app.lower().startswith("teamlistfiller") or app.lower().startswith("tl"):
             embed = discord.Embed(description=desc.format(desc_teamlist))
             # releases = requests.get("https://api.github.com/repos/FlagBrew/TeamListFiller/releases").json() #No releases yet, errors out.
-            # for asset in releases[0]['assets']:
-                # if asset['name'] == "TeamListFiller.cia":
-                    # embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset['browser_download_url'] + "&choe=UTF-8.png")
+            # for asset in releases[0]["assets"]:
+                # if asset["name"] == "TeamListFiller.cia":
+                    # embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset["browser_download_url"] + "&choe=UTF-8.png")
         elif app.lower().startswith("pksm-scripts") or app.lower().startswith("scripts") or app.lower().startswith("script") or app.lower().startswith("pksmscripts"):
             embed = discord.Embed(description=desc.format(desc_scripts))
         elif app.lower().startswith("legality") or app.lower().startswith("servelegality"):
@@ -145,9 +145,9 @@ class Info:
     async def vguides(self, ctx):
         """Information about video guides relating to custom firmware"""
         embed = discord.Embed(title="Why you shouldn't use video guides")
-        embed.description = ('"Video guides" are not recommended for use. Their contents generally become outdated very quickly for them to be of any use, and they are harder to update unlike a written guide.\n\n'
-                            'When this happens, video guides become more complicated than current methods, having users do certain tasks which may not be required anymore.\n\n'
-                            'There is also a risk of the uploader spreading misinformation or including potentially harmful files, sometimes unintentionally.')
+        embed.description = ("\"Video guides\" are not recommended for use. Their contents generally become outdated very quickly for them to be of any use, and they are harder to update unlike a written guide.\n\n"
+                            "When this happens, video guides become more complicated than current methods, having users do certain tasks which may not be required anymore.\n\n"
+                            "There is also a risk of the uploader spreading misinformation or including potentially harmful files, sometimes unintentionally.")
         await ctx.send(embed=embed)
         
     @commands.command()
@@ -189,6 +189,15 @@ class Info:
             extra_info = "frequently asked questions"
             wiki_link_ext = "/FAQs"
         await ctx.send("You can read PKSM's wiki {} here: <https://github.com/FlagBrew/PKSM/wiki{}>".format(extra_info, wiki_link_ext))
+        
+    @commands.command()
+    async def assets(self, ctx):
+        """Gives instructions on manually downloading assets for PKSM"""
+        embed = discord.Embed(title="How to manually download PKSM assets")
+        embed.description = ("1. Download the assets from [here](https://github.com/FlagBrew/PKSM/tree/master/assets).\n"
+                             "2. Copy the assets to `/3ds/PKSM/assets/`. You may need to create the folder.\n"
+                             "3. Launch PKSM, and you should be good to go.")
+        await ctx.send(embed=embed)
         
 def setup(bot):
     bot.add_cog(Info(bot))
