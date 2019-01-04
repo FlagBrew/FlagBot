@@ -16,7 +16,6 @@ desc_servelegality = "serveLegality [here](https://github.com/FlagBrew/serveLega
 desc_servepkx = "servepkx [here](https://github.com/FlagBrew/servepkx/releases/latest)"
 desc_teamlist = "TeamListFiller [here](https://github.com/FlagBrew/TeamListFiller/releases/latest)"
 desc_jedecheck = "JEDECheck [here](https://github.com/FlagBrew/JEDECheck/releases/latest)"
-wiki_link = "https://github.com/FlagBrew/PKSM/wiki"
 
 
 class Info:
@@ -154,15 +153,42 @@ class Info:
     @commands.command()
     async def question(self, ctx):
         """Reminder for those who won't just ask their question"""
-        await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, as little as they may seem, aswell as assisting materials. Asking to ask wont expedite your process, and may delay assistance.")
+        await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, as little as they may seem, as well as assisting materials. Asking to ask wont expedite your process, and may delay assistance.")
         
     @commands.command()
     async def wiki(self, ctx, option=""):
-        """Sends wiki link. extrasaves as option."""
-        if option == "extrasaves":
-            await ctx.send("You can read PKSM's wiki entry for extra saves here: <{}/Configuration#extra-saves>".format(wiki_link))
-        else:
-            await ctx.send("You can read PKSM's wiki here: <{}>".format(wiki_link))
+        """Sends wiki link. extrasaves, storage, editor, events, scripts, bag, config, scriptdev, and faq all as options"""
+        extra_info = ""
+        wiki_link_ext = ""
+        option = option.lower()
+        if option == "extrasaves" or option == "extra-saves" or option == "saves" or option == "saveconfig":
+            extra_info = "entry for extra saves"
+            wiki_link_ext = "/Configuration#extra-saves"
+        elif option == "storage":
+            extra_info = "entry for the storage feature"
+            wiki_link_ext = "/Storage"
+        elif option == "editor":
+            extra_info = "entry for the editor feature"
+            wiki_link_ext = "/Editor"
+        elif option == "event" or option == "events" or option == "eventinject" or option == "eventinjector" or option == "event-inject" or option == "event-injector":
+            extra_info = "entry for the event injection feature"
+            wiki_link_ext = "/Event-Injector"
+        elif option == "script" or option == "scripts" or option == "scriptinject" or option == "scriptinjector" or option == "script-inject" or option == "script-injector":
+            extra_info = "entry for the script injection feature"
+            wiki_link_ext = "/Script-Injector"
+        elif option == "bag":
+            extra_info = "entry for the bag editing feature"
+            wiki_link_ext = "/Bag-Editor"
+        elif option == "config" or option == "configuration":
+            extra_info = "entry for the config"
+            wiki_link_ext = "/Configuration"
+        elif option == "scriptdev":
+            extra_info = "entry for script development"
+            wiki_link_ext = "/Scripts-Development"
+        elif option == "faq":
+            extra_info = "frequently asked questions"
+            wiki_link_ext = "/FAQs"
+        await ctx.send("You can read PKSM's wiki {} here: <https://github.com/FlagBrew/PKSM/wiki{}>".format(extra_info, wiki_link_ext))
         
 def setup(bot):
     bot.add_cog(Info(bot))
