@@ -138,7 +138,8 @@ class Info:
         embed = discord.Embed(title="Frequently Asked Questions")
         embed.add_field(name="When will Virtual Console games be supported?", value="Never.")
         embed.add_field(name="Why do I have to wait so long for new releases?", value="Because you think you're entitled to everything.")
-        embed.add_field(name="Why can't I scan this QR code?", value="FBI currently does not work with QR codes due to [changes to GitHub](https://www.reddit.com/r/3dshacks/comments/7zof0c/reminder_github_has_dropped_tlsv111_support_as_of/). You can use [QRaken](https://github.com/FlagBrew/QRaken/releases) to download via QR codes.")
+        embed.add_field(name="Why can't I scan this QR code?", value="You are likely using an outdated version of FBI. You can download the latest version [here](https://github.com/Steveice10/FBI/releases/latest).\n"
+                             "Any further questions about FBI should be taken to the FBI repository. **This server is not for FBI troubleshooting.**")
         await ctx.send(embed=embed)
 
     @commands.command() # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
@@ -162,33 +163,33 @@ class Info:
         wiki_link_ext = ""
         option = option.lower()
         if option == "extrasaves" or option == "extra-saves" or option == "saves" or option == "saveconfig":
-            extra_info = "entry for extra saves"
+            extra_info = " entry for extra saves"
             wiki_link_ext = "/Configuration#extra-saves"
         elif option == "storage":
-            extra_info = "entry for the storage feature"
+            extra_info = " entry for the storage feature"
             wiki_link_ext = "/Storage"
         elif option == "editor":
-            extra_info = "entry for the editor feature"
+            extra_info = " entry for the editor feature"
             wiki_link_ext = "/Editor"
         elif option == "event" or option == "events" or option == "eventinject" or option == "eventinjector" or option == "event-inject" or option == "event-injector":
-            extra_info = "entry for the event injection feature"
+            extra_info = " entry for the event injection feature"
             wiki_link_ext = "/Event-Injector"
         elif option == "script" or option == "scripts" or option == "scriptinject" or option == "scriptinjector" or option == "script-inject" or option == "script-injector":
-            extra_info = "entry for the script injection feature"
+            extra_info = " entry for the script injection feature"
             wiki_link_ext = "/Script-Injector"
         elif option == "bag":
-            extra_info = "entry for the bag editing feature"
+            extra_info = " entry for the bag editing feature"
             wiki_link_ext = "/Bag-Editor"
         elif option == "config" or option == "configuration":
-            extra_info = "entry for the config"
+            extra_info = " entry for the config"
             wiki_link_ext = "/Configuration"
         elif option == "scriptdev":
-            extra_info = "entry for script development"
+            extra_info = " entry for script development"
             wiki_link_ext = "/Scripts-Development"
         elif option == "faq":
-            extra_info = "frequently asked questions"
+            extra_info = " frequently asked questions"
             wiki_link_ext = "/FAQs"
-        await ctx.send("You can read PKSM's wiki {} here: <https://github.com/FlagBrew/PKSM/wiki{}>".format(extra_info, wiki_link_ext))
+        await ctx.send("You can read PKSM's wiki{} here: <https://github.com/FlagBrew/PKSM/wiki{}>".format(extra_info, wiki_link_ext))
         
     @commands.command()
     async def assets(self, ctx):
@@ -197,6 +198,33 @@ class Info:
         embed.description = ("1. Download the assets from [here](https://github.com/FlagBrew/PKSM/tree/master/assets).\n"
                              "2. Copy the assets to `/3ds/PKSM/assets/`. You may need to create the folder.\n"
                              "3. Launch PKSM, and you should be good to go.")
+        await ctx.send(embed=embed)
+    
+    @commands.command(aliases=["extrasaves", "template", "estemp"])
+    async def estemplate(self, ctx):
+        """Outputs the template for extrasaves from the wiki"""
+        embed = discord.Embed(title="Extra Saves Template")
+        embed.description = ("```json\n"
+                       "\"extraSaves\": {\n"
+                       "  \"CPUE\": {\n"
+                       "    \"files\": [\n"
+                       "      \"/roms/nds/POKEMON_PL.sav\",\n"
+                       "      \"/path/to/file.save\"\n"
+                       "    ],\n"
+                       "    \"folders\": [\n"
+                       "      \"/3ds/PKSM/backups/POKEMON PL\",\n"
+                       "      \"/path/to/folder\"\n"
+                       "    ]\n"
+                       "  },\n"
+                       "  \"0x0055D\": {\n"
+                       "    \"files\": [\n"
+                       "    ],\n"
+                       "    \"folders\": [\n"
+                       "      \"/3ds/PKSM/backups/0x0055D\"\n"
+                       "    ]\n"
+                       "  }\n"
+                       "}```")
+        embed.description += "\nYou can also use the online tool from the FlagBrew website [here](https://flagbrew.org/tools/extra_save)."
         await ctx.send(embed=embed)
         
 def setup(bot):
