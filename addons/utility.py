@@ -104,21 +104,22 @@ class Utility:
     @commands.command()
     @commands.guild_only()
     @commands.has_any_role("Discord Moderator", "Flagbrew Team")
-    async def secure_role_mention(self, ctx, update_type: str, *, message=None):
+    async def secure_role_mention(self, ctx, update_type: str):
         """Securely mention an Updates role.
 
         update_type must be any valid role that ends in Updates (ie. General updates has update_type set to General)."""
 
-        role = discord.utils.get(ctx.guild.roles, name=update_type + " Updates")
+        role = discord.utils.get(ctx.guild.roles, name=update_type + " updates")
         if not role:
             return await ctx.send("This is not a valid Updates role!")
 
         await role.edit(mentionable=True, reason="{} wanted to mention users with this role.".format(ctx.author)) # Reason -> Helps pointing out folks that abuse this
 
+        chan_message = "🔔 Update was posted in {}\n".format(ctx.channel)
+        chan_message += "Updater was {} | {}".format(ctx.author, ctx.author.id)
+
+        await self.bot.logs_channel.send(chan_message)
         await ctx.send("{}".format(role.mention))
-        # Alternative way -> Remove =None from signature and comment the above line and uncomment the below two to use it.
-        #await ctx.send("**<{}#{}>**: {}".format(ctx.author.name, ctx.author.discriminator, message))
-        #await ctx.message.delete()
 
         await role.edit(mentionable=False, reason="Making role unmentionable again.")
 
