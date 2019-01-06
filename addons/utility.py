@@ -101,7 +101,7 @@ class Utility:
         except discord.errors.Forbidden:
             await ctx.send("{} Successfully toggled all possible roles.".format(ctx.author.mention), delete_after=5)
             
-    @commands.command(aliases=['srm', 'mention')
+    @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "Flagbrew Team")
     async def secure_role_mention(self, ctx, update_role: str, channel:discord.TextChannel):
         """Securely mention an Updates role. Options: pksm, checkpoint, general"""
