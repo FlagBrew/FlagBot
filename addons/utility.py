@@ -101,27 +101,22 @@ class Utility:
         except discord.errors.Forbidden:
             await ctx.send("{} Successfully toggled all possible roles.".format(ctx.author.mention), delete_after=5)
             
-    @commands.command()
-    @commands.guild_only()
+    @commands.command(aliases=['srm', 'mention')
     @commands.has_any_role("Discord Moderator", "Flagbrew Team")
-    async def secure_role_mention(self, ctx, update_type: str):
-        """Securely mention an Updates role.
-
-        update_type must be any valid role that ends in Updates (ie. General updates has update_type set to General)."""
-
-        role = discord.utils.get(ctx.guild.roles, name=update_type + " updates")
-        if not role:
-            return await ctx.send("This is not a valid Updates role!")
-
+    async def secure_role_mention(self, ctx, update_role: str, channel:discord.TextChannel):
+        """Securely mention an Updates role. Options: pksm, checkpoint, general"""
+        if update_role.lower() == "pksm":
+            role = self.bot.pksm_update_role
+        elif update_role.lower() == "checkpoint":
+            role = self.bot.checkpoint_update_role
+        elif update_role.lower() == "general":
+            role = self.bot.general_update_role
+        else:
+            return await ctx.send("You didn't give a valid role. Do `.help srm' to see all available roles.")
         await role.edit(mentionable=True, reason="{} wanted to mention users with this role.".format(ctx.author)) # Reason -> Helps pointing out folks that abuse this
-
-        chan_message = "🔔 Update was posted in {}\n".format(ctx.channel)
-        chan_message += "Updater was {} | {}".format(ctx.author, ctx.author.id)
-
-        await self.bot.logs_channel.send(chan_message)
-        await ctx.send("{}".format(role.mention))
-
+        await channel.send("{}".format(role.mention))
         await role.edit(mentionable=False, reason="Making role unmentionable again.")
+        await self.bot.logs_channel.send("{} pinged {} in {}".format(ctx.author, role.name, channel))
 
 def setup(bot):
     bot.add_cog(Utility(bot))
