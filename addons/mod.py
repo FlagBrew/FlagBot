@@ -45,6 +45,7 @@ class Moderation:
                 await ctx.guild.ban(member, delete_message_days=0, reason=reason)
             except discord.Forbidden: # i have no clue
                 try:
+                    reason += "\n\nAction done by {} (This is to deal with audit log scraping".format(ctx.author)
                     await member.ban(reason=reason)
                 except discord.Forbidden: # none at all
                     return await ctx.send("I don't have permission. Why don't I have permission.")
