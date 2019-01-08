@@ -61,7 +61,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, discord.ext.commands.NoPrivateMessage):
         await ctx.send("You cannot use this command in DMs! Please go to <#379201279479513100>")
     elif isinstance(error, discord.ext.commands.errors.BadArgument):
-        await ctx.send("A bad argument was provided, please try again. (If this happens with ban, right click for now. I have no clue what's causing this as I cannot reproduce outside of Flagbrew.")
+        await ctx.send("A bad argument was provided, please try again.")
     elif isinstance(error, discord.ext.commands.errors.CheckFailure):
         await ctx.send("You don't have permission to use this command.")
     else:
