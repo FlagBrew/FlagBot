@@ -60,6 +60,8 @@ async def on_command_error(ctx, error):
         await ctx.send("You are missing required arguments.\n{}".format(formatter.format_help_for(ctx, ctx.command)[0]))
     elif isinstance(error, discord.ext.commands.NoPrivateMessage):
         await ctx.send("You cannot use this command in DMs! Please go to <#379201279479513100>")
+    elif isinstance(error, discord.ext.commands.errors.BadArgument):
+        await ctx.send("A bad argument was provided, please try again.")
     elif isinstance(error, discord.ext.commands.errors.CheckFailure):
         await ctx.send("You don't have permission to use this command.")
     else:
@@ -105,7 +107,6 @@ async def on_ready():
                 if guild.id == bot.flagbrew_id:
                     bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
                     bot.patron_role = discord.utils.get(guild.roles, id=330078911704727552)
-                    bot.stream_role = discord.utils.get(guild.roles, id=449552215586111499)
                     bot.pksm_update_role = discord.utils.get(guild.roles, id=467719280163684352)
                     bot.checkpoint_update_role = discord.utils.get(guild.roles, id=467719471746777088)
                     bot.general_update_role = discord.utils.get(guild.roles, id=467719755822792730)

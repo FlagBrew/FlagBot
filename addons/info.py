@@ -156,7 +156,7 @@ class Info:
         """Reminder for those who won't just ask their question"""
         await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, as little as they may seem, as well as assisting materials. Asking to ask wont expedite your process, and may delay assistance.")
         
-    @commands.command()
+    @commands.command(aliases=['readthedocs', 'docs'])
     async def wiki(self, ctx, option=""):
         """Sends wiki link. extrasaves, storage, editor, events, scripts, bag, config, scriptdev, and faq all as options"""
         extra_info = ""
@@ -225,6 +225,13 @@ class Info:
                        "  }\n"
                        "}```")
         embed.description += "\nYou can also use the online tool from the FlagBrew website [here](https://flagbrew.org/tools/extra_save)."
+        await ctx.send(embed=embed)
+        
+    @commands.command(aliases=['database'])
+    async def db(self, ctx):
+        """Links to the Sharkive database"""
+        embed = discord.Embed(title="Sharkive Code Database")
+        embed.description = "You can see the full code database [here](https://github.com/FlagBrew/Sharkive/tree/master/db). You can find what game is what ID [here](http://www.3dsdb.com/)."
         await ctx.send(embed=embed)
         
 def setup(bot):
