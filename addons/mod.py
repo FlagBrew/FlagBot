@@ -13,7 +13,7 @@ class Moderation:
         self.bot = bot
         print('Addon "{}" loaded'.format(self.__class__.__name__))
     
-    async def generic_ban_things(ctx, member, reason):
+    async def generic_ban_things(self, ctx, member, reason):
         """Generic stuff that is used by both ban commands.
         
         ctx -> Commands.Context object.
