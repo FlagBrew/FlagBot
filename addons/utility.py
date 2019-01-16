@@ -103,8 +103,10 @@ class Utility:
             
     @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "Flagbrew Team")
-    async def secure_role_mention(self, ctx, update_role: str, channel:discord.TextChannel):
+    async def secure_role_mention(self, ctx, update_role: str, channel:discord.TextChannel=None):
         """Securely mention an Updates role. Options: pksm, checkpoint, general"""
+        if channel is None:
+            channel = ctx.channel
         if update_role.lower() == "pksm":
             role = self.bot.pksm_update_role
         elif update_role.lower() == "checkpoint":
