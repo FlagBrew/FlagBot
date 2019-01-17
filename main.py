@@ -56,8 +56,8 @@ async def on_command_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         pass  # ...don't need to know if commands don't exist
     elif isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
-        formatter = commands.formatter.HelpFormatter()
-        await ctx.send("You are missing required arguments.\n{}".format(formatter.format_help_for(ctx, ctx.command)[0]))
+        formatter = (await commands.formatter.HelpFormatter().format_help_for(ctx, ctx.command))[0]
+        await ctx.send("You are missing required arguments.\n{}".format(formatter))
     elif isinstance(error, discord.ext.commands.NoPrivateMessage):
         await ctx.send("You cannot use this command in DMs! Please go to <#379201279479513100>")
     elif isinstance(error, discord.ext.commands.errors.BadArgument):
