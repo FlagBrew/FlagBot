@@ -10,11 +10,9 @@ desc_checkpoint = "Checkpoint [here](https://github.com/FlagBrew/Checkpoint/rele
 desc_pickr = "Pickr [here](https://github.com/FlagBrew/Pickr/releases/latest)"
 desc_2048 = "2048 [here](https://github.com/FlagBrew/2048/releases/latest)"
 desc_scripts = "PKSM-Scripts [here](https://github.com/FlagBrew/PKSM-Scripts/releases/latest)"
-desc_qraken = "QRaken [here](https://github.com/FlagBrew/QRaken/releases/latest)"
 desc_sharkive = "Sharkive [here](https://github.com/FlagBrew/Sharkive/releases/latest)"
 desc_servelegality = "serveLegality [here](https://github.com/FlagBrew/serveLegality/releases/latest)"
 desc_servepkx = "servepkx [here](https://github.com/FlagBrew/servepkx/releases/latest)"
-desc_teamlist = "TeamListFiller [here](https://github.com/FlagBrew/TeamListFiller/releases/latest)"
 desc_jedecheck = "JEDECheck [here](https://github.com/FlagBrew/JEDECheck/releases/latest)"
 
 
@@ -66,12 +64,6 @@ class Info:
             for asset in releases[0]["assets"]:
                 if asset["name"] == "Sharkive.cia":
                     embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset["browser_download_url"] + "&choe=UTF-8.png")
-        elif app.lower().startswith("teamlist") or app.lower().startswith("teamlistfiller") or app.lower().startswith("tl"):
-            embed = discord.Embed(description=desc.format(desc_teamlist))
-            # releases = requests.get("https://api.github.com/repos/FlagBrew/TeamListFiller/releases").json() #No releases yet, errors out.
-            # for asset in releases[0]["assets"]:
-                # if asset["name"] == "TeamListFiller.cia":
-                    # embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset["browser_download_url"] + "&choe=UTF-8.png")
         elif app.lower().startswith("pksm-scripts") or app.lower().startswith("scripts") or app.lower().startswith("script") or app.lower().startswith("pksmscripts"):
             embed = discord.Embed(description=desc.format(desc_scripts))
         elif app.lower().startswith("legality") or app.lower().startswith("servelegality"):
@@ -80,13 +72,11 @@ class Info:
             embed = discord.Embed(description=desc.format(desc_2048))
         elif app.lower().startswith("servepkx"):
             embed = discord.Embed(description=desc.format(desc_servepkx))
-        elif app.lower().startswith("qraken"):
-            embed = discord.Embed(description=desc.format(desc_qraken))
         elif app.lower().startswith("jedecheck") or app.lower().startswith("jede") or app.lower().startswith("jedec"):
             embed = discord.Embed(description=desc.format(desc_jedecheck))
         else:
-            embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_sharkive) + "\n" + desc.format(desc_teamlist) + "\n" +
-                                              desc.format(desc_scripts) + "\n" + desc.format(desc_servelegality) + "\n" + desc.format(desc_2048) + "\n" + desc.format(desc_servepkx) + "\n" + desc.format(desc_qraken) + "\n" +
+            embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_sharkive) + "\n" +
+                                              desc.format(desc_scripts) + "\n" + desc.format(desc_servelegality) + "\n" + desc.format(desc_2048) + "\n" + desc.format(desc_servepkx) + "\n" +
                                               desc.format(desc_jedecheck))
         await ctx.send(embed=embed)
         
@@ -109,10 +99,6 @@ class Info:
             embed.add_field(name="Servepkx-Browser", value="You can read servepkx's README [here](https://github.com/FlagBrew/servepkx/blob/master/browser/README.md).", inline=False)
             embed.add_field(name="Servepkx-Go", value="You can read servepkx-go's README [here](https://github.com/FlagBrew/servepkx/blob/master/go/README.md).", inline=False)
             embed.add_field(name="Servepkx-Java", value="You can read servepkx-java's README [here](https://github.com/FlagBrew/servepkx/tree/master/java).", inline=False)
-        elif app.lower() == "teamlistfiller" or app.lower() == "teamlist" or app.lower() == "tl":
-            embed = discord.Embed(description="You can read TeamListFiller's README [here](https://github.com/FlagBrew/TeamListFiller/blob/master/README.md).")
-        elif app.lower() == "qraken":
-            embed = discord.Embed(description="You can read QRaken's README [here](https://github.com/FlagBrew/QRaken/blob/master/README.md).")
         elif app.lower() == "2048":
             embed = discord.Embed(description="You can read 2048's README [here](https://github.com/FlagBrew/2048/blob/master/README.md).")
         elif app.lower() == "pickr":
@@ -140,6 +126,8 @@ class Info:
         embed.add_field(name="Why do I have to wait so long for new releases?", value="Because you think you're entitled to everything.")
         embed.add_field(name="Why can't I scan this QR code?", value="You are likely using an outdated version of FBI. You can download the latest version [here](https://github.com/Steveice10/FBI/releases/latest).\n"
                              "Any further questions about FBI should be taken to the FBI repository. **This server is not for FBI troubleshooting.**")
+        embed.add_field(name="Can you please add a code for `x` game?", value="Nobody on the Flagbrew team knows how to make gameshark codes, or wants to learn. Almost all of the codes were taken from a fort42 dump."
+                             " If you want more codes, learn how to make them yourself, or find a working one and open a pull request on the [repository](https://github.com/Flagbrew/Sharkive/pulls) to get the code added.")
         await ctx.send(embed=embed)
 
     @commands.command() # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
