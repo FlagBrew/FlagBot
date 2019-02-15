@@ -128,6 +128,8 @@ class Info:
                              "Any further questions about FBI should be taken to the FBI repository. **This server is not for FBI troubleshooting.**")
         embed.add_field(name="Can you please add a code for `x` game?", value="Nobody on the Flagbrew team knows how to make gameshark codes, or wants to learn. Almost all of the codes were taken from a fort42 dump."
                              " If you want more codes, learn how to make them yourself, or find a working one and open a pull request on the [repository](https://github.com/Flagbrew/Sharkive/pulls) to get the code added.")
+        embed.add_field(name="I have Homebrew/*hax. Why can't I launch PKSM?", value="PKSM 6.0 and up now *requires* CFW to function. **There is no viable reason to not install CFW nowadays. There is a free method.**"
+                             " You can follow [this guide](https://3ds.hacks.guide) to install CFW on your 3ds. ***Versions under PKSM 6.0 are not supported and no assistance will be given with them!!!***")
         await ctx.send(embed=embed)
 
     @commands.command() # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
