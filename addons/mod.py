@@ -11,7 +11,7 @@ class Moderation:
     """Bot commands for moderation."""
     def __init__(self, bot):
         self.bot = bot
-        self.staff_role = discord.utils.get(guild.roles, name="Discord Moderator")
+        self.staff_role = discord.utils.get(self.bot.guild.roles, name="Discord Moderator")
         print('Addon "{}" loaded'.format(self.__class__.__name__))
     
     async def generic_ban_things(self, ctx, member, reason):
