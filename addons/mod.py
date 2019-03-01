@@ -11,6 +11,7 @@ class Moderation:
     """Bot commands for moderation."""
     def __init__(self, bot):
         self.bot = bot
+        self.staff_role = discord.utils.get(self.bot.guild.roles, name="Discord Moderator")
         print('Addon "{}" loaded'.format(self.__class__.__name__))
     
     async def generic_ban_things(self, ctx, member, reason):
@@ -22,6 +23,8 @@ class Moderation:
         """
         if member.id == ctx.message.author.id:
             return await ctx.send("You can't ban yourself, obviously")
+        elif self.staff_role in member.roles:
+            return await ctx.send("You can't ban a staff member!")
         else:
             try:
                 await member.send("You were banned from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, please contact a staff member".format(reason))
