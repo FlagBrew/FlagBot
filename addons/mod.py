@@ -11,7 +11,6 @@ class Moderation:
     """Bot commands for moderation."""
     def __init__(self, bot):
         self.bot = bot
-        self.staff_role = discord.utils.get(self.bot.guild.roles, name="Discord Moderator")
         print('Addon "{}" loaded'.format(self.__class__.__name__))
     
     async def generic_ban_things(self, ctx, member, reason):
@@ -21,23 +20,26 @@ class Moderation:
         member -> discord.User object, can be limited.
         reason -> reason to ban
         """
+        
         if member.id == ctx.message.author.id:
             return await ctx.send("You can't ban yourself, obviously")
-        elif self.staff_role in member.roles:
-            return await ctx.send("You can't ban a staff member!")
-        else:
-            try:
-                await member.send("You were banned from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, please contact a staff member".format(reason))
-            except:
-                pass # bot blocked or not accepting DMs
-            reason += "\n\nAction done by {} (This is to deal with audit log scraping)".format(ctx.author)
-            try:
-                await ctx.guild.ban(member, delete_message_days=0, reason=reason)
-            except discord.Forbidden: # i have no clue
-                return await ctx.send("I don't have permission. Why don't I have permission.")
-            embed = discord.Embed()
-            embed.set_image(url="https://i.imgur.com/tEBrxUF.jpg")
-            await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(member), embed=embed)
+        try:
+            if any(self.bot.protected_roles for r in member.roles):
+                return await ctx.send("You can't ban a staff member!")  
+        except AttributeError:
+            pass # Happens when banning via id, as they have no roles if not on guild
+        try:
+            await member.send("You were banned from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, please contact a staff member".format(reason))
+        except discord.Forbidden:
+            pass # bot blocked or not accepting DMs
+        reason += "\n\nAction done by {} (This is to deal with audit log scraping)".format(ctx.author)
+        try:
+            await ctx.guild.ban(member, delete_message_days=0, reason=reason)
+        except discord.Forbidden: # i have no clue
+            return await ctx.send("I don't have permission. Why don't I have permission.")
+        embed = discord.Embed()
+        embed.set_image(url="https://i.imgur.com/tEBrxUF.jpg")
+        await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(member), embed=embed)
     
     @commands.has_permissions(kick_members=True)    
     @commands.command(pass_context=True)
@@ -45,6 +47,8 @@ class Moderation:
         """Kick a member."""
         if member == ctx.message.author:
             return await ctx.send("You can't kick yourself, obviously")
+        elif any(self.bot.protected_roles for r in member.roles):
+            return await ctx.send("You can't kick a staff member!")
         else:
             embed = discord.Embed(title="{} kicked".format(member))
             embed.description = "{}#{} was kicked by {} for:\n\n{}".format(member.name, member.discriminator, ctx.message.author, reason)
@@ -80,7 +84,7 @@ class Moderation:
     async def purge(self, ctx, amount=0):
         """Purge x amount of messages"""
         await ctx.message.delete()
-        asyncio.sleep(2)
+        await asyncio.sleep(2)
         if amount > 0:
             await ctx.channel.purge(limit=amount)
         else:

@@ -15,6 +15,7 @@ import sys
 import os
 import re
 import ast
+import asyncio
 
 # sets working directory to bot's folder
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -64,6 +65,8 @@ async def on_command_error(ctx, error):
         await ctx.send("A bad argument was provided, please try again.")
     elif isinstance(error, discord.ext.commands.errors.CheckFailure):
         await ctx.send("You don't have permission to use this command.")
+    elif isinstance(error, discord.Forbidden):
+        pass # Will happen on failed DMs or with logging for testing token. DMs are usually caught, this is a failsafe
     else:
         if ctx.command:
             await ctx.send("An error occurred while processing the `{}` command.".format(ctx.command.name))
@@ -110,6 +113,7 @@ async def on_ready():
                     bot.pksm_update_role = discord.utils.get(guild.roles, id=467719280163684352)
                     bot.checkpoint_update_role = discord.utils.get(guild.roles, id=467719471746777088)
                     bot.general_update_role = discord.utils.get(guild.roles, id=467719755822792730)
+                    bot.protected_roles = (discord.utils.get(guild.roles, id=279598900799864832), discord.utils.get(guild.roles, id=396988600480301059), discord.utils.get(guild.roles, id=482928611809165335), discord.utils.get(guild.roles, id=381053929389031424))
                     
                 if guild.id == bot.testing_id:
                     bot.err_logs_channel = discord.utils.get(guild.channels, id=468877079023321089)
@@ -161,6 +165,41 @@ async def load(ctx, *, module):
             await ctx.send(':anger: Failed!\n```\n{}: {}\n```'.format(type(e).__name__, e))
         else:
             await ctx.send(':white_check_mark: Extension loaded.')
+    else:
+        await ctx.send("You don't have permission to do that!")
+        
+def check_is_author(ctx):
+        return ctx.message.author.id == 177939404243992578
+    
+@bot.command(aliases=['drid'], hidden=True)
+@commands.check(check_is_author)
+async def dump_role_id(ctx):
+    """Dumps role ids for guild. Creator restricted."""
+    roles = {}
+    for role in ctx.guild.roles[1:]:
+        roles[role.name] = role.id
+    await bot.creator.send(roles)
+    await ctx.send("Roles dumped. Cleaning messages in 5 seconds.", delete_after=5)
+    await asyncio.sleep(5.1)
+    await ctx.message.delete()
+    
+@bot.command()
+async def reload(ctx):
+    """Reloads an addon."""
+    if ctx.author == ctx.guild.owner or ctx.author == bot.creator:
+        errors = ""
+        for addon in os.listdir("addons"):
+            if ".py" in addon:
+                addon = addon.replace('.py', '')
+                try:
+                    bot.unload_extension("addons.{}".format(addon))
+                    bot.load_extension("addons.{}".format(addon))
+                except Exception as e:
+                    errors += 'Failed to load addon: `{}.py` due to `{}: {}`\n'.format(addon, type(e).__name__, e)
+        if not errors:
+            await ctx.send(':white_check_mark: Extensions reloaded.')
+        else:
+            await ctx.send(errors)
     else:
         await ctx.send("You don't have permission to do that!")
         
