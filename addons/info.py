@@ -130,6 +130,10 @@ class Info:
                              " If you want more codes, learn how to make them yourself, or find a working one and open a pull request on the [repository](https://github.com/Flagbrew/Sharkive/pulls) to get the code added.")
         embed.add_field(name="I have Homebrew/*hax. Why can't I launch PKSM?", value="PKSM 6.0 and up now *requires* CFW to function. **There is no viable reason to not install CFW nowadays. There is a free method.**"
                              " You can follow [this guide](https://3ds.hacks.guide) to install CFW on your 3ds. ***Versions under PKSM 6.0 are not supported and no assistance will be given with them!!!***")
+        embed.add_field(name="Can we get legality checking please?", value="No. It would be *extremely* memory intensive, and excessive bloat. It will not happen."
+                             " There will be a way to check legality soon, keep an eye on <#382077725579411457> for that.")
+        embed.add_field(name="When are we getting PKSM on Switch?", value="You can access LGPE saves by bridging PKSM on 3DS to Checkpoint on Switch. This is the best you'll get for now, possibly ever if you annoy Bernardo.")
+        embed.add_field(name="When are we getting Sword and Shield support?", value="Never :)")
         await ctx.send(embed=embed)
 
     @commands.command() # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205

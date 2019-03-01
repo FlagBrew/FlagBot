@@ -169,7 +169,7 @@ async def load(ctx, *, module):
         await ctx.send("You don't have permission to do that!")
         
 def check_is_author(ctx):
-        return ctx.message.author.id == 177939404243992578
+        return ctx.message.author.id == bot.creator.id
     
 @bot.command(aliases=['drid'], hidden=True)
 @commands.check(check_is_author)
