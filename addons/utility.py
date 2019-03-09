@@ -10,26 +10,6 @@ class Utility:
     def __init__(self, bot):
         self.bot = bot
         print('Addon "{}" loaded'.format(self.__class__.__name__))
-        
-    @commands.command()
-    async def reload(self, ctx):
-        """Reloads an addon."""
-        if ctx.author == ctx.guild.owner or ctx.author == self.bot.creator:
-            errors = ""
-            for addon in os.listdir("addons"):
-                if ".py" in addon:
-                    addon = addon.replace('.py', '')
-                    try:
-                        self.bot.unload_extension("addons.{}".format(addon))
-                        self.bot.load_extension("addons.{}".format(addon))
-                    except Exception as e:
-                        errors += 'Failed to load addon: `{}.py` due to `{}: {}`\n'.format(addon, type(e).__name__, e)
-            if not errors:
-                await ctx.send(':white_check_mark: Extensions reloaded.')
-            else:
-                await ctx.send(errors)
-        else:
-            await ctx.send("You don't have permission to do that!")
             
     @commands.has_permissions(ban_members=True) 
     @commands.command()
@@ -104,7 +84,7 @@ class Utility:
     @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "Flagbrew Team")
     async def secure_role_mention(self, ctx, update_role:str, channel:discord.TextChannel=None):
-        """Securely mention an Updates role. Options: pksm, checkpoint, general. Can input a channel at the end for remote mentioning"""
+        """Securely mention an Updates role. Options: pksm, checkpoint, general, votes. Can input a channel at the end for remote mentioning"""
         if not channel:
             channel = ctx.channel
         if update_role.lower() == "pksm":
@@ -113,12 +93,17 @@ class Utility:
             role = self.bot.checkpoint_update_role
         elif update_role.lower() == "general":
             role = self.bot.general_update_role
+        elif update_role.lower() == "votes":
+            role = self.bot.patreon_votes_role
         else:
             return await ctx.send("You didn't give a valid role. Do `.help srm' to see all available roles.")
         await role.edit(mentionable=True, reason="{} wanted to mention users with this role.".format(ctx.author)) # Reason -> Helps pointing out folks that abuse this
         await channel.send("{}".format(role.mention))
         await role.edit(mentionable=False, reason="Making role unmentionable again.")
-        await self.bot.logs_channel.send("{} pinged {} in {}".format(ctx.author, role.name, channel))
+        try:
+            await self.bot.logs_channel.send("{} pinged {} in {}".format(ctx.author, role.name, channel))
+        except discord.Forbidden:
+            pass # beta bot can't log
 
 def setup(bot):
     bot.add_cog(Utility(bot))

@@ -34,19 +34,28 @@ class Events:
                 break
         embed = discord.Embed(title="{} banned".format(user))
         embed.description = "{} was banned by {} for:\n\n{}".format(user, admin, reason)
-        await self.bot.logs_channel.send(embed=embed)
+        try:
+            await self.bot.logs_channel.send(embed=embed)
+        except discord.Forbidden:
+            pass # beta bot can't log
                 
     async def on_member_join(self, member):
         embed = discord.Embed(title="New member!")
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
         if member.guild.id == self.bot.flagbrew_id:
-            await self.bot.logs_channel.send(embed=embed)
+            try:
+                await self.bot.logs_channel.send(embed=embed)
+            except discord.Forbidden:
+                pass # beta bot can't log
             
     async def on_member_remove(self, member):
         embed = discord.Embed(title="Member left :(")
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
         if member.guild.id == self.bot.flagbrew_id:
-            await self.bot.logs_channel.send(embed=embed)
+            try:
+                await self.bot.logs_channel.send(embed=embed)
+            except discord.Forbidden:
+                pass # beta bot can't log
                 
                 
     async def on_message(self, message):
@@ -68,7 +77,10 @@ class Events:
                             attachment_urls.append('[{}]({})'.format(attachment.filename, attachment.url))
                         attachment_msg = '\N{BULLET} ' + '\n\N{BULLET} s '.join(attachment_urls)
                         embed.add_field(name='Attachments', value=attachment_msg, inline=False)
-                await self.bot.logs_channel.send("Message by {0} deleted in channel {1.mention}:".format(message.author, message.channel), embed=embed)
+                try:
+                    await self.bot.logs_channel.send("Message by {0} deleted in channel {1.mention}:".format(message.author, message.channel), embed=embed)
+                except discord.Forbidden:
+                    pass # beta bot can't log
         
         
 def setup(bot):
