@@ -24,8 +24,9 @@ class Moderation:
         if member.id == ctx.message.author.id:
             return await ctx.send("You can't ban yourself, obviously")
         try:
-            if any(self.bot.protected_roles for r in member.roles):
-                return await ctx.send("You can't ban a staff member!")  
+            member_guild = ctx.guild.get_member(member.id)
+            if any(self.bot.protected_roles for r in member_guild.roles):
+                return await ctx.send("That user is protected!")  
         except AttributeError:
             pass # Happens when banning via id, as they have no roles if not on guild
         try:
@@ -65,7 +66,7 @@ class Moderation:
     
     @commands.has_permissions(ban_members=True)    
     @commands.command(pass_context=True)
-    async def ban(self, ctx, member:discord.User, *, reason="No reason was given."):
+    async def ban(self, ctx, member:discord.Member, *, reason="No reason was given."):
         """Ban a user."""
         if not member: # Edge case in which UserConverter may fail to get a User
             return await ctx.send("Could not find user. They may no longer be in the global User cache. If you are sure this is a valid user, try `.banid` instead.")
@@ -83,7 +84,7 @@ class Moderation:
         await self.generic_ban_things(ctx, member, reason)
 
     @commands.has_permissions(ban_members=True)
-    @commands.command(aliases=['p'])
+    @commands.command(aliases=['p', 'clear', 'clean'])
     async def purge(self, ctx, amount=0):
         """Purge x amount of messages"""
         await ctx.message.delete()
