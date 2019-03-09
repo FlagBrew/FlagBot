@@ -65,8 +65,6 @@ async def on_command_error(ctx, error):
         await ctx.send("A bad argument was provided, please try again.")
     elif isinstance(error, discord.ext.commands.errors.CheckFailure):
         await ctx.send("You don't have permission to use this command.")
-    elif isinstance(error, discord.Forbidden):
-        pass # Will happen on failed DMs or with logging for testing token. DMs are usually caught, this is a failsafe
     else:
         if ctx.command:
             await ctx.send("An error occurred while processing the `{}` command.".format(ctx.command.name))
@@ -79,6 +77,7 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_error(event_method, *args, **kwargs):
+    print(args[0])
     if isinstance(args[0], commands.errors.CommandNotFound):
         return
     print("Ignoring exception in {}".format(event_method))
@@ -113,6 +112,7 @@ async def on_ready():
                     bot.pksm_update_role = discord.utils.get(guild.roles, id=467719280163684352)
                     bot.checkpoint_update_role = discord.utils.get(guild.roles, id=467719471746777088)
                     bot.general_update_role = discord.utils.get(guild.roles, id=467719755822792730)
+                    bot.patreon_votes_role = discord.utils.get(guild.roles, id=501494870095953939)
                     bot.protected_roles = (discord.utils.get(guild.roles, id=279598900799864832), discord.utils.get(guild.roles, id=396988600480301059), discord.utils.get(guild.roles, id=482928611809165335), discord.utils.get(guild.roles, id=381053929389031424))
                     
                 if guild.id == bot.testing_id:

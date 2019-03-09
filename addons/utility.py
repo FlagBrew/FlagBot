@@ -84,7 +84,7 @@ class Utility:
     @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "Flagbrew Team")
     async def secure_role_mention(self, ctx, update_role:str, channel:discord.TextChannel=None):
-        """Securely mention an Updates role. Options: pksm, checkpoint, general. Can input a channel at the end for remote mentioning"""
+        """Securely mention an Updates role. Options: pksm, checkpoint, general, votes. Can input a channel at the end for remote mentioning"""
         if not channel:
             channel = ctx.channel
         if update_role.lower() == "pksm":
@@ -93,6 +93,8 @@ class Utility:
             role = self.bot.checkpoint_update_role
         elif update_role.lower() == "general":
             role = self.bot.general_update_role
+        elif update_role.lower() == "votes":
+            role = self.bot.patreon_votes_role
         else:
             return await ctx.send("You didn't give a valid role. Do `.help srm' to see all available roles.")
         await role.edit(mentionable=True, reason="{} wanted to mention users with this role.".format(ctx.author)) # Reason -> Helps pointing out folks that abuse this
