@@ -100,7 +100,10 @@ class Utility:
         await role.edit(mentionable=True, reason="{} wanted to mention users with this role.".format(ctx.author)) # Reason -> Helps pointing out folks that abuse this
         await channel.send("{}".format(role.mention))
         await role.edit(mentionable=False, reason="Making role unmentionable again.")
-        await self.bot.logs_channel.send("{} pinged {} in {}".format(ctx.author, role.name, channel))
+        try:
+            await self.bot.logs_channel.send("{} pinged {} in {}".format(ctx.author, role.name, channel))
+        except discord.Forbidden:
+            pass # beta bot can't log
 
 def setup(bot):
     bot.add_cog(Utility(bot))

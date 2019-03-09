@@ -52,7 +52,10 @@ class Moderation:
         else:
             embed = discord.Embed(title="{} kicked".format(member))
             embed.description = "{}#{} was kicked by {} for:\n\n{}".format(member.name, member.discriminator, ctx.message.author, reason)
-            await self.bot.logs_channel.send(embed=embed)
+            try:
+                await self.bot.logs_channel.send(embed=embed)
+            except discord.Forbidden:
+                pass # beta bot can't log
             try:
                 await member.send("You were kicked from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY".format(reason))
             except discord.Forbidden:
