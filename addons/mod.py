@@ -66,7 +66,7 @@ class Moderation:
     
     @commands.has_permissions(ban_members=True)    
     @commands.command(pass_context=True)
-    async def ban(self, ctx, member:discord.Member, *, reason="No reason was given."):
+    async def ban(self, ctx, member:discord.User, *, reason="No reason was given."):
         """Ban a user."""
         if not member: # Edge case in which UserConverter may fail to get a User
             return await ctx.send("Could not find user. They may no longer be in the global User cache. If you are sure this is a valid user, try `.banid` instead.")
