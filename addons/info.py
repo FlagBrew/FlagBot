@@ -2,6 +2,8 @@
 
 import json, requests
 import discord
+import qrcode
+import io
 from discord.ext import commands
 
 desc = "You can get the latest release of {}."
@@ -28,10 +30,6 @@ class Info:
         str_list = app.lower().split()
         if "switch" in str_list:
             return embed
-        releases = requests.get("https://api.github.com/repos/FlagBrew/Checkpoint/releases").json()
-        for asset in releases[0]["assets"]:
-            if asset["name"] == "Checkpoint.cia":
-                embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset["browser_download_url"] + "&choe=UTF-8.png")
         return embed
         
     def pickr_embed(self, ctx, app):
@@ -39,31 +37,37 @@ class Info:
         str_list = app.lower().split()
         if "switch" in str_list:
             return embed
-        releases = requests.get("https://api.github.com/repos/FlagBrew/Pickr/releases").json()
-        for asset in releases[0]["assets"]:
-            if asset["name"] == "Pickr.cia":
-                embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset["browser_download_url"] + "&choe=UTF-8.png")
         return embed
+        
+    def gen_qr(self, ctx, app):
+        releases = requests.get("https://api.github.com/repos/FlagBrew/{}/releases".format(app)).json()
+        for asset in releases[0]["assets"]:
+            if asset["name"] == "{}.cia".format(app):
+                qr = qrcode.QRCode(version=None)
+                qr.add_data(asset["browser_download_url"])
+                qr.make(fit=True)
+                img = qr.make_image(fill_color="black", back_color="white")
+                bytes = io.BytesIO()
+                img.save(bytes, format='PNG')
+                bytes = bytes.getvalue()
+                return bytes
         
     @commands.command(aliases=["releases", "latest"])
     async def release(self, ctx, *, app = ""):
         """Returns the latest release for FlagBrew"s projects. If pulling checkpoint release, you can add "switch" to the end to get one without a qr code for ease of assistance"""
+        img = 0
         if app.lower().startswith("pksm"):
             embed = discord.Embed(description=desc.format(desc_pksm))
-            releases = requests.get("https://api.github.com/repos/FlagBrew/PKSM/releases").json()
-            for asset in releases[0]["assets"]:
-                if asset["name"] == "PKSM.cia":
-                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset["browser_download_url"] + "&choe=UTF-8.png")
+            img = url=self.gen_qr(self, "PKSM")
         elif app.lower().startswith("checkpoint"):
             embed = self.checkpoint_embed(self, app)
+            img = url=self.gen_qr(self, "Checkpoint")
         elif app.lower().startswith("pickr"):
             embed = self.pickr_embed(self, app)
+            img = url=self.gen_qr(self, "Pickr")
         elif app.lower().startswith("sharkive"):
             embed = discord.Embed(description=desc.format(desc_sharkive))
-            releases = requests.get("https://api.github.com/repos/FlagBrew/Sharkive/releases").json()
-            for asset in releases[0]["assets"]:
-                if asset["name"] == "Sharkive.cia":
-                    embed.set_image(url="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + asset["browser_download_url"] + "&choe=UTF-8.png")
+            img = url=self.gen_qr(self, "Sharkive")
         elif app.lower().startswith("pksm-scripts") or app.lower().startswith("scripts") or app.lower().startswith("script") or app.lower().startswith("pksmscripts"):
             embed = discord.Embed(description=desc.format(desc_scripts))
         elif app.lower().startswith("legality") or app.lower().startswith("servelegality"):
@@ -78,7 +82,11 @@ class Info:
             embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_sharkive) + "\n" +
                                               desc.format(desc_scripts) + "\n" + desc.format(desc_servelegality) + "\n" + desc.format(desc_2048) + "\n" + desc.format(desc_servepkx) + "\n" +
                                               desc.format(desc_jedecheck))
-        await ctx.send(embed=embed)
+        if img == 0: 
+            return await ctx.send(embed=embed)
+        f = discord.File(img, filename="qr.png")
+        embed.set_image(url="attachment://qr.png")
+        await ctx.send(file=f, embed=embed)
         
     @commands.command()
     async def about(self, ctx):
