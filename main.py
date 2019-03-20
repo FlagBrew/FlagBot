@@ -113,6 +113,7 @@ async def on_ready():
                     bot.checkpoint_update_role = discord.utils.get(guild.roles, id=467719471746777088)
                     bot.general_update_role = discord.utils.get(guild.roles, id=467719755822792730)
                     bot.patreon_votes_role = discord.utils.get(guild.roles, id=501494870095953939)
+                    bot.patrons_role = discord.utils.get(guild.roles, id=330078911704727552)
                     bot.protected_roles = (discord.utils.get(guild.roles, id=279598900799864832), discord.utils.get(guild.roles, id=396988600480301059), discord.utils.get(guild.roles, id=482928611809165335), discord.utils.get(guild.roles, id=381053929389031424))
                     
                 if guild.id == bot.testing_id:
