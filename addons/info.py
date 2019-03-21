@@ -158,13 +158,13 @@ class Info:
         """Reminder for those who won't just ask their question"""
         await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, as little as they may seem, as well as assisting materials. Asking to ask wont expedite your process, and may delay assistance.")
         
-    @commands.command(aliases=['readthedocs', 'docs'])
+    @commands.command(aliases=['readthedocs', 'docs', 'extrasaves', 'es'])
     async def wiki(self, ctx, option=""):
         """Sends wiki link. extrasaves, storage, editor, events, scripts, bag, config, scriptdev, and faq all as options"""
         extra_info = ""
         wiki_link_ext = ""
         option = option.lower()
-        if option == "extrasaves" or option == "extra-saves" or option == "saves" or option == "saveconfig":
+        if option == "extrasaves" or option == "extra-saves" or option == "saves" or option == "saveconfig" or ctx.invoked_with == "extrasaves" or ctx.invoked_with == "es":
             extra_info = " entry for extra saves"
             wiki_link_ext = "/Configuration#extra-saves"
         elif option == "storage":
@@ -202,31 +202,22 @@ class Info:
                              "3. Launch PKSM, and you should be good to go.")
         await ctx.send(embed=embed)
     
-    @commands.command(aliases=["extrasaves", "template", "estemp"])
+    @commands.command(aliases=["template", "estemp"])
     async def estemplate(self, ctx):
         """Outputs the template for extrasaves from the wiki"""
         embed = discord.Embed(title="Extra Saves Template")
         embed.description = ("```json\n"
                        "\"extraSaves\": {\n"
-                       "  \"CPUE\": {\n"
-                       "    \"files\": [\n"
-                       "      \"/roms/nds/POKEMON_PL.sav\",\n"
-                       "      \"/path/to/file.save\"\n"
-                       "    ],\n"
-                       "    \"folders\": [\n"
-                       "      \"/3ds/PKSM/backups/POKEMON PL\",\n"
-                       "      \"/path/to/folder\"\n"
-                       "    ]\n"
-                       "  },\n"
-                       "  \"0x0055D\": {\n"
-                       "    \"files\": [\n"
-                       "    ],\n"
-                       "    \"folders\": [\n"
-                       "      \"/3ds/PKSM/backups/0x0055D\"\n"
-                       "    ]\n"
-                       "  }\n"
+                       "  \"CPUE\": [\n"
+                       "    \"/roms/nds/POKEMON_PL.sav\",\n"
+                       "    \"/path/to/file.save\"\n"
+                       "  ],\n"
+                       "  \"0x0055D\": [\n"
+                       "    \"/backups/game/name/main\",\n"
+                       "    \"/path/to/main\"\n"
+                       "  ]\n"
                        "}```")
-        embed.description += "\nYou can also use the online tool from the FlagBrew website [here](https://flagbrew.org/tools/extra_save)."
+        embed.description += "\nYou can also use the online tool from the FlagBrew website [here](https://flagbrew.org/tools/extra_saves)."
         await ctx.send(embed=embed)
         
     @commands.command(aliases=['database'])
