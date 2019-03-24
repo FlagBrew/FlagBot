@@ -84,7 +84,7 @@ class Utility:
     @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     async def secure_role_mention(self, ctx, update_role:str, channel:discord.TextChannel=None):
-        """Securely mention an Updates role. Options: pksm, checkpoint, general, votes, patrons. Can input a channel at the end for remote mentioning"""
+        """Securely mention a role. Options: pksm, checkpoint, general, votes, patrons. Can input a channel at the end for remote mentioning"""
         if not channel:
             channel = ctx.channel
         if update_role.lower() == "pksm":
