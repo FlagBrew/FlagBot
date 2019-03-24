@@ -11,10 +11,7 @@ desc_pksm = "PKSM [here](https://github.com/FlagBrew/PKSM/releases/latest)"
 desc_checkpoint = "Checkpoint [here](https://github.com/FlagBrew/Checkpoint/releases/latest)"
 desc_pickr = "Pickr [here](https://github.com/FlagBrew/Pickr/releases/latest)"
 desc_2048 = "2048 [here](https://github.com/FlagBrew/2048/releases/latest)"
-desc_scripts = "PKSM-Scripts [here](https://github.com/FlagBrew/PKSM-Scripts/releases/latest)"
 desc_sharkive = "Sharkive [here](https://github.com/FlagBrew/Sharkive/releases/latest)"
-desc_servelegality = "serveLegality [here](https://github.com/FlagBrew/serveLegality/releases/latest)"
-desc_servepkx = "servepkx [here](https://github.com/FlagBrew/servepkx/releases/latest)"
 desc_jedecheck = "JEDECheck [here](https://github.com/FlagBrew/JEDECheck/releases/latest)"
 
 
@@ -23,21 +20,6 @@ class Info:
     def __init__(self, bot):
         self.bot = bot
         print("Addon \"{}\" loaded".format(self.__class__.__name__))
-        
-        
-    def checkpoint_embed(self, ctx, app):
-        embed = discord.Embed(description=desc.format(desc_checkpoint))
-        str_list = app.lower().split()
-        if "switch" in str_list:
-            return embed
-        return embed
-        
-    def pickr_embed(self, ctx, app):
-        embed = discord.Embed(description=desc.format(desc_pickr))
-        str_list = app.lower().split()
-        if "switch" in str_list:
-            return embed
-        return embed
         
     def gen_qr(self, ctx, app):
         releases = requests.get("https://api.github.com/repos/FlagBrew/{}/releases".format(app)).json()
@@ -54,34 +36,31 @@ class Info:
         
     @commands.command(aliases=["releases", "latest"])
     async def release(self, ctx, *, app = ""):
-        """Returns the latest release for FlagBrew"s projects. If pulling checkpoint release, you can add "switch" to the end to get one without a qr code for ease of assistance"""
+        """Returns the latest release for FlagBrew"s projects. If pulling checkpoint or pickr release, you can add "switch" to the end to get one without a qr code for ease of use"""
         img = 0
         if app.lower().startswith("pksm"):
             embed = discord.Embed(description=desc.format(desc_pksm))
             img = url=self.gen_qr(self, "PKSM")
         elif app.lower().startswith("checkpoint"):
-            embed = self.checkpoint_embed(self, app)
-            img = url=self.gen_qr(self, "Checkpoint")
+            embed = discord.Embed(description=desc.format(desc_checkpoint))
+            str_list = app.lower().split()
+            if not "switch" in str_list:
+                img = url=self.gen_qr(self, "Checkpoint")
         elif app.lower().startswith("pickr"):
-            embed = self.pickr_embed(self, app)
-            img = url=self.gen_qr(self, "Pickr")
+            embed = discord.Embed(description=desc.format(desc_pickr))
+            str_list = app.lower().split()
+            if not "switch" in str_list:
+                img = url=self.gen_qr(self, "Pickr")
         elif app.lower().startswith("sharkive"):
             embed = discord.Embed(description=desc.format(desc_sharkive))
             img = url=self.gen_qr(self, "Sharkive")
-        elif app.lower().startswith("pksm-scripts") or app.lower().startswith("scripts") or app.lower().startswith("script") or app.lower().startswith("pksmscripts"):
-            embed = discord.Embed(description=desc.format(desc_scripts))
-        elif app.lower().startswith("legality") or app.lower().startswith("servelegality"):
-            embed = discord.Embed(description=desc.format(desc_servelegality))
         elif app.lower().startswith("2048"):
             embed = discord.Embed(description=desc.format(desc_2048))
-        elif app.lower().startswith("servepkx"):
-            embed = discord.Embed(description=desc.format(desc_servepkx))
         elif app.lower().startswith("jedecheck") or app.lower().startswith("jede") or app.lower().startswith("jedec"):
             embed = discord.Embed(description=desc.format(desc_jedecheck))
         else:
             embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_sharkive) + "\n" +
-                                              desc.format(desc_scripts) + "\n" + desc.format(desc_servelegality) + "\n" + desc.format(desc_2048) + "\n" + desc.format(desc_servepkx) + "\n" +
-                                              desc.format(desc_jedecheck))
+                                              desc.format(desc_2048) + "\n" + desc.format(desc_jedecheck))
         if img == 0: 
             return await ctx.send(embed=embed)
         f = discord.File(img, filename="qr.png")
@@ -98,15 +77,8 @@ class Info:
         """READMEs for FlagBrew's projects."""
         if app.lower() == "script" or app.lower() == "pksmscript" or app.lower() == "scripts" or app.lower() == "pksmscripts":
             embed = discord.Embed(description="You can read about PKSM scripts [here](https://github.com/FlagBrew/PKSM-Scripts/blob/master/README.md).")
-        elif app.lower() == "servelegality" or app.lower() == "legality":
-            embed = discord.Embed(description="You can read serveLegality's README [here](https://github.com/FlagBrew/serveLegality/blob/master/README.md).")
         elif app.lower() == "sharkive":
             embed = discord.Embed(description="You can read Sharkive's README [here](https://github.com/FlagBrew/Sharkive/blob/master/README.md).")
-        elif app.lower() == "servepkx":
-            embed = discord.Embed(title="Servepkx READMEs")
-            embed.add_field(name="Servepkx-Browser", value="You can read servepkx's README [here](https://github.com/FlagBrew/servepkx/blob/master/browser/README.md).", inline=False)
-            embed.add_field(name="Servepkx-Go", value="You can read servepkx-go's README [here](https://github.com/FlagBrew/servepkx/blob/master/go/README.md).", inline=False)
-            embed.add_field(name="Servepkx-Java", value="You can read servepkx-java's README [here](https://github.com/FlagBrew/servepkx/tree/master/java).", inline=False)
         elif app.lower() == "2048":
             embed = discord.Embed(description="You can read 2048's README [here](https://github.com/FlagBrew/2048/blob/master/README.md).")
         elif app.lower() == "pickr":
@@ -118,7 +90,7 @@ class Info:
         elif app.lower() == "jedecheck" or app.lower() == "jede" or app.lower() == "jedec":
             embed = discord.Embed(description="You can read JEDECheck's README [here](https://github.com/FlagBrew/JEDECheck/blob/master/README.md).")
         else:
-            return await ctx.send("Input not given or recognized. Available READMEs: `pksmscript`, `servelegality`, `sharkive`, `servepkx`, `teamlistfiller`, `qraken`, `2048`, `pickr`, `checkpoint`, `pksm`, 'jedecheck'.")
+            return await ctx.send("Input not given or recognized. Available READMEs: `pksmscript`, `sharkive`, `teamlistfiller`, `qraken`, `2048`, `pickr`, `checkpoint`, `pksm`, 'jedecheck'.")
         await ctx.send(embed=embed)
         
     @commands.command(aliases=['patron'])
@@ -128,7 +100,7 @@ class Info:
         
     @commands.command()
     async def faq(self, ctx, faq=""):
-        """Frequently Asked Questions"""
+        """Frequently Asked Questions. Allows numeric input for specific faq."""
         embed = discord.Embed(title="Frequently Asked Questions")
         if faq.isdigit():
             embed.title += f" #{faq}"
