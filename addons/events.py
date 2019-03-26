@@ -32,6 +32,8 @@ class Events:
                     reason = "No reason was given. Please do that in the future!"
                 admin = ban.user
                 break
+            else:
+                return
         embed = discord.Embed(title="{} banned".format(user))
         embed.description = "{} was banned by {} for:\n\n{}".format(user, admin, reason)
         try:
