@@ -209,5 +209,9 @@ class Info:
         embed.description = "You can see the full code database [here](https://github.com/FlagBrew/Sharkive/wiki/List-of-games-in-the-database)."
         await ctx.send(embed=embed)
         
+    @commands.command()
+    async def test(self, ctx):
+        print(ctx.author)
+        
 def setup(bot):
     bot.add_cog(Info(bot))

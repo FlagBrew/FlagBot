@@ -99,7 +99,10 @@ class Utility:
             role = self.bot.patrons_role
         else:
             return await ctx.send("You didn't give a valid role. Do `.help srm' to see all available roles.")
-        await role.edit(mentionable=True, reason="{} wanted to mention users with this role.".format(ctx.author)) # Reason -> Helps pointing out folks that abuse this
+        try:
+            await role.edit(mentionable=True, reason="{} wanted to mention users with this role.".format(ctx.author)) # Reason -> Helps pointing out folks that abuse this
+        except:
+            await role.edit(mentionable=True, reason="A staff member wanted to mention users with this role, and I couldn't log properly.") # Bypass the TypeError it kept throwing
         await channel.send("{}".format(role.mention))
         await role.edit(mentionable=False, reason="Making role unmentionable again.")
         try:
