@@ -65,6 +65,9 @@ async def on_command_error(ctx, error):
         await ctx.send("A bad argument was provided, please try again.")
     elif isinstance(error, discord.ext.commands.errors.CheckFailure):
         await ctx.send("You don't have permission to use this command.")
+    elif isinstance(error, discord.ext.commands.errors.CommandOnCooldown):
+        await ctx.message.delete()
+        await ctx.send("This command is on cooldown.", delete_after=10)
     else:
         if ctx.command:
             await ctx.send("An error occurred while processing the `{}` command.".format(ctx.command.name))
@@ -108,13 +111,14 @@ async def on_ready():
                 
                 if guild.id == bot.flagbrew_id:
                     bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
-                    bot.patron_role = discord.utils.get(guild.roles, id=330078911704727552)
                     bot.pksm_update_role = discord.utils.get(guild.roles, id=467719280163684352)
                     bot.checkpoint_update_role = discord.utils.get(guild.roles, id=467719471746777088)
                     bot.general_update_role = discord.utils.get(guild.roles, id=467719755822792730)
                     bot.patreon_votes_role = discord.utils.get(guild.roles, id=501494870095953939)
                     bot.patrons_role = discord.utils.get(guild.roles, id=330078911704727552)
-                    bot.protected_roles = (discord.utils.get(guild.roles, id=279598900799864832), discord.utils.get(guild.roles, id=396988600480301059), discord.utils.get(guild.roles, id=482928611809165335), discord.utils.get(guild.roles, id=381053929389031424))
+                    bot.flagbrew_team_role = discord.utils.get(guild.roles, id=482928611809165335)
+                    bot.discord_moderator_role = discord.utils.get(guild.roles, id=396988600480301059)
+                    bot.protected_roles = (discord.utils.get(guild.roles, id=279598900799864832), bot.discord_moderator_role, bot.flagbrew_team_role, discord.utils.get(guild.roles, id=381053929389031424))
                     
                 if guild.id == bot.testing_id:
                     bot.err_logs_channel = discord.utils.get(guild.channels, id=468877079023321089)
