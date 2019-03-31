@@ -16,6 +16,23 @@ import os
 import re
 import ast
 import asyncio
+import argparse
+
+def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu1232/Discord-Selfbot/blob/master/appuselfbot.py
+    parser = argparse.ArgumentParser(description="Flagbot")
+    parser.add_argument("-test", "--test-run",  # test run flag for Travis
+                        action="store_true",
+                        help="Makes the bot quit before trying to log in")
+    return parser
+args = parse_cmd_arguments().parse_args()
+_test_run = args.test_run
+if _test_run:
+    try:
+        os.path.isfile("/faq.json")
+    except:
+        print('Faq.json is missing')  # only visible in Travis
+    print("Quitting: test run")
+    exit(0)
 
 # sets working directory to bot's folder
 dir_path = os.path.dirname(os.path.realpath(__file__))
