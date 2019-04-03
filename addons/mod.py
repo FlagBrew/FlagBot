@@ -7,7 +7,7 @@ import sys
 import json
 import asyncio
 
-class Moderation:
+class Moderation(commands.Cog):
     """Bot commands for moderation."""
     def __init__(self, bot):
         self.bot = bot
@@ -78,7 +78,7 @@ class Moderation:
         """Ban a user with their user ID.
         
         To get a user ID, enable developer mode and right click their profile."""
-        member = await self.bot.get_user_info(member)
+        member = await self.bot.fetch_user(member)
         if not member:
             return await ctx.send("This is not a valid discord user.")
         await self.generic_ban_things(ctx, member, reason)
@@ -93,6 +93,14 @@ class Moderation:
             await ctx.channel.purge(limit=amount)
         else:
             await ctx.send("Why would you wanna purge no messages?", delete_after=10)
+            
+    @commands.command()
+    async def test(self, ctx, id):
+        member = await self.bot.get_user_info(id)
+        member_2 = ctx.guild.get_member(member.id)
+        if any(r for r in self.bot.protected_roles if r in member_2.roles):
+            return await ctx.send("That user is protected!")
+        await ctx.send("User would be banned.")
             
 def setup(bot):
     bot.add_cog(Moderation(bot))
