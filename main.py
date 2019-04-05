@@ -74,8 +74,8 @@ async def on_command_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         pass  # ...don't need to know if commands don't exist
     elif isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
-        formatter = (await commands.formatter.HelpFormatter().format_help_for(ctx, ctx.command))[0]
-        await ctx.send("You are missing required arguments.\n{}".format(formatter))
+        await ctx.send("You are missing required arguments.")
+        await ctx.send_help(ctx.command)
     elif isinstance(error, discord.ext.commands.NoPrivateMessage):
         await ctx.send("You cannot use this command in DMs! Please go to <#379201279479513100>")
     elif isinstance(error, discord.ext.commands.errors.BadArgument):
@@ -189,21 +189,6 @@ async def load(ctx, *, module):
             await ctx.send(':white_check_mark: Extension loaded.')
     else:
         await ctx.send("You don't have permission to do that!")
-        
-def check_is_author(ctx):
-        return ctx.message.author.id == bot.creator.id
-    
-@bot.command(aliases=['drid'], hidden=True)
-@commands.check(check_is_author)
-async def dump_role_id(ctx):
-    """Dumps role ids for guild. Creator restricted."""
-    roles = {}
-    for role in ctx.guild.roles[1:]:
-        roles[role.name] = role.id
-    await bot.creator.send(roles)
-    await ctx.send("Roles dumped. Cleaning messages in 5 seconds.", delete_after=5)
-    await asyncio.sleep(5.1)
-    await ctx.message.delete()
     
 @bot.command()
 async def reload(ctx):
@@ -224,6 +209,21 @@ async def reload(ctx):
             await ctx.send(errors)
     else:
         await ctx.send("You don't have permission to do that!")
+        
+def check_is_author(ctx):
+        return ctx.message.author.id == bot.creator.id
+    
+@bot.command(aliases=['drid'], hidden=True)
+@commands.check(check_is_author)
+async def dump_role_id(ctx):
+    """Dumps role ids for guild. Creator restricted."""
+    roles = {}
+    for role in ctx.guild.roles[1:]:
+        roles[role.name] = role.id
+    await bot.creator.send(roles)
+    await ctx.send("Roles dumped. Cleaning messages in 5 seconds.", delete_after=5)
+    await asyncio.sleep(5.1)
+    await ctx.message.delete()
         
 # Execute
 print('Bot directory: ', dir_path)

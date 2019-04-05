@@ -16,7 +16,7 @@ desc_sharkive = "Sharkive [here](https://github.com/FlagBrew/Sharkive/releases/l
 desc_jedecheck = "JEDECheck [here](https://github.com/FlagBrew/JEDECheck/releases/latest)"
 
 
-class Info:
+class Info(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot

@@ -3,13 +3,14 @@
 import discord
 from discord.ext import commands
 
-class Events:
+class Events(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
         print('Addon "{}" loaded'.format(self.__class__.__name__))
         
-        
+    
+    @commands.Cog.listener()
     async def on_guild_join(self, guild):
         # Don't let the bot be used elsewhere with the same token
         if guild.id != self.bot.testing_id and guild.id != self.bot.flagbrew_id:
@@ -23,6 +24,7 @@ class Events:
             finally:
                 await guild.leave()
                 
+    @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
         async for ban in guild.audit_logs(limit=20, action=discord.AuditLogAction.ban): # 20 to handle multiple staff bans in quick succession
             if ban.target == user:
@@ -41,6 +43,7 @@ class Events:
         except discord.Forbidden:
             pass # beta bot can't log
                 
+    @commands.Cog.listener()
     async def on_member_join(self, member):
         embed = discord.Embed(title="New member!")
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
@@ -50,6 +53,7 @@ class Events:
             except discord.Forbidden:
                 pass # beta bot can't log
             
+    @commands.Cog.listener()
     async def on_member_remove(self, member):
         embed = discord.Embed(title="Member left :(")
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
@@ -59,7 +63,7 @@ class Events:
             except discord.Forbidden:
                 pass # beta bot can't log
                 
-                
+    @commands.Cog.listener()
     async def on_message(self, message):
         # auto ban on 15+ pings
         if len(message.mentions) > 15:
@@ -68,7 +72,7 @@ class Events:
             await message.author.ban()
             await message.channel.send("{} was banned for attempting to spam user mentions.".format(message.author))
             
-            
+    @commands.Cog.listener()        
     async def on_message_delete(self, message):
         if isinstance(message.channel, discord.abc.GuildChannel) and message.author.id != self.bot.user.id and message.guild.id == self.bot.flagbrew_id:
             if message.channel != self.bot.logs_channel:

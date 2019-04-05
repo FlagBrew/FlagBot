@@ -1,3 +1,3 @@
-git+https://github.com/BernardoGiordano/discord.py@production
+git+https://github.com/Rapptz/discord.py@rewrite
 requests
 qrcode[pil]
