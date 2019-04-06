@@ -66,7 +66,7 @@ class Info(commands.Cog):
                                               desc.format(desc_2048) + "\n" + desc.format(desc_jedecheck))
         if img == 0: 
             return await ctx.send(embed=embed)
-        f = discord.File(img, filename="qr.png")
+        f = discord.File(io.BytesIO(img), filename="qr.png")
         embed.set_image(url="attachment://qr.png")
         await ctx.send(file=f, embed=embed)
         
