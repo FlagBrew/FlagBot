@@ -20,6 +20,10 @@
     "value": "PKSM 6.0 and up now *requires* CFW to function. **There is no viable reason to not install CFW nowadays. There is a free method.** You can follow [this guide](https://3ds.hacks.guide) to install CFW on your 3ds. ***Versions under PKSM 6.0 are not supported and no assistance will be given with them!!!***"
   },
   {
+    "title": "My pokemon isn't legal, what do I do???",
+    "value": "The met location is incorrect. From the *edit pokemon* screen, click the icon in the top right. Then, find the met location byte and edit it to a legal value. The location corresponding to each value can be found on the bottom screen."
+  },
+  {
     "title": "Can we get legality checking please?",
     "value": "No. It would be *extremely* memory intensive, and excessive bloat. It will not happen. There will be a way to check legality soon, keep an eye on <#382077725579411457> for that."
   },
