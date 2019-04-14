@@ -195,7 +195,7 @@ class Info(commands.Cog):
     async def db(self, ctx):
         """Links to the Sharkive database"""
         embed = discord.Embed(title="Sharkive Code Database")
-        embed.description = "You can see the full 3DS code database [here](https://github.com/FlagBrew/Sharkive/wiki/3DS-games-in-the-database)."
+        embed.description = "You can see the full code database [here](https://github.com/FlagBrew/Sharkive/wiki/3DS-games-in-the-database)."
         await ctx.send(embed=embed)
         
 def setup(bot):
