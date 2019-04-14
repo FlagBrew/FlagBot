@@ -192,10 +192,13 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
         
     @commands.command(aliases=['database'])
-    async def db(self, ctx):
-        """Links to the Sharkive database"""
-        embed = discord.Embed(title="Sharkive Code Database")
-        embed.description = "You can see the full code database [here](https://github.com/FlagBrew/Sharkive/wiki/3DS-games-in-the-database)."
+    async def db(self, ctx, console=""):
+        """Links to the cheat database"""
+        embed = discord.Embed(title="Cheat Code Database", description="")
+        if console.lower() == "3ds" or not console:
+            embed.description += "You can see the 3DS code database [here](https://github.com/FlagBrew/Sharkive/wiki/3DS-games-in-the-database).\n"
+        if console.lower() == "switch" or not console:
+            embed.description += "You can view the Switch code database [here](https://github.com/FlagBrew/Sharkive/wiki/Switch-games-in-the-database)."
         await ctx.send(embed=embed)
         
     @commands.command()
