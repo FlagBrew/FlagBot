@@ -198,5 +198,12 @@ class Info(commands.Cog):
         embed.description = "You can see the full code database [here](https://github.com/FlagBrew/Sharkive/wiki/3DS-games-in-the-database)."
         await ctx.send(embed=embed)
         
+    @commands.command()
+    async def guide(self, ctx):
+        """Links to 3ds guide"""
+        embed = discord.Embed()
+        embed.description = "You can use [this guide](https://3ds.hacks.guide) to hack your 3ds."
+        await ctx.send(embed=embed)
+        
 def setup(bot):
     bot.add_cog(Info(bot))
