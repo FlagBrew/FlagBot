@@ -12,7 +12,6 @@ desc_pksm = "PKSM [here](https://github.com/FlagBrew/PKSM/releases/latest)"
 desc_checkpoint = "Checkpoint [here](https://github.com/FlagBrew/Checkpoint/releases/latest)"
 desc_pickr = "Pickr [here](https://github.com/FlagBrew/Pickr/releases/latest)"
 desc_2048 = "2048 [here](https://github.com/FlagBrew/2048/releases/latest)"
-desc_sharkive = "Sharkive [here](https://github.com/FlagBrew/Sharkive/releases/latest)"
 desc_jedecheck = "JEDECheck [here](https://github.com/FlagBrew/JEDECheck/releases/latest)"
 
 
@@ -54,15 +53,12 @@ class Info(commands.Cog):
             str_list = app.lower().split()
             if not "switch" in str_list:
                 img = url=self.gen_qr(self, "Pickr")
-        elif app.lower().startswith("sharkive"):
-            embed = discord.Embed(description=desc.format(desc_sharkive))
-            img = url=self.gen_qr(self, "Sharkive")
         elif app.lower().startswith("2048"):
             embed = discord.Embed(description=desc.format(desc_2048))
         elif app.lower().startswith("jedecheck") or app.lower().startswith("jede") or app.lower().startswith("jedec"):
             embed = discord.Embed(description=desc.format(desc_jedecheck))
         else:
-            embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_sharkive) + "\n" +
+            embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" +
                                               desc.format(desc_2048) + "\n" + desc.format(desc_jedecheck))
         if img == 0: 
             return await ctx.send(embed=embed)
@@ -80,8 +76,6 @@ class Info(commands.Cog):
         """READMEs for FlagBrew's projects."""
         if app.lower() == "script" or app.lower() == "pksmscript" or app.lower() == "scripts" or app.lower() == "pksmscripts":
             embed = discord.Embed(description="You can read about PKSM scripts [here](https://github.com/FlagBrew/PKSM-Scripts/blob/master/README.md).")
-        elif app.lower() == "sharkive":
-            embed = discord.Embed(description="You can read Sharkive's README [here](https://github.com/FlagBrew/Sharkive/blob/master/README.md).")
         elif app.lower() == "2048":
             embed = discord.Embed(description="You can read 2048's README [here](https://github.com/FlagBrew/2048/blob/master/README.md).")
         elif app.lower() == "pickr":
