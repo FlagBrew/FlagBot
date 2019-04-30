@@ -93,7 +93,7 @@ class Info(commands.Cog):
         elif app.lower() == "jedecheck" or app.lower() == "jede" or app.lower() == "jedec":
             embed = discord.Embed(description="You can read JEDECheck's README [here](https://github.com/FlagBrew/JEDECheck/blob/master/README.md).")
         else:
-            return await ctx.send("Input not given or recognized. Available READMEs: `pksmscript`, `sharkive`, `teamlistfiller`, `qraken`, `2048`, `pickr`, `checkpoint`, `pksm`, 'jedecheck'.")
+            return await ctx.send("Input not given or recognized. Available READMEs: `scripts`, `sharkive`, `2048`, `pickr`, `checkpoint`, `pksm`, 'jedecheck'.")
         await ctx.send(embed=embed)
         
     @commands.command(aliases=['patron'])
