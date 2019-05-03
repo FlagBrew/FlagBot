@@ -5,6 +5,7 @@ import discord
 import qrcode
 import io
 import json
+import math
 from discord.ext import commands
 
 desc = "You can get the latest release of {}."
@@ -12,7 +13,6 @@ desc_pksm = "PKSM [here](https://github.com/FlagBrew/PKSM/releases/latest)"
 desc_checkpoint = "Checkpoint [here](https://github.com/FlagBrew/Checkpoint/releases/latest)"
 desc_pickr = "Pickr [here](https://github.com/FlagBrew/Pickr/releases/latest)"
 desc_2048 = "2048 [here](https://github.com/FlagBrew/2048/releases/latest)"
-desc_sharkive = "Sharkive [here](https://github.com/FlagBrew/Sharkive/releases/latest)"
 desc_jedecheck = "JEDECheck [here](https://github.com/FlagBrew/JEDECheck/releases/latest)"
 
 
@@ -23,6 +23,8 @@ class Info(commands.Cog):
         print("Addon \"{}\" loaded".format(self.__class__.__name__))
         with open("faq.json", "r") as f:
             self.faq_dict = json.load(f)
+        with open("key_inputs.json", "r") as f:
+            self.key_dict = json.load(f)
         
     def gen_qr(self, ctx, app):
         releases = requests.get("https://api.github.com/repos/FlagBrew/{}/releases".format(app)).json()
@@ -54,15 +56,12 @@ class Info(commands.Cog):
             str_list = app.lower().split()
             if not "switch" in str_list:
                 img = url=self.gen_qr(self, "Pickr")
-        elif app.lower().startswith("sharkive"):
-            embed = discord.Embed(description=desc.format(desc_sharkive))
-            img = url=self.gen_qr(self, "Sharkive")
         elif app.lower().startswith("2048"):
             embed = discord.Embed(description=desc.format(desc_2048))
         elif app.lower().startswith("jedecheck") or app.lower().startswith("jede") or app.lower().startswith("jedec"):
             embed = discord.Embed(description=desc.format(desc_jedecheck))
         else:
-            embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_sharkive) + "\n" +
+            embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" +
                                               desc.format(desc_2048) + "\n" + desc.format(desc_jedecheck))
         if img == 0: 
             return await ctx.send(embed=embed)
@@ -80,8 +79,6 @@ class Info(commands.Cog):
         """READMEs for FlagBrew's projects."""
         if app.lower() == "script" or app.lower() == "pksmscript" or app.lower() == "scripts" or app.lower() == "pksmscripts":
             embed = discord.Embed(description="You can read about PKSM scripts [here](https://github.com/FlagBrew/PKSM-Scripts/blob/master/README.md).")
-        elif app.lower() == "sharkive":
-            embed = discord.Embed(description="You can read Sharkive's README [here](https://github.com/FlagBrew/Sharkive/blob/master/README.md).")
         elif app.lower() == "2048":
             embed = discord.Embed(description="You can read 2048's README [here](https://github.com/FlagBrew/2048/blob/master/README.md).")
         elif app.lower() == "pickr":
@@ -192,10 +189,13 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
         
     @commands.command(aliases=['database'])
-    async def db(self, ctx):
-        """Links to the Sharkive database"""
-        embed = discord.Embed(title="Sharkive Code Database")
-        embed.description = "You can see the full code database [here](https://github.com/FlagBrew/Sharkive/wiki/3DS-games-in-the-database)."
+    async def db(self, ctx, console=""):
+        """Links to the cheat database"""
+        embed = discord.Embed(title="Cheat Code Database", description="")
+        if console.lower() == "3ds" or not console:
+            embed.description += "You can see the 3DS code database [here](https://github.com/FlagBrew/Sharkive/wiki/3DS-games-in-the-database).\n"
+        if console.lower() == "switch" or not console:
+            embed.description += "You can view the Switch code database [here](https://github.com/FlagBrew/Sharkive/wiki/Switch-games-in-the-database)."
         await ctx.send(embed=embed)
         
     @commands.command()
@@ -204,6 +204,26 @@ class Info(commands.Cog):
         embed = discord.Embed()
         embed.description = "You can use [this guide](https://3ds.hacks.guide) to hack your 3ds."
         await ctx.send(embed=embed)
+        
+    def get_keys(self, hexval): # thanks to architdate for the code
+        final_indices = {'3ds': [], 'switch': []}
+        decval = int(hexval, 16)
+        switch = True
+        while decval != 0:
+            key_index = math.floor(math.log(decval, 2))
+            final_indices['3ds'].append(self.key_dict.get(hex(2**key_index))[0])
+            final_indices['switch'].append(self.key_dict.get(hex(2**key_index))[1])
+            decval -= 2**key_index
+        return final_indices
+        
+    @commands.command()
+    async def cheatkeys(self, ctx, key):
+        indexes = self.get_keys(key)
+        embed = discord.Embed(title=f"Matching inputs for `{key}`")
+        embed.add_field(name="3DS inputs", value='`' + '` + `'.join(indexes["3ds"]) + '`')
+        embed.add_field(name="Switch inputs", value='`' + '` + `'.join(indexes["switch"]) + '`', inline=False) # commented until switch codes are mapped
+        await ctx.send(embed=embed)
+        
         
 def setup(bot):
     bot.add_cog(Info(bot))
