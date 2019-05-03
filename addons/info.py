@@ -5,6 +5,7 @@ import discord
 import qrcode
 import io
 import json
+import math
 from discord.ext import commands
 
 desc = "You can get the latest release of {}."
@@ -22,6 +23,8 @@ class Info(commands.Cog):
         print("Addon \"{}\" loaded".format(self.__class__.__name__))
         with open("faq.json", "r") as f:
             self.faq_dict = json.load(f)
+        with open("key_inputs.json", "r") as f:
+            self.key_dict = json.load(f)
         
     def gen_qr(self, ctx, app):
         releases = requests.get("https://api.github.com/repos/FlagBrew/{}/releases".format(app)).json()
@@ -200,6 +203,31 @@ class Info(commands.Cog):
         """Links to 3ds guide"""
         embed = discord.Embed()
         embed.description = "You can use [this guide](https://3ds.hacks.guide) to hack your 3ds."
+        await ctx.send(embed=embed)
+        
+    def get_keys(self, hexval): # thanks to architdate for the code
+        final_indices = {'3ds': [], 'switch': []}
+        decval = int(hexval, 16)
+        switch = True
+        while decval != 0:
+            key_index = math.floor(math.log(decval, 2))
+            key_3ds = self.key_dict.get(hex(2**key_index))[0]
+            if key_3ds != "None":
+                final_indices['3ds'].append(key_3ds)
+            key_switch = self.key_dict.get(hex(2**key_index))[1]
+            if key_switch != "None" and hexval.replace('0x', '')[0] == "8":
+                final_indices['switch'].append(key_switch)
+            decval -= 2**key_index
+        return final_indices
+        
+    @commands.command()
+    async def cheatkeys(self, ctx, key):
+        indexes = self.get_keys(key)
+        embed = discord.Embed(title=f"Matching inputs for `{key}`")
+        if len(indexes["3ds"]) > 0:
+            embed.add_field(name="3DS inputs", value='`' + '` + `'.join(indexes["3ds"]) + '`')
+        if len(indexes["switch"]) > 0:
+            embed.add_field(name="Switch inputs", value='`' + '` + `'.join(indexes["switch"]) + '`', inline=False)
         await ctx.send(embed=embed)
         
 def setup(bot):
