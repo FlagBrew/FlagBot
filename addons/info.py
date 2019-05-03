@@ -211,8 +211,12 @@ class Info(commands.Cog):
         switch = True
         while decval != 0:
             key_index = math.floor(math.log(decval, 2))
-            final_indices['3ds'].append(self.key_dict.get(hex(2**key_index))[0])
-            final_indices['switch'].append(self.key_dict.get(hex(2**key_index))[1])
+            key_3ds = self.key_dict.get(hex(2**key_index))[0]
+            if key_3ds != "None":
+                final_indices['3ds'].append(key_3ds)
+            key_switch = self.key_dict.get(hex(2**key_index))[1]
+            if key_switch != "None" and hexval.replace('0x', '')[0] == "8":
+                final_indices['switch'].append(key_switch)
             decval -= 2**key_index
         return final_indices
         
@@ -220,8 +224,10 @@ class Info(commands.Cog):
     async def cheatkeys(self, ctx, key):
         indexes = self.get_keys(key)
         embed = discord.Embed(title=f"Matching inputs for `{key}`")
-        embed.add_field(name="3DS inputs", value='`' + '` + `'.join(indexes["3ds"]) + '`')
-        embed.add_field(name="Switch inputs", value='`' + '` + `'.join(indexes["switch"]) + '`', inline=False) # commented until switch codes are mapped
+        if len(indexes["3ds"]) > 0:
+            embed.add_field(name="3DS inputs", value='`' + '` + `'.join(indexes["3ds"]) + '`')
+        if len(indexes["switch"]) > 0:
+            embed.add_field(name="Switch inputs", value='`' + '` + `'.join(indexes["switch"]) + '`', inline=False)
         await ctx.send(embed=embed)
         
         
