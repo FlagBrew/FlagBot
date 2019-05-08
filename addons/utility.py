@@ -4,12 +4,15 @@ import discord
 from discord.ext import commands
 import sys
 import os
+import json
 
 class Utility(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
         print('Addon "{}" loaded'.format(self.__class__.__name__))
+        with open("saves/role_mentions.json", "r") as f:
+            self.role_mentions_dict = json.load(f)
             
     @commands.has_permissions(ban_members=True) 
     @commands.command()
@@ -84,23 +87,18 @@ class Utility(commands.Cog):
     @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     async def secure_role_mention(self, ctx, update_role:str, channel:discord.TextChannel=None):
-        """Securely mention a role. Options: pksm, checkpoint, general, votes, patrons, flagbrew. Can input a channel at the end for remote mentioning"""
+        """Securely mention a role. Can input a channel at the end for remote mentioning. More can be added with srm_add"""
         if not channel:
             channel = ctx.channel
-        if update_role.lower() == "pksm":
-            role = self.bot.pksm_update_role
-        elif update_role.lower() == "checkpoint":
-            role = self.bot.checkpoint_update_role
-        elif update_role.lower() == "general":
-            role = self.bot.general_update_role
-        elif update_role.lower() == "votes":
-            role = self.bot.patreon_votes_role
-        elif update_role.lower() == "patrons":
-            role = self.bot.patrons_role
-        elif update_role.lower() == "flagbrew":
+        if update_role.lower() == "flagbrew":
             role = self.bot.flagbrew_team_role
         else:
-            return await ctx.send("You didn't give a valid role. Do `.help srm' to see all available roles.")
+            try:
+                role = discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict[update_role.lower()]))
+            except KeyError:
+                role = None
+        if role is None:
+            return await ctx.send("You didn't give a valid role. Do `.srm_list` to see all available roles.")
         try:
             await role.edit(mentionable=True, reason="{} wanted to mention users with this role.".format(ctx.author)) # Reason -> Helps pointing out folks that abuse this
         except:
@@ -111,6 +109,15 @@ class Utility(commands.Cog):
             await self.bot.logs_channel.send("{} pinged {} in {}".format(ctx.author, role.name, channel))
         except discord.Forbidden:
             pass # beta bot can't log
+            
+    @commands.command(aliases=['srm_list'])
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
+    async def secure_role_mention_list(self, ctx):
+        """Lists all available roles for srm"""
+        embed = discord.Embed(title="Mentionable Roles")
+        embed.description = "\n".join(self.role_mentions_dict)
+        embed.description += "\nflagbrew"
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Utility(bot))
