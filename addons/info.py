@@ -22,9 +22,9 @@ class Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         print("Addon \"{}\" loaded".format(self.__class__.__name__))
-        with open("faq.json", "r") as f:
+        with open("saves/faq.json", "r") as f:
             self.faq_dict = json.load(f)
-        with open("key_inputs.json", "r") as f:
+        with open("saves/key_inputs.json", "r") as f:
             self.key_dict = json.load(f)
         
     def gen_qr(self, ctx, app):
@@ -211,7 +211,6 @@ class Info(commands.Cog):
     def get_keys(self, hexval): # thanks to architdate for the code
         final_indices = {'3ds': [], 'switch': []}
         decval = int(hexval, 16)
-        switch = True
         while decval != 0:
             key_index = math.floor(math.log(decval, 2))
             key_3ds = self.key_dict.get(hex(2**key_index))[0]

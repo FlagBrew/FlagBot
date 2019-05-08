@@ -1,0 +1,38 @@
+[
+   {
+    "title": "When will Virtual Console games be supported?",
+    "value": "Never."
+  },
+  {
+    "title": "Why do I have to wait so long for new releases?",
+    "value": "Because you think you're entitled to everything."
+  },
+  {
+    "title": "Why can't I scan this QR code?",
+    "value": "You are likely using an outdated version of FBI. You can download the latest version [here](https://github.com/Steveice10/FBI/releases/latest).\nAny further questions about FBI should be taken to the FBI repository. **This server is not for FBI troubleshooting.**"
+  },
+  {
+    "title": "Can you please add a code for `x` game?",
+    "value": "Nobody on the Flagbrew team knows how to make gameshark codes, or wants to learn. Almost all of the codes were taken from a fort42 dump. If you want more codes, learn how to make them yourself, or find a working one and open a pull request on the [repository](https://github.com/Flagbrew/Sharkive/pulls) to get the code added."
+  },
+  {
+    "title": "I have Homebrew/*hax. Why can't I launch PKSM?",
+    "value": "PKSM 6.0 and up now *requires* CFW to function. **There is no viable reason to not install CFW nowadays. There is a free method.** You can follow [this guide](https://3ds.hacks.guide) to install CFW on your 3ds. ***Versions under PKSM 6.0 are not supported and no assistance will be given with them!!!***"
+  },
+  {
+    "title": "My pokemon isn't legal, what do I do???",
+    "value": "The met location is incorrect. From the *edit pokemon* screen, click the icon in the top right. Then, find the met location byte and edit it to a legal value. The location corresponding to each value can be found on the bottom screen."
+  },
+  {
+    "title": "Can we get legality checking please?",
+    "value": "No. It would be *extremely* memory intensive, and excessive bloat. It will not happen. There will be a way to check legality soon, keep an eye on <#382077725579411457> for that."
+  },
+  {
+    "title": "When are we getting PKSM on Switch?",
+    "value": "You can access LGPE saves by bridging PKSM on 3DS to Checkpoint on Switch. This is the best you'll get for now, possibly ever if you annoy Bernardo."
+  },
+  {
+    "title": "When are we getting Sword and Shield support?",
+    "value": "Never :)"
+  }
+]
