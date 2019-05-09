@@ -13,16 +13,6 @@ class Utility(commands.Cog):
         print('Addon "{}" loaded'.format(self.__class__.__name__))
         with open("saves/role_mentions.json", "r") as f:
             self.role_mentions_dict = json.load(f)
-            
-    @commands.has_permissions(ban_members=True) 
-    @commands.command()
-    async def restart(self, ctx):
-        """Restarts the bot, obviously"""
-        await ctx.send("Restarting...")
-        with open("restart.txt", "w+") as f:
-            f.write(str(ctx.message.channel.id))
-            f.close()
-        sys.exit(0)
         
     async def toggleroles(self, ctx, role, user):
         author_roles = user.roles[1:]
