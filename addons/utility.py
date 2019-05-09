@@ -29,9 +29,10 @@ class Utility(commands.Cog):
         Available roles: PKSM, Checkpoint, General"""
         await ctx.message.delete()
         user = ctx.message.author
-        if not role and role.lower() not in ["pksm", "checkpoint", "general", "guinea_pig"]:
+        if not role or role.lower() not in ["pksm", "checkpoint", "general", "guinea_pig"]:
             embed = discord.Embed(title="Toggleable roles")
             embed.description = "pksm\ncheckpoint\ngeneral\nguinea_pig"
+            return await ctx.send(embed=embed)
         had_role = await self.toggleroles(ctx, discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict[role.lower()])), user)
         if had_role:
             info_string = "You will no longer be pinged for {} updates.".format("guide" if role == "guinea_pig" else role)
