@@ -116,16 +116,6 @@ async def on_ready():
         try:
             if guild.id == bot.testing_id or guild.id == bot.flagbrew_id:
                 bot.guild = guild
-                
-                try:
-                    with open("restart.txt") as f:
-                        channel = bot.get_channel(int(f.readline()))
-                        f.close()
-                    await channel.send("Restarted!")
-                    os.remove("restart.txt")
-                except:
-                    pass
-                
                 if guild.id == bot.flagbrew_id:
                     bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
                     bot.flagbrew_team_role = discord.utils.get(guild.roles, id=482928611809165335)
