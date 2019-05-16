@@ -164,7 +164,7 @@ class Info(commands.Cog):
             wiki_link_ext = "/Scripts-Development"
         elif option == "gameid":
             extra_info = " entry for game ID info"
-            wiki_link_ext = "FAQs#what-backup-folder-corresponds-to-which-game"
+            wiki_link_ext = "/FAQs#what-backup-folder-corresponds-to-which-game"
         elif option == "faq":
             extra_info = " frequently asked questions"
             wiki_link_ext = "/FAQs"
