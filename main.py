@@ -7,7 +7,7 @@ import os
 from discord.ext import commands
 import discord
 import datetime
-import json, asyncio
+import asyncio
 import copy
 import configparser
 import traceback
@@ -15,7 +15,6 @@ import sys
 import os
 import re
 import ast
-import asyncio
 import argparse
 
 def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu1232/Discord-Selfbot/blob/master/appuselfbot.py
@@ -28,9 +27,10 @@ args = parse_cmd_arguments().parse_args()
 _test_run = args.test_run
 if _test_run:
     try:
-        os.path.isfile("/faq.json")
+        os.path.isfile("saves/faq.json")
+        os.path.isfile("/saves/key_inputs.json")
     except:
-        print('Faq.json is missing')  # only visible in Travis
+        print('faq.json or key_inputs.json is missing')  # only visible in Travis
     print("Quitting: test run")
     exit(0)
 
@@ -116,23 +116,8 @@ async def on_ready():
         try:
             if guild.id == bot.testing_id or guild.id == bot.flagbrew_id:
                 bot.guild = guild
-                
-                try:
-                    with open("restart.txt") as f:
-                        channel = bot.get_channel(int(f.readline()))
-                        f.close()
-                    await channel.send("Restarted!")
-                    os.remove("restart.txt")
-                except:
-                    pass
-                
                 if guild.id == bot.flagbrew_id:
                     bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
-                    bot.pksm_update_role = discord.utils.get(guild.roles, id=467719280163684352)
-                    bot.checkpoint_update_role = discord.utils.get(guild.roles, id=467719471746777088)
-                    bot.general_update_role = discord.utils.get(guild.roles, id=467719755822792730)
-                    bot.patreon_votes_role = discord.utils.get(guild.roles, id=501494870095953939)
-                    bot.patrons_role = discord.utils.get(guild.roles, id=330078911704727552)
                     bot.flagbrew_team_role = discord.utils.get(guild.roles, id=482928611809165335)
                     bot.discord_moderator_role = discord.utils.get(guild.roles, id=396988600480301059)
                     bot.protected_roles = (discord.utils.get(guild.roles, id=279598900799864832), bot.discord_moderator_role, bot.flagbrew_team_role, discord.utils.get(guild.roles, id=381053929389031424))
