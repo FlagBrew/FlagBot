@@ -104,18 +104,36 @@ class Info(commands.Cog):
         """Donate here"""
         await ctx.send("You can donate to FlagBrew on Patreon here: <https://www.patreon.com/FlagBrew>.\nYou can also donate to Bernardo on Patreon here: <https://www.patreon.com/BernardoGiordano>.")
         
-    @commands.command()
-    async def faq(self, ctx, faq=""):
-        """Frequently Asked Questions. Allows numeric input for specific faq."""
+    async def format_faq_embed(self, ctx, faq_num, channel):
         embed = discord.Embed(title="Frequently Asked Questions")
-        if faq.isdigit() and int(faq) > 0 and int(faq) < len(self.faq_dict)+1:
-            faq = int(faq)
-            embed.title += f" #{faq}"
-            current_faq = self.faq_dict[faq-1]
-            embed.add_field(name=current_faq["title"], value=current_faq["value"])
-        else:
-            for faq in self.faq_dict:
-                embed.add_field(name=faq["title"], value=faq["value"])
+        embed.title += f" #{faq_num}"
+        current_faq = self.faq_dict[faq_num-1]
+        embed.add_field(name=current_faq["title"], value=current_faq["value"])
+        await channel.send(embed=embed)
+        
+    @commands.command()
+    async def faq(self, ctx, *, faq=""):
+        """Frequently Asked Questions. Allows numeric input for specific faq."""
+        faq = faq.replace(' ', ',').split(',')
+        count = 0
+        for faq_num in faq:
+            if not faq_num.isdigit():
+                if count == 0:
+                    break
+                else:
+                    count += 1
+                    continue
+            faq_num = int(faq_num)
+            count += 1
+            if faq_num > 0 and faq_num < len(self.faq_dict)+1:
+                await self.format_faq_embed(self, faq_num, ctx.channel)
+            elif count == 1:
+                await ctx.send(f"Faq number {faq_num} doesn't exist.")
+        if count == len(faq):
+            return
+        embed = discord.Embed(title="Frequently Asked Questions")
+        for faq in self.faq_dict:
+            embed.add_field(name=faq["title"], value=faq["value"])
         await ctx.send(embed=embed)
 
     @commands.command() # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
