@@ -2,6 +2,7 @@
 
 import discord
 from discord.ext import commands
+from datetime import datetime
 
 class Events(commands.Cog):
 
@@ -47,6 +48,8 @@ class Events(commands.Cog):
     async def on_member_join(self, member):
         embed = discord.Embed(title="New member!")
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
+        if (datetime.now() - member.created_at).days < 1:
+            embed.description += "\n**Account was created {} days ago.".format((datetime.now() - member.created_at).days)
         if member.guild.id == self.bot.flagbrew_id:
             try:
                 await self.bot.logs_channel.send(embed=embed)
@@ -71,6 +74,11 @@ class Events(commands.Cog):
             await message.delete()
             await message.author.ban()
             await message.channel.send("{} was banned for attempting to spam user mentions.".format(message.author))
+            
+        # Watch hook for susp account(s)
+        if message.author.id == 592144464382787595:
+            embed = discord.Embed(description=message.content)
+            await self.bot.logs_channel.send("Suspicious user `{}` sent a message:".format(message.author))
             
     @commands.Cog.listener()        
     async def on_message_delete(self, message):
