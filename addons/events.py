@@ -78,7 +78,7 @@ class Events(commands.Cog):
         # Watch hook for susp account(s)
         if message.author.id == 592144464382787595:
             embed = discord.Embed(description=message.content)
-            await self.bot.logs_channel.send("Suspicious user `{}` sent a message:".format(message.author))
+            await self.bot.logs_channel.send("Suspicious user `{}` sent a message:".format(message.author), embed=embed)
             
     @commands.Cog.listener()        
     async def on_message_delete(self, message):
