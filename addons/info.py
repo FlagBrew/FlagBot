@@ -128,7 +128,7 @@ class Info(commands.Cog):
             if faq_num > 0 and faq_num < len(self.faq_dict)+1:
                 await self.format_faq_embed(self, faq_num, ctx.channel)
             elif count == 1:
-                await ctx.send(f"Faq number {faq_num} doesn't exist.")
+                await ctx.send("Faq number {} doesn't exist.".format(faq_num))
         if count == len(faq):
             return
         embed = discord.Embed(title="Frequently Asked Questions")
@@ -245,12 +245,21 @@ class Info(commands.Cog):
         
     @commands.command()
     async def cheatkeys(self, ctx, key):
+        """Byte decoder for sharkive codes"""
         indexes = self.get_keys(key)
-        embed = discord.Embed(title=f"Matching inputs for `{key}`")
+        embed = discord.Embed(title="Matching inputs for `{}`".format(key))
         if len(indexes["3ds"]) > 0:
             embed.add_field(name="3DS inputs", value='`' + '` + `'.join(indexes["3ds"]) + '`')
         if len(indexes["switch"]) > 0:
             embed.add_field(name="Switch inputs", value='`' + '` + `'.join(indexes["switch"]) + '`', inline=False)
+        await ctx.send(embed=embed)
+        
+    @commands.command(aliases=['dg'])
+    async def downgrade(self, ctx):
+        """Don't. Fucking. Downgrade."""
+        embed = discord.Embed(title="Should you downgrade?")
+        embed.description = "If you downgrade, you will fuck things up. Don't do it for fucks sake."
+        embed.set_thumbnail(url="https://media.giphy.com/media/ToMjGpx9F5ktZw8qPUQ/giphy.gif")
         await ctx.send(embed=embed)
         
 def setup(bot):
