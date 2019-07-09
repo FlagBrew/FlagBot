@@ -1,7 +1,7 @@
 [
    {
     "title": "When will Virtual Console games be supported?",
-    "value": "Never."
+    "value": "Nobody on the FlagBrew team is interested in working on this. However, if you would like to work on it yourself, and the code is up to our standards, we will merge a PR."
   },
   {
     "title": "Why do I have to wait so long for new releases?",
@@ -13,7 +13,7 @@
   },
   {
     "title": "Can you please add a code for `x` game?",
-    "value": "Nobody on the Flagbrew team knows how to make gameshark codes, or wants to learn. Almost all of the codes were taken from a fort42 dump. If you want more codes, learn how to make them yourself, or find a working one and open a pull request on the [repository](https://github.com/Flagbrew/Sharkive/pulls) to get the code added."
+    "value": "Nobody on the FlagBrew team knows how to make gameshark codes, or wants to learn. Almost all of the codes were taken from a fort42 dump. If you want more codes, learn how to make them yourself, or find a working one and open a pull request on the [repository](https://github.com/Flagbrew/Sharkive/pulls) to get the code added."
   },
   {
     "title": "I have Homebrew/*hax. Why can't I launch PKSM?",
@@ -34,5 +34,8 @@
   {
     "title": "When are we getting Sword and Shield support?",
     "value": "Never :)"
-  }
+  },
+  {
+    "title": "My DeSmuME save is messed up and I can't load it, help!!!",
+    "value": "If this save came from DeSmuME, then it likely has an extra 122 bytes at the end of it. Back up your file, then delete those last 122 bytes using a hex editor."}
 ]
