@@ -96,7 +96,7 @@ class Moderation(commands.Cog):
             
     @commands.command()
     async def test(self, ctx, id):
-        member = await self.bot.get_user_info(id)
+        member = await self.bot.fetch_user(id)
         member_2 = ctx.guild.get_member(member.id)
         if any(r for r in self.bot.protected_roles if r in member_2.roles):
             return await ctx.send("That user is protected!")
