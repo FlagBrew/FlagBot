@@ -194,7 +194,8 @@ async def reload(ctx):
             await ctx.send(':white_check_mark: Extensions reloaded.')
         else:
             await ctx.send(errors)
-        await ctx.send("This is the first reload after I restarted!")
+        if bot.reload_counter == 1:
+            await ctx.send("This is the first reload after I restarted!")
     else:
         await ctx.send("You don't have permission to do that!")
         
