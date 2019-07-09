@@ -25,7 +25,7 @@ class Moderation(commands.Cog):
             return await ctx.send("You can't ban yourself, obviously")
         try:
             member_guild = ctx.guild.get_member(member.id)
-            if any(r for r in self.bot.protected_roles if r in member.roles):
+            if any(r for r in self.bot.protected_roles if r in member_guild.roles):
                 return await ctx.send("That user is protected!")  
         except AttributeError:
             pass # Happens when banning via id, as they have no roles if not on guild
