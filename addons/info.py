@@ -13,7 +13,6 @@ desc_pksm = "PKSM [here](https://github.com/FlagBrew/PKSM/releases/latest)"
 desc_checkpoint = "Checkpoint [here](https://github.com/FlagBrew/Checkpoint/releases/latest)"
 desc_pickr = "Pickr [here](https://github.com/FlagBrew/Pickr/releases/latest)"
 desc_2048 = "2048 [here](https://github.com/FlagBrew/2048/releases/latest)"
-desc_jedecheck = "JEDECheck [here](https://github.com/FlagBrew/JEDECheck/releases/latest)"
 
 
 class Info(commands.Cog):
@@ -58,11 +57,9 @@ class Info(commands.Cog):
                 img = url=self.gen_qr(self, "Pickr")
         elif app.lower().startswith("2048"):
             embed = discord.Embed(description=desc.format(desc_2048))
-        elif app.lower().startswith("jedecheck") or app.lower().startswith("jede") or app.lower().startswith("jedec"):
-            embed = discord.Embed(description=desc.format(desc_jedecheck))
         else:
             embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" +
-                                              desc.format(desc_2048) + "\n" + desc.format(desc_jedecheck))
+                                              desc.format(desc_2048))
         if img == 0: 
             return await ctx.send(embed=embed)
         f = discord.File(io.BytesIO(img), filename="qr.png")
@@ -87,10 +84,8 @@ class Info(commands.Cog):
             embed = discord.Embed(description="You can read Checkpoint's README [here](https://github.com/FlagBrew/Checkpoint/blob/master/README.md).")
         elif app.lower() == "pksm":
             embed = discord.Embed(description="You can read PKSM's README [here](https://github.com/FlagBrew/PKSM/blob/master/README.md).")
-        elif app.lower() == "jedecheck" or app.lower() == "jede" or app.lower() == "jedec":
-            embed = discord.Embed(description="You can read JEDECheck's README [here](https://github.com/FlagBrew/JEDECheck/blob/master/README.md).")
         else:
-            return await ctx.send("Input not given or recognized. Available READMEs: `scripts`, `sharkive`, `2048`, `pickr`, `checkpoint`, `pksm`, 'jedecheck'.")
+            return await ctx.send("Input not given or recognized. Available READMEs: `scripts`, `2048`, `pickr`, `checkpoint`, `pksm`.")
         await ctx.send(embed=embed)
         
     @commands.command(aliases=['patron'])
