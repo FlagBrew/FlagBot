@@ -95,6 +95,16 @@ class Events(commands.Cog):
                     await self.bot.logs_channel.send("Message by {0} deleted in channel {1.mention}:".format(message.author, message.channel), embed=embed)
                 except discord.Forbidden:
                     pass # beta bot can't log
+                    
+    @commands.Cog.listener()
+    async def on_member_update(self, before, after):
+        if before.roles != after.roles and (self.bot.patrons_role in after.roles or self.bot.patrons_role in before.roles):
+            if len(before.roles) < len(after.roles):
+                await self.bot.patrons_channel.send("Welcome to the super secret cool kids club {}! You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.".format(after.mention))
+            else:
+                # await self.bot.patrons_channel.send("How sad, {} has betrayed us and stopped giving our gods money :(".format(after)) 
+                # Commented out until Bernardo approves of a leaving message
+                pass
         
         
 def setup(bot):
