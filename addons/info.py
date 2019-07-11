@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import json, requests
+import json
+import requests
 import discord
 import qrcode
 import io
@@ -41,32 +42,32 @@ class Info(commands.Cog):
                 return bytes
         
     @commands.command(aliases=["releases", "latest"])
-    async def release(self, ctx, *, app = ""):
+    async def release(self, ctx, *, app=""):
         """Returns the latest release for FlagBrew"s projects. If pulling checkpoint or pickr release, you can add "switch" to the end to get one without a qr code for ease of use"""
         img = 0
         if app.lower().startswith("pksm"):
             embed = discord.Embed(description=desc.format(desc_pksm))
-            img = url=self.gen_qr(self, "PKSM")
+            img = url = self.gen_qr(self, "PKSM")
         elif app.lower().startswith("checkpoint"):
             embed = discord.Embed(description=desc.format(desc_checkpoint))
             str_list = app.lower().split()
-            if not "switch" in str_list:
-                img = url=self.gen_qr(self, "Checkpoint")
+            if "switch" not in str_list:
+                img = url = self.gen_qr(self, "Checkpoint")
         elif app.lower().startswith("pickr"):
             embed = discord.Embed(description=desc.format(desc_pickr))
             str_list = app.lower().split()
-            if not "switch" in str_list:
-                img = url=self.gen_qr(self, "Pickr")
+            if "switch" not in str_list:
+                img = url = self.gen_qr(self, "Pickr")
         elif app.lower().startswith("sharkive"):
             embed = discord.Embed(description=desc.format(desc_sharkive))
-            img = url=self.gen_qr(self, "Sharkive")
+            img = url = self.gen_qr(self, "Sharkive")
         elif app.lower().startswith("2048"):
             embed = discord.Embed(description=desc.format(desc_2048))
         elif app.lower().startswith("jedecheck") or app.lower().startswith("jede") or app.lower().startswith("jedec"):
             embed = discord.Embed(description=desc.format(desc_jedecheck))
         else:
             embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_sharkive) + "\n" +
-                                              desc.format(desc_2048) + "\n" + desc.format(desc_jedecheck))
+                                  desc.format(desc_2048) + "\n" + desc.format(desc_jedecheck))
         if img == 0: 
             return await ctx.send(embed=embed)
         f = discord.File(io.BytesIO(img), filename="qr.png")
@@ -79,7 +80,7 @@ class Info(commands.Cog):
         await ctx.send("This is a bot coded in python for use in the FlagBrew server, made by {}#{}. You can view the source code here: <https://github.com/GriffinG1/FlagBot>.".format(self.bot.creator.name, self.bot.creator.discriminator))   
         
     @commands.command()
-    async def readme(self, ctx, app = ""):
+    async def readme(self, ctx, app=""):
         """READMEs for FlagBrew's projects."""
         if app.lower() == "script" or app.lower() == "pksmscript" or app.lower() == "scripts" or app.lower() == "pksmscripts":
             embed = discord.Embed(description="You can read about PKSM scripts [here](https://github.com/FlagBrew/PKSM-Scripts/blob/master/README.md).")
@@ -107,7 +108,7 @@ class Info(commands.Cog):
     async def format_faq_embed(self, ctx, faq_num, channel):
         embed = discord.Embed(title="Frequently Asked Questions")
         embed.title += f" #{faq_num}"
-        current_faq = self.faq_dict[faq_num-1]
+        current_faq = self.faq_dict[faq_num - 1]
         embed.add_field(name=current_faq["title"], value=current_faq["value"])
         await channel.send(embed=embed)
         
@@ -125,7 +126,7 @@ class Info(commands.Cog):
                     continue
             faq_num = int(faq_num)
             count += 1
-            if faq_num > 0 and faq_num < len(self.faq_dict)+1:
+            if faq_num > 0 and faq_num < len(self.faq_dict) + 1:
                 await self.format_faq_embed(self, faq_num, ctx.channel)
             elif count == 1:
                 await ctx.send("Faq number {} doesn't exist.".format(faq_num))
@@ -136,13 +137,13 @@ class Info(commands.Cog):
             embed.add_field(name=faq["title"], value=faq["value"])
         await ctx.send(embed=embed)
 
-    @commands.command() # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
+    @commands.command()  # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
     async def vguides(self, ctx):
         """Information about video guides relating to custom firmware"""
         embed = discord.Embed(title="Why you shouldn't use video guides")
         embed.description = ("\"Video guides\" are not recommended for use. Their contents generally become outdated very quickly for them to be of any use, and they are harder to update unlike a written guide.\n\n"
-                            "When this happens, video guides become more complicated than current methods, having users do certain tasks which may not be required anymore.\n\n"
-                            "There is also a risk of the uploader spreading misinformation or including potentially harmful files, sometimes unintentionally.")
+                             "When this happens, video guides become more complicated than current methods, having users do certain tasks which may not be required anymore.\n\n"
+                             "There is also a risk of the uploader spreading misinformation or including potentially harmful files, sometimes unintentionally.")
         await ctx.send(embed=embed)
         
     @commands.command()
@@ -202,16 +203,16 @@ class Info(commands.Cog):
         """Outputs the template for extrasaves from the wiki"""
         embed = discord.Embed(title="Extra Saves Template")
         embed.description = ("```json\n"
-                       "\"extraSaves\": {\n"
-                       "  \"CPUE\": [\n"
-                       "    \"/roms/nds/POKEMON_PL.sav\",\n"
-                       "    \"/path/to/file.save\"\n"
-                       "  ],\n"
-                       "  \"0x0055D\": [\n"
-                       "    \"/backups/game/name/main\",\n"
-                       "    \"/path/to/main\"\n"
-                       "  ]\n"
-                       "}```")
+                             "\"extraSaves\": {\n"
+                             "  \"CPUE\": [\n"
+                             "    \"/roms/nds/POKEMON_PL.sav\",\n"
+                             "    \"/path/to/file.save\"\n"
+                             "  ],\n"
+                             "  \"0x0055D\": [\n"
+                             "    \"/backups/game/name/main\",\n"
+                             "    \"/path/to/main\"\n"
+                             "  ]\n"
+                             "}```")
         embed.description += "\nYou can also use the online tool from the FlagBrew website [here](https://flagbrew.org/tools/extra_saves)."
         await ctx.send(embed=embed)
         
@@ -229,7 +230,7 @@ class Info(commands.Cog):
         embed.description = "You can use [this guide](https://3ds.hacks.guide) to hack your 3ds."
         await ctx.send(embed=embed)
         
-    def get_keys(self, hexval): # thanks to architdate for the code
+    def get_keys(self, hexval):  # thanks to architdate for the code
         final_indices = {'3ds': [], 'switch': []}
         decval = int(hexval, 16)
         while decval != 0:
@@ -262,5 +263,6 @@ class Info(commands.Cog):
         embed.set_thumbnail(url="https://media.giphy.com/media/ToMjGpx9F5ktZw8qPUQ/giphy.gif")
         await ctx.send(embed=embed)
         
+
 def setup(bot):
     bot.add_cog(Info(bot))

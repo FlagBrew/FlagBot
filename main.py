@@ -17,6 +17,7 @@ import re
 import ast
 import argparse
 
+
 def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu1232/Discord-Selfbot/blob/master/appuselfbot.py
     parser = argparse.ArgumentParser(description="Flagbot")
     parser.add_argument("-test", "--test-run",  # test run flag for Travis
@@ -60,7 +61,8 @@ except KeyError:
     token = config['Main']['token']
     heroku = False
     
-@bot.check # taken and modified from https://discordpy.readthedocs.io/en/rewrite/ext/commands/commands.html#global-checks
+
+@bot.check  # taken and modified from https://discordpy.readthedocs.io/en/rewrite/ext/commands/commands.html#global-checks
 async def globally_block_dms(ctx):
     if ctx.guild is None:
         raise discord.ext.commands.NoPrivateMessage('test')
@@ -95,6 +97,7 @@ async def on_command_error(ctx, error):
         embed = discord.Embed(description=error_trace)
         await bot.err_logs_channel.send("An error occurred while processing the `{}` command in channel `{}`.".format(ctx.command.name, ctx.message.channel), embed=embed)
 
+
 @bot.event
 async def on_error(event_method, *args, **kwargs):
     print(args[0])
@@ -107,7 +110,6 @@ async def on_error(event_method, *args, **kwargs):
     embed = discord.Embed(description=error_trace)
     await bot.err_logs_channel.send("An error occurred while processing `{}`.".format(event_method), embed=embed)
     
-
 
 @bot.event
 async def on_ready():
@@ -134,7 +136,7 @@ async def on_ready():
                     await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
                 except discord.Forbidden:
                     for channel in guild.channels:
-                       if guild.me.permissions_in(channel).send_messages and isinstance(channel, discord.TextChannel):
+                        if guild.me.permissions_in(channel).send_messages and isinstance(channel, discord.TextChannel):
                             await channel.send("Left your server, as this bot should only be used on the PKSM server under this token.")
                             break
                 finally:
@@ -163,7 +165,8 @@ for extension in addons:
         failed_addons.append([extension, type(e).__name__, e])
 if not failed_addons:
     print('All addons loaded!')
-        
+
+
 @bot.command(hidden=True)
 async def load(ctx, *, module):
     """Loads an addon"""
@@ -176,6 +179,7 @@ async def load(ctx, *, module):
             await ctx.send(':white_check_mark: Extension loaded.')
     else:
         await ctx.send("You don't have permission to do that!")
+  
     
 @bot.command()
 async def reload(ctx):
@@ -197,8 +201,10 @@ async def reload(ctx):
     else:
         await ctx.send("You don't have permission to do that!")
         
+
 def check_is_author(ctx):
         return ctx.message.author.id == bot.creator.id
+    
     
 @bot.command(aliases=['drid'], hidden=True)
 @commands.check(check_is_author)
