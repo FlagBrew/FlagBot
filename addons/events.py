@@ -4,13 +4,13 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 
+
 class Events(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
         print('Addon "{}" loaded'.format(self.__class__.__name__))
-        
-    
+         
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         # Don't let the bot be used elsewhere with the same token
@@ -19,7 +19,7 @@ class Events(commands.Cog):
                 await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
             except discord.Forbidden:
                 for channel in guild.channels:
-                   if guild.me.permissions_in(channel).send_messages and isinstance(channel, discord.TextChannel):
+                    if guild.me.permissions_in(channel).send_messages and isinstance(channel, discord.TextChannel):
                         await channel.send("Left your server, as this bot should only be used on the PKSM server under this token.")
                         break
             finally:
@@ -27,7 +27,7 @@ class Events(commands.Cog):
                 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
-        async for ban in guild.audit_logs(limit=20, action=discord.AuditLogAction.ban): # 20 to handle multiple staff bans in quick succession
+        async for ban in guild.audit_logs(limit=20, action=discord.AuditLogAction.ban):  # 20 to handle multiple staff bans in quick succession
             if ban.target == user:
                 if ban.reason:
                     reason = ban.reason
@@ -42,7 +42,7 @@ class Events(commands.Cog):
         try:
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
-            pass # beta bot can't log
+            pass  # beta bot can't log
                 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -54,7 +54,7 @@ class Events(commands.Cog):
             try:
                 await self.bot.logs_channel.send(embed=embed)
             except discord.Forbidden:
-                pass # beta bot can't log
+                pass  # beta bot can't log
             
     @commands.Cog.listener()
     async def on_member_remove(self, member):
@@ -64,7 +64,7 @@ class Events(commands.Cog):
             try:
                 await self.bot.logs_channel.send(embed=embed)
             except discord.Forbidden:
-                pass # beta bot can't log
+                pass  # beta bot can't log
                 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -94,7 +94,7 @@ class Events(commands.Cog):
                 try:
                     await self.bot.logs_channel.send("Message by {0} deleted in channel {1.mention}:".format(message.author, message.channel), embed=embed)
                 except discord.Forbidden:
-                    pass # beta bot can't log
+                    pass  # beta bot can't log
                     
     @commands.Cog.listener()
     async def on_member_update(self, before, after):

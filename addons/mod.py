@@ -7,6 +7,7 @@ import sys
 import json
 import asyncio
 
+
 class Moderation(commands.Cog):
     """Bot commands for moderation."""
     def __init__(self, bot):
@@ -28,15 +29,15 @@ class Moderation(commands.Cog):
             if any(r for r in self.bot.protected_roles if r in member_guild.roles):
                 return await ctx.send("That user is protected!")  
         except AttributeError:
-            pass # Happens when banning via id, as they have no roles if not on guild
+            pass  # Happens when banning via id, as they have no roles if not on guild
         try:
             await member.send("You were banned from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, please contact a staff member".format(reason))
         except discord.Forbidden:
-            pass # bot blocked or not accepting DMs
+            pass  # bot blocked or not accepting DMs
         reason += "\n\nAction done by {} (This is to deal with audit log scraping)".format(ctx.author)
         try:
             await ctx.guild.ban(member, delete_message_days=0, reason=reason)
-        except discord.Forbidden: # i have no clue
+        except discord.Forbidden:  # i have no clue
             return await ctx.send("I don't have permission. Why don't I have permission.")
         embed = discord.Embed()
         embed.set_image(url="https://i.imgur.com/tEBrxUF.jpg")
@@ -44,7 +45,7 @@ class Moderation(commands.Cog):
     
     @commands.has_permissions(kick_members=True)    
     @commands.command(pass_context=True)
-    async def kick(self, ctx, member:discord.Member, *, reason="No reason was given."):
+    async def kick(self, ctx, member: discord.Member, *, reason="No reason was given."):
         """Kick a member."""
         if member == ctx.message.author:
             return await ctx.send("You can't kick yourself, obviously")
@@ -56,25 +57,25 @@ class Moderation(commands.Cog):
             try:
                 await self.bot.logs_channel.send(embed=embed)
             except discord.Forbidden:
-                pass # beta bot can't log
+                pass  # beta bot can't log
             try:
                 await member.send("You were kicked from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY".format(reason))
             except discord.Forbidden:
-                pass # bot blocked or not accepting DMs
+                pass  # bot blocked or not accepting DMs
             await member.kick(reason=reason)
             await ctx.send("Successfully kicked user {0.name}#{0.discriminator}!".format(member))
     
     @commands.has_permissions(ban_members=True)    
     @commands.command(pass_context=True)
-    async def ban(self, ctx, member:discord.User, *, reason="No reason was given."):
+    async def ban(self, ctx, member: discord.User, *, reason="No reason was given."):
         """Ban a user."""
-        if not member: # Edge case in which UserConverter may fail to get a User
+        if not member:  # Edge case in which UserConverter may fail to get a User
             return await ctx.send("Could not find user. They may no longer be in the global User cache. If you are sure this is a valid user, try `.banid` instead.")
         await self.generic_ban_things(ctx, member, reason)
 
     @commands.has_permissions(ban_members=True)    
     @commands.command(pass_context=True)
-    async def banid(self, ctx, member:int, *, reason="No reason was given."):
+    async def banid(self, ctx, member: int, *, reason="No reason was given."):
         """Ban a user with their user ID.
         
         To get a user ID, enable developer mode and right click their profile."""
@@ -101,6 +102,7 @@ class Moderation(commands.Cog):
         if any(r for r in self.bot.protected_roles if r in member_2.roles):
             return await ctx.send("That user is protected!")
         await ctx.send("User would be banned.")
+  
             
 def setup(bot):
     bot.add_cog(Moderation(bot))
