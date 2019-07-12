@@ -6,6 +6,7 @@ import sys
 import os
 import json
 
+
 class Utility(commands.Cog):
 
     def __init__(self, bot):
@@ -16,7 +17,7 @@ class Utility(commands.Cog):
         
     async def toggleroles(self, ctx, role, user):
         author_roles = user.roles[1:]
-        if not role in author_roles:
+        if role not in author_roles:
             await user.add_roles(role)
             return False
         else:
@@ -63,7 +64,7 @@ class Utility(commands.Cog):
             
     @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    async def secure_role_mention(self, ctx, update_role:str, channel:discord.TextChannel=None):
+    async def secure_role_mention(self, ctx, update_role: str, channel: discord.TextChannel=None):
         """Securely mention a role. Can input a channel at the end for remote mentioning. More can be added with srm_add"""
         if not channel:
             channel = ctx.channel
@@ -77,15 +78,15 @@ class Utility(commands.Cog):
         if role is None:
             return await ctx.send("You didn't give a valid role. Do `.srm_list` to see all available roles.")
         try:
-            await role.edit(mentionable=True, reason="{} wanted to mention users with this role.".format(ctx.author)) # Reason -> Helps pointing out folks that abuse this
+            await role.edit(mentionable=True, reason="{} wanted to mention users with this role.".format(ctx.author))  # Reason -> Helps pointing out folks that abuse this
         except:
-            await role.edit(mentionable=True, reason="A staff member wanted to mention users with this role, and I couldn't log properly. Check {}.".format(self.bot.logs_channel.mention)) # Bypass the TypeError it kept throwing
+            await role.edit(mentionable=True, reason="A staff member wanted to mention users with this role, and I couldn't log properly. Check {}.".format(self.bot.logs_channel.mention))  # Bypass the TypeError it kept throwing
         await channel.send("{}".format(role.mention))
         await role.edit(mentionable=False, reason="Making role unmentionable again.")
         try:
             await self.bot.logs_channel.send("{} pinged {} in {}".format(ctx.author, role.name, channel))
         except discord.Forbidden:
-            pass # beta bot can't log
+            pass  # beta bot can't log
             
     @commands.command(aliases=['srm_list'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
@@ -95,6 +96,7 @@ class Utility(commands.Cog):
         embed.description = "\n".join(self.role_mentions_dict)
         embed.description += "\nflagbrew"
         await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Utility(bot))
