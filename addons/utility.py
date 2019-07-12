@@ -14,7 +14,7 @@ class Utility(commands.Cog):
         print('Addon "{}" loaded'.format(self.__class__.__name__))
         with open("saves/role_mentions.json", "r") as f:
             self.role_mentions_dict = json.load(f)
-        
+
     async def toggleroles(self, ctx, role, user):
         author_roles = user.roles[1:]
         if role not in author_roles:
@@ -23,7 +23,7 @@ class Utility(commands.Cog):
         else:
             await user.remove_roles(role)
             return True
-        
+
     @commands.command()
     async def togglerole(self, ctx, role=""):
         """Allows user to toggle update roles. You can use .masstoggle to apply all roles at once.
@@ -43,7 +43,7 @@ class Utility(commands.Cog):
             await ctx.author.send(info_string)
         except discord.errors.Forbidden:
             await ctx.send(ctx.author.mention + ' ' + info_string, delete_after=5)
-            
+
     @commands.command()
     async def masstoggle(self, ctx):
         """Allows a user to toggle all possible update roles. Use .help toggleroles to see possible roles."""
@@ -61,7 +61,7 @@ class Utility(commands.Cog):
             await user.send("Successfully toggled all possible roles.")
         except discord.errors.Forbidden:
             await ctx.send("{} Successfully toggled all possible roles.".format(ctx.author.mention), delete_after=5)
-            
+
     @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     async def secure_role_mention(self, ctx, update_role: str, channel: discord.TextChannel=None):
@@ -87,7 +87,7 @@ class Utility(commands.Cog):
             await self.bot.logs_channel.send("{} pinged {} in {}".format(ctx.author, role.name, channel))
         except discord.Forbidden:
             pass  # beta bot can't log
-            
+
     @commands.command(aliases=['srm_list'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     async def secure_role_mention_list(self, ctx):
