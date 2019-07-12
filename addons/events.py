@@ -98,7 +98,8 @@ class Events(commands.Cog):
                     
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        if before.roles != after.roles and (self.bot.patrons_role in after.roles or self.bot.patrons_role in before.roles):
+        if before.roles != after.roles and ((self.bot.patrons_role in after.roles and self.bot.patrons_role not in before.roles) or
+                                            (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles)):
             if len(before.roles) < len(after.roles):
                 await self.bot.patrons_channel.send("Welcome to the super secret cool kids club {}! You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.".format(after.mention))
             else:
