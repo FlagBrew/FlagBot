@@ -56,14 +56,11 @@ class Info(commands.Cog):
             str_list = app.lower().split()
             if "switch" not in str_list:
                 img = url = self.gen_qr(self, "Pickr")
-        elif app.lower().startswith("sharkive"):
-            embed = discord.Embed(description=desc.format(desc_sharkive))
-            img = url = self.gen_qr(self, "Sharkive")
         elif app.lower().startswith("2048"):
             embed = discord.Embed(description=desc.format(desc_2048))
         else:
-            embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" + desc.format(desc_sharkive) + "\n" +
-                                  desc.format(desc_2048) + "\n" + desc.format(desc_jedecheck))
+            embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" +
+                                  desc.format(desc_2048))
         if img == 0: 
             return await ctx.send(embed=embed)
         f = discord.File(io.BytesIO(img), filename="qr.png")
