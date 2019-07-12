@@ -13,21 +13,21 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         print('Addon "{}" loaded'.format(self.__class__.__name__))
-
+    
     async def generic_ban_things(self, ctx, member, reason):
         """Generic stuff that is used by both ban commands.
-
+        
         ctx -> Commands.Context object.
         member -> discord.User object, can be limited.
         reason -> reason to ban
         """
-
+        
         if member.id == ctx.message.author.id:
             return await ctx.send("You can't ban yourself, obviously")
         try:
             member_guild = ctx.guild.get_member(member.id)
             if any(r for r in self.bot.protected_roles if r in member_guild.roles):
-                return await ctx.send("That user is protected!")
+                return await ctx.send("That user is protected!")  
         except AttributeError:
             pass  # Happens when banning via id, as they have no roles if not on guild
         try:
@@ -42,8 +42,8 @@ class Moderation(commands.Cog):
         embed = discord.Embed()
         embed.set_image(url="https://i.imgur.com/tEBrxUF.jpg")
         await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(member), embed=embed)
-
-    @commands.has_permissions(kick_members=True)
+    
+    @commands.has_permissions(kick_members=True)    
     @commands.command(pass_context=True)
     async def kick(self, ctx, member: discord.Member, *, reason="No reason was given."):
         """Kick a member."""
@@ -64,8 +64,8 @@ class Moderation(commands.Cog):
                 pass  # bot blocked or not accepting DMs
             await member.kick(reason=reason)
             await ctx.send("Successfully kicked user {0.name}#{0.discriminator}!".format(member))
-
-    @commands.has_permissions(ban_members=True)
+    
+    @commands.has_permissions(ban_members=True)    
     @commands.command(pass_context=True)
     async def ban(self, ctx, member: discord.User, *, reason="No reason was given."):
         """Ban a user."""
@@ -73,11 +73,11 @@ class Moderation(commands.Cog):
             return await ctx.send("Could not find user. They may no longer be in the global User cache. If you are sure this is a valid user, try `.banid` instead.")
         await self.generic_ban_things(ctx, member, reason)
 
-    @commands.has_permissions(ban_members=True)
+    @commands.has_permissions(ban_members=True)    
     @commands.command(pass_context=True)
     async def banid(self, ctx, member: int, *, reason="No reason was given."):
         """Ban a user with their user ID.
-
+        
         To get a user ID, enable developer mode and right click their profile."""
         member = await self.bot.fetch_user(member)
         if not member:
@@ -94,7 +94,7 @@ class Moderation(commands.Cog):
             await ctx.channel.purge(limit=amount)
         else:
             await ctx.send("Why would you wanna purge no messages?", delete_after=10)
-
+            
     @commands.command()
     async def test(self, ctx, id):
         member = await self.bot.fetch_user(id)
@@ -102,7 +102,7 @@ class Moderation(commands.Cog):
         if any(r for r in self.bot.protected_roles if r in member_2.roles):
             return await ctx.send("That user is protected!")
         await ctx.send("User would be banned.")
-
-
+  
+            
 def setup(bot):
     bot.add_cog(Moderation(bot))

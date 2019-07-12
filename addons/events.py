@@ -10,7 +10,7 @@ class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         print('Addon "{}" loaded'.format(self.__class__.__name__))
-
+         
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         # Don't let the bot be used elsewhere with the same token
@@ -24,7 +24,7 @@ class Events(commands.Cog):
                         break
             finally:
                 await guild.leave()
-
+                
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
         async for ban in guild.audit_logs(limit=20, action=discord.AuditLogAction.ban):  # 20 to handle multiple staff bans in quick succession
@@ -43,7 +43,7 @@ class Events(commands.Cog):
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta bot can't log
-
+                
     @commands.Cog.listener()
     async def on_member_join(self, member):
         embed = discord.Embed(title="New member!")
@@ -55,7 +55,7 @@ class Events(commands.Cog):
                 await self.bot.logs_channel.send(embed=embed)
             except discord.Forbidden:
                 pass  # beta bot can't log
-
+            
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         embed = discord.Embed(title="Member left :(")
@@ -65,7 +65,7 @@ class Events(commands.Cog):
                 await self.bot.logs_channel.send(embed=embed)
             except discord.Forbidden:
                 pass  # beta bot can't log
-
+                
     @commands.Cog.listener()
     async def on_message(self, message):
         # auto ban on 15+ pings
@@ -74,13 +74,13 @@ class Events(commands.Cog):
             await message.delete()
             await message.author.ban()
             await message.channel.send("{} was banned for attempting to spam user mentions.".format(message.author))
-
+            
         # Watch hook for susp account(s)
         if message.author.id == 592144464382787595:
             embed = discord.Embed(description=message.content)
             await self.bot.logs_channel.send("Suspicious user `{}` sent a message:".format(message.author), embed=embed)
-
-    @commands.Cog.listener()
+            
+    @commands.Cog.listener()        
     async def on_message_delete(self, message):
         if isinstance(message.channel, discord.abc.GuildChannel) and message.author.id != self.bot.user.id and message.guild.id == self.bot.flagbrew_id:
             if message.channel != self.bot.logs_channel:
@@ -95,7 +95,7 @@ class Events(commands.Cog):
                     await self.bot.logs_channel.send("Message by {0} deleted in channel {1.mention}:".format(message.author, message.channel), embed=embed)
                 except discord.Forbidden:
                     pass  # beta bot can't log
-
+                    
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         if before.roles != after.roles and ((self.bot.patrons_role in after.roles and self.bot.patrons_role not in before.roles) or
@@ -103,10 +103,10 @@ class Events(commands.Cog):
             if len(before.roles) < len(after.roles):
                 await self.bot.patrons_channel.send("Welcome to the super secret cool kids club {}! You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.".format(after.mention))
             else:
-                # await self.bot.patrons_channel.send("How sad, {} has betrayed us and stopped giving our gods money :(".format(after))
+                # await self.bot.patrons_channel.send("How sad, {} has betrayed us and stopped giving our gods money :(".format(after)) 
                 # Commented out until Bernardo approves of a leaving message
                 pass
-
-
+        
+        
 def setup(bot):
     bot.add_cog(Events(bot))

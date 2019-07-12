@@ -60,7 +60,7 @@ try:
 except KeyError:
     token = config['Main']['token']
     heroku = False
-
+    
 
 @bot.check  # taken and modified from https://discordpy.readthedocs.io/en/rewrite/ext/commands/commands.html#global-checks
 async def globally_block_dms(ctx):
@@ -68,7 +68,7 @@ async def globally_block_dms(ctx):
         raise discord.ext.commands.NoPrivateMessage('test')
         return False
     return True
-
+        
 
 # mostly taken from https://github.com/Rapptz/discord.py/blob/async/discord/ext/commands/bot.py
 @bot.event
@@ -109,7 +109,7 @@ async def on_error(event_method, *args, **kwargs):
     print(error_trace)
     embed = discord.Embed(description=error_trace)
     await bot.err_logs_channel.send("An error occurred while processing `{}`.".format(event_method), embed=embed)
-
+    
 
 @bot.event
 async def on_ready():
@@ -118,6 +118,7 @@ async def on_ready():
         try:
             if guild.id == bot.testing_id or guild.id == bot.flagbrew_id:
                 bot.guild = guild
+                bot.reload_counter = 0
                 if guild.id == bot.flagbrew_id:
                     bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
                     bot.flagbrew_team_role = discord.utils.get(guild.roles, id=482928611809165335)
@@ -125,12 +126,12 @@ async def on_ready():
                     bot.patrons_role = discord.utils.get(guild.roles, id=330078911704727552)
                     bot.protected_roles = (discord.utils.get(guild.roles, id=279598900799864832), bot.discord_moderator_role, bot.flagbrew_team_role, discord.utils.get(guild.roles, id=381053929389031424))
                     bot.patrons_channel = discord.utils.get(guild.channels, id=381000988246540292)
-
+                    
                 if guild.id == bot.testing_id:
                     bot.err_logs_channel = discord.utils.get(guild.channels, id=468877079023321089)
-
+                    
                 bot.creator = discord.utils.get(guild.members, id=177939404243992578)
-
+                    
             else:
                 try:
                     await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
@@ -141,12 +142,12 @@ async def on_ready():
                             break
                 finally:
                     await guild.leave()
-
+                
             print("Initialized on {}.".format(guild.name))
         except:
             print("Failed to initialize on {}".format(guild.name))
 
-
+    
 # loads extensions
 addons = [
     'addons.utility',
@@ -179,11 +180,12 @@ async def load(ctx, *, module):
             await ctx.send(':white_check_mark: Extension loaded.')
     else:
         await ctx.send("You don't have permission to do that!")
-
-
+  
+    
 @bot.command()
 async def reload(ctx):
     """Reloads an addon."""
+    bot.reload_counter += 1
     if ctx.author == ctx.guild.owner or ctx.author == bot.creator:
         errors = ""
         for addon in os.listdir("addons"):
@@ -198,14 +200,16 @@ async def reload(ctx):
             await ctx.send(':white_check_mark: Extensions reloaded.')
         else:
             await ctx.send(errors)
+        if bot.reload_counter == 1:
+            await ctx.send("This is the first reload after I restarted!")
     else:
         await ctx.send("You don't have permission to do that!")
-
+        
 
 def check_is_author(ctx):
         return ctx.message.author.id == bot.creator.id
-
-
+    
+    
 @bot.command(aliases=['drid'], hidden=True)
 @commands.check(check_is_author)
 async def dump_role_id(ctx):
@@ -217,7 +221,7 @@ async def dump_role_id(ctx):
     await ctx.send("Roles dumped. Cleaning messages in 5 seconds.", delete_after=5)
     await asyncio.sleep(5.1)
     await ctx.message.delete()
-
+        
 # Execute
 print('Bot directory: ', dir_path)
 bot.run(token)
