@@ -102,20 +102,27 @@ class Events(commands.Cog):
     async def on_member_update(self, before, after):
         if before.roles != after.roles and ((self.bot.patrons_role in after.roles and self.bot.patrons_role not in before.roles) or
                                             (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles)):
+            token = secrets.token_urlsafe(16)
             data = {
                 "secret": self.bot.site_secret,
                 "user_id": str(before.id),
-                "token": secrets.token_urlsafe(16)
+                "token": token
             }
             if len(before.roles) < len(after.roles):
                 await self.bot.patrons_channel.send("Welcome to the super secret cool kids club {}!"
                                                     " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.".format(after.mention))
                 url = "https://flagbrew.org/patron/generate"
+                message = ("Congrats on becoming a patron! You can add the token below to PKSM's config to access some special patron only stuff. It's only valid until your"
+                           " patron status is cancelled, so keep up those payments! If you need any help setting it up, ask in {}!\n\n`{}`".format(self.bot.patrons_channel.mention, token))
             else:
                 # await self.bot.patrons_channel.send("How sad, {} has betrayed us and stopped giving our gods money :(".format(after))
                 # Commented out until Bernardo approves of a leaving message
-                url = "https://flagbrew.org/patron/delete"
+
+                message = ("Unfortunately, your patreon subscription has been cancelled, or stopped renewing automatically. This means your token, and the special features,"
+                           " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
+                url = "https://flagbrew.org/patron/remove"
             response = requests.post(url, data=data)
+            await before.send(message=message)
 
 
 def setup(bot):

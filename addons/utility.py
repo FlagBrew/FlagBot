@@ -5,6 +5,7 @@ from discord.ext import commands
 import sys
 import os
 import json
+import secrets
 
 
 class Utility(commands.Cog):
@@ -96,6 +97,17 @@ class Utility(commands.Cog):
         embed.description = "\n".join(self.role_mentions_dict)
         embed.description += "\nflagbrew"
         await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
+    async def token_backfill(self, ctx):
+        for member in ctx.guild.members:
+            if self.bot.patrons_role in member.roles:
+                token = secrets.token_urlsafe(16)
+                await member.send("We are rolling out a new feature for patrons that gives you special features integrated directly to PKSM! All you'll need to do is"
+                                  " add the token below to the correct field in your config, and you'll be able to automatically update to the latest nightly build"
+                                  " and all pokemon you upload to the GPSS will have a star next to them. Please note this token will only last until your patreon"
+                                  " subscription ends! If you need any help adding it, ask in {}!\n\n`{}`".format(self.bot.patrons_chat, token))
 
 
 def setup(bot):
