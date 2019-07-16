@@ -121,7 +121,7 @@ class Events(commands.Cog):
                 message = ("Unfortunately, your patreon subscription has been cancelled, or stopped renewing automatically. This means your token, and the special features,"
                            " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
                 url = "https://flagbrew.org/patron/remove"
-            response = requests.post(url, data=data)
+            requests.post(url, data=data)
             await before.send(message=message)
 
 
