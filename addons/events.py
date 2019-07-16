@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import discord
+import requests
+import secrets
 from discord.ext import commands
 from datetime import datetime
 
@@ -100,12 +102,20 @@ class Events(commands.Cog):
     async def on_member_update(self, before, after):
         if before.roles != after.roles and ((self.bot.patrons_role in after.roles and self.bot.patrons_role not in before.roles) or
                                             (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles)):
+            data = {
+                "secret": self.bot.site_secret,
+                "user_id": str(before.id),
+                "token": secrets.token_urlsafe(16)
+            }
             if len(before.roles) < len(after.roles):
-                await self.bot.patrons_channel.send("Welcome to the super secret cool kids club {}! You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.".format(after.mention))
+                await self.bot.patrons_channel.send("Welcome to the super secret cool kids club {}!"
+                                                    " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.".format(after.mention))
+                url = "https://flagbrew.org/patron/generate"
             else:
                 # await self.bot.patrons_channel.send("How sad, {} has betrayed us and stopped giving our gods money :(".format(after))
                 # Commented out until Bernardo approves of a leaving message
-                pass
+                url = "https://flagbrew.org/patron/delete"
+            response = requests.post(url, data=data)
 
 
 def setup(bot):

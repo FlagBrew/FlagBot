@@ -9,7 +9,6 @@ import discord
 import datetime
 import asyncio
 import copy
-import configparser
 import traceback
 import sys
 import os
@@ -17,8 +16,15 @@ import re
 import ast
 import argparse
 
+try:
+    import config
+    heroku = False
+except Exception as e:
+    print(f"Exception: {e}")
+    heroku = True
 
-def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu1232/Discord-Selfbot/blob/master/appuselfbot.py
+
+def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu1232/Discord-Selfbot/blob/master/appuselfbot.py#L33
     parser = argparse.ArgumentParser(description="Flagbot")
     parser.add_argument("-test", "--test-run",  # test run flag for Travis
                         action="store_true",
@@ -39,27 +45,24 @@ if _test_run:
 dir_path = os.path.dirname(os.path.realpath(__file__))
 os.chdir(dir_path)
 
-config = configparser.ConfigParser()
-config.read("config.ini")
-
-try:
-    prefix = config['Main']['prefix']
-except KeyError:
+if heroku:
     prefix = ['!', '.']
+    token = os.environ['TOKEN']
+else:
+    prefix = config.token
+    token = config.token
 
 bot = commands.Bot(command_prefix=prefix, description=description)
+
+if heroku:
+    bot.site_secret = os.environ['SECRET']
+else:
+    bot.site_secret = config.secret
 
 bot.dir_path = os.path.dirname(os.path.realpath(__file__))
 
 bot.flagbrew_id = 278222834633801728
 bot.testing_id = 378420595190267915
-
-try:
-    token = os.environ['TOKEN']
-    heroku = True
-except KeyError:
-    token = config['Main']['token']
-    heroku = False
 
 
 @bot.check  # taken and modified from https://discordpy.readthedocs.io/en/rewrite/ext/commands/commands.html#global-checks
