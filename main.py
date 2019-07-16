@@ -20,7 +20,6 @@ try:
     import config
     heroku = False
 except Exception as e:
-    print(f"Exception: {e}")
     heroku = True
 
 
@@ -49,7 +48,7 @@ if heroku:
     prefix = ['!', '.']
     token = os.environ['TOKEN']
 else:
-    prefix = config.token
+    prefix = config.prefix
     token = config.token
 
 bot = commands.Bot(command_prefix=prefix, description=description)

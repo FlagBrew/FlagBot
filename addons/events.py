@@ -105,19 +105,16 @@ class Events(commands.Cog):
             token = secrets.token_urlsafe(16)
             data = {
                 "secret": self.bot.site_secret,
-                "user_id": str(before.id),
-                "token": token
+                "user_id": str(before.id)
             }
             if len(before.roles) < len(after.roles):
                 await self.bot.patrons_channel.send("Welcome to the super secret cool kids club {}!"
                                                     " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.".format(after.mention))
                 url = "https://flagbrew.org/patron/generate"
+                data.append("token", token)
                 message = ("Congrats on becoming a patron! You can add the token below to PKSM's config to access some special patron only stuff. It's only valid until your"
                            " patron status is cancelled, so keep up those payments! If you need any help setting it up, ask in {}!\n\n`{}`".format(self.bot.patrons_channel.mention, token))
             else:
-                # await self.bot.patrons_channel.send("How sad, {} has betrayed us and stopped giving our gods money :(".format(after))
-                # Commented out until Bernardo approves of a leaving message
-
                 message = ("Unfortunately, your patreon subscription has been cancelled, or stopped renewing automatically. This means your token, and the special features,"
                            " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
                 url = "https://flagbrew.org/patron/remove"

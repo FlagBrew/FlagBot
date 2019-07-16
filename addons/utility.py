@@ -112,8 +112,8 @@ class Utility(commands.Cog):
                                   " subscription ends! If you need any help adding it, ask in {}!\n\n`{}`".format(self.bot.patrons_chat, token))
 
     @commands.command()
-    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    async def regen_token(self, ctx, user, old_token):
+    # @commands.has_any_role("Discord Moderator", "FlagBrew Team")
+    async def regen_token(self, ctx, user: discord.Member, old_token: str):
         """Regenerates a patron's token"""
         new_token = secrets.token_urlsafe(16)
         data = {
