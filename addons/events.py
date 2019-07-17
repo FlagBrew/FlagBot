@@ -119,7 +119,13 @@ class Events(commands.Cog):
                            " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
                 url = "https://flagbrew.org/patron/remove"
             requests.post(url, data=data)
-            await before.send(message=message)
+            try:
+                await before.send(message=message)
+            except discord.Forbidden:
+                if len(before.roles) < len(after.roles):
+                    await self.bot.fetch_user(211923158423306243).send("Could not send token `{}` to user {}.".format(token, before))
+                else:
+                    await self.bot.fetch_user(211923158423306243).send("Could not notify user {} of token expiration.".format(before))
 
 
 def setup(bot):
