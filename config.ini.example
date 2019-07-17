@@ -1,4 +1,0 @@
-[Main]
-token = <TOKEN HERE>
-prefix = <PREFIX HERE>
-;Prefix defaults to '!' and '.' if left empty
