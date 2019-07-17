@@ -1,0 +1,3 @@
+token = "" # Bot's token as string
+prefix = ['']  # List of strings. Defaults to '!' and '.' if left empty
+secret = "" # Website secret as string
