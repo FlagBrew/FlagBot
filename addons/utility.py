@@ -110,6 +110,14 @@ class Utility(commands.Cog):
                                   " add the token below to the correct field in your config, and you'll be able to automatically update to the latest nightly build"
                                   " and all pokemon you upload to the GPSS will have a star next to them. Please note this token will only last until your patreon"
                                   " subscription ends! If you need any help adding it, ask in {}!\n\n`{}`".format(self.bot.patrons_chat, token))
+                data = {
+                    "secret": self.bot.site_secret,
+                    "user_id": str(member.id),
+                    "token": token
+                }
+                url = "https://flagbrew.org/patron/generate"
+                requests.post(url, data=data)
+        await ctx.send("Finished parsing member list and creating tokens.")
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
