@@ -1,4 +1,9 @@
 *__pycache__*
 *.pyc
+<<<<<<< HEAD
 config.py
 .vscode
+=======
+.vscode
+config.py
+>>>>>>> 614cd33d38c601d70ce61e49c8789d7ca0ff8e3c
