@@ -117,6 +117,7 @@ class Utility(commands.Cog):
                 }
                 url = "https://flagbrew.org/patron/generate"
                 requests.post(url, data=data)
+        await ctx.send("Finished parsing member list and creating tokens.")
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
