@@ -224,10 +224,19 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def guide(self, ctx):
-        """Links to 3ds guide"""
-        embed = discord.Embed()
-        embed.description = "You can use [this guide](https://3ds.hacks.guide) to hack your 3ds."
+    async def guide(self, ctx, option=""):
+        """Links to 3ds & switch guides. Each can be given for specific. Defaults to 3ds in any channel that starts with pksm"""
+        embed = discord.Embed(description="")
+        ds, switch = (True,) * 2
+        if option.lower() == "switch":
+            ds = False
+        elif ctx.channel.name.startswith("pksm") or option.lower() == "3ds":
+            switch = False
+            ds = True
+        if ds:
+            embed.description += "You can use [this guide](https://3ds.hacks.guide) to hack your 3ds.\n"
+        if switch:
+            embed.description += "You can use [this guide](https://nh-server.github.io/switch-guide/) to hack your switch."
         await ctx.send(embed=embed)
 
     def get_keys(self, hexval):  # thanks to architdate for the code
