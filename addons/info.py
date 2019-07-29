@@ -134,7 +134,7 @@ class Info(commands.Cog):
             return
         embed = discord.Embed(title="Frequently Asked Questions")
         for faq in self.faq_dict:
-            embed.add_field(name=faq["title"], value=faq["value"])
+            embed.add_field(name="{}: {}".format(self.faq_dict.index(faq) + 1, faq["title"]), value=faq["value"])
         await ctx.send(embed=embed)
 
     @commands.command()  # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
