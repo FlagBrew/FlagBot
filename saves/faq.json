@@ -40,7 +40,7 @@
     "value": "If this save came from DeSmuME, then it likely has an extra 122 bytes at the end of it. Back up your file, then delete those last 122 bytes using a hex editor."
   },
   {
-    "title": "Can we edit trainer names with PKSM?",
-    "value": "No, and it will not be added as it can cause bans"
+    "title": "Can we get trainer name editing?",
+    "value": "No. Changing your trainer name can get your account banned, and as such the FlagBrew team will not allow it."
   }
 ]
