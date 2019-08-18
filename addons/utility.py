@@ -100,11 +100,7 @@ class Utility(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-<<<<<<< HEAD
-    @commands.has_any_role("FlagBrew Team")
-=======
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
->>>>>>> master
     async def regen_token(self, ctx, user: discord.Member, old_token: str):
         """Regenerates a patron's token"""
         new_token = secrets.token_urlsafe(16)
