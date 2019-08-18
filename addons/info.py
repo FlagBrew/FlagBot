@@ -255,7 +255,7 @@ class Info(commands.Cog):
 
     @commands.command()
     async def cheatkeys(self, ctx, key):
-        """Byte decoder for sharkive codes"""
+        """Byte decoder for sharkive codes. Input should be the second half of the line starting with DD000000"""
         indexes = self.get_keys(key)
         embed = discord.Embed(title="Matching inputs for `{}`".format(key))
         if len(indexes["3ds"]) > 0:
