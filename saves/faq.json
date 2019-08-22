@@ -16,12 +16,12 @@
     "value": "Nobody on the FlagBrew team knows how to make gameshark codes, or wants to learn. Almost all of the codes were taken from a fort42 dump. If you want more codes, learn how to make them yourself, or find a working one and open a pull request on the [repository](https://github.com/Flagbrew/Sharkive/pulls) to get the code added."
   },
   {
-    "title": "I have Homebrew/*hax. Why can't I launch PKSM?",
-    "value": "PKSM 6.0 and up now *requires* CFW to function. **There is no viable reason to not install CFW nowadays. There is a free method.** You can follow [this guide](https://3ds.hacks.guide) to install CFW on your 3ds. ***Versions under PKSM 6.0 are not supported and no assistance will be given with them!!!***"
+    "title": "I have Homebrew/*hax. Why can't I launch any Flagbrew apps?",
+    "value": "FlagBrew apps *require* CFW to function. **There is no viable reason to not install CFW nowadays. There is a free method.** You can follow [this guide](https://3ds.hacks.guide) to install CFW on your 3ds. ***Versions under PKSM 6.0 are not supported and no assistance will be given with them!!!***"
   },
   {
     "title": "My pokemon isn't legal, what do I do???",
-    "value": "The met location is incorrect. From the *edit pokemon* screen, click the icon in the top right. Then, find the met location byte and edit it to a legal value. The location corresponding to each value can be found on the bottom screen."
+    "value": "The met location is incorrect. From the *edit pokemon* screen, click the icon in the top right. Then, find the met location byte and edit it to a legal value. The location corresponding to each value can be found on the bottom screen.\nNote: There may be other issues with the legality of your pokemon. Double check moves, level, etc."
   },
   {
     "title": "Can we get legality checking please?",
