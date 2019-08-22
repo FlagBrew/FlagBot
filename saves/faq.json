@@ -21,11 +21,11 @@
   },
   {
     "title": "My pokemon isn't legal, what do I do???",
-    "value": "The met location is incorrect. From the **edit pokemon** screen, go to the **misc** screen. Then click on **met location**. After, just select a legal met location from the list.\nYou'll need to find that using something like [serebii](https://serebii.net), or an in-game pokedex.\nNote: There may be other issues with the legality of your pokemon. Double check moves, level, etc., or use the legality checker in the same **misc** screen."
+    "value": "The met location is incorrect. From the *edit pokemon* screen, click the icon in the top right. Then, find the met location byte and edit it to a legal value. The location corresponding to each value can be found on the bottom screen.\nNote: There may be other issues with the legality of your pokemon. Double check moves, level, etc."
   },
   {
     "title": "Can we get legality checking please?",
-    "value": "Believe it or not, you can! Go to the **edit pokemon** screen, then go to the **misc** screen. Click on the wireless icon. Congrats, you've accessed the legality checker.\nPlease note: the legality checker requires a network connection. It cannot be handled on-3ds as it would destroy the 3ds."
+    "value": "No. It would be *extremely* memory intensive, and excessive bloat. It will not happen. There will be a way to check legality soon, keep an eye on <#382077725579411457> for that."
   },
   {
     "title": "When are we getting PKSM on Switch?",
