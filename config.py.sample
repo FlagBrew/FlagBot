@@ -1,3 +1,4 @@
 token = "" # Bot's token as string
 prefix = ['']  # List of strings. Defaults to '!' and '.' if left empty
 secret = "" # Website secret as string
+err_logs_channel = 0  # Defaults to err-logs on testing server if left blank
