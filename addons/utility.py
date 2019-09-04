@@ -159,7 +159,7 @@ class Utility(commands.Cog):
     @commands.command(aliases=['report', 'rc'])  # Modified from https://gist.github.com/JeffPaine/3145490
     async def report_code(self, ctx, game_id: str, code_name: str, issue):
         """Allow reporting a broken code through the bot. Example: .report_code 00040000001B5000, "PP Not Decrease v1.0", "PP still decreases with code enabled"""
-        db_3ds = requests.get("https://api.github.com/repos/FlagBrew/Sharkive/contents/db")
+        db_3ds = requests.get("https://api.github.com/repos/FlagBrew/Sharkive/contents/3ds")
         db_3ds = json.loads(db_3ds.text)
         content_3ds = [x['name'].replace(".txt", "") for x in db_3ds]
         db_switch = requests.get("https://api.github.com/repos/FlagBrew/Sharkive/contents/switch")
