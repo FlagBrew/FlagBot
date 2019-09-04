@@ -55,8 +55,12 @@ bot = commands.Bot(command_prefix=prefix, description=description)
 
 if heroku:
     bot.site_secret = os.environ['SECRET']
+    bot.github_user = os.environ['GITHUB-USER']
+    bot.github_pass = os.environ['GITHUB-PASS']
 else:
     bot.site_secret = config.secret
+    bot.github_user = config.github_username
+    bot.github_pass = config.github_password
 
 bot.dir_path = os.path.dirname(os.path.realpath(__file__))
 
