@@ -129,7 +129,11 @@ async def on_ready():
                     bot.patrons_channel = discord.utils.get(guild.channels, id=381000988246540292)
 
                 if guild.id == bot.testing_id:
-                    bot.err_logs_channel = discord.utils.get(guild.channels, id=468877079023321089)
+                    if heroku or config.err_logs_channel == 0:
+                        id = 468877079023321089
+                    else:
+                        id = config.err_logs_channel
+                    bot.err_logs_channel = discord.utils.get(guild.channels, id=id)
 
                 bot.creator = discord.utils.get(guild.members, id=177939404243992578)
 

@@ -111,7 +111,7 @@ class Events(commands.Cog):
                 await self.bot.patrons_channel.send("Welcome to the super secret cool kids club {}!"
                                                     " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.".format(after.mention))
                 url = "https://flagbrew.org/patron/generate"
-                data.append("token", token)
+                data["token"] = token
                 message = ("Congrats on becoming a patron! You can add the token below to PKSM's config to access some special patron only stuff. It's only valid until your"
                            " patron status is cancelled, so keep up those payments! If you need any help setting it up, ask in {}!\n\n`{}`".format(self.bot.patrons_channel.mention, token))
             else:
@@ -120,7 +120,7 @@ class Events(commands.Cog):
                 url = "https://flagbrew.org/patron/remove"
             requests.post(url, data=data)
             try:
-                await before.send(message=message)
+                await before.send(message)
             except discord.Forbidden:
                 if len(before.roles) < len(after.roles):
                     await self.bot.fetch_user(211923158423306243).send("Could not send token `{}` to user {}.".format(token, before))
