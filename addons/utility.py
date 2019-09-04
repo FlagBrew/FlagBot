@@ -183,8 +183,6 @@ class Utility(commands.Cog):
             await ctx.send("There was an issue creating the issue. {} please see logs.".format(self.bot.creator.mention))
             await self.bot.err_logs_channel.send("Failed to create issue with status code `{}` - `{}`.".format(r.status_code, requests.status_codes._codes[r.status_code][0]))
         session.close
-        with open("saves/output.json", "w") as f:
-            f.write(r.text)
 
 
 def setup(bot):
