@@ -159,18 +159,24 @@ class Utility(commands.Cog):
     @commands.command(aliases=['report', 'rc'])  # Modified from https://gist.github.com/JeffPaine/3145490
     async def report_code(self, ctx, game_id: str, code_name: str, issue):
         """Allow reporting a broken code through the bot. Example: .report_code 00040000001B5000, "PP Not Decrease v1.0", "PP still decreases with code enabled"""
-        db3ds = requests.get("https://api.github.com/repos/FlagBrew/Sharkive/contents/db")
-        db3ds = json.loads(db3ds.text)
-        content = [x['name'].replace(".txt", "") for x in db3ds]
-        if game_id not in content:
+        db_3ds = requests.get("https://api.github.com/repos/FlagBrew/Sharkive/contents/db")
+        db_3ds = json.loads(db_3ds.text)
+        content_3ds = [x['name'].replace(".txt", "") for x in db_3ds]
+        db_switch = requests.get("https://api.github.com/repos/FlagBrew/Sharkive/contents/switch")
+        db_switch = json.loads(db_switch.text)
+        content_switch = [x['name'] for x in db_switch]
+        if game_id not in content_3ds and game_id not in content_switch:
             return await ctx.send("That game ID isn't in the database! Please confirm the game is in the database.")
+        elif game_id in content_3ds and game_id not in content_switch:
+            console = "3DS"
+        else:
+            console = "Switch"
         repo_owner = "FlagBrew"
         repo_name = "Sharkive"
         url = "https://api.github.com/repos/{}/{}/issues".format(repo_owner, repo_name)
-        print(url)
         session = requests.session()
         session.auth = (self.bot.github_user, self.bot.github_pass)
-        issue_body = "Game ID: {}\nCode name: {}\n\n Issue: {}\n\n Submitted by: {} | User id: {}".format(game_id, code_name, issue, ctx.author, ctx.author.id)
+        issue_body = "Game ID: {}\nConsole: {}\nCode name: {}\n\n Issue: {}\n\n Submitted by: {} | User id: {}".format(game_id, console, code_name, issue, ctx.author, ctx.author.id)
         issue = {
             "title": "Broken code submitted through bot",
             "body": issue_body
