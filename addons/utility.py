@@ -156,6 +156,36 @@ class Utility(commands.Cog):
             await ctx.author.send("Could not message user {} about token generation. Please reach out manually. Message below.\n\n{}".format(user, message))
         await ctx.send("Token for user {} successfully generated.".format(user))
 
+    @commands.command(aliases=['report', 'rc'])  # Modified from https://gist.github.com/JeffPaine/3145490
+    async def report_code(self, ctx, game_id: str, code_name: str, issue):
+        """Allow reporting a broken code through the bot. Example: .report_code 00040000001B5000, "PP Not Decrease v1.0", "PP still decreases with code enabled"""
+        db3ds = requests.get("https://api.github.com/repos/FlagBrew/Sharkive/contents/db")
+        db3ds = json.loads(db3ds.text)
+        content = [x['name'].replace(".txt", "") for x in db3ds]
+        if game_id not in content:
+            return await ctx.send("That game ID isn't in the database! Please confirm the game is in the database.")
+        repo_owner = "FlagBrew"
+        repo_name = "Sharkive"
+        url = "https://api.github.com/repos/{}/{}/issues".format(repo_owner, repo_name)
+        print(url)
+        session = requests.session()
+        session.auth = (self.bot.github_user, self.bot.github_pass)
+        issue_body = "Game ID: {}\nCode name: {}\n\n Issue: {}\n\n Submitted by: {} | User id: {}".format(game_id, code_name, issue, ctx.author, ctx.author.id)
+        issue = {
+            "title": "Broken code submitted through bot",
+            "body": issue_body
+        }
+        r = session.post(url, json.dumps(issue))
+        json_content = json.loads(r.text)
+        if r.status_code == 201:
+            await ctx.send("Successfully created issue! You can find it here: https://github.com/{}/{}/issues/{}".format(repo_owner, repo_name, json_content["number"]))
+        else:
+            await ctx.send("There was an issue creating the issue. {} please see logs.".format(self.bot.creator.mention))
+            await self.bot.err_logs_channel.send("Failed to create issue with status code `{}` - `{}`.".format(r.status_code, requests.status_codes._codes[r.status_code][0]))
+        session.close
+        with open("saves/output.json", "w") as f:
+            f.write(r.text)
+
 
 def setup(bot):
     bot.add_cog(Utility(bot))
