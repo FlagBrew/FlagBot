@@ -86,13 +86,9 @@ class Events(commands.Cog):
     async def on_message_delete(self, message):
         if isinstance(message.channel, discord.abc.GuildChannel) and message.author.id != self.bot.user.id and message.guild.id == self.bot.flagbrew_id:
             if message.channel != self.bot.logs_channel:
+                if not message.content:
+                    return
                 embed = discord.Embed(description=message.content)
-                if message.attachments:
-                        attachment_urls = []
-                        for attachment in message.attachments:
-                            attachment_urls.append('[{}]({})'.format(attachment.filename, attachment.url))
-                        attachment_msg = '\N{BULLET} ' + '\n\N{BULLET} s '.join(attachment_urls)
-                        embed.add_field(name='Attachments', value=attachment_msg, inline=False)
                 try:
                     await self.bot.logs_channel.send("Message by {0} deleted in channel {1.mention}:".format(message.author, message.channel), embed=embed)
                 except discord.Forbidden:
