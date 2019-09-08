@@ -13,19 +13,19 @@
   },
   {
     "title": "Can you please add a code for `x` game?",
-    "value": "Nobody on the FlagBrew team knows how to make gameshark codes, or wants to learn. Almost all of the codes were taken from a fort42 dump. If you want more codes, learn how to make them yourself, or find a working one and open a pull request on the [repository](https://github.com/Flagbrew/Sharkive/pulls) to get the code added."
+    "value": "Nobody on the FlagBrew team knows how to make gameshark codes, or wants to learn. All of the codes were either taken from a fort42 dump, or submitted to the repo. If you want more codes, learn how to make them yourself, or find a working one and open a pull request on the [repository](https://github.com/Flagbrew/Sharkive/pulls) to get the code added."
   },
   {
     "title": "I have Homebrew/*hax. Why can't I launch any Flagbrew apps?",
-    "value": "FlagBrew apps *require* CFW to function. **There is no viable reason to not install CFW nowadays. There is a free method.** You can follow [this guide](https://3ds.hacks.guide) to install CFW on your 3ds. ***Versions under PKSM 6.0 are not supported and no assistance will be given with them!!!***"
+    "value": "FlagBrew apps *require* CFW to function. **There is no viable reason to not install CFW nowadays. There is a free method.** You can follow [this guide](https://3ds.hacks.guide) to install CFW on your 3ds. ***Versions under PKSM 7.0 are not supported and no assistance will be given with them!!!***"
   },
   {
     "title": "My pokemon isn't legal, what do I do???",
-    "value": "The met location is incorrect. From the *edit pokemon* screen, click the icon in the top right. Then, find the met location byte and edit it to a legal value. The location corresponding to each value can be found on the bottom screen.\nNote: There may be other issues with the legality of your pokemon. Double check moves, level, etc."
+    "value": "The met location is incorrect. From the **edit pokemon** screen, go to the **misc** screen. Then click on **met location**. After, just select a legal met location from the list.\nYou'll need to find that using something like [serebii](https://serebii.net), or an in-game pokedex.\nNote: There may be other issues with the legality of your pokemon. Double check moves, level, etc., or use the legality checker in the same **misc** screen."
   },
   {
     "title": "Can we get legality checking please?",
-    "value": "No. It would be *extremely* memory intensive, and excessive bloat. It will not happen. There will be a way to check legality soon, keep an eye on <#382077725579411457> for that."
+    "value": "Believe it or not, you can! Go to the **edit pokemon** screen, then go to the **misc** screen. Click on the wireless icon. Congrats, you've accessed the legality checker.\nPlease note: the legality checker requires a network connection. It cannot be handled on-3ds as it would destroy the 3ds."
   },
   {
     "title": "When are we getting PKSM on Switch?",
