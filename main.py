@@ -124,6 +124,7 @@ async def on_ready():
         try:
             if guild.id == bot.testing_id or guild.id == bot.flagbrew_id:
                 bot.guild = guild
+                bot.reload_counter = 0
                 if guild.id == bot.flagbrew_id:
                     bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
                     bot.flagbrew_team_role = discord.utils.get(guild.roles, id=482928611809165335)
@@ -194,6 +195,7 @@ async def load(ctx, *, module):
 @bot.command()
 async def reload(ctx):
     """Reloads an addon."""
+    bot.reload_counter += 1
     if ctx.author == ctx.guild.owner or ctx.author == bot.creator:
         errors = ""
         for addon in os.listdir("addons"):
@@ -208,6 +210,8 @@ async def reload(ctx):
             await ctx.send(':white_check_mark: Extensions reloaded.')
         else:
             await ctx.send(errors)
+        if bot.reload_counter == 1:
+            await ctx.send("This is the first reload after I restarted!")
     else:
         await ctx.send("You don't have permission to do that!")
 
