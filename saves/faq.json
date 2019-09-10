@@ -42,5 +42,13 @@
   {
     "title": "Can we get trainer data editing?",
     "value": "No. Editing your trainer data can get your account banned, and as such the FlagBrew team will not be adding it."
+  },
+  {
+    "title": "Where are the save files stored?",
+    "value": "**3DS**: `sd:/luma/titles/<titleID>/cheats.txt` substituting the proper title ID for `<titleID>`\n**Switch**: Unknown"
+  },
+  {
+    "title": "How to report a broken code without a GitHub account",
+    "value": "Use the `report_code` command (aliased as `rc`) in FlagBot. You need to provide the game id, the code name, and a description of the issue. Below is an example for Pokemon Ultra Sun.\n```.rc 00040000001B5000 'Can use mega evolution multiple times in a fight v1.0' 'Can only use mega evolution 2 times'```\n***Please note the quotation marks are necessary!!!***\n\nYou can find the game id either through FBI>Titles, or by going to the sharkive database, clicking on the game, and copying the id for the file it brings you to."
   }
 ]
