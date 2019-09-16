@@ -138,7 +138,9 @@ class Info(commands.Cog):
     @commands.command()
     async def question(self, ctx):
         """Reminder for those who won't just ask their question"""
-        await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, as little as they may seem, as well as assisting materials. Asking to ask wont expedite your process, and may delay assistance.")
+        await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, "
+                       "as little as they may seem, as well as assisting materials. Asking to ask wont expedite your process, and may delay assistance. "
+                       "***WE ARE NOT PSYCHIC.***")
 
     @commands.command(aliases=['readthedocs', 'docs', 'extrasaves', 'es', '<:wikidiot:558815031836540940>'])
     async def wiki(self, ctx, option=""):
