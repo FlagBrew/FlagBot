@@ -102,11 +102,11 @@ class Info(commands.Cog):
         await channel.send(embed=embed)
 
     @commands.command()
-    async def faq(self, ctx, *, faq=""):
+    async def faq(self, ctx, *, faq_item=""):
         """Frequently Asked Questions. Allows numeric input for specific faq."""
-        faq = faq.replace(' ', ',').split(',')
+        faq_item = faq_item.replace(' ', ',').split(',')
         count = 0
-        for faq_num in faq:
+        for faq_num in faq_item:
             if not faq_num.isdigit():
                 if count == 0:
                     break
@@ -119,16 +119,15 @@ class Info(commands.Cog):
                 await self.format_faq_embed(self, faq_num, ctx.channel)
             elif count == 1:
                 await ctx.send("Faq number {} doesn't exist.".format(faq_num))
-        if count == len(faq):
+        if count == len(faq_item):
             return
         embed = discord.Embed(title="Frequently Asked Questions")
-        for faq in self.faq_dict:
-            embed.add_field(name="{}: {}".format(self.faq_dict.index(faq) + 1, faq["title"]), value=faq["value"])
-        if not faq and ctx.author is not self.bot.creator and ctx.author is not self.bot.pie:
-            await ctx.send(embed=embed)
-        else:
+        for faq_arr in self.faq_dict:
+            embed.add_field(name="{}: {}".format(self.faq_dict.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"])
+        if faq_item == [''] and (ctx.author is self.bot.creator or ctx.author is self.bot.pie):
             await ctx.message.delete()
-            await ctx.author.send(embed=embed)
+            return await ctx.author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.command()  # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
     async def vguides(self, ctx):
