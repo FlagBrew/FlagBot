@@ -125,7 +125,7 @@ class Info(commands.Cog):
         for faq in self.faq_dict:
             embed.add_field(name="{}: {}".format(self.faq_dict.index(faq) + 1, faq["title"]), value=faq["value"])
         if not faq and ctx.author is not self.bot.creator and ctx.author is not self.bot.pie:
-        await ctx.send(embed=embed)
+            await ctx.send(embed=embed)
         else:
             await ctx.message.delete()
             await ctx.author.send(embed=embed)
@@ -146,16 +146,13 @@ class Info(commands.Cog):
                        "as little as they may seem, as well as assisting materials. Asking to ask wont expedite your process, and may delay assistance. "
                        "***WE ARE NOT PSYCHIC.***")
 
-    @commands.command(aliases=['readthedocs', 'docs', 'extrasaves', 'es', '<:wikidiot:558815031836540940>'])
+    @commands.command(aliases=['readthedocs', 'docs', '<:wikidiot:558815031836540940>'])
     async def wiki(self, ctx, option=""):
         """Sends wiki link. extrasaves, storage, editor, events, scripts, bag, config, scriptdev, and faq all as options"""
         extra_info = ""
         wiki_link_ext = ""
         option = option.lower()
-        if option == "extrasaves" or option == "extra-saves" or option == "saves" or option == "saveconfig" or ctx.invoked_with == "extrasaves" or ctx.invoked_with == "es":
-            extra_info = " entry for extra saves"
-            wiki_link_ext = "/Configuration#extra-saves"
-        elif option == "storage":
+        if option == "storage":
             extra_info = " entry for the storage feature"
             wiki_link_ext = "/Storage"
         elif option == "editor":
@@ -191,24 +188,6 @@ class Info(commands.Cog):
         embed.description = ("1. Download the assets from [here](https://github.com/dsoldier/PKResources/tree/master/additionalassets).\n"
                              "2. Copy the assets to `/3ds/PKSM/assets/`. You may need to create the folder.\n"
                              "3. Launch PKSM, and you should be good to go.")
-        await ctx.send(embed=embed)
-
-    @commands.command(aliases=["template", "estemp"])
-    async def estemplate(self, ctx):
-        """Outputs the template for extrasaves from the wiki"""
-        embed = discord.Embed(title="Extra Saves Template")
-        embed.description = ("```json\n"
-                             "\"extraSaves\": {\n"
-                             "  \"CPUE\": [\n"
-                             "    \"/roms/nds/POKEMON_PL.sav\",\n"
-                             "    \"/path/to/file.save\"\n"
-                             "  ],\n"
-                             "  \"0x0055D\": [\n"
-                             "    \"/backups/game/name/main\",\n"
-                             "    \"/path/to/main\"\n"
-                             "  ]\n"
-                             "}```")
-        embed.description += "\nYou can also use the online tool from the FlagBrew website [here](https://flagbrew.org/tools/extra_saves)."
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['database'])
@@ -268,6 +247,15 @@ class Info(commands.Cog):
         embed = discord.Embed(title="Should you downgrade?")
         embed.description = "If you downgrade, you will fuck things up. Don't do it for fucks sake."
         embed.set_thumbnail(url="https://media.giphy.com/media/ToMjGpx9F5ktZw8qPUQ/giphy.gif")
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['es'])
+    async def extrasaves(self, ctx):
+        """Extrasaves info"""
+        embed = discord.Embed(title="How do I access my external saves?")
+        embed.description = ("Open PKSM's settings from the game select menu by pressing `x`, and go to **Misc**. Choose **Extra Saves**. "
+                             "Then, select the game you want to add a save for, choose add save, and navigate to the save. "
+                             "Afterwards, hit `y` on the game select screen to view the absent games menu.")
         await ctx.send(embed=embed)
 
 
