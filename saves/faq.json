@@ -41,6 +41,14 @@
   },
   {
     "title": "Can we get trainer data editing?",
-    "value": "No. Editing your trainer data can get your account banned, and as such the FlagBrew team will not be adding it."
+    "value": "You can do it through a script. Fair warning that it may get your game banned however."
+  },
+  {
+    "title": "Why won't Sharkive launch?",
+    "value": "Sharkive has been deprecated as its functionality has been merged into [Checkpoint](https://github.com/FlagBrew/Checkpoint/releases/latest). Use Checkpoint instead."
+  },
+  {
+    "title": "Where can I find the script docs?",
+    "value": "You can see what each script does [here](https://github.com/FlagBrew/PKSM-Scripts/wiki/Script-Notes)."
   }
 ]

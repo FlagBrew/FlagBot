@@ -141,6 +141,7 @@ async def on_ready():
                     bot.err_logs_channel = discord.utils.get(guild.channels, id=id)
 
                 bot.creator = discord.utils.get(guild.members, id=177939404243992578)
+                bot.pie = discord.utils.get(guild.members, id=307233052650635265)
 
             else:
                 try:
