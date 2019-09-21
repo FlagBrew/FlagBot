@@ -124,7 +124,7 @@ class Info(commands.Cog):
         embed = discord.Embed(title="Frequently Asked Questions")
         for faq_arr in self.faq_dict:
             embed.add_field(name="{}: {}".format(self.faq_dict.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"])
-        if faq_item == [''] and (ctx.author is self.bot.creator or ctx.author is self.bot.pie):
+        if faq_item == [''] and (ctx.author.id == self.bot.creator.id or ctx.author.id == self.bot.pie.id):
             await ctx.message.delete()
             return await ctx.author.send(embed=embed)
         await ctx.send(embed=embed)

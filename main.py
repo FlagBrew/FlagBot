@@ -140,9 +140,6 @@ async def on_ready():
                         id = config.err_logs_channel
                     bot.err_logs_channel = discord.utils.get(guild.channels, id=id)
 
-                bot.creator = discord.utils.get(guild.members, id=177939404243992578)
-                bot.pie = discord.utils.get(guild.members, id=307233052650635265)
-
             else:
                 try:
                     await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
@@ -157,6 +154,8 @@ async def on_ready():
             print("Initialized on {}.".format(guild.name))
         except:
             print("Failed to initialize on {}".format(guild.name))
+    bot.creator = await bot.fetch_user(177939404243992578)
+    bot.pie = await bot.fetch_user(307233052650635265)
 
 
 # loads extensions
