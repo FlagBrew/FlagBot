@@ -124,7 +124,11 @@ class Info(commands.Cog):
         embed = discord.Embed(title="Frequently Asked Questions")
         for faq in self.faq_dict:
             embed.add_field(name="{}: {}".format(self.faq_dict.index(faq) + 1, faq["title"]), value=faq["value"])
+        if not faq and ctx.author is not self.bot.creator and ctx.author is not self.bot.pie:
         await ctx.send(embed=embed)
+        else:
+            await ctx.message.delete()
+            await ctx.author.send(embed=embed)
 
     @commands.command()  # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
     async def vguides(self, ctx):
