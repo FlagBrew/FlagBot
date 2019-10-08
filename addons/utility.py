@@ -27,20 +27,16 @@ class Utility(commands.Cog):
             return True
 
     @commands.command()
-    async def togglerole(self, ctx, role=""):
+    async def togglerole(self, ctx, role):
         """Allows user to toggle update roles. You can use .masstoggle to apply all roles at once.
         Available roles: PKSM, Checkpoint, General"""
         await ctx.message.delete()
         user = ctx.message.author
-        if not role or role.lower() not in ["pksm", "checkpoint", "general", "guinea_pig"]:
-            embed = discord.Embed(title="Toggleable roles")
-            embed.description = "pksm\ncheckpoint\ngeneral\nguinea_pig"
-            return await ctx.send(embed=embed)
         had_role = await self.toggleroles(ctx, discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict[role.lower()])), user)
         if had_role:
-            info_string = "You will no longer be pinged for {} updates.".format("guide" if role == "guinea_pig" else role)
+            info_string = "You will no longer be pinged for {} updates.".format(role)
         else:
-            info_string = "You will now receive pings for {} updates!".format("guide" if role == "guinea_pig" else role)
+            info_string = "You will now receive pings for {} updates!".format(role)
         try:
             await ctx.author.send(info_string)
         except discord.errors.Forbidden:
@@ -52,8 +48,7 @@ class Utility(commands.Cog):
         toggle_roles = [
             discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["pksm"])),
             discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["checkpoint"])),
-            discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["general"])),
-            discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["guinea_pig"]))
+            discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["general"]))
         ]
         await ctx.message.delete()
         user = ctx.message.author
