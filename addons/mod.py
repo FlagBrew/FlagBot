@@ -95,14 +95,6 @@ class Moderation(commands.Cog):
         else:
             await ctx.send("Why would you wanna purge no messages?", delete_after=10)
 
-    @commands.command()
-    async def test(self, ctx, id):
-        member = await self.bot.fetch_user(id)
-        member_2 = ctx.guild.get_member(member.id)
-        if any(r for r in self.bot.protected_roles if r in member_2.roles):
-            return await ctx.send("That user is protected!")
-        await ctx.send("User would be banned.")
-
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
