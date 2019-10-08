@@ -227,7 +227,8 @@ async def dump_role_id(ctx):
     roles = {}
     for role in ctx.guild.roles[1:]:
         roles[role.name] = role.id
-    await bot.creator.send(roles)
+    formatted_roles = str(roles).replace('{', '').replace(', ', ',\n').replace('}', '').replace("'", "**")
+    await bot.creator.send(formatted_roles)
     await ctx.send("Roles dumped. Cleaning messages in 5 seconds.", delete_after=5)
     await asyncio.sleep(5.1)
     await ctx.message.delete()
