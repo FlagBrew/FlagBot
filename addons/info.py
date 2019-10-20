@@ -9,11 +9,12 @@ import json
 import math
 from discord.ext import commands
 
-desc = "You can get the latest release of {}."
+desc_temp = "You can get the latest release of {}."
 desc_pksm = "PKSM [here](https://github.com/FlagBrew/PKSM/releases/latest)"
 desc_checkpoint = "Checkpoint [here](https://github.com/FlagBrew/Checkpoint/releases/latest)"
 desc_pickr = "Pickr [here](https://github.com/FlagBrew/Pickr/releases/latest)"
 desc_2048 = "2048 [here](https://github.com/FlagBrew/2048/releases/latest)"
+readme_temp = "You can read {}'s README [here](https://github.com/FlagBrew/{}/blob/master/README.md)."
 
 
 class Info(commands.Cog):
@@ -44,23 +45,23 @@ class Info(commands.Cog):
         """Returns the latest release for FlagBrew"s projects. If pulling checkpoint or pickr release, you can add "switch" to the end to get one without a qr code for ease of use"""
         img = 0
         if app.lower().startswith("pksm"):
-            embed = discord.Embed(description=desc.format(desc_pksm))
+            embed = discord.Embed(description=desc_temp.format(desc_pksm))
             img = url = self.gen_qr(self, "PKSM")
         elif app.lower().startswith("checkpoint"):
-            embed = discord.Embed(description=desc.format(desc_checkpoint))
+            embed = discord.Embed(description=desc_temp.format(desc_checkpoint))
             str_list = app.lower().split()
             if "switch" not in str_list:
                 img = url = self.gen_qr(self, "Checkpoint")
         elif app.lower().startswith("pickr"):
-            embed = discord.Embed(description=desc.format(desc_pickr))
+            embed = discord.Embed(description=desc_temp.format(desc_pickr))
             str_list = app.lower().split()
             if "switch" not in str_list:
                 img = url = self.gen_qr(self, "Pickr")
         elif app.lower().startswith("2048"):
-            embed = discord.Embed(description=desc.format(desc_2048))
+            embed = discord.Embed(description=desc_temp.format(desc_2048))
         else:
-            embed = discord.Embed(description=desc.format(desc_pksm) + "\n" + desc.format(desc_checkpoint) + "\n" + desc.format(desc_pickr) + "\n" +
-                                  desc.format(desc_2048))
+            embed = discord.Embed(description=desc_temp.format(desc_pksm) + "\n" + desc_temp.format(desc_checkpoint) + "\n" + desc_temp.format(desc_pickr) + "\n" +
+                                  desc_temp.format(desc_2048))
         if img == 0:
             return await ctx.send(embed=embed)
         f = discord.File(io.BytesIO(img), filename="qr.png")
@@ -76,17 +77,19 @@ class Info(commands.Cog):
     async def readme(self, ctx, app=""):
         """READMEs for FlagBrew's projects."""
         if app.lower() == "script" or app.lower() == "pksmscript" or app.lower() == "scripts" or app.lower() == "pksmscripts":
-            embed = discord.Embed(description="You can read about PKSM scripts [here](https://github.com/FlagBrew/PKSM-Scripts/blob/master/README.md).")
+            embed = discord.Embed(description=readme_temp.format("PKSM Scripts", "PKSM-Scripts"))
         elif app.lower() == "2048":
-            embed = discord.Embed(description="You can read 2048's README [here](https://github.com/FlagBrew/2048/blob/master/README.md).")
+            embed = discord.Embed(description=readme_temp.format("2048", "2048"))
         elif app.lower() == "pickr":
-            embed = discord.Embed(description="You can read Pickr's README [here](https://github.com/FlagBrew/Pickr/blob/master/README.md).")
+            embed = discord.Embed(description=readme_temp.format("Pickr", "Pickr"))
         elif app.lower() == "checkpoint":
-            embed = discord.Embed(description="You can read Checkpoint's README [here](https://github.com/FlagBrew/Checkpoint/blob/master/README.md).")
+            embed = discord.Embed(description=readme_temp.format("Checkpoint", "Checkpoint"))
         elif app.lower() == "pksm":
-            embed = discord.Embed(description="You can read PKSM's README [here](https://github.com/FlagBrew/PKSM/blob/master/README.md).")
+            embed = discord.Embed(description=readme_temp.format("PKSM", "PKSM"))
+        elif app.lower() == "sharkive":
+            embed = discord.Embed(description=readme_temp.format("Sharkive", "Sharkive"))
         else:
-            return await ctx.send("Input not given or recognized. Available READMEs: `scripts`, `2048`, `pickr`, `checkpoint`, `pksm`.")
+            return await ctx.send("Input not given or recognized. Available READMEs: `scripts`, `2048`, `pickr`, `checkpoint`, `pksm`, `sharkive`.")
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['patron'])
