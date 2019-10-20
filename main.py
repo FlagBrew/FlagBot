@@ -134,10 +134,10 @@ async def on_ready():
                     bot.patrons_channel = discord.utils.get(guild.channels, id=381000988246540292)
 
                 if guild.id == bot.testing_id:
-                    if heroku or config.err_logs_channel == 0:
-                        id = 468877079023321089
+                    if config.is_bot:
+                        id = 614206536394342533
                     else:
-                        id = config.err_logs_channel
+                        id = 468877079023321089
                     bot.err_logs_channel = discord.utils.get(guild.channels, id=id)
 
             else:
