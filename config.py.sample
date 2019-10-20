@@ -1,6 +1,6 @@
 token = "" # Bot's token as string
 prefix = ['']  # List of strings. Defaults to '!' and '.' if left empty
-secret = "" # Website secret as string
-err_logs_channel = 0  # Defaults to err-logs on testing server if left blank
+secret = ""  # Website secret as string
+is_beta = False  # Used to determine if bot is beta or production
 github_username = ""  # Github username as string
 github_password = ""  # Github password as string
