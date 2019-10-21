@@ -30,17 +30,16 @@ class Utility(commands.Cog):
     async def togglerole(self, ctx, role):
         """Allows user to toggle update roles. You can use .masstoggle to apply all roles at once.
         Available roles: 3DS, Switch"""
-        await ctx.message.delete()
         user = ctx.message.author
-        had_role = await self.toggleroles(ctx, discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict[role.lower()])), user)
+        role = role.lower()
+        if not role in ('3ds', 'switch'):
+            return await ctx.send("{} That isn't a toggleable role!".format(user.mention))
+        had_role = await self.toggleroles(ctx, discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict[role])), user)
         if had_role:
             info_string = "You will no longer be pinged for {} updates.".format(role)
         else:
             info_string = "You will now receive pings for {} updates!".format(role)
-        try:
-            await ctx.author.send(info_string)
-        except discord.errors.Forbidden:
-            await ctx.send(ctx.author.mention + ' ' + info_string, delete_after=5)
+        await ctx.send(user.mention + ' ' + info_string)
 
     @commands.command()
     async def masstoggle(self, ctx):
@@ -49,14 +48,10 @@ class Utility(commands.Cog):
             discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["3ds"])),
             discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["switch"]))
         ]
-        await ctx.message.delete()
         user = ctx.message.author
         for role in toggle_roles:
             await self.toggleroles(ctx, role, user)
-        try:
-            await user.send("Successfully toggled all possible roles.")
-        except discord.errors.Forbidden:
-            await ctx.send("{} Successfully toggled all possible roles.".format(ctx.author.mention), delete_after=5)
+        await ctx.send("{} Successfully toggled all possible roles.".format(user.mention))
 
     @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
