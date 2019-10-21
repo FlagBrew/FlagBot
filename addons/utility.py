@@ -29,7 +29,7 @@ class Utility(commands.Cog):
     @commands.command()
     async def togglerole(self, ctx, role):
         """Allows user to toggle update roles. You can use .masstoggle to apply all roles at once.
-        Available roles: PKSM, Checkpoint, General"""
+        Available roles: 3DS, Switch"""
         await ctx.message.delete()
         user = ctx.message.author
         had_role = await self.toggleroles(ctx, discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict[role.lower()])), user)
@@ -46,9 +46,8 @@ class Utility(commands.Cog):
     async def masstoggle(self, ctx):
         """Allows a user to toggle all possible update roles. Use .help toggleroles to see possible roles."""
         toggle_roles = [
-            discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["pksm"])),
-            discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["checkpoint"])),
-            discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["general"]))
+            discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["3ds"])),
+            discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["switch"]))
         ]
         await ctx.message.delete()
         user = ctx.message.author

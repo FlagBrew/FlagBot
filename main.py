@@ -134,7 +134,7 @@ async def on_ready():
                     bot.patrons_channel = discord.utils.get(guild.channels, id=381000988246540292)
 
                 if guild.id == bot.testing_id:
-                    if config.is_bot:
+                    if config.is_beta:
                         id = 614206536394342533
                     else:
                         id = 468877079023321089
