@@ -3,6 +3,8 @@
 import discord
 import requests
 import secrets
+import qrcode
+import io
 from discord.ext import commands
 from datetime import datetime
 
@@ -110,13 +112,22 @@ class Events(commands.Cog):
                 data["token"] = token
                 message = ("Congrats on becoming a patron! You can add the token below to PKSM's config to access some special patron only stuff. It's only valid until your"
                            " patron status is cancelled, so keep up those payments! If you need any help setting it up, ask in {}!\n\n`{}`".format(self.bot.patrons_channel.mention, token))
+                qr = qrcode.QRCode(version=None)
+                qr.add_data(token)
+                qr.make(fit=True)
+                img = qr.make_image(fill_color="black", back_color="white")
+                bytes = io.BytesIO()
+                img.save(bytes, format='PNG')
+                bytes = bytes.getvalue()
+                f = discord.File(io.BytesIO(bytes), filename="qr.png")
             else:
                 message = ("Unfortunately, your patreon subscription has been cancelled, or stopped renewing automatically. This means your token, and the special features,"
                            " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
                 url = "https://flagbrew.org/patron/remove"
+                f = None
             requests.post(url, data=data)
             try:
-                await before.send(message)
+                await before.send(message, file=f)
             except discord.Forbidden:
                 if len(before.roles) < len(after.roles):
                     await self.bot.fetch_user(211923158423306243).send("Could not send token `{}` to user {}.".format(token, before))

@@ -46,17 +46,17 @@ class Info(commands.Cog):
         img = 0
         if app.lower().startswith("pksm"):
             embed = discord.Embed(description=desc_temp.format(desc_pksm))
-            img = url = self.gen_qr(self, "PKSM")
+            img = self.gen_qr(self, "PKSM")
         elif app.lower().startswith("checkpoint"):
             embed = discord.Embed(description=desc_temp.format(desc_checkpoint))
             str_list = app.lower().split()
             if "switch" not in str_list:
-                img = url = self.gen_qr(self, "Checkpoint")
+                img = self.gen_qr(self, "Checkpoint")
         elif app.lower().startswith("pickr"):
             embed = discord.Embed(description=desc_temp.format(desc_pickr))
             str_list = app.lower().split()
             if "switch" not in str_list:
-                img = url = self.gen_qr(self, "Pickr")
+                img = self.gen_qr(self, "Pickr")
         elif app.lower().startswith("2048"):
             embed = discord.Embed(description=desc_temp.format(desc_2048))
         else:
