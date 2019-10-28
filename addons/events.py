@@ -111,7 +111,9 @@ class Events(commands.Cog):
                 url = "https://flagbrew.org/patron/generate"
                 data["token"] = token
                 message = ("Congrats on becoming a patron! You can add the token below to PKSM's config to access some special patron only stuff. It's only valid until your"
-                           " patron status is cancelled, so keep up those payments! If you need any help setting it up, ask in {}!\n\n`{}`".format(self.bot.patrons_channel.mention, token))
+                           " patron status is cancelled, so keep up those payments!"
+                           " To access the hidden Patron settings menu, press the four corners of the touch screen while on the configuration screen."
+                           " If you need any further help setting it up, ask in {}!\n\n`{}`".format(self.bot.patrons_channel.mention, token))
                 qr = qrcode.QRCode(version=None)
                 qr.add_data(token)
                 qr.make(fit=True)
