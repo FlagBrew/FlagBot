@@ -203,10 +203,11 @@ class Utility(commands.Cog):
         """Shows how many users would be kicked for inactivity. Defaults to maximum of 30 days"""
         if days > 30:
             return await ctx.send("Error, cannot estimate for greater than 30 days.")
+        msg = await ctx.send("Processing. This may take a minute.")
         prune_amount = await ctx.guild.estimate_pruned_members(days=days)
         if prune_amount == 0:
-            return await ctx.send("There are no users that would be kicked in that time frame.")  # Unlikely to be triggered on FlagBrew
-        await ctx.send("{} users would be kicked as a result of a prune.".format(prune_amount))
+            return await msg.edit(content="There are no users that would be kicked in that time frame.")  # Unlikely to be triggered on FlagBrew
+        await msg.edit(content="{} users would be kicked as a result of a prune.".format(prune_amount))
 
 
 def setup(bot):
