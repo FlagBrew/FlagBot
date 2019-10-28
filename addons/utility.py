@@ -194,6 +194,16 @@ class Utility(commands.Cog):
             await self.bot.err_logs_channel.send("Failed to create issue with status code `{}` - `{}`.".format(r.status_code, requests.status_codes._codes[r.status_code][0]))
         session.close
 
+    @commands.command(aliases=['estpurge'])
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
+    async def estprune(self, ctx, days=30):
+        """Shows how many users would be kicked for inactivity. Defaults to maximum of 30 days"""
+        if days > 30:
+            return await ctx.send("Error, cannot estimate for greater than 30 days.")
+        prune_amount = await ctx.guild.estimate_pruned_members(days=days)
+        if prune_amount == 0:
+            return await ctx.send("There are no users that would be kicked in that time frame.")  # Unlikely to be triggered on FlagBrew
+        await ctx.send("{} users would be kicked as a result of a prune.".format(prune_amount))
 
 def setup(bot):
     bot.add_cog(Utility(bot))
