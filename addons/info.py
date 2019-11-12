@@ -196,12 +196,10 @@ class Info(commands.Cog):
     async def db(self, ctx, console=""):
         """Links to the cheat database"""
         embed = discord.Embed(title="Cheat Code Database", description="")
-        if not console in ("3ds", "switch"):
-            all = True
-        else: all = False
-        if console.lower() == "3ds" or all:
+        is_all = console not in ("3ds", "switch")
+        if console.lower() == "3ds" or is_all:
             embed.description += "You can see the 3DS code database [here](https://github.com/FlagBrew/Sharkive/wiki/3DS-games-in-the-database).\n"
-        if console.lower() == "switch" or all:
+        if console.lower() == "switch" or is_all:
             embed.description += "You can view the Switch code database [here](https://github.com/FlagBrew/Sharkive/wiki/Switch-games-in-the-database)."
         await ctx.send(embed=embed)
 
