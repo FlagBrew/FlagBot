@@ -201,8 +201,8 @@ class Utility(commands.Cog):
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     async def estprune(self, ctx, days=30):
         """Shows how many users would be kicked for inactivity. Defaults to maximum of 30 days"""
-        if days > 30:
-            return await ctx.send("Error, cannot estimate for greater than 30 days.")
+        if not 0 < days <= 30:
+            return await ctx.send("Error, day count must be a positive number and less than 31 days.")
         msg = await ctx.send("Processing. This may take a minute.")
         prune_amount = await ctx.guild.estimate_pruned_members(days=days)
         if prune_amount == 0:
