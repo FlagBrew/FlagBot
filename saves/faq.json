@@ -50,5 +50,13 @@
   {
     "title": "Where can I find the script docs?",
     "value": "You can see what each script does [here](https://github.com/FlagBrew/PKSM-Scripts/wiki/Script-Notes)."
+  },
+  {
+    "title": "I can't access any of the channels in the Community group!",
+    "value": "You need to toggle either 3ds updates or switch updates to access these channels now. Information on how can be found in <#278223623175798794>."
+  },
+  {
+    "title": "PKSM is erroring with Archive::init on launch, how can I fix it?",
+    "value": "Backup and immediately restore PKSM's ExtData using [Checkpoint](https://github.com/FlagBrew/Checkpoint/releases)."
   }
 ]
