@@ -58,5 +58,9 @@
   {
     "title": "PKSM is erroring with Archive::init on launch, how can I fix it?",
     "value": "Backup and immediately restore PKSM's ExtData using [Checkpoint](https://github.com/FlagBrew/Checkpoint/releases)."
+  },
+  {
+    "title": "Why can't I switch profiles in Checkpoint?",
+    "value": "Applet mode isn't supported. Use Atmosphere's title takeover feature (launch game holding R) instead."
   }
 ]
