@@ -109,7 +109,7 @@ class Info(commands.Cog):
         """Frequently Asked Questions. Allows numeric input for specific faq."""
         faq_item = faq_item.replace(' ', ',').split(',')
         count = 0
-        dm_list = (self.bot.creator)  # Handles DMs on full command usage outside bot-channel
+        dm_list = (self.bot.creator, self.bot.pie)  # Handles DMs on full command usage outside bot-channel
         for faq_num in faq_item:
             if not faq_num.isdigit():
                 if count == 0:
