@@ -109,6 +109,7 @@ class Info(commands.Cog):
         """Frequently Asked Questions. Allows numeric input for specific faq."""
         faq_item = faq_item.replace(' ', ',').split(',')
         count = 0
+        dm_list = (self.bot.creator)  # Handles DMs on full command usage outside bot-channel
         for faq_num in faq_item:
             if not faq_num.isdigit():
                 if count == 0:
@@ -129,8 +130,11 @@ class Info(commands.Cog):
             embed.add_field(name="{}: {}".format(self.faq_dict.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"], inline=False)
         if faq_item == ['']:
             if ctx.author.id in (self.bot.creator.id, self.bot.pie.id):
-            await ctx.message.delete()
-            return await ctx.author.send(embed=embed)
+                await ctx.message.delete()
+                return await ctx.author.send(embed=embed)
+            elif ctx.channel is not self.bot.bot_channel:
+                for user in dm_list:
+                    await user.send("Full faq command used in {}".format(ctx.channel.mention))
         await ctx.send(embed=embed)
 
     @commands.command()  # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
