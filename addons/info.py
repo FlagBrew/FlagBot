@@ -101,7 +101,7 @@ class Info(commands.Cog):
         embed = discord.Embed(title="Frequently Asked Questions")
         embed.title += f" #{faq_num}"
         current_faq = self.faq_dict[faq_num - 1]
-        embed.add_field(name=current_faq["title"], value=current_faq["value"])
+        embed.add_field(name=current_faq["title"], value=current_faq["value"], inline=False)
         await channel.send(embed=embed)
 
     @commands.command()
@@ -109,6 +109,7 @@ class Info(commands.Cog):
         """Frequently Asked Questions. Allows numeric input for specific faq."""
         faq_item = faq_item.replace(' ', ',').split(',')
         count = 0
+        dm_list = (self.bot.creator, self.bot.pie)  # Handles DMs on full command usage outside bot-channel
         for faq_num in faq_item:
             if not faq_num.isdigit():
                 if count == 0:
@@ -126,10 +127,14 @@ class Info(commands.Cog):
             return
         embed = discord.Embed(title="Frequently Asked Questions")
         for faq_arr in self.faq_dict:
-            embed.add_field(name="{}: {}".format(self.faq_dict.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"])
-        if faq_item == [''] and (ctx.author.id == self.bot.creator.id or ctx.author.id == self.bot.pie.id):
-            await ctx.message.delete()
-            return await ctx.author.send(embed=embed)
+            embed.add_field(name="{}: {}".format(self.faq_dict.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"], inline=False)
+        if faq_item == ['']:
+            if ctx.author.id in (self.bot.creator.id, self.bot.pie.id):
+                await ctx.message.delete()
+                return await ctx.author.send(embed=embed)
+            elif ctx.channel is not self.bot.bot_channel:
+                for user in dm_list:
+                    await user.send("Full faq command used in {} by {}\n\nHyperlink to command invoke: {}".format(ctx.channel.mention, ctx.author, ctx.message.jump_url))
         await ctx.send(embed=embed)
 
     @commands.command()  # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
