@@ -134,7 +134,7 @@ class Info(commands.Cog):
                 return await ctx.author.send(embed=embed)
             elif ctx.channel is not self.bot.bot_channel:
                 for user in dm_list:
-                    await user.send("Full faq command used in {}".format(ctx.channel.mention))
+                    await user.send("Full faq command used in {} by {}\n\nHyperlink to command invoke: {}".format(ctx.channel.mention, ctx.author, ctx.message.jump_url))
         await ctx.send(embed=embed)
 
     @commands.command()  # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
