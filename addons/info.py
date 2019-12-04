@@ -131,10 +131,16 @@ class Info(commands.Cog):
         if faq_item == ['']:
             if ctx.author.id in (self.bot.creator.id, self.bot.pie.id):
                 await ctx.message.delete()
-                return await ctx.author.send(embed=embed)
+                try:
+                    return await ctx.author.send(embed=embed)
+                except discord.Forbidden:
+                    pass  # Bot blocked, or api bug
             elif ctx.channel is not self.bot.bot_channel:
                 for user in dm_list:
-                    await user.send("Full faq command used in {} by {}\n\nHyperlink to command invoke: {}".format(ctx.channel.mention, ctx.author, ctx.message.jump_url))
+                    try:
+                        await user.send("Full faq command used in {} by {}\n\nHyperlink to command invoke: {}".format(ctx.channel.mention, ctx.author, ctx.message.jump_url))
+                    except discord.Forbidden:
+                        pass  # Bot blocked, or api bug
         await ctx.send(embed=embed)
 
     @commands.command()  # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
