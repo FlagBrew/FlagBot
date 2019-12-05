@@ -234,6 +234,15 @@ async def dump_role_id(ctx):
     await asyncio.sleep(5.1)
     await ctx.message.delete()
 
+@bot.command(hidden=True)  # taken from https://github.com/appu1232/Discord-Selfbot/blob/873a2500d2c518e0d25ca5a6f67828de60fbda99/cogs/misc.py#L626
+async def ping(ctx):
+    """Get response time."""
+    msgtime = ctx.message.created_at.now()
+    await (await bot.ws.ping())
+    now = datetime.datetime.now()
+    ping = now - msgtime
+    await ctx.send('🏓 Response time is {} milliseconds.'.format(str(ping.microseconds / 1000.0)))
+
 # Execute
 print('Bot directory: ', dir_path)
 bot.run(token)
