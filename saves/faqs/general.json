@@ -1,0 +1,22 @@
+[
+  {
+    "title": "When will Virtual Console games be supported?",
+    "value": "Nobody on the FlagBrew team is interested in working on this. However, if you would like to work on it yourself, and the code is up to our standards, we will merge a PR."
+  },
+  {
+    "title": "Why do I have to wait so long for new releases?",
+    "value": "Because you think you're entitled to everything."
+  },
+  {
+    "title": "Why can't I scan this QR code?",
+    "value": "You are likely using an outdated version of FBI. You can download the latest version [here](https://github.com/Steveice10/FBI/releases/latest).\nAny further questions about FBI should be taken to the FBI repository. **This server is not for FBI troubleshooting.**"
+  },
+  {
+    "title": "I have Homebrew/*hax. Why can't I launch any Flagbrew apps?",
+    "value": "FlagBrew apps *require* CFW to function. **There is no viable reason to not install CFW nowadays. There is a free method.** You can follow [this guide](https://3ds.hacks.guide) to install CFW on your 3ds. ***Versions under PKSM 7.0 are not supported and no assistance will be given with them!!!***"
+  },
+  {
+    "title": "I can't access any of the channels in the Community group!",
+    "value": "You need to toggle either 3ds updates or switch updates to access these channels now. Information on how can be found in <#278223623175798794>."
+  }
+]

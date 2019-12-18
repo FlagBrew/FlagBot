@@ -1,0 +1,30 @@
+[
+  {
+    "title": "My pokemon isn't legal, what do I do???",
+    "value": "The met location is incorrect. From the **edit pokemon** screen, go to the **misc** screen. Then click on **met location**. After, just select a legal met location from the list.\nYou'll need to find that using something like [serebii](https://serebii.net), or an in-game pokedex.\nNote: There may be other issues with the legality of your pokemon. Double check moves, level, etc., or use the legality checker in the same **misc** screen."
+  },
+  {
+    "title": "Can we get legality checking please?",
+    "value": "Believe it or not, you can! Go to the **edit pokemon** screen, then go to the **misc** screen. Click on the wireless icon. Congrats, you've accessed the legality checker.\nPlease note: the legality checker requires a network connection. It cannot be handled on-3ds as it would destroy the 3ds."
+  },
+  {
+    "title": "When are we getting PKSM on Switch?",
+    "value": "You can access LGPE saves by bridging PKSM on 3DS to Checkpoint on Switch. This is the best you'll get for now, possibly ever if you annoy Bernardo."
+  },
+  {
+    "title": "When are we getting Sword and Shield support?",
+    "value": "Never :)"
+  },
+  {
+    "title": "My DeSmuME save is messed up and I can't load it, help!!!",
+    "value": "If this save came from DeSmuME, then it likely has an extra 122 bytes at the end of it. Back up your file, then delete those last 122 bytes using a hex editor."
+  },
+  {
+    "title": "Can we get trainer data editing?",
+    "value": "You can do it through a script. Fair warning that it may get your game banned however."
+  },
+  {
+    "title": "PKSM is erroring with Archive::init on launch, how can I fix it?",
+    "value": "Backup and immediately restore PKSM's ExtData using [Checkpoint](https://github.com/FlagBrew/Checkpoint/releases)."
+  }
+]

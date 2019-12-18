@@ -136,6 +136,46 @@ class Events(commands.Cog):
                 else:
                     await self.bot.fetch_user(211923158423306243).send("Could not notify user {} of token expiration.".format(before))
 
+    async def process_reactions(self, reaction):
+        positive_votes = 0
+        negative_votes = 0
+        vote_barrier = 3
+        reactions = reaction.message.reactions
+        for r in reactions:
+            if '🆒' == r.emoji:
+                users = await r.users().flatten()
+                for u in users:
+                    if self.bot.flagbrew_team_role in u.roles:
+                        if reaction.message.pinned:
+                            await reaction.message.unpin()
+                        return  # Used to signify idea is implemented
+            if '✅' == r.emoji:
+                positive_votes = r.count
+            if '❌' == r.emoji:
+                negative_votes = r.count
+        total_votes = positive_votes - negative_votes
+        if total_votes >= vote_barrier and not reaction.message.pinned:
+            try:
+                await reaction.message.pin()
+                await self.bot.logs_channel.send("Idea pinned after passing {} votes.\nJump link: {}".format(vote_barrier, reaction.message.jump_url))
+            except discord.HTTPException as e:
+                await reaction.message.channel.send("Error pinning message. Please make sure that there are less than 50 pins."
+                                                    " If issue persists, contact {}.\nMessage link: {}".format(self.bot.creator, reaction.message.jump_url))
+                await self.bot.err_logs_channel.send(e.text)
+        elif total_votes < vote_barrier and reaction.message.pinned:
+            await reaction.message.unpin()
+            await self.bot.logs_channel.send("Idea unpinned due to falling below {} votes.\nJump link: {}".format(vote_barrier, reaction.message.jump_url))
+
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
+        if reaction.message.channel.id == 509857867726192641:
+            await self.process_reactions(reaction)
+
+    @commands.Cog.listener()
+    async def on_reaction_remove(self, reaction, user):
+        if reaction.message.channel.id == 509857867726192641:
+            await self.process_reactions(reaction)
+
 
 def setup(bot):
     bot.add_cog(Events(bot))
