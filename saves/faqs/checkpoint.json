@@ -1,0 +1,18 @@
+[
+  {
+    "title": "Can you please add a code for `x` game?",
+    "value": "Nobody on the FlagBrew team knows how to make gameshark codes, or wants to learn. All of the codes were either taken from a fort42 dump, or submitted to the repo. If you want more codes, learn how to make them yourself, or find a working one and open a pull request on the [repository](https://github.com/Flagbrew/Sharkive/pulls) to get the code added."
+  },
+  {
+    "title": "Why won't Sharkive launch?",
+    "value": "Sharkive has been deprecated as its functionality has been merged into [Checkpoint](https://github.com/FlagBrew/Checkpoint/releases/latest). Use Checkpoint instead."
+  },
+  {
+    "title": "Why isn't my game showing up in Checkpoint?",
+    "value": "There could be a few reasons.\n1. Make sure you have save data in the game. Checkpoint requires a save archive to locate a game.\n2. The game might save solely in ExtData. Press `X` and make sure it's not showing up there.\n3. Reload your titles using `B`. If you loaded Checkpoint before saving in game, you'll need to do this as Checkpoint doesn't check titles at each launch."
+  },
+  {
+    "title": "Why am I having issues using Checkpoint under applet mode?",
+    "value": "Applet mode isn't supported, as it doesn't give enough memory. Use Atmosphere's title takeover feature (launch game holding R) instead."
+  }
+]

@@ -22,8 +22,14 @@ class Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         print("Addon \"{}\" loaded".format(self.__class__.__name__))
-        with open("saves/faq.json", "r") as f:
+        with open("saves/faqs/faq.json", "r") as f:
             self.faq_dict = json.load(f)
+        with open("saves/faqs/general.json", "r") as f:
+            self.general_faq_dict = json.load(f)
+        with open("saves/faqs/pksm.json", "r") as f:
+            self.pksm_faq_dict = json.load(f)
+        with open("saves/faqs/checkpoint.json", "r") as f:
+            self.checkpoint_faq_dict = json.load(f)
         with open("saves/key_inputs.json", "r") as f:
             self.key_dict = json.load(f)
 
@@ -97,16 +103,25 @@ class Info(commands.Cog):
         """Donate here"""
         await ctx.send("You can donate to FlagBrew on Patreon here: <https://www.patreon.com/FlagBrew>.\nYou can also donate to Bernardo on Patreon here: <https://www.patreon.com/BernardoGiordano>.")
 
-    async def format_faq_embed(self, ctx, faq_num, channel):
+    async def format_faq_embed(self, ctx, faq_num, channel, loaded_faq):
         embed = discord.Embed(title="Frequently Asked Questions")
         embed.title += f" #{faq_num}"
-        current_faq = self.faq_dict[faq_num - 1]
+        current_faq = loaded_faq[faq_num - 1]
         embed.add_field(name=current_faq["title"], value=current_faq["value"], inline=False)
         await channel.send(embed=embed)
 
     @commands.command()
-    async def faq(self, ctx, *, faq_item=""):
+    async def faq(self, ctx, faq_doc="", *, faq_item=""):
         """Frequently Asked Questions. Allows numeric input for specific faq."""
+        if faq_doc == "general":
+            loaded_faq = self.general_faq_dict
+        elif faq_doc == "pksm":
+            loaded_faq = self.pksm_faq_dict
+        elif faq_doc == "checkpoint":
+            loaded_faq = self.checkpoint_faq_dict
+        else:
+            loaded_faq = self.faq_dict
+            faq_item = faq_doc
         faq_item = faq_item.replace(' ', ',').split(',')
         count = 0
         dm_list = (self.bot.creator, self.bot.pie)  # Handles DMs on full command usage outside bot-channel
@@ -119,15 +134,15 @@ class Info(commands.Cog):
                     continue
             faq_num = int(faq_num)
             count += 1
-            if faq_num > 0 and faq_num < len(self.faq_dict) + 1:
-                await self.format_faq_embed(self, faq_num, ctx.channel)
+            if faq_num > 0 and faq_num < len(loaded_faq) + 1:
+                await self.format_faq_embed(self, faq_num, ctx.channel, loaded_faq)
             elif count == 1:
                 await ctx.send("Faq number {} doesn't exist.".format(faq_num))
         if count == len(faq_item):
             return
         embed = discord.Embed(title="Frequently Asked Questions")
-        for faq_arr in self.faq_dict:
-            embed.add_field(name="{}: {}".format(self.faq_dict.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"], inline=False)
+        for faq_arr in loaded_faq:
+            embed.add_field(name="{}: {}".format(loaded_faq.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"], inline=False)
         if faq_item == ['']:
             if ctx.author.id in (self.bot.creator.id, self.bot.pie.id):
                 await ctx.message.delete()
