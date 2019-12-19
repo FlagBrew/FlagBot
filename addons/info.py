@@ -149,7 +149,8 @@ class Info(commands.Cog):
             embed.title += " - {}".format("General" if faq_doc.lower() == "general" else "PKSM" if faq_doc.lower() == "pksm" else "Checkpoint")
         for faq_arr in loaded_faq:
             embed.add_field(name="{}: {}".format(loaded_faq.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"], inline=False)
-        if faq_item == ['']:
+        if faq_item == [""]: faq_item = ["0"]
+        if not [int(val) <= len(loaded_faq) for val in faq_item if val.isdigit()] or is_category:
             if ctx.author.id in (self.bot.creator.id, self.bot.pie.id):
                 await ctx.message.delete()
                 try:
