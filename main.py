@@ -10,9 +10,13 @@ import asyncio
 import traceback
 import sys
 import argparse
-import config
 import json
 from discord.ext import commands
+
+try:
+    import config
+except ModuleNotFoundError:
+    print("Config not available. Bot will not be able to run in this state.")
 
 
 def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu1232/Discord-Selfbot/blob/master/appuselfbot.py#L33
