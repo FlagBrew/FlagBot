@@ -109,7 +109,7 @@ class Warning(commands.Cog):
             return await ctx.send("{} already has no warns.".format(target))
         await ctx.send("Cleared warns for {}.".format(target))
         with open("saves/warns.json", "w") as f:
-            json.dump(self.bot.warns_dict[str(target.id)], f, indent=4)
+            json.dump(self.bot.warns_dict, f, indent=4)
         embed = discord.Embed(title="Warns for {} cleared".format(target))
         embed.description = "{} had their warns cleared by {}. Warns can be found below.".format(target, ctx.author)
         count = 1
