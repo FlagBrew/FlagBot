@@ -4,18 +4,15 @@ description = """FlagBot server helper bot by GriffinG1"""
 
 # import dependencies
 import os
-from discord.ext import commands
 import discord
 import datetime
 import asyncio
-import copy
 import traceback
 import sys
-import os
-import re
-import ast
 import argparse
 import config
+import json
+from discord.ext import commands
 
 
 def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu1232/Discord-Selfbot/blob/master/appuselfbot.py#L33
@@ -43,6 +40,12 @@ prefix = config.prefix
 token = config.token
 
 bot = commands.Bot(command_prefix=prefix, description=description)
+
+if not os.path.exists('saves/warns.json'):
+    data = {}
+    with open('saves/warns.json', 'w') as f:
+        json.dump(data, f, indent=4)
+bot.warns_dict = json.load(open('saves/warns.json', 'r'))
 
 bot.site_secret = config.secret
 bot.github_user = config.github_username
@@ -158,7 +161,8 @@ addons = [
     'addons.utility',
     'addons.info',
     'addons.mod',
-    'addons.events'
+    'addons.events',
+    'addons.warns'
 ]
 
 failed_addons = []
