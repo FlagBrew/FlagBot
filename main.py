@@ -15,12 +15,7 @@ import os
 import re
 import ast
 import argparse
-
-try:
-    import config
-    heroku = False
-except Exception as e:
-    heroku = True
+import config
 
 
 def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu1232/Discord-Selfbot/blob/master/appuselfbot.py#L33
@@ -44,23 +39,14 @@ if _test_run:
 dir_path = os.path.dirname(os.path.realpath(__file__))
 os.chdir(dir_path)
 
-if heroku:
-    prefix = ['!', '.']
-    token = os.environ['TOKEN']
-else:
-    prefix = config.prefix
-    token = config.token
+prefix = config.prefix
+token = config.token
 
 bot = commands.Bot(command_prefix=prefix, description=description)
 
-if heroku:
-    bot.site_secret = os.environ['SECRET']
-    bot.github_user = os.environ['GITHUB-USER']
-    bot.github_pass = os.environ['GITHUB-PASS']
-else:
-    bot.site_secret = config.secret
-    bot.github_user = config.github_username
-    bot.github_pass = config.github_password
+bot.site_secret = config.secret
+bot.github_user = config.github_username
+bot.github_pass = config.github_password
 
 bot.dir_path = os.path.dirname(os.path.realpath(__file__))
 
