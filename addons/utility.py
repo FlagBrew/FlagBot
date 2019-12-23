@@ -45,7 +45,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     async def masstoggle(self, ctx):
-        """Allows a user to toggle all possible update roles. Use .help toggleroles to see possible roles."""
+        """Allows a user to toggle all possible update roles, except bot. Use .help toggleroles to see possible roles."""
         toggle_roles = [
             discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["3ds"])),
             discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["switch"]))
@@ -54,6 +54,22 @@ class Utility(commands.Cog):
         for role in toggle_roles:
             await self.toggleroles(ctx, role, user)
         await ctx.send("{} Successfully toggled all possible roles.".format(user.mention))
+
+    @commands.command(aliases=['brm'])
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team", "Bot Dev")
+    async def bot_role_mention(self, ctx):
+        """Securely mention anyone with the bot updates role"""
+        role = discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict['bot']))
+        try:
+            await role.edit(mentionable=True, reason="{} wanted to mention users with this role.".format(ctx.author))  # Reason -> Helps pointing out folks that abuse this
+        except:
+            await role.edit(mentionable=True, reason="A staff member, or Griffin, wanted to mention users with this role, and I couldn't log properly. Check {}.".format(self.bot.logs_channel.mention))  # Bypass the TypeError it kept throwing
+        await ctx.channel.send("{}".format(role.mention))
+        await role.edit(mentionable=False, reason="Making role unmentionable again.")
+        try:
+            await self.bot.logs_channel.send("{} pinged bot updates in {}".format(ctx.author, ctx.channel))
+        except discord.Forbidden:
+            pass  # beta bot can't log
 
     @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
