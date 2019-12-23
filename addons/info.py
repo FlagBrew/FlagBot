@@ -146,7 +146,7 @@ class Info(commands.Cog):
             return
         embed = discord.Embed(title="Frequently Asked Questions")
         if is_category:
-            embed.title += " - {}".format("General" if faq_doc.lower() == "general" else "PKSM" if faq_doc.lower() == "pksm" else "Checkpoint")
+            embed.title += " - {}".format("PKSM" if faq_doc.lower() == "pksm" else faq_doc.title())
         for faq_arr in loaded_faq:
             embed.add_field(name="{}: {}".format(loaded_faq.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"], inline=False)
         if faq_item == [""]: faq_item = ["0"]
