@@ -57,7 +57,7 @@ class Utility(commands.Cog):
 
     @commands.command(aliases=['brm'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team", "Bot Dev")
-    async def bot_role_mention(self, ctx):
+    async def role_mention_bot(self, ctx):
         """Securely mention anyone with the bot updates role"""
         role = discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict['bot']))
         try:

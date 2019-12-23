@@ -151,12 +151,20 @@ async def on_ready():
                             break
                 finally:
                     await guild.leave()
-
+            try:
+                with open('restart.txt', 'r') as f:
+                    restart_channel = f.readline()
+                c = await bot.fetch_channel(restart_channel)
+                await c.send("Successfully restarted!")
+                os.remove('restart.txt')
+            except (discord.NotFound, FileNotFoundError):
+                pass
             print("Initialized on {}.".format(guild.name))
         except:
             print("Failed to initialize on {}".format(guild.name))
     bot.creator = await bot.fetch_user(177939404243992578)
     bot.pie = await bot.fetch_user(307233052650635265)
+    bot.allen = await bot.fetch_user(211923158423306243)
 
 
 # loads extensions
@@ -242,6 +250,17 @@ async def ping(ctx):
     now = datetime.datetime.now()
     ping = now - msgtime
     await ctx.send('🏓 Response time is {} milliseconds.'.format(str(ping.microseconds / 1000.0)))
+
+@bot.command(hidden=True)
+async def restart(ctx):
+    """Restarts the bot."""
+    if not ctx.author == ctx.guild.owner and not ctx.author == bot.creator and not ctx.author == bot.allen:
+        return await ctx.send("You don't have permission to do that!")
+    await ctx.send("Restarting...")
+    with open('restart.txt', 'w') as f:
+        f.write(str(ctx.channel.id))
+    sys.exit(0)
+
 
 # Execute
 print('Bot directory: ', dir_path)
