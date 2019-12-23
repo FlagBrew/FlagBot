@@ -31,10 +31,10 @@ class Utility(commands.Cog):
     @commands.command()
     async def togglerole(self, ctx, role):
         """Allows user to toggle update roles. You can use .masstoggle to apply all roles at once.
-        Available roles: 3DS, Switch"""
+        Available roles: 3DS, Switch, Bot"""
         user = ctx.message.author
         role = role.lower()
-        if not role in ('3ds', 'switch'):
+        if not role in ('3ds', 'switch', 'bot'):
             return await ctx.send("{} That isn't a toggleable role!".format(user.mention))
         had_role = await self.toggleroles(ctx, discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict[role])), user)
         if had_role:
@@ -45,7 +45,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     async def masstoggle(self, ctx):
-        """Allows a user to toggle all possible update roles. Use .help toggleroles to see possible roles."""
+        """Allows a user to toggle all possible update roles, except bot. Use .help toggleroles to see possible roles."""
         toggle_roles = [
             discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["3ds"])),
             discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["switch"]))
@@ -54,6 +54,22 @@ class Utility(commands.Cog):
         for role in toggle_roles:
             await self.toggleroles(ctx, role, user)
         await ctx.send("{} Successfully toggled all possible roles.".format(user.mention))
+
+    @commands.command(aliases=['brm'])
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team", "Bot Dev")
+    async def role_mention_bot(self, ctx):
+        """Securely mention anyone with the bot updates role"""
+        role = discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict['bot']))
+        try:
+            await role.edit(mentionable=True, reason="{} wanted to mention users with this role.".format(ctx.author))  # Reason -> Helps pointing out folks that abuse this
+        except:
+            await role.edit(mentionable=True, reason="A staff member, or Griffin, wanted to mention users with this role, and I couldn't log properly. Check {}.".format(self.bot.logs_channel.mention))  # Bypass the TypeError it kept throwing
+        await ctx.channel.send("{}".format(role.mention))
+        await role.edit(mentionable=False, reason="Making role unmentionable again.")
+        try:
+            await self.bot.logs_channel.send("{} pinged bot updates in {}".format(ctx.author, ctx.channel))
+        except discord.Forbidden:
+            pass  # beta bot can't log
 
     @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
@@ -89,6 +105,46 @@ class Utility(commands.Cog):
         embed.description = "\n".join(self.role_mentions_dict)
         embed.description += "\nflagbrew"
         await ctx.send(embed=embed)
+
+    @commands.command(aliases=['srm_add'])
+    @commands.has_any_role("Discord Moderator")
+    async def secure_role_mention_add(self, ctx, role_name, role_id:int):
+        """Allows adding a role to the dict for secure_role_mention. Role_name should be the name that will be used when srm is called"""
+        role = discord.utils.get(ctx.guild.roles, id=role_id)
+        if role is None:
+            return await ctx.send("That's not a role on this guild.")
+        not_new = True
+        try:
+            self.role_mentions_dict[role_name.lower()]
+        except KeyError:
+            not_new = False
+        if not_new:
+            return await ctx.send("There's already a key with that name.")
+        self.role_mentions_dict[role_name.lower()] = str(role_id)
+        with open("saves/role_mentions.json", "w") as f:
+            json.dump(self.role_mentions_dict, f, indent=4)
+        await ctx.send("`{}` can now be mentioned via srm.".format(role_name.lower()))
+        try:
+            await self.bot.logs_channel.send("{} added {} to the mentionable roles.".format(ctx.author, role_name.lower()))
+        except discord.Forbidden:
+            pass # beta bot can't log
+
+    @commands.command(aliases=['srm_remove'])
+    @commands.has_any_role("Discord Moderator")
+    async def secure_role_mention_remove(self, ctx, role_name):
+        """Allows removing a role from the dict for secure_role_mention. Role_name should be the name that is used when srm is called"""
+        try:
+            self.role_mentions_dict[role_name.lower()]
+        except KeyError:
+            return await ctx.send("That role isn't in the dict. Please use `.srm_list` to confirm.")
+        del self.role_mentions_dict[role_name.lower()]
+        with open("saves/role_mentions.json", "w") as f:
+            json.dump(self.role_mentions_dict, f, indent=4)
+        await ctx.send("`{}` can no longer be mentioned via srm.".format(role_name.lower()))
+        try:
+            await self.bot.logs_channel.send("{} removed {} from the mentionable roles.".format(ctx.author, role_name.lower()))
+        except discord.Forbidden:
+            pass # beta bot can't log
 
     def gen_token_qr(self, token):
         qr = qrcode.QRCode(version=None)

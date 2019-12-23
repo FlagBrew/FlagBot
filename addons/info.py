@@ -113,12 +113,16 @@ class Info(commands.Cog):
     @commands.command()
     async def faq(self, ctx, faq_doc="", *, faq_item=""):
         """Frequently Asked Questions. Allows numeric input for specific faq."""
-        if faq_doc == "general":
+        is_category = False
+        if faq_doc.lower() == "general":
             loaded_faq = self.general_faq_dict
-        elif faq_doc == "pksm":
+            is_category = True
+        elif faq_doc.lower() == "pksm":
             loaded_faq = self.pksm_faq_dict
-        elif faq_doc == "checkpoint":
+            is_category = True
+        elif faq_doc.lower() == "checkpoint":
             loaded_faq = self.checkpoint_faq_dict
+            is_category = True
         else:
             loaded_faq = self.faq_dict
             faq_item = faq_doc
@@ -141,9 +145,12 @@ class Info(commands.Cog):
         if count == len(faq_item):
             return
         embed = discord.Embed(title="Frequently Asked Questions")
+        if is_category:
+            embed.title += " - {}".format("PKSM" if faq_doc.lower() == "pksm" else faq_doc.title())
         for faq_arr in loaded_faq:
             embed.add_field(name="{}: {}".format(loaded_faq.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"], inline=False)
-        if faq_item == ['']:
+        if faq_item == [""]: faq_item = ["0"]
+        if not [int(val) <= len(loaded_faq) for val in faq_item if val.isdigit()] or is_category:
             if ctx.author.id in (self.bot.creator.id, self.bot.pie.id):
                 await ctx.message.delete()
                 try:
