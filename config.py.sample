@@ -5,4 +5,4 @@ is_beta = False  # Used to determine if bot is beta or production
 github_username = ""  # Github username as string
 github_password = ""  # Github password as string
 warn_db_storage = False # Used to determine if we should use a database for storing warns or not.
-db_address = "mongodb://localhost:27017/" # MongoDB Database Address
+db_address = "" # MongoDB Database Address

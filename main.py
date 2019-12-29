@@ -45,7 +45,6 @@ prefix = config.prefix
 token = config.token
 
 bot = commands.Bot(command_prefix=prefix, description=description)
-bot.db_address = config.db_address
 bot.warn_db_storage = config.warn_db_storage
 if not os.path.exists('saves/warns.json'):
     data = {}
@@ -56,11 +55,11 @@ if bot.warn_db_storage:
     connected = False
     try:
         # try connecting to the database
-        bot.db = pymongo.MongoClient(bot.db_address, serverSelectionTimeoutMS=3000)
+        bot.db = pymongo.MongoClient(config.db_address, serverSelectionTimeoutMS=3000)
         # try get server info, if the server is down it will error out after 3 seconds
         bot.db.server_info()
         connected = True
-    except:
+    except pymongo.errors.ServerSelectionTimeoutError:
         # when the database connection fails
         bot.warn_db_storage = False
     # sync the database with the warns file on start up, only if the database is online
