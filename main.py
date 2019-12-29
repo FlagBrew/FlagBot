@@ -11,6 +11,7 @@ import traceback
 import sys
 import argparse
 import json
+import pymongo
 from discord.ext import commands
 
 try:
@@ -44,13 +45,35 @@ prefix = config.prefix
 token = config.token
 
 bot = commands.Bot(command_prefix=prefix, description=description)
-
+bot.warn_db_storage = config.warn_db_storage
 if not os.path.exists('saves/warns.json'):
     data = {}
     with open('saves/warns.json', 'w') as f:
         json.dump(data, f, indent=4)
 bot.warns_dict = json.load(open('saves/warns.json', 'r'))
-
+if bot.warn_db_storage:
+    db_address = config.db_address
+    connected = False
+    try:
+        # try connecting to the database
+        bot.db = pymongo.MongoClient(db_address, serverSelectionTimeoutMS=3000)
+        # try get server info, if the server is down it will error out after 3 seconds
+        bot.db.server_info()
+        connected = True
+    except pymongo.errors.ServerSelectionTimeoutError:
+        # when the database connection fails
+        bot.warn_db_storage = False
+    # sync the database with the warns file on start up, only if the database is online
+    if connected:
+        for warn in bot.warns_dict:
+            bot.db['flagbrew']['warns'].update_one({"user": warn}, 
+            { 
+                "$set": {
+                    "user": warn,
+                    "warns": bot.warns_dict[warn]
+                }
+            }, upsert=True)
+    
 bot.site_secret = config.secret
 bot.github_user = config.github_username
 bot.github_pass = config.github_password
