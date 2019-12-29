@@ -102,7 +102,7 @@ class Warning(commands.Cog):
             warn['reason'],
             warn['warned_by'],
             time.strftime(
-                '%Y-%m-%d %H:%M:%S',
+                '%Y-%m-%d',
                 time.localtime(
                     warn['date'])),
             target.name,
@@ -135,7 +135,7 @@ class Warning(commands.Cog):
                 name="Warn #{}".format(count),
                 value="Date: {}\nReason: {}".format(
                     time.strftime(
-                        '%Y-%m-%d %H:%M:%S',
+                        '%Y-%m-%d',
                         time.localtime(
                             warn['date'])),
                     warn['reason']))
