@@ -1,12 +1,15 @@
 import discord
 import json
+import time
 from discord.ext import commands
 
-class Warning(commands.Cog):
 
+class Warning(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
+        self.warn_db_storage = bot.warn_db_storage
+        if self.warn_db_storage:
+            self.db = bot.db['flagbrew']
     @commands.command()
     @commands.has_permissions(ban_members=True)
     async def warn(self, ctx, target: discord.Member, *, reason="No reason was given"):
@@ -15,7 +18,11 @@ class Warning(commands.Cog):
             self.bot.warns_dict[str(target.id)]
         except KeyError:
             self.bot.warns_dict[str(target.id)] = []
-        self.bot.warns_dict[str(target.id)].append(reason)
+        self.bot.warns_dict[str(target.id)].append({
+            "reason": reason,
+            "date": time.time(),
+            "warned_by": "{}".format(ctx.author),
+        })
         warns = self.bot.warns_dict[str(target.id)]
         dm_msg = "You were warned on {}.\nThe reason provided was: `{}`.\nThis is warn #{}.".format(ctx.guild, reason, len(warns))
         log_msg = ""
@@ -35,6 +42,13 @@ class Warning(commands.Cog):
             await target.send(dm_msg)
         except discord.Forbidden:
             embed.description += "\n**Could not DM user.**"
+        if self.warn_db_storage:
+            self.db['warns'].update_one({"user": str(target.id)}, {
+                "$set": {
+                "user": str(target.id),
+                "warns": self.bot.warns_dict[str(target.id)]
+                }
+            }, upsert=True)
         with open("saves/warns.json", "w") as f:
             json.dump(self.bot.warns_dict, f, indent=4)
         await ctx.send("Warned {}. This is warn #{}. {}".format(target, len(warns), log_msg))
@@ -51,6 +65,12 @@ class Warning(commands.Cog):
     @commands.has_permissions(ban_members=True)
     async def delwarn(self, ctx, target: discord.Member, *, warn):
         """Deletes a users warn. Can take the warn number, or the warn reason"""
+        try:
+            warnings = len(self.bot.warns_dict[str(target.id)])
+            if warnings == 0:
+                return await ctx.send("{} doesn't have any warnings!".format(target))
+        except:
+            return await ctx.send("{} hasn't been warned before!".format(target))
         if warn.isdigit() and warn not in self.bot.warns_dict[str(target.id)]:
             try:
                 warn = self.bot.warns_dict[str(target.id)].pop(int(warn) - 1)
@@ -61,14 +81,23 @@ class Warning(commands.Cog):
                 self.bot.warns_dict[str(target.id)].remove(warn)
             except ValueError:
                 return await ctx.send("{} doesn't have a warn matching `{}`.".format(target, warn))
+        if self.warn_db_storage:
+            self.db['warns'].update_one({"user": str(target.id)}, {
+                "$set": {
+                "user": str(target.id),
+                "warns": self.bot.warns_dict[str(target.id)]
+                }
+            }, upsert=True)
         with open("saves/warns.json", "w") as f:
             json.dump(self.bot.warns_dict, f, indent=4)
         await ctx.send("Removed warn from {}.".format(target))
         warns_count = len(self.bot.warns_dict[str(target.id)])
         embed = discord.Embed(title="Warn removed from {}".format(target))
-        embed.description = "{} had a warn removed by by {}. The warn was `{}`. {} now has {} warn(s).".format(target, ctx.author, warn, target.name, warns_count)
+        embed.description = "{} had a warn removed by {}. The warn was `{}` and given by {} on {}. {} now has {} warn(s).".format(target, ctx.author, warn['reason'], warn['warned_by'], time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(warn['date'])), 
+        target.name, warns_count)
         try:
-            await target.send("Warn `{}` was removed on {}. You now have {} warn(s).".format(warn, ctx.guild, warns_count))
+            await target.send("Warn `{}` given by {} on {} was removed on {}. You now have {} warn(s).".format(warn['reason'], warn['warned_by'], time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(warn['date'])), 
+            ctx.guild, warns_count))
         except discord.Forbidden:
             embed.description += "\n**Could not DM user.**"
         try:
@@ -91,7 +120,8 @@ class Warning(commands.Cog):
         embed = discord.Embed(title="Warns for {}".format(target))
         count = 1
         for warn in warns:
-            embed.add_field(name="Warn #{}".format(count), value="{}".format(warn))
+            embed.add_field(name="Warn #{}".format(count), value="Date: {}\nGiven By: {}\nReason: {}".format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(warn['date'])),
+            warn['warned_by'], warn['reason']))
             count += 1
         if count - 1 == 0:
             return await ctx.send("{} has no warns.".format(target))
@@ -104,10 +134,19 @@ class Warning(commands.Cog):
         """Clears all of a users warns"""
         try:
             warns = self.bot.warns_dict[str(target.id)]
+            if len(warns) == 0:
+                return await ctx.send("{} doesn't have any warnings!".format(target))
             self.bot.warns_dict[str(target.id)] = []
         except KeyError:
             return await ctx.send("{} already has no warns.".format(target))
         await ctx.send("Cleared warns for {}.".format(target))
+        if self.warn_db_storage:
+            self.db['warns'].update_one({"user": str(target.id)}, {
+                "$set": {
+                "user": str(target.id),
+                "warns": self.bot.warns_dict[str(target.id)]
+                }
+            }, upsert=True)
         with open("saves/warns.json", "w") as f:
             json.dump(self.bot.warns_dict, f, indent=4)
         embed = discord.Embed(title="Warns for {} cleared".format(target))
