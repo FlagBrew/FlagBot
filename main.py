@@ -4,19 +4,20 @@ description = """FlagBot server helper bot by GriffinG1"""
 
 # import dependencies
 import os
-from discord.ext import commands
 import discord
 import datetime
 import asyncio
-import copy
 import traceback
 import sys
-import os
-import re
-import ast
 import argparse
-import config
+import json
+import pymongo
+from discord.ext import commands
 
+try:
+    import config
+except ModuleNotFoundError:
+    print("Config not available. Bot will not be able to run in this state.")
 
 def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu1232/Discord-Selfbot/blob/master/appuselfbot.py#L33
     parser = argparse.ArgumentParser(description="Flagbot")
@@ -44,6 +45,37 @@ token = config.token
 
 bot = commands.Bot(command_prefix=prefix, description=description)
 
+bot.is_mongodb = config.is_mongodb
+
+if not os.path.exists('saves/warns.json'):
+    data = {}
+    with open('saves/warns.json', 'w') as f:
+        json.dump(data, f, indent=4)
+bot.warns_dict = json.load(open('saves/warns.json', 'r'))
+
+if bot.is_mongodb:
+    db_address = config.db_address
+    connected = False
+    try:
+        # try connecting to the database
+        bot.db = pymongo.MongoClient(db_address, serverSelectionTimeoutMS=3000)
+        # try get server info, if the server is down it will error out after 3 seconds
+        bot.db.server_info()
+        connected = True
+    except pymongo.errors.ServerSelectionTimeoutError:
+        # when the database connection fails
+        bot.is_mongodb = False
+    # sync the database with the warns file on start up, only if the database is online
+    if connected:
+        for warn in bot.warns_dict:
+            bot.db['flagbrew']['warns'].update_one({"user": warn}, 
+            { 
+                "$set": {
+                    "user": warn,
+                    "warns": bot.warns_dict[warn]
+                }
+            }, upsert=True)
+    
 bot.site_secret = config.secret
 bot.github_user = config.github_username
 bot.github_pass = config.github_password
@@ -158,7 +190,8 @@ addons = [
     'addons.utility',
     'addons.info',
     'addons.mod',
-    'addons.events'
+    'addons.events',
+    'addons.warns'
 ]
 
 failed_addons = []
