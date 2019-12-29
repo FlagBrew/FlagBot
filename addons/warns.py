@@ -7,7 +7,7 @@ from discord.ext import commands
 class Warning(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        if self.bot.warn_db_storage:
+        if self.bot.is_mongodb:
             self.db = bot.db['flagbrew']
 
     @commands.command()
@@ -43,7 +43,7 @@ class Warning(commands.Cog):
             await target.send(dm_msg)
         except discord.Forbidden:
             embed.description += "\n**Could not DM user.**"
-        if self.bot.warn_db_storage:
+        if self.bot.is_mongodb:
             self.db['warns'].update_one(
                 {
                     "user": str(target.id)
@@ -86,7 +86,7 @@ class Warning(commands.Cog):
                 self.bot.warns_dict[str(target.id)].remove(warn)
             except ValueError:
                 return await ctx.send("{} doesn't have a warn matching `{}`.".format(target, warn))
-        if self.bot.warn_db_storage:
+        if self.bot.is_mongodb:
             self.db['warns'].update_one(
                 {
                     "user": str(target.id)
@@ -149,7 +149,7 @@ class Warning(commands.Cog):
         except KeyError:
             return await ctx.send("{} already has no warns.".format(target))
         await ctx.send("Cleared warns for {}.".format(target))
-        if self.bot.warn_db_storage:
+        if self.bot.is_mongodb:
             self.db['warns'].update_one(
                 {
                     "user": str(target.id)
