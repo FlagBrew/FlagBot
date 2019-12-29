@@ -4,5 +4,5 @@ secret = ""  # Website secret as string
 is_beta = False  # Used to determine if bot is beta or production
 github_username = ""  # Github username as string
 github_password = ""  # Github password as string
-warn_db_storage = False # Bool for if MongoDB database is in use
-db_address = "" # MongoDB database address as string
+is_mongodb = False  # Bool for if MongoDB database is in use
+db_address = ""  # MongoDB database address as string

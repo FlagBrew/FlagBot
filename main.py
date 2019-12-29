@@ -19,7 +19,6 @@ try:
 except ModuleNotFoundError:
     print("Config not available. Bot will not be able to run in this state.")
 
-
 def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu1232/Discord-Selfbot/blob/master/appuselfbot.py#L33
     parser = argparse.ArgumentParser(description="Flagbot")
     parser.add_argument("-test", "--test-run",  # test run flag for Travis
@@ -45,13 +44,16 @@ prefix = config.prefix
 token = config.token
 
 bot = commands.Bot(command_prefix=prefix, description=description)
-bot.warn_db_storage = config.warn_db_storage
+
+bot.is_mongodb = config.is_mongodb
+
 if not os.path.exists('saves/warns.json'):
     data = {}
     with open('saves/warns.json', 'w') as f:
         json.dump(data, f, indent=4)
 bot.warns_dict = json.load(open('saves/warns.json', 'r'))
-if bot.warn_db_storage:
+
+if bot.is_mongodb:
     db_address = config.db_address
     connected = False
     try:
@@ -62,7 +64,7 @@ if bot.warn_db_storage:
         connected = True
     except pymongo.errors.ServerSelectionTimeoutError:
         # when the database connection fails
-        bot.warn_db_storage = False
+        bot.is_mongodb = False
     # sync the database with the warns file on start up, only if the database is online
     if connected:
         for warn in bot.warns_dict:
