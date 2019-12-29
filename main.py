@@ -52,10 +52,11 @@ if not os.path.exists('saves/warns.json'):
         json.dump(data, f, indent=4)
 bot.warns_dict = json.load(open('saves/warns.json', 'r'))
 if bot.warn_db_storage:
+    db_address = config.db_address
     connected = False
     try:
         # try connecting to the database
-        bot.db = pymongo.MongoClient(config.db_address, serverSelectionTimeoutMS=3000)
+        bot.db = pymongo.MongoClient(db_address, serverSelectionTimeoutMS=3000)
         # try get server info, if the server is down it will error out after 3 seconds
         bot.db.server_info()
         connected = True
