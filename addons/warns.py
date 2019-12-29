@@ -96,8 +96,7 @@ class Warning(commands.Cog):
         embed.description = "{} had a warn removed by {}. The warn was `{}` and given by {} on {}. {} now has {} warn(s).".format(target, ctx.author, warn['reason'], warn['warned_by'], time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(warn['date'])), 
         target.name, warns_count)
         try:
-            await target.send("Warn `{}` given by {} on {} was removed on {}. You now have {} warn(s).".format(warn['reason'], warn['warned_by'], time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(warn['date'])), 
-            ctx.guild, warns_count))
+            await target.send("Warn `{}` in {}. You now have {} warn(s).".format(warn['reason'], ctx.guild, warns_count))
         except discord.Forbidden:
             embed.description += "\n**Could not DM user.**"
         try:
@@ -120,8 +119,8 @@ class Warning(commands.Cog):
         embed = discord.Embed(title="Warns for {}".format(target))
         count = 1
         for warn in warns:
-            embed.add_field(name="Warn #{}".format(count), value="Date: {}\nGiven By: {}\nReason: {}".format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(warn['date'])),
-            warn['warned_by'], warn['reason']))
+            embed.add_field(name="Warn #{}".format(count), value="Date: {}\nReason: {}".format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(warn['date'])),
+            warn['reason']))
             count += 1
         if count - 1 == 0:
             return await ctx.send("{} has no warns.".format(target))
