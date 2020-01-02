@@ -29,10 +29,10 @@ args = parse_cmd_arguments().parse_args()
 _test_run = args.test_run
 if _test_run:
     try:
-        os.path.isfile("saves/faqs/faq.json")
+        os.path.isfile("saves/faqs/general.json")
         os.path.isfile("/saves/key_inputs.json")
     except:
-        print('faq.json or key_inputs.json is missing')  # only visible in Travis
+        print('general.json or key_inputs.json is missing')  # only visible in Travis
     print("Quitting: test run")
     exit(0)
 

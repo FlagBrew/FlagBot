@@ -14,5 +14,9 @@
   {
     "title": "Why am I having issues using Checkpoint under applet mode?",
     "value": "Applet mode isn't supported, as it doesn't give enough memory. Use Atmosphere's title takeover feature (launch game holding R) instead."
+  },
+  {
+    "title": "I'm having issues using cheats with SUMO and USUM",
+    "value": "This is due to a kernel bug. Luma's cheat engine would need to be redesigned to fix this, which would cause another bug elsewhere. As such, there is no solution to this problem at this time besides using another console."
   }
 ]

@@ -22,8 +22,6 @@ class Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         print("Addon \"{}\" loaded".format(self.__class__.__name__))
-        with open("saves/faqs/faq.json", "r") as f:
-            self.faq_dict = json.load(f)
         with open("saves/faqs/general.json", "r") as f:
             self.general_faq_dict = json.load(f)
         with open("saves/faqs/pksm.json", "r") as f:
@@ -112,7 +110,7 @@ class Info(commands.Cog):
 
     @commands.command()
     async def faq(self, ctx, faq_doc="", *, faq_item=""):
-        """Frequently Asked Questions. Allows numeric input for specific faq."""
+        """Frequently Asked Questions. Allows numeric input for specific faq. Requires general, pksm, or checkpoint to be given as faq_doc"""
         is_category = False
         if faq_doc.lower() == "general":
             loaded_faq = self.general_faq_dict
@@ -124,8 +122,7 @@ class Info(commands.Cog):
             loaded_faq = self.checkpoint_faq_dict
             is_category = True
         else:
-            loaded_faq = self.faq_dict
-            faq_item = faq_doc
+            return await ctx.send("The base faq has been deprecated. Please provide one of the three categories: `general`, `pksm`, or `checkpoint`.")
         faq_item = faq_item.replace(' ', ',').split(',')
         count = 0
         dm_list = (self.bot.creator, self.bot.pie)  # Handles DMs on full command usage outside bot-channel
