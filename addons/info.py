@@ -22,8 +22,6 @@ class Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         print("Addon \"{}\" loaded".format(self.__class__.__name__))
-        with open("saves/faqs/faq.json", "r") as f:
-            self.faq_dict = json.load(f)
         with open("saves/faqs/general.json", "r") as f:
             self.general_faq_dict = json.load(f)
         with open("saves/faqs/pksm.json", "r") as f:
@@ -112,7 +110,7 @@ class Info(commands.Cog):
 
     @commands.command()
     async def faq(self, ctx, faq_doc="", *, faq_item=""):
-        """Frequently Asked Questions. Allows numeric input for specific faq."""
+        """Frequently Asked Questions. Allows numeric input for specific faq. Requires general, pksm, or checkpoint to be given as faq_doc"""
         is_category = False
         if faq_doc.lower() == "general":
             loaded_faq = self.general_faq_dict
@@ -124,11 +122,10 @@ class Info(commands.Cog):
             loaded_faq = self.checkpoint_faq_dict
             is_category = True
         else:
-            loaded_faq = self.faq_dict
-            faq_item = faq_doc
+            return await ctx.send("The base faq has been deprecated. Please provide one of the three categories: `general`, `pksm`, or `checkpoint`.")
         faq_item = faq_item.replace(' ', ',').split(',')
         count = 0
-        dm_list = (self.bot.creator, self.bot.pie)  # Handles DMs on full command usage outside bot-channel
+        usage_dm = (self.bot.creator, self.bot.pie)  # Handles DMs on full command usage outside bot-channel
         for faq_num in faq_item:
             if not faq_num.isdigit():
                 if count == 0:
@@ -151,14 +148,14 @@ class Info(commands.Cog):
             embed.add_field(name="{}: {}".format(loaded_faq.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"], inline=False)
         if faq_item == [""]: faq_item = ["0"]
         if not [int(val) <= len(loaded_faq) for val in faq_item if val.isdigit()] or is_category:
-            if ctx.author.id in (self.bot.creator.id, self.bot.pie.id):
+            if ctx.author.id in self.bot.dm_list:
                 await ctx.message.delete()
                 try:
                     return await ctx.author.send(embed=embed)
                 except discord.Forbidden:
                     pass  # Bot blocked, or api bug
             elif ctx.channel is not self.bot.bot_channel:
-                for user in dm_list:
+                for user in usage_dm:
                     try:
                         await user.send("Full faq command used in {} by {}\n\nHyperlink to command invoke: {}".format(ctx.channel.mention, ctx.author, ctx.message.jump_url))
                     except discord.Forbidden:

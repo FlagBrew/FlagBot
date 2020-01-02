@@ -265,6 +265,18 @@ class Utility(commands.Cog):
             return await msg.edit(content="There are no users that would be kicked in that time frame.")  # Unlikely to be triggered on FlagBrew
         await msg.edit(content="{} users would be kicked as a result of a prune.".format(prune_amount))
 
+    @commands.command()
+    async def toggledmfaq(self, ctx):
+        """Allows a user to toggle getting the faq dm'd to them instead of it posting in channel"""
+        if ctx.author.id in self.bot.dm_list:
+            self.bot.dm_list.remove(ctx.author.id)
+            await ctx.send("You will no longer have the FAQ dm'd to you.")
+        else:
+            self.bot.dm_list.append(ctx.author.id)
+            await ctx.send("You'll now have the FAQ dm'd to you on use instead.")
+        with open('saves/faqdm.json', 'w') as f:
+            json.dump(self.bot.dm_list, f, indent=4)
+
 
 def setup(bot):
     bot.add_cog(Utility(bot))

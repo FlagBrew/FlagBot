@@ -29,10 +29,10 @@ args = parse_cmd_arguments().parse_args()
 _test_run = args.test_run
 if _test_run:
     try:
-        os.path.isfile("saves/faqs/faq.json")
+        os.path.isfile("saves/faqs/general.json")
         os.path.isfile("/saves/key_inputs.json")
     except:
-        print('faq.json or key_inputs.json is missing')  # only visible in Travis
+        print('general.json or key_inputs.json is missing')  # only visible in Travis
     print("Quitting: test run")
     exit(0)
 
@@ -52,6 +52,12 @@ if not os.path.exists('saves/warns.json'):
     with open('saves/warns.json', 'w') as f:
         json.dump(data, f, indent=4)
 bot.warns_dict = json.load(open('saves/warns.json', 'r'))
+
+if not os.path.exists('saves/faqdm.json'):
+    data = []
+    with open('saves/faqdm.json', 'w') as f:
+        json.dump(data, f, indent=4)
+bot.dm_list = json.load(open('saves/faqdm.json', 'r'))
 
 if bot.is_mongodb:
     db_address = config.db_address
