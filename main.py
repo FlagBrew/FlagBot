@@ -53,6 +53,12 @@ if not os.path.exists('saves/warns.json'):
         json.dump(data, f, indent=4)
 bot.warns_dict = json.load(open('saves/warns.json', 'r'))
 
+if not os.path.exists('saves/faqdm.json'):
+    data = []
+    with open('saves/faqdm.json', 'w') as f:
+        json.dump(data, f, indent=4)
+bot.dm_list = json.load(open('saves/faqdm.json', 'r'))
+
 if bot.is_mongodb:
     db_address = config.db_address
     connected = False
