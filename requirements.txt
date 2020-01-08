@@ -1,4 +1,4 @@
 discord.py
-requests
 qrcode[pil]
 pymongo
+validators
