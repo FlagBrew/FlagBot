@@ -12,6 +12,8 @@ import sys
 import argparse
 import json
 import pymongo
+import aiohttp
+from exceptions import APIConnectionError
 from discord.ext import commands
 
 try:
@@ -29,10 +31,10 @@ args = parse_cmd_arguments().parse_args()
 _test_run = args.test_run
 if _test_run:
     try:
-        os.path.isfile("saves/faqs/general.json")
+        os.path.isfile("saves/faqs/faq.json")
         os.path.isfile("/saves/key_inputs.json")
     except:
-        print('general.json or key_inputs.json is missing')  # only visible in Travis
+        print('faq.json or key_inputs.json is missing')  # only visible in Travis
     print("Quitting: test run")
     exit(0)
 
@@ -46,18 +48,13 @@ token = config.token
 bot = commands.Bot(command_prefix=prefix, description=description)
 
 bot.is_mongodb = config.is_mongodb
+bot.api_url = config.api_url
 
 if not os.path.exists('saves/warns.json'):
     data = {}
     with open('saves/warns.json', 'w') as f:
         json.dump(data, f, indent=4)
 bot.warns_dict = json.load(open('saves/warns.json', 'r'))
-
-if not os.path.exists('saves/faqdm.json'):
-    data = []
-    with open('saves/faqdm.json', 'w') as f:
-        json.dump(data, f, indent=4)
-bot.dm_list = json.load(open('saves/faqdm.json', 'r'))
 
 if bot.is_mongodb:
     db_address = config.db_address
@@ -85,6 +82,7 @@ if bot.is_mongodb:
 bot.site_secret = config.secret
 bot.github_user = config.github_username
 bot.github_pass = config.github_password
+bot.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
 
 bot.dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -115,8 +113,9 @@ async def on_command_error(ctx, error):
     elif isinstance(error, discord.ext.commands.errors.CheckFailure):
         await ctx.send("You don't have permission to use this command.")
     elif isinstance(error, discord.ext.commands.errors.CommandOnCooldown):
-        await ctx.message.delete()
-        await ctx.send("This command is on cooldown.", delete_after=10)
+        await ctx.send("{} This command is on a cooldown.".format(ctx.author.mention))
+    elif isinstance(error, APIConnectionError):
+        print("Error: api_url was left blank in config.py, or the server is down. Commands in the PKHeX module will not work properly until this is rectified.")
     else:
         if ctx.command:
             await ctx.send("An error occurred while processing the `{}` command.".format(ctx.command.name))
@@ -124,7 +123,7 @@ async def on_command_error(ctx, error):
         tb = traceback.format_exception(type(error), error, error.__traceback__)
         error_trace = "".join(tb)
         print(error_trace)
-        embed = discord.Embed(description=error_trace)
+        embed = discord.Embed(description=error_trace.replace("__", "_\\_").replace("**", "*\\*"))
         await bot.err_logs_channel.send("An error occurred while processing the `{}` command in channel `{}`.".format(ctx.command.name, ctx.message.channel), embed=embed)
 
 
@@ -137,7 +136,7 @@ async def on_error(event_method, *args, **kwargs):
     tb = traceback.format_exc()
     error_trace = "".join(tb)
     print(error_trace)
-    embed = discord.Embed(description=error_trace)
+    embed = discord.Embed(description=error_trace.replace("__", "_\\_").replace("**", "*\\*"))
     await bot.err_logs_channel.send("An error occurred while processing `{}`.".format(event_method), embed=embed)
 
 
@@ -192,23 +191,28 @@ async def on_ready():
 
 
 # loads extensions
-addons = [
+cogs = [
     'addons.utility',
     'addons.info',
     'addons.mod',
     'addons.events',
-    'addons.warns'
+    'addons.warns',
+    'addons.pkhex'
 ]
 
-failed_addons = []
+failed_cogs = []
 
-for extension in addons:
+for extension in cogs:
     try:
         bot.load_extension(extension)
+    except commands.ExtensionFailed as e:
+        if e.original.__class__ == APIConnectionError:
+            print("API server is down, so {} wasn't loaded.".format(extension))
+            continue
     except Exception as e:
         print('{} failed to load.\n{}: {}'.format(extension, type(e).__name__, e))
-        failed_addons.append([extension, type(e).__name__, e])
-if not failed_addons:
+        failed_cogs.append([extension, type(e).__name__, e])
+if not failed_cogs:
     print('All addons loaded!')
 
 
@@ -218,6 +222,9 @@ async def load(ctx, *, module):
     if ctx.author == ctx.guild.owner or ctx.author == bot.creator:
         try:
             bot.load_extension("addons.{}".format(module))
+        except commands.ExtensionFailed as e:
+            if e.original.__class__ == APIConnectionError:
+                return await ctx.send("`{}.py` was not loaded due to the API being down.".format(module))
         except Exception as e:
             await ctx.send(':anger: Failed!\n```\n{}: {}\n```'.format(type(e).__name__, e))
         else:
@@ -238,6 +245,10 @@ async def reload(ctx):
                 try:
                     bot.unload_extension("addons.{}".format(addon))
                     bot.load_extension("addons.{}".format(addon))
+                except commands.ExtensionFailed as e:
+                    if e.original.__class__ == APIConnectionError:
+                        await ctx.send("`{}.py` was not loaded due to the API being down.".format(addon))
+                        continue
                 except Exception as e:
                     errors += 'Failed to load addon: `{}.py` due to `{}: {}`\n'.format(addon, type(e).__name__, e)
         if not errors:
