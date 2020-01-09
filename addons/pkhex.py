@@ -101,6 +101,15 @@ class pkhex(commands.Cog):
             embed.description += values[0] + val
         return embed
 
+    async def confirm_api_link(self):
+        while self is self.bot.get_cog("pkhex"):
+            await asyncio.sleep(300)
+            r = await self.ping_api()
+            if not r == 200:
+                for x in (self.bot.creator, self.bot.allen):
+                    await x.send("pkhex.py was unloaded as API connection was dropped.")
+                self.bot.unload_extension("addons.pkhex")
+
     @commands.command(hidden=True)
     async def ping_cc(self, ctx):
         """Pings the CoreConsole server"""
@@ -288,4 +297,7 @@ class pkhex(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(pkhex(bot))
+    pkh = pkhex(bot)
+    loop = asyncio.get_event_loop()
+    loop.create_task(pkh.confirm_api_link())
+    bot.add_cog(pkh)
