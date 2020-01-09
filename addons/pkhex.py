@@ -102,12 +102,15 @@ class pkhex(commands.Cog):
 
     async def confirm_api_link(self):
         while self is self.bot.get_cog("pkhex"):
-            await asyncio.sleep(300)
+            if not self.bot.ready:
+                await asyncio.sleep(30)
+                continue
             r = await self.ping_api()
             if not r == 200:
                 for x in (self.bot.creator, self.bot.allen):
                     await x.send("pkhex.py was unloaded as API connection was dropped.")
                 self.bot.unload_extension("addons.pkhex")
+            await asyncio.sleep(300)
 
     @commands.command(hidden=True)
     async def ping_cc(self, ctx):

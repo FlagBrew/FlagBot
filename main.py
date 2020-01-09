@@ -83,6 +83,7 @@ bot.site_secret = config.secret
 bot.github_user = config.github_username
 bot.github_pass = config.github_password
 bot.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
+bot.ready = False
 
 bot.dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -188,6 +189,7 @@ async def on_ready():
     bot.creator = await bot.fetch_user(177939404243992578)
     bot.pie = await bot.fetch_user(307233052650635265)
     bot.allen = await bot.fetch_user(211923158423306243)
+    bot.ready = True
 
 
 # loads extensions
@@ -219,7 +221,7 @@ if not failed_cogs:
 @bot.command(hidden=True)
 async def load(ctx, *, module):
     """Loads an addon"""
-    if ctx.author == ctx.guild.owner or ctx.author == bot.creator:
+    if ctx.author == ctx.guild.owner or ctx.author == bot.creator or ctx.author == bot.allen:
         try:
             bot.load_extension("addons.{}".format(module))
         except commands.ExtensionFailed as e:
