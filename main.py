@@ -270,6 +270,8 @@ async def reload(ctx):
                     await ctx.send("`{}.py` was not loaded due to the API being down.".format(addon))
                     continue
             except Exception as e:
+                if addon not in addon_dict.keys():
+                    pass
                 errors += 'Failed to load addon: `{}.py` due to `{}: {}`\n'.format(addon, type(e).__name__, e)
         if not errors:
             await ctx.send(':white_check_mark: Extensions reloaded.')
@@ -282,7 +284,7 @@ async def reload(ctx):
 
 
 def check_is_author(ctx):
-        return ctx.message.author.id == bot.creator.id
+    return ctx.message.author.id == bot.creator.id
 
 
 @bot.command(aliases=['drid'], hidden=True)
