@@ -194,12 +194,12 @@ async def on_ready():
 
 # loads extensions
 cogs = [
-    'addons.utility',
-    'addons.info',
-    'addons.mod',
     'addons.events',
-    'addons.warns',
-    'addons.pkhex'
+    'addons.info', 
+    'addons.mod', 
+    'addons.pkhex', 
+    'addons.utility', 
+    'addons.warns'
 ]
 
 failed_cogs = []
@@ -234,6 +234,19 @@ async def load(ctx, *, module):
     else:
         await ctx.send("You don't have permission to do that!")
 
+@bot.command(hidden=True)
+async def unload(ctx, *, module):
+    """Unloads an addon"""
+    if ctx.author == ctx.guild.owner or ctx.author == bot.creator or ctx.author == bot.allen:
+        try:
+            bot.unload_extension("addons.{}".format(module))
+        except Exception as e:
+            await ctx.send(':anger: Failed!\n```\n{}: {}\n```'.format(type(e).__name__, e))
+        else:
+            await ctx.send(':white_check_mark: Extension unloaded.')
+    else:
+        await ctx.send("You don't have permission to do that!")
+
 
 @bot.command()
 async def reload(ctx):
@@ -241,18 +254,23 @@ async def reload(ctx):
     bot.reload_counter += 1
     if ctx.author == ctx.guild.owner or ctx.author == bot.creator:
         errors = ""
-        for addon in os.listdir("addons"):
-            if ".py" in addon:
-                addon = addon.replace('.py', '')
-                try:
-                    bot.unload_extension("addons.{}".format(addon))
-                    bot.load_extension("addons.{}".format(addon))
-                except commands.ExtensionFailed as e:
-                    if e.original.__class__ == APIConnectionError:
-                        await ctx.send("`{}.py` was not loaded due to the API being down.".format(addon))
-                        continue
-                except Exception as e:
-                    errors += 'Failed to load addon: `{}.py` due to `{}: {}`\n'.format(addon, type(e).__name__, e)
+        addon_dict = {
+            "Events": "events",
+            "Info": "info",
+            "Moderation": "mod",
+            "pkhex": "pkhex",
+            "Utility": "utility",
+            "Warning": "warns"
+        }
+        for addon in bot.cogs:
+            try:
+                bot.reload_extension("addons.{}".format(addon_dict[addon]))
+            except commands.ExtensionFailed as e:
+                if e.original.__class__ == APIConnectionError:
+                    await ctx.send("`{}.py` was not loaded due to the API being down.".format(addon))
+                    continue
+            except Exception as e:
+                errors += 'Failed to load addon: `{}.py` due to `{}: {}`\n'.format(addon, type(e).__name__, e)
         if not errors:
             await ctx.send(':white_check_mark: Extensions reloaded.')
         else:
