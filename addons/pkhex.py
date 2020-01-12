@@ -59,9 +59,9 @@ class pkhex(commands.Cog):
             except aiohttp.client_exceptions.ContentTypeError:
                 rj = {}
             content = await r.content.read()
-            if content is b'':
+            if content == b'':
                 content = await r.read()
-            if content is b'':
+            if content == b'':
                 await ctx.send("Couldn't get response content. {} and {} please investigate!".format(self.bot.creator.mention, self.bot.allen.mention))
                 return 400
             return [r.status, rj, content]
@@ -76,7 +76,7 @@ class pkhex(commands.Cog):
             embed.add_field(name="Ability", value="N/A")
         embed.add_field(name="Original Trainer", value=data["OT"])
         embed.add_field(name="Handling Trainer", value=data["HT"])
-        if int(data["Generation"]) > 2 and not data["MetLoc"] is "":
+        if int(data["Generation"]) > 2 and not data["MetLoc"] == "":
             embed.add_field(name="Met Location", value=data["MetLoc"])
         else:
             embed.add_field(name="Met Location", value="N/A")
