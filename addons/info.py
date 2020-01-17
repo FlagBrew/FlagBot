@@ -112,7 +112,7 @@ class Info(commands.Cog):
         embed.add_field(name=current_faq["title"], value=current_faq["value"], inline=False)
         await channel.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=['rtfm'])
     async def faq(self, ctx, faq_doc="", *, faq_item=""):
         """Frequently Asked Questions. Allows numeric input for specific faq. Requires general, pksm, or checkpoint to be given as faq_doc"""
         is_category = False
