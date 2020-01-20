@@ -172,7 +172,7 @@ class pkhex(commands.Cog):
 
     @commands.command(name='learns', aliases=['learn'])
     async def check_moves(self, ctx, *, input_data):
-        """Checks if a given pokemon can learn moves. Separate moves using pipes. Example: .cm pikachu | quick attack | hail"""
+        """Checks if a given pokemon can learn moves. Separate moves using pipes. Example: .learns pikachu | quick attack | hail"""
         if not await self.ping_api() == 200:
             return await ctx.send("The CoreConsole server is currently down, and as such no commands in the PKHeX module can be used.")
         input_data = input_data.replace("| ", "|").replace(" |", "|").replace(" | ", "|")
@@ -195,9 +195,11 @@ class pkhex(commands.Cog):
 
     @commands.command(name='find')
     async def check_encounters(self, ctx, generation: int, *, input_data):
-        """Outputs the locations a given pokemon can be found. Separate data using pipes. Example: .cm 6 pikachu | volt tackle"""
+        """Outputs the locations a given pokemon can be found. Separate data using pipes. Example: .find 6 pikachu | volt tackle"""
         if not await self.ping_api() == 200:
             return await ctx.send("The CoreConsole server is currently down, and as such no commands in the PKHeX module can be used.")
+        elif not generation in range(1, 9):
+            return await ctx.send("The inputted generation must be a valid integer between 1 and 8 inclusive. You entered: `{}`".format(generation))
         input_data = input_data.replace("| ", "|").replace(" |", "|").replace(" | ", "|")
         input_data = input_data.split("|")
         pokemon = input_data[0]
