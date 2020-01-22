@@ -157,6 +157,8 @@ async def on_ready():
                     bot.patrons_role = discord.utils.get(guild.roles, id=330078911704727552)
                     bot.protected_roles = (discord.utils.get(guild.roles, id=279598900799864832), bot.discord_moderator_role, bot.flagbrew_team_role, discord.utils.get(guild.roles, id=381053929389031424))
                     bot.patrons_channel = discord.utils.get(guild.channels, id=381000988246540292)
+                with open('saves/faqdm.json', 'r') as f:
+                    bot.dm_list = json.load(f)
 
                 if guild.id == bot.testing_id:
                     if config.is_beta:
