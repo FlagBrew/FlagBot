@@ -262,7 +262,8 @@ async def reload(ctx):
             "Utility": "utility",
             "Warning": "warns"
         }
-        for addon in bot.cogs:
+        loaded_cogs = bot.cogs.copy()
+        for addon in loaded_cogs:
             try:
                 bot.reload_extension("addons.{}".format(addon_dict[addon]))
             except commands.ExtensionFailed as e:

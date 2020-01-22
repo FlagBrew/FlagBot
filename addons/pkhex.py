@@ -180,7 +180,7 @@ class pkhex(commands.Cog):
         pokemon = input_data[0]
         moves = input_data[1:]
         if not moves:
-            return await ctx.send("No moves provided, or the data provided was in an incorrect format.\n```Example: .cm pikachu | quick attack | hail```")
+            return await ctx.send("No moves provided, or the data provided was in an incorrect format.\n```Example: .learns pikachu | quick attack | hail```")
         data = {
             "query": pokemon + "|" + "|".join(moves)
         }
@@ -205,13 +205,12 @@ class pkhex(commands.Cog):
         pokemon = input_data[0]
         moves = input_data[1:]
         data = {
-            "query": pokemon + "|" + "|".join(moves)
+            "query": pokemon + ("|" + "|".join(moves) if not len(moves) == 0 else "")
         }
         async with self.bot.session.post(self.bot.api_url + "api/v1/bot/query/encounter", data=data) as r:
             if r.status == 400:
                 return await ctx.send("Something you sent was invalid. Please double check your data and try again.")
             rj = await r.json()
-            print(rj)
             embed = discord.Embed(title="Encounter Data for {} in Generation {}{}{}".format(pokemon.title(), generation, " with move(s) " if len(moves) > 0 else "", ", ".join([move.title() for move in moves])))
             generation_data = rj["Gen{}".format(generation)]
             for encs in generation_data:

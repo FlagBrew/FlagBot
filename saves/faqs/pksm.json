@@ -13,7 +13,7 @@
   },
   {
     "title": "When are we getting Sword and Shield support?",
-    "value": "Never :)"
+    "value": "SWSH saves are accessible by bridging to Checkpoint on switch, same as LGPE saves."
   },
   {
     "title": "My DeSmuME save is messed up and I can't load it, help!!!",
@@ -26,5 +26,9 @@
   {
     "title": "PKSM is erroring with Archive::init on launch, how can I fix it?",
     "value": "Backup and immediately restore PKSM's ExtData using [Checkpoint](https://github.com/FlagBrew/Checkpoint/releases)."
+  },
+  {
+    "title": "Why can't I access the GPSS?",
+    "value": "With PKSM 8.0.0, the GPSS was updated to v2.0. As such, if you haven't updated to 8.0.0+, the GPSS will not work."
   }
 ]
