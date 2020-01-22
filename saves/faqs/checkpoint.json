@@ -9,7 +9,7 @@
   },
   {
     "title": "Why isn't my game showing up in Checkpoint?",
-    "value": "There could be a few reasons.\n1. Make sure you have save data in the game. Checkpoint requires a save archive to locate a game.\n2. The game might save solely in ExtData. Press `X` and make sure it's not showing up there.\n3. Reload your titles using `B`. If you loaded Checkpoint before saving in game, you'll need to do this as Checkpoint doesn't check titles at each launch."
+    "value": "There could be a few reasons.\n1. Make sure you have save data in the game. Checkpoint requires a save archive to locate a game.\n2. The game might save solely in ExtData. Press `X` and make sure it's not showing up there.\n3. Reload your titles by holding `B`. If you loaded Checkpoint before saving in game, you'll need to do this as Checkpoint doesn't check titles at each launch."
   },
   {
     "title": "Why am I having issues using Checkpoint under applet mode?",
