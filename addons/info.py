@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import json
-import requests
+import aiohttp
 import discord
 import qrcode
 import io
@@ -31,8 +31,12 @@ class Info(commands.Cog):
         with open("saves/key_inputs.json", "r") as f:
             self.key_dict = json.load(f)
 
-    def gen_qr(self, ctx, app):
-        releases = requests.get("https://api.github.com/repos/FlagBrew/{}/releases".format(app)).json()
+    async def gen_qr(self, ctx, app):
+        releases = None
+        async with aiohttp.ClientSession() as session:
+            url = "https://api.github.com/repos/FlagBrew/{}/releases".format(app)
+            async with session.get(url) as r:
+                releases = await r.json()
         for asset in releases[0]["assets"]:
             if asset["name"] == "{}.cia".format(app):
                 qr = qrcode.QRCode(version=None)
@@ -50,17 +54,17 @@ class Info(commands.Cog):
         img = 0
         if app.lower().startswith("pksm"):
             embed = discord.Embed(description=desc_temp.format(desc_pksm))
-            img = self.gen_qr(self, "PKSM")
+            img = await self.gen_qr(self, "PKSM")
         elif app.lower().startswith("checkpoint"):
             embed = discord.Embed(description=desc_temp.format(desc_checkpoint))
             str_list = app.lower().split()
             if "switch" not in str_list:
-                img = self.gen_qr(self, "Checkpoint")
+                img = await self.gen_qr(self, "Checkpoint")
         elif app.lower().startswith("pickr"):
             embed = discord.Embed(description=desc_temp.format(desc_pickr))
             str_list = app.lower().split()
             if "switch" not in str_list:
-                img = self.gen_qr(self, "Pickr")
+                img = await self.gen_qr(self, "Pickr")
         elif app.lower().startswith("2048"):
             embed = discord.Embed(description=desc_temp.format(desc_2048))
         else:
@@ -108,7 +112,7 @@ class Info(commands.Cog):
         embed.add_field(name=current_faq["title"], value=current_faq["value"], inline=False)
         await channel.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=['rtfm'])
     async def faq(self, ctx, faq_doc="", *, faq_item=""):
         """Frequently Asked Questions. Allows numeric input for specific faq. Requires general, pksm, or checkpoint to be given as faq_doc"""
         is_category = False
