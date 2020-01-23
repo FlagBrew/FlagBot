@@ -6,7 +6,7 @@ import sys
 import os
 import json
 import secrets
-import requests
+import http
 import aiohttp
 import qrcode
 import io
@@ -252,7 +252,7 @@ class Utility(commands.Cog):
             if r.status == 201:
                 await ctx.send("Successfully created issue! You can find it here: https://github.com/{}/{}/issues/{}".format(repo_owner, repo_name, json_content["number"]))
             else:
-                status_name = requests.status_codes._codes[r.status][0]  # I wish I didn't have to use requests solely here '<_'
+                status_name = http.HTTPStatus(r.status).name  # pylint: disable=no-member
                 await ctx.send("There was an issue creating the issue. {} please take a look.\n\n`{}` - `{}`".format(self.bot.creator.mention, r.status, status_name))
 
     @commands.command(aliases=['estpurge'])
