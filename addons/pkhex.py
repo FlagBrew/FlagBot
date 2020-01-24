@@ -276,6 +276,8 @@ class pkhex(commands.Cog):
             return await ctx.send("The CoreConsole server is currently down, and as such no commands in the PKHeX module can be used.")
         msg = await ctx.send("Attempting to legalize pokemon...")
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/auto_legality")
+        if r == 400:
+            return
         rj = r[1]
         if not rj["ran"]:
             return await msg.edit(content="That pokemon is already legal!")
