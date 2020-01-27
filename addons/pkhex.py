@@ -19,7 +19,7 @@ class pkhex(commands.Cog):
         self.bot = bot
         print('Addon "{}" loaded'.format(self.__class__.__name__))
 
-    async def ping_api(self):
+    async def ping_api_func(self):
         async with self.bot.session.get(self.bot.api_url + "api/v1/bot/ping") as r:
             return r.status
 
@@ -105,29 +105,29 @@ class pkhex(commands.Cog):
             if not self.bot.ready:
                 await asyncio.sleep(30)
                 continue
-            r = await self.ping_api()
+            r = await self.ping_api_func()
             if not r == 200:
                 for x in (self.bot.creator, self.bot.allen):
-                    await x.send("pkhex.py was unloaded as API connection was dropped.")
+                    await x.send("pkhex.py was unloaded as API connection was dropped. Status code: `{}`".format(r))
                 self.bot.unload_extension("addons.pkhex")
             await asyncio.sleep(300)
 
     @commands.command(hidden=True)
-    async def ping_cc(self, ctx):
-        """Pings the CoreConsole server"""
+    async def ping_api(self, ctx):
+        """Pings the CoreAPI server"""
         if not ctx.author in (self.bot.creator, self.bot.allen):
             raise commands.errors.CheckFailure()
         msgtime = ctx.message.created_at.now()
-        r = await self.ping_api() 
+        r = await self.ping_api_func() 
         now = datetime.now()
         ping = now - msgtime
-        await ctx.send("🏓 CoreConsole response time is {} milliseconds. Current CoreConsole status code is {}.".format(str(ping.microseconds / 1000.0), r))
+        await ctx.send("🏓 CoreAPI response time is {} milliseconds. Current CoreAPI status code is {}.".format(str(ping.microseconds / 1000.0), r))
 
     @commands.command(name='legality', aliases=['illegal'])
     async def check_legality(self, ctx, *, data=""):
         """Checks the legality of either a provided URL or attached pkx file. URL *must* be a direct download link"""
-        if not await self.ping_api() == 200:
-            return await ctx.send("The CoreConsole server is currently down, and as such no commands in the PKHeX module can be used.")
+        if not await self.ping_api_func() == 200:
+            return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/pkmn_info")
         if r == 400:
             return
@@ -142,8 +142,8 @@ class pkhex(commands.Cog):
     @commands.command(name='pokeinfo')
     async def poke_info(self, ctx, data=""):
         """Returns an embed with a Pokemon's nickname, species, and a few others. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
-        if not await self.ping_api() == 200:
-            return await ctx.send("The CoreConsole server is currently down, and as such no commands in the PKHeX module can be used.")
+        if not await self.ping_api_func() == 200:
+            return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/pkmn_info")
         if r == 400:
             return
@@ -160,21 +160,21 @@ class pkhex(commands.Cog):
     @commands.command(name='qr')
     async def gen_pkmn_qr(self, ctx, data=""):
         """Gens a QR code that PKSM can read. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
-        if not await self.ping_api() == 200:
-            return await ctx.send("The CoreConsole server is currently down, and as such no commands in the PKHeX module can be used.")
-        r = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/pkmn_qr")
+        if not await self.ping_api_func() == 200:
+            return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
+        r = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/pkmn_info")
         if r == 400:
             return
-        d = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/pkmn_info")
-        d = d[1]
-        qr = discord.File(io.BytesIO(r[2]), 'pokemon_qr.png')
-        await ctx.send("QR containing a {} for Generation {}".format(d["Species"], d["Generation"]), file=qr)
+        r = r[1]
+        decoded_qr = base64.decodebytes(r['QR'].encode("ascii"))
+        qr = discord.File(io.BytesIO(decoded_qr), 'pokemon_qr.png')
+        await ctx.send("QR containing a {} for Generation {}".format(r["Species"], r["Generation"]), file=qr)
 
     @commands.command(name='learns', aliases=['learn'])
     async def check_moves(self, ctx, *, input_data):
         """Checks if a given pokemon can learn moves. Separate moves using pipes. Example: .learns pikachu | quick attack | hail"""
-        if not await self.ping_api() == 200:
-            return await ctx.send("The CoreConsole server is currently down, and as such no commands in the PKHeX module can be used.")
+        if not await self.ping_api_func() == 200:
+            return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         input_data = input_data.replace("| ", "|").replace(" |", "|").replace(" | ", "|")
         input_data = input_data.split("|")
         pokemon = input_data[0]
@@ -196,8 +196,8 @@ class pkhex(commands.Cog):
     @commands.command(name='find')
     async def check_encounters(self, ctx, generation: int, *, input_data):
         """Outputs the locations a given pokemon can be found. Separate data using pipes. Example: .find 6 pikachu | volt tackle"""
-        if not await self.ping_api() == 200:
-            return await ctx.send("The CoreConsole server is currently down, and as such no commands in the PKHeX module can be used.")
+        if not await self.ping_api_func() == 200:
+            return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         elif not generation in range(1, 9):
             return await ctx.send("The inputted generation must be a valid integer between 1 and 8 inclusive. You entered: `{}`".format(generation))
         input_data = input_data.replace("| ", "|").replace(" |", "|").replace(" | ", "|")
@@ -205,25 +205,29 @@ class pkhex(commands.Cog):
         pokemon = input_data[0]
         moves = input_data[1:]
         data = {
-            "query": pokemon + ("|" + "|".join(moves) if not len(moves) == 0 else "")
+            "query": pokemon + ("|" + "|".join(moves) if not len(moves) == 0 else ""),
+            "generation": generation
         }
         async with self.bot.session.post(self.bot.api_url + "api/v1/bot/query/encounter", data=data) as r:
             if r.status == 400:
                 return await ctx.send("Something you sent was invalid. Please double check your data and try again.")
             rj = await r.json()
             embed = discord.Embed(title="Encounter Data for {} in Generation {}{}{}".format(pokemon.title(), generation, " with move(s) " if len(moves) > 0 else "", ", ".join([move.title() for move in moves])))
-            generation_data = rj["Gen{}".format(generation)]
-            for encs in generation_data:
+            for encs in rj['Encounters']:
                 locations = {}
                 for loc in encs["Locations"]:
-                    if loc["Location"] == "":
+                    if loc["Name"] == "":
                         locations[", ".join(loc["Games"])] = "N/A"
                         continue
-                    locations[", ".join(loc["Games"])] = loc["Location"]
+                    locations[", ".join(loc["Games"])] = loc["Name"]
                 field_values = ""
                 for location in locations:
-                    field_values += "{} in **{}**.\n".format(location, locations[location])
-                embed.add_field(name="As {}".format(encs["EncounterType"]), value=field_values, inline=False)
+                    if encs["EncounterType"] == "Egg":
+                        field_values += "{} as **egg**.\n".format(location)
+                    elif not locations[location] == "N/A":
+                        field_values += "{} in **{}**.\n".format(location, locations[location])
+                if field_values:
+                    embed.add_field(name="As {}".format(encs["EncounterType"]), value=field_values, inline=False)
             if len(embed.fields) == 0:
                 return await ctx.send("Could not find matching encounter data for {} in Generation {}{}{}.".format(pokemon.title(), generation, " with move(s) " if len(moves) > 0 else "", ", ".join([move.title() for move in moves])))
             await ctx.send(embed=embed)
@@ -272,19 +276,21 @@ class pkhex(commands.Cog):
     async def legalize(self, ctx, data=""):
         """Legalizes a pokemon as much as possible. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-file-upload on FlagBrew
-        if not await self.ping_api() == 200:
-            return await ctx.send("The CoreConsole server is currently down, and as such no commands in the PKHeX module can be used.")
+        if not await self.ping_api_func() == 200:
+            return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         msg = await ctx.send("Attempting to legalize pokemon...")
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/auto_legality")
         if r == 400:
             return
+        elif r[0] == 503:
+            return await msg.edit(content="Legalizing is currently disabled in CoreAPI, and as such this command cannot be used currently.")
         rj = r[1]
-        if not rj["ran"]:
+        if not rj["Ran"]:
             return await msg.edit(content="That pokemon is already legal!")
-        elif not rj["success"]:
+        elif not rj["Success"]:
             return await msg.edit(content="That pokemon couldn't be legalized!")
-        pokemon_b64 = rj["pokemon"].encode("ascii")
-        qr_b64 = rj["qr"].encode("ascii")
+        pokemon_b64 = rj["Pokemon"].encode("ascii")
+        qr_b64 = rj["QR"].encode("ascii")
         pokemon_decoded = base64.decodebytes(pokemon_b64)
         qr_decoded = base64.decodebytes(qr_b64)
         if data:
@@ -294,8 +300,8 @@ class pkhex(commands.Cog):
         pokemon = discord.File(io.BytesIO(pokemon_decoded), "fixed-" + filename)
         qr = discord.File(io.BytesIO(qr_decoded), 'pokemon_qr.png')
         m = await upload_channel.send(file=pokemon)
-        embed = discord.Embed(title="Fixed Legality Issues for {}".format(rj["species"]), description="[Download link]({})\n".format(m.attachments[0].url))
-        embed = self.list_to_embed(embed, rj["report"])
+        embed = discord.Embed(title="Fixed Legality Issues for {}".format(rj["Species"]), description="[Download link]({})\n".format(m.attachments[0].url))
+        embed = self.list_to_embed(embed, rj["Report"])
         embed.set_thumbnail(url="attachment://pokemon_qr.png")
         await msg.delete()
         await ctx.send(embed=embed, file=qr)
