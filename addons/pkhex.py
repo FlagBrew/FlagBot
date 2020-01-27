@@ -247,19 +247,17 @@ class pkhex(commands.Cog):
             rj = await r.json()
             embed = discord.Embed(title="Encounter Data for {} in Generation {}{}{}".format(pokemon.title(), generation, " with move(s) " if len(moves) > 0 else "", ", ".join([move.title() for move in moves])))
             for encs in rj['Encounters']:
-                locations = {}
+                field_values = ""
                 for loc in encs["Locations"]:
                     games = (game_dict[x] if x in game_dict.keys() else x for x in loc["Games"])
-                    if loc["Name"] == "":
-                        locations[", ".join(games)] = "N/A"
-                        continue
-                    locations[", ".join(games)] = loc["Name"]
-                field_values = ""
-                for location in locations:
+                    games_str = ", ".join(games)
                     if encs["EncounterType"] == "Egg":
-                        field_values += "{} as **egg**.\n".format(location)
-                    elif not locations[location] == "N/A":
-                        field_values += "{} in **{}**.\n".format(location, locations[location])
+                        field_values += "{} as **egg**.\n".format(games_str)
+                    elif not loc["Name"] == "":
+                        field_values += "{} in **{}**.\n".format(games_str, loc["Name"])
+                    elif generation == 1:
+                        field_values += "{} in **Unknown**.\n".format(games_str)
+                        embed.set_footer(text="Please ask Kurt#6024 to add route names to gen 1 location data")
                 if field_values:
                     embed.add_field(name="As {}".format(encs["EncounterType"]), value=field_values, inline=False)
             if len(embed.fields) == 0:
