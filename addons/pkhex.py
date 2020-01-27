@@ -196,6 +196,39 @@ class pkhex(commands.Cog):
     @commands.command(name='find')
     async def check_encounters(self, ctx, generation: int, *, input_data):
         """Outputs the locations a given pokemon can be found. Separate data using pipes. Example: .find 6 pikachu | volt tackle"""
+        game_dict = {
+            "RD": "Red (VC)",
+            "BU": "Blue (VC)",
+            "GN": "Green (VC)",
+            "YW": "Yellow (VC)",
+            "GD": "Gold (VC)",
+            "SV": "Silver (VC)",
+            "C": "Crystal (VC)",
+            "R": "Ruby",
+            "S": "Sapphire",
+            "E": "Emerald",
+            "FR": "FireRed",
+            "LG": "LeafGreen",
+            "D": "Diamond",
+            "P": "Pearl",
+            "Pt": "Platinum",
+            "HG": "Heart Gold",
+            "SS": "Soul Silver",
+            "B": "Black",
+            "W": "White",
+            "B2": "Black 2",
+            "W2": "White 2",
+            "OR": "Omega Ruby",
+            "AS": "Alpha Sapphire",
+            "SN": "Sun",
+            "MN": "Moon",
+            "US": "Ultra Sun",
+            "UM": "Ultra Moon",
+            "GP": "Let's Go Pikachu",
+            "GE": "Let's Go Eevee",
+            "SW": "Sword",
+            "SH": "Shield"
+        }
         if not await self.ping_api_func() == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         elif not generation in range(1, 9):
@@ -216,10 +249,11 @@ class pkhex(commands.Cog):
             for encs in rj['Encounters']:
                 locations = {}
                 for loc in encs["Locations"]:
+                    games = (game_dict[x] if x in game_dict.keys() else x for x in loc["Games"])
                     if loc["Name"] == "":
-                        locations[", ".join(loc["Games"])] = "N/A"
+                        locations[", ".join(games)] = "N/A"
                         continue
-                    locations[", ".join(loc["Games"])] = loc["Name"]
+                    locations[", ".join(games)] = loc["Name"]
                 field_values = ""
                 for location in locations:
                     if encs["EncounterType"] == "Egg":
