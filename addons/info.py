@@ -235,6 +235,7 @@ class Info(commands.Cog):
             embed.description += "You can see the 3DS code database [here](https://github.com/FlagBrew/Sharkive/wiki/3DS-games-in-the-database).\n"
         if console.lower() == "switch" or is_all:
             embed.description += "You can view the Switch code database [here](https://github.com/FlagBrew/Sharkive/wiki/Switch-games-in-the-database)."
+        embed.set_thumbnail(url="https://raw.githubusercontent.com/FlagBrew/Sharkive/766456e8a605330a6e2e9f982ec359b6d19c54bb/assets/icon.png")
         await ctx.send(embed=embed)
 
     @commands.command()
