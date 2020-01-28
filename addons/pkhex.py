@@ -173,11 +173,11 @@ class pkhex(commands.Cog):
                 "Blue": discord.Colour.blue(),
                 "Yellow": discord.Colour.gold(),
                 "Green": discord.Colour.green(),
-                "Black": discord.Colour.darker_grey(),
+                "Black": discord.Colour(0x070e1c),
                 "Brown": discord.Colour(0x8B4513),
                 "Purple": discord.Colour.purple(),
                 "Gray": discord.Colour.light_grey(),
-                "White": discord.Colour.default(),
+                "White": discord.Colour(0xe9edf5),
                 "Pink": discord.Colour(0xFF1493),
             }
             url = self.bot.api_url + "api/v1/bot/query/baseinfo"
