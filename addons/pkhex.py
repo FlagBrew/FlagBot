@@ -139,11 +139,89 @@ class pkhex(commands.Cog):
         embed = self.list_to_embed(embed, reasons)
         await ctx.send(embed=embed)
 
-    @commands.command(name='pokeinfo')
-    async def poke_info(self, ctx, data=""):
-        """Returns an embed with a Pokemon's nickname, species, and a few others. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
+    @commands.command(name='forms')
+    async def check_forms(self, ctx, species):
+        """Returns a list of a given Pokemon's forms."""
         if not await self.ping_api_func() == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
+        url = self.bot.api_url + "api/v1/bot/query/pokemonforms"
+        data = {
+            "species": species
+        }
+        async with self.bot.session.post(url=url, data=data) as r:
+            if not r.status == 200:
+                return await ctx.send("Are you sure that's a real pokemon?")
+            rj = await r.json()
+            await ctx.send("Available forms: `{}`".format('`, `'.join(rj)))
+            
+
+    @commands.command(name='pokeinfo', aliases=['pi'])
+    async def poke_info(self, ctx, data=""):
+        ("""Returns an embed with a Pokemon's nickname, species, and a few others. Takes a provided URL or attached pkx file. URL *must* be a direct download link.\n"""
+        """Alternatively can take a single Pokemon as an entry, and will return basic information on the species.""")
+        if not await self.ping_api_func() == 200:
+            return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
+        
+        # Get info for inputted pokemon
+        if not validators.url(data) and not ctx.message.attachments:
+            colours = {
+                "Red": discord.Colour.red(),
+                "Blue": discord.Colour.blue(),
+                "Yellow": discord.Colour.gold(),
+                "Green": discord.Colour.green(),
+                "Black": discord.Colour.darker_grey(),
+                "Brown": discord.Colour(0x8B4513),
+                "Purple": discord.Colour.purple(),
+                "Gray": discord.Colour.light_grey(),
+                "White": discord.Colour.default(),
+                "Pink": discord.Colour(0xFF1493),
+            }
+            url = self.bot.api_url + "api/v1/bot/query/baseinfo"
+            data = data.split('-')
+            species = data[0].lower()
+            form = ""
+            if len(data) > 1:
+                form = data[1].lower()
+            data = {
+                "species": species,
+                "form": form
+            }
+            async with self.bot.session.post(url=url, data=data) as r:
+                if not r.status == 200:
+                    return await ctx.send("Are you sure that's a real pokemon (or proper form)?")
+                rj = await r.json()
+                embed = discord.Embed(title="Basic info for {}{}".format(species.title(), '-' + form.title() if form else ""), colour=colours[rj["Color"]])
+                type_str = "Type 1: {}".format(rj["Types"][0])
+                if not rj["Types"][1] == rj["Types"][0]:
+                    type_str += "\nType 2: {}".format(rj["Types"][1])
+                embed.add_field(name="Types", value=type_str)
+                ability_str = "Ability (1): {}".format(rj["Ability1"])
+                if not rj["Ability2"] == rj["Ability1"]:
+                    ability_str += "\nAbility (2): {}".format(rj["Ability2"])
+                if rj["HasHiddenAbility"]:
+                    ability_str += "\nAbility (H): {}".format(rj["AbilityH"])
+                embed.add_field(name="Abilities", value=ability_str)
+                embed.add_field(name="Evolution Stage", value=rj["EvoStage"])
+                if rj["IsDualGender"]:
+                    ratio = (rj["Gender"] / 254) * 100
+                    ratio = round(ratio, 2)
+                    embed.add_field(name="Gender Ratio", value="~{}% Female".format(ratio))
+                else:
+                    embed.add_field(name="Gender", value="Genderless" if rj["Genderless"] else "Male" if rj["OnlyMale"] else "Female")
+                embed.add_field(name="EXP Growth", value=rj["EXPGrowth"])
+                embed.add_field(name="Height & Weight", value="{} meters\n{} kilograms".format(rj["Height"] / 100, rj["Weight"] / 10))
+                embed.add_field(name="Hatch Cycles", value=rj["HatchCycles"])
+                embed.add_field(name="Base Friendship", value=rj["BaseFriendship"])
+                embed.add_field(name="Catch Rate", value="{}/255".format(rj["CatchRate"]))
+                embed.add_field(name="Base stats ({})".format(rj["BST"]), value="```HP:    {} Atk:   {}\nDef:   {} SpAtk: {} \nSpDef: {} Spd:   {}```".format(rj["HP"], rj["ATK"], rj["DEF"], rj["SPA"], rj["SPD"], rj["SPE"]))
+                egg_str = "Egg Group 1: {}".format(rj["EggGroups"][0])
+                if not rj["EggGroups"][1] == rj["EggGroups"][0]:
+                    egg_str += "\nEgg Group 2: {}".format(rj["EggGroups"][1])
+                embed.add_field(name="Egg Groups", value=egg_str)
+                embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/normal/{}.png".format(species))
+                return await ctx.send(embed=embed)
+
+        # Get info for inputted file
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/pkmn_info")
         if r == 400:
             return
