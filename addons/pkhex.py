@@ -75,7 +75,10 @@ class pkhex(commands.Cog):
         else:
             embed.add_field(name="Ability", value="N/A")
         embed.add_field(name="Original Trainer", value=data["OT"])
-        embed.add_field(name="Handling Trainer", value=data["HT"])
+        if not data["HT"] == "":
+            embed.add_field(name="Handling Trainer", value=data["HT"])
+        else:
+            embed.add_field(name="Handling Trainer", value="N/A")
         if int(data["Generation"]) > 2 and not data["MetLoc"] == "":
             embed.add_field(name="Met Location", value=data["MetLoc"])
         else:
@@ -200,7 +203,7 @@ class pkhex(commands.Cog):
                 if rj["HasHiddenAbility"]:
                     ability_str += "\nAbility (H): {}".format(rj["AbilityH"])
                 embed.add_field(name="Abilities", value=ability_str)
-                embed.add_field(name="Evolution Stage", value=rj["EvoStage"])
+                embed.add_field(name="Height & Weight", value="{} meters\n{} kilograms".format(rj["Height"] / 100, rj["Weight"] / 10))
                 if rj["IsDualGender"]:
                     ratio = (rj["Gender"] / 254) * 100
                     ratio = round(ratio, 2)
@@ -208,15 +211,15 @@ class pkhex(commands.Cog):
                 else:
                     embed.add_field(name="Gender", value="Genderless" if rj["Genderless"] else "Male" if rj["OnlyMale"] else "Female")
                 embed.add_field(name="EXP Growth", value=rj["EXPGrowth"])
-                embed.add_field(name="Height & Weight", value="{} meters\n{} kilograms".format(rj["Height"] / 100, rj["Weight"] / 10))
+                embed.add_field(name="Evolution Stage", value=rj["EvoStage"])
                 embed.add_field(name="Hatch Cycles", value=rj["HatchCycles"])
                 embed.add_field(name="Base Friendship", value=rj["BaseFriendship"])
                 embed.add_field(name="Catch Rate", value="{}/255".format(rj["CatchRate"]))
-                embed.add_field(name="Base stats ({})".format(rj["BST"]), value="```HP:    {} Atk:   {}\nDef:   {} SpAtk: {} \nSpDef: {} Spd:   {}```".format(rj["HP"], rj["ATK"], rj["DEF"], rj["SPA"], rj["SPD"], rj["SPE"]))
                 egg_str = "Egg Group 1: {}".format(rj["EggGroups"][0])
                 if not rj["EggGroups"][1] == rj["EggGroups"][0]:
                     egg_str += "\nEgg Group 2: {}".format(rj["EggGroups"][1])
                 embed.add_field(name="Egg Groups", value=egg_str)
+                embed.add_field(name="Base stats ({})".format(rj["BST"]), value="```HP:    {} Atk:   {}\nDef:   {} SpAtk: {} \nSpDef: {} Spd:   {}```".format(rj["HP"], rj["ATK"], rj["DEF"], rj["SPA"], rj["SPD"], rj["SPE"]))
                 embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/normal/{}.png".format(species))
                 return await ctx.send(embed=embed)
 
@@ -355,10 +358,10 @@ class pkhex(commands.Cog):
             for pkmn in rj["results"]:
                 if pkmn["code"] == code:
                     pkmn_data = pkmn["pokemon"]
-                    embed = discord.Embed(description="[GPSS Page]({})".format(self.bot.api_url + "gpss/view/" + code))
+                    embed = discord.Embed(description="[GPSS Page]({})".format(self.bot.gpss_url + "gpss/view/" + code))
                     embed = self.embed_fields(ctx, embed, pkmn_data)
                     embed.set_author(icon_url=pkmn_data["SpeciesSpriteURL"], name="Data for {}".format(pkmn_data["Nickname"]))
-                    embed.set_thumbnail(url=self.bot.api_url + "gpss/qr/{}".format(code))
+                    embed.set_thumbnail(url=self.bot.gpss_url + "gpss/qr/{}".format(code))
                     return await msg.edit(embed=embed, content=None)
         await msg.edit(content="There was no pokemon on the GPSS with the code `{}`.".format(code))
 
@@ -377,8 +380,8 @@ class pkhex(commands.Cog):
         elif r[0] == 503:
             return await ctx.send("GPSS uploading is currently disabled. Please try again later.")
         elif r[0] == 200:
-            return await ctx.send("The provided pokemon has already been uploaded. You can find it at: {}gpss/view/{}".format(self.bot.api_url, code))
-        await ctx.send("Your pokemon has been uploaded! You can find it at: {}gpss/view/{}".format(self.bot.api_url, code))
+            return await ctx.send("The provided pokemon has already been uploaded. You can find it at: {}gpss/view/{}".format(self.bot.gpss_url, code))
+        await ctx.send("Your pokemon has been uploaded! You can find it at: {}gpss/view/{}".format(self.bot.gpss_url, code))
 
     @commands.command()
     @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
