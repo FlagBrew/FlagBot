@@ -100,7 +100,7 @@ class pkhex(commands.Cog):
             val = ""
             for x in values[1:]:
                 val += x + " "
-            embed.description += values[0] + val
+            embed.description += values[0] + val + "\n"
         return embed
 
     async def confirm_api_link(self):
