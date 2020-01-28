@@ -75,7 +75,10 @@ class pkhex(commands.Cog):
         else:
             embed.add_field(name="Ability", value="N/A")
         embed.add_field(name="Original Trainer", value=data["OT"])
-        embed.add_field(name="Handling Trainer", value=data["HT"])
+        if not data["HT"] == "":
+            embed.add_field(name="Handling Trainer", value=data["HT"])
+        else:
+            embed.add_field(name="Handling Trainer", value="N/A")
         if int(data["Generation"]) > 2 and not data["MetLoc"] == "":
             embed.add_field(name="Met Location", value=data["MetLoc"])
         else:
@@ -355,10 +358,10 @@ class pkhex(commands.Cog):
             for pkmn in rj["results"]:
                 if pkmn["code"] == code:
                     pkmn_data = pkmn["pokemon"]
-                    embed = discord.Embed(description="[GPSS Page]({})".format(self.bot.api_url + "gpss/view/" + code))
+                    embed = discord.Embed(description="[GPSS Page]({})".format(self.bot.gpss_url + "gpss/view/" + code))
                     embed = self.embed_fields(ctx, embed, pkmn_data)
                     embed.set_author(icon_url=pkmn_data["SpeciesSpriteURL"], name="Data for {}".format(pkmn_data["Nickname"]))
-                    embed.set_thumbnail(url=self.bot.api_url + "gpss/qr/{}".format(code))
+                    embed.set_thumbnail(url=self.bot.gpss_url + "gpss/qr/{}".format(code))
                     return await msg.edit(embed=embed, content=None)
         await msg.edit(content="There was no pokemon on the GPSS with the code `{}`.".format(code))
 
@@ -377,8 +380,8 @@ class pkhex(commands.Cog):
         elif r[0] == 503:
             return await ctx.send("GPSS uploading is currently disabled. Please try again later.")
         elif r[0] == 200:
-            return await ctx.send("The provided pokemon has already been uploaded. You can find it at: {}gpss/view/{}".format(self.bot.api_url, code))
-        await ctx.send("Your pokemon has been uploaded! You can find it at: {}gpss/view/{}".format(self.bot.api_url, code))
+            return await ctx.send("The provided pokemon has already been uploaded. You can find it at: {}gpss/view/{}".format(self.bot.gpss_url, code))
+        await ctx.send("Your pokemon has been uploaded! You can find it at: {}gpss/view/{}".format(self.bot.gpss_url, code))
 
     @commands.command()
     @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
