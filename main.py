@@ -48,7 +48,10 @@ token = config.token
 bot = commands.Bot(command_prefix=prefix, description=description)
 
 bot.is_mongodb = config.is_mongodb
-bot.api_url = config.api_url
+if config.is_localhost:
+    bot.api_url = "http://localhost:4000"
+else:
+    bot.api_url = config.api_url
 
 if not os.path.exists('saves/warns.json'):
     data = {}

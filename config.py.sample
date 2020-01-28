@@ -7,3 +7,4 @@ github_password = ""  # Github token as string
 is_mongodb = False  # Bool for if MongoDB database is in use
 db_address = ""  # MongoDB database address as string
 api_url = ""  # API URL as string
+is_localhost = False

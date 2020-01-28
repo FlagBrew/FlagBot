@@ -200,7 +200,7 @@ class pkhex(commands.Cog):
                 if rj["HasHiddenAbility"]:
                     ability_str += "\nAbility (H): {}".format(rj["AbilityH"])
                 embed.add_field(name="Abilities", value=ability_str)
-                embed.add_field(name="Evolution Stage", value=rj["EvoStage"])
+                embed.add_field(name="Height & Weight", value="{} meters\n{} kilograms".format(rj["Height"] / 100, rj["Weight"] / 10))
                 if rj["IsDualGender"]:
                     ratio = (rj["Gender"] / 254) * 100
                     ratio = round(ratio, 2)
@@ -208,15 +208,15 @@ class pkhex(commands.Cog):
                 else:
                     embed.add_field(name="Gender", value="Genderless" if rj["Genderless"] else "Male" if rj["OnlyMale"] else "Female")
                 embed.add_field(name="EXP Growth", value=rj["EXPGrowth"])
-                embed.add_field(name="Height & Weight", value="{} meters\n{} kilograms".format(rj["Height"] / 100, rj["Weight"] / 10))
+                embed.add_field(name="Evolution Stage", value=rj["EvoStage"])
                 embed.add_field(name="Hatch Cycles", value=rj["HatchCycles"])
                 embed.add_field(name="Base Friendship", value=rj["BaseFriendship"])
                 embed.add_field(name="Catch Rate", value="{}/255".format(rj["CatchRate"]))
-                embed.add_field(name="Base stats ({})".format(rj["BST"]), value="```HP:    {} Atk:   {}\nDef:   {} SpAtk: {} \nSpDef: {} Spd:   {}```".format(rj["HP"], rj["ATK"], rj["DEF"], rj["SPA"], rj["SPD"], rj["SPE"]))
                 egg_str = "Egg Group 1: {}".format(rj["EggGroups"][0])
                 if not rj["EggGroups"][1] == rj["EggGroups"][0]:
                     egg_str += "\nEgg Group 2: {}".format(rj["EggGroups"][1])
                 embed.add_field(name="Egg Groups", value=egg_str)
+                embed.add_field(name="Base stats ({})".format(rj["BST"]), value="```HP:    {} Atk:   {}\nDef:   {} SpAtk: {} \nSpDef: {} Spd:   {}```".format(rj["HP"], rj["ATK"], rj["DEF"], rj["SPA"], rj["SPD"], rj["SPE"]))
                 embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/normal/{}.png".format(species))
                 return await ctx.send(embed=embed)
 
