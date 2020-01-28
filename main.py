@@ -49,7 +49,7 @@ bot = commands.Bot(command_prefix=prefix, description=description)
 
 bot.is_mongodb = config.is_mongodb
 if not config.localhost_port == 0:
-    bot.api_url = "http://localhost:" + config.localhost_port
+    bot.api_url = "http://localhost:" + config.localhost_port + "/"
 else:
     bot.api_url = config.api_url
 bot.gpss_url = config.api_url
