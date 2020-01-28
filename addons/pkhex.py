@@ -149,13 +149,15 @@ class pkhex(commands.Cog):
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         url = self.bot.api_url + "api/v1/bot/query/pokemonforms"
         data = {
-            "species": species
+            "species": species.lower()
         }
         async with self.bot.session.post(url=url, data=data) as r:
             if not r.status == 200:
                 return await ctx.send("Are you sure that's a real pokemon?")
             rj = await r.json()
-            await ctx.send("Available forms: `{}`".format('`, `'.join(rj)))
+            if rj[0] == "":
+                return await ctx.send("No forms available for `{}`.".format(species.title()))
+            await ctx.send("Available forms for {}: `{}`.".format(species.title(), '`, `'.join(rj)))
 
     @commands.command(name='pokeinfo', aliases=['pi'])
     async def poke_info(self, ctx, data=""):
