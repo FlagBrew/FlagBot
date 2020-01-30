@@ -2,3 +2,4 @@ discord.py
 qrcode[pil]
 pymongo
 validators
+psutil

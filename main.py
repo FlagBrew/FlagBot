@@ -48,7 +48,7 @@ token = config.token
 bot = commands.Bot(command_prefix=prefix, description=description)
 
 bot.is_mongodb = config.is_mongodb
-if not config.localhost_port == 0:
+if not config.localhost_port == "":
     bot.api_url = "http://localhost:" + config.localhost_port + "/"
 else:
     bot.api_url = config.api_url
@@ -121,6 +121,8 @@ async def on_command_error(ctx, error):
         await ctx.send("{} This command is on a cooldown.".format(ctx.author.mention))
     elif isinstance(error, APIConnectionError):
         print("Error: api_url was left blank in config.py, or the server is down. Commands in the PKHeX module will not work properly until this is rectified.")
+    elif isinstance(error, commands.DisabledCommand):
+        await ctx.send("This command is currently disabled.")
     else:
         if ctx.command:
             await ctx.send("An error occurred while processing the `{}` command.".format(ctx.command.name))
@@ -161,6 +163,7 @@ async def on_ready():
                     bot.patrons_role = discord.utils.get(guild.roles, id=330078911704727552)
                     bot.protected_roles = (discord.utils.get(guild.roles, id=279598900799864832), bot.discord_moderator_role, bot.flagbrew_team_role, discord.utils.get(guild.roles, id=381053929389031424))
                     bot.patrons_channel = discord.utils.get(guild.channels, id=381000988246540292)
+                    bot.interpreter_logs_channel = discord.utils.get(guild.channels, id=672553506690826250)
                 with open('saves/faqdm.json', 'r') as f:
                     bot.dm_list = json.load(f)
 
@@ -203,7 +206,8 @@ cogs = [
     'addons.events',
     'addons.info', 
     'addons.mod', 
-    'addons.pkhex', 
+    'addons.pkhex',
+    'addons.pyint',
     'addons.utility', 
     'addons.warns'
 ]
@@ -265,6 +269,7 @@ async def reload(ctx):
             "Info": "info",
             "Moderation": "mod",
             "pkhex": "pkhex",
+            "PythonInterpreter": "pyint",
             "Utility": "utility",
             "Warning": "warns"
         }

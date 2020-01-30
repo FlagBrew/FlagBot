@@ -100,7 +100,7 @@ class pkhex(commands.Cog):
             val = ""
             for x in values[1:]:
                 val += x + " "
-            embed.description += values[0] + val
+            embed.description += values[0] + val + "\n"
         return embed
 
     async def confirm_api_link(self):
@@ -149,13 +149,15 @@ class pkhex(commands.Cog):
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         url = self.bot.api_url + "api/v1/bot/query/pokemonforms"
         data = {
-            "species": species
+            "species": species.lower()
         }
         async with self.bot.session.post(url=url, data=data) as r:
             if not r.status == 200:
                 return await ctx.send("Are you sure that's a real pokemon?")
             rj = await r.json()
-            await ctx.send("Available forms: `{}`".format('`, `'.join(rj)))
+            if rj[0] == "":
+                return await ctx.send("No forms available for `{}`.".format(species.title()))
+            await ctx.send("Available forms for {}: `{}`.".format(species.title(), '`, `'.join(rj)))
 
     @commands.command(name='pokeinfo', aliases=['pi'])
     async def poke_info(self, ctx, data=""):
@@ -171,11 +173,11 @@ class pkhex(commands.Cog):
                 "Blue": discord.Colour.blue(),
                 "Yellow": discord.Colour.gold(),
                 "Green": discord.Colour.green(),
-                "Black": discord.Colour.darker_grey(),
+                "Black": discord.Colour(0x070e1c),
                 "Brown": discord.Colour(0x8B4513),
                 "Purple": discord.Colour.purple(),
                 "Gray": discord.Colour.light_grey(),
-                "White": discord.Colour.default(),
+                "White": discord.Colour(0xe9edf5),
                 "Pink": discord.Colour(0xFF1493),
             }
             url = self.bot.api_url + "api/v1/bot/query/baseinfo"
