@@ -7,6 +7,7 @@ import qrcode
 import io
 import json
 import math
+import psutil
 from discord.ext import commands
 
 desc_temp = "You can get the latest release of {}."
@@ -79,7 +80,15 @@ class Info(commands.Cog):
     @commands.command()
     async def about(self, ctx):
         """Information about the bot"""
-        await ctx.send("This is a bot coded in python for use in the FlagBrew server, made by {}#{}. You can view the source code here: <https://github.com/GriffinG1/FlagBot>.".format(self.bot.creator.name, self.bot.creator.discriminator))
+        embed = discord.Embed()
+        embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in the FlagBrew server.\n"
+                             "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
+                             "Written by {}.".format(self.bot.creator.mention))
+        embed.set_author(name="GriffinG1", url='https://github.com/GriffinG1', icon_url='https://avatars0.githubusercontent.com/u/28538707')
+        total_mem = psutil.virtual_memory().total/float(1<<30)
+        used_mem = psutil.Process().memory_info().rss/float(1<<20)
+        embed.set_footer(text="{} MB used out of {} GB".format(round(used_mem, 2), round(total_mem, 2)))
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def readme(self, ctx, app=""):
