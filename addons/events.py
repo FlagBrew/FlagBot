@@ -74,15 +74,9 @@ class Events(commands.Cog):
     async def on_message(self, message):
         # auto ban on 15+ pings
         if len(message.mentions) > 15:
-            embed = discord.Embed(description=message.content)
             await message.delete()
             await message.author.ban()
             await message.channel.send("{} was banned for attempting to spam user mentions.".format(message.author))
-
-        # Watch hook for susp account(s)
-        if message.author.id == 592144464382787595:
-            embed = discord.Embed(description=message.content)
-            await self.bot.logs_channel.send("Suspicious user `{}` sent a message:".format(message.author), embed=embed)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
