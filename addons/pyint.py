@@ -1,9 +1,10 @@
 import discord
 import io
 import os
+import json
 import textwrap
-from contextlib import redirect_stdout
 import traceback
+from contextlib import redirect_stdout
 from discord.ext import commands
 
 
@@ -13,6 +14,9 @@ class PythonInterpreter(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._last_result = None
+        with open('saves/banned_phrases.json', 'r') as f:
+            self.banned_phrases = json.load(f)
+        print('Addon "{}" loaded'.format(self.__class__.__name__))
 
     def cleanup_code(self, content):
         """Automatically removes code blocks from the code."""
@@ -75,21 +79,7 @@ class PythonInterpreter(commands.Cog):
     @commands.has_any_role("Bot Dev", "FlagBrew Team", "Discord Moderator")
     async def py(self, ctx, *, msg):
         """Python interpreter. Limited to bot devs, flagbrew team, and staff"""
-        blocked_libraries_and_terms = [
-            'requests',
-            'aiohttp',
-            '/etc',
-            '/etc/shadow',
-            '/etc/passwd',
-            'passwd',
-            'shadow',
-            '/home',
-            'home',
-            'requests_futures',
-            'sys',
-            'raise'
-        ]
-        if any(b in msg for b in blocked_libraries_and_terms):
+        if any(b in msg for b in self.banned_phrases):
             return await ctx.send("Something in your code isn't allowed. Cancelling code execution.")
         log_msg = self.cleanup_code(msg).replace('`', r'\`')
         if not log_msg[0:3] == '```':
@@ -121,6 +111,35 @@ class PythonInterpreter(commands.Cog):
         else:
             pycmd.enabled = True
             return await ctx.send("Enabled the py command!")
+
+    @commands.command(name='bp')
+    async def banphrase(self, ctx, phrase):
+        """Bans a phrase from the interpreter"""
+        if not ctx.author in (self.bot.creator, self.bot.allen):
+            raise commands.errors.CheckFailure()
+        if phrase in self.banned_phrases:
+            return await ctx.send("`{}` is already banned!".format(phrase))
+        self.banned_phrases.append(phrase)
+        with open("saves/banned_phrases.json", "w") as f:
+            json.dump(self.banned_phrases, f, indent=4)
+        await ctx.send("Added `{}` to the banned phrase list.".format(phrase))
+
+    @commands.command(name='ubp')
+    async def unbanphrase(self, ctx, phrase):
+        """Unbans a phrase from the interpreter"""
+        if not ctx.author in (self.bot.creator, self.bot.allen):
+            raise commands.errors.CheckFailure()
+        if not phrase in self.banned_phrases:
+            return await ctx.send("`{}` isn't a banned phrase!".format(phrase))
+        self.banned_phrases.remove(phrase)
+        with open("saves/banned_phrases.json", "w") as f:
+            json.dump(self.banned_phrases, f, indent=4)
+        await ctx.send("Removed `{}` from the banned phrase list.".format(phrase))
+
+    @commands.command(name='lbp')
+    @commands.has_any_role("Bot Dev", "FlagBrew Team", "Discord Moderator")
+    async def listbannedphrases(self, ctx):
+        await ctx.send("Banned phrases:\n```{}\n{}```".format(self.banned_phrases[0], "\n".join(self.banned_phrases)))
 
 
 def setup(bot):
