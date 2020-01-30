@@ -89,7 +89,7 @@ class PythonInterpreter(commands.Cog):
             'sys',
             'raise'
         ]
-        if (b in msg for b in blocked_libraries_and_terms):
+        if any(b in msg for b in blocked_libraries_and_terms):
             return await ctx.send("Something in your code isn't allowed. Cancelling code execution.")
         log_msg = self.cleanup_code(msg).replace('`', r'\`')
         if not log_msg[0:3] == '```':
