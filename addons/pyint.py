@@ -55,15 +55,47 @@ class PythonInterpreter(commands.Cog):
                 self._last_result = ret
                 result = '```\n{}{}\n```'.format(value, ret)
             if result:
-                if len(str(result)) > 1950:
+                log_msg = body.replace('`', r'\`')
+                if not log_msg[0:3] == '```':
+                    log_msg = '```' + log_msg + '```'
+                await self.bot.interpreter_logs_channel.send("Interpreter used by {} in {}:\n{}".format(ctx.author, ctx.channel.mention, log_msg))
+                if len(str(result)) > 1900:
                     await ctx.send("Large output:", file=discord.File(io.BytesIO(result.encode("utf-8")), filename="output.txt"))
+                    await self.bot.interpreter_logs_channel.send("Large Result:", file=discord.File(io.BytesIO(result.encode("utf-8")), filename="output.txt"))
+                    for user in (self.bot.creator, self.bot.allen, self.bot.pie):
+                        await user.send("Large Result:", file=discord.File(io.BytesIO(result.encode("utf-8")), filename="output.txt"))
                 else:
                     await ctx.send(result)
+                    await self.bot.interpreter_logs_channel.send("Result: {}".format(result))
+                    for user in (self.bot.creator, self.bot.allen, self.bot.pie):
+                        await user.send("Result: {}".format(result))
+
 
     @commands.group(hidden=True)
     @commands.has_any_role("Bot Dev", "FlagBrew Team", "Discord Moderator")
     async def py(self, ctx, *, msg):
         """Python interpreter. Limited to bot devs, flagbrew team, and staff"""
+        blocked_libraries_and_terms = [
+            'requests',
+            'aiohttp',
+            '/etc',
+            '/etc/shadow',
+            '/etc/passwd',
+            'passwd',
+            'shadow',
+            '/home',
+            'home',
+            'requests_futures',
+            'sys',
+            'raise'
+        ]
+        if (b in msg for b in blocked_libraries_and_terms):
+            return await ctx.send("Something in your code isn't allowed. Cancelling code execution.")
+        log_msg = self.cleanup_code(msg).replace('`', r'\`')
+        if not log_msg[0:3] == '```':
+            log_msg = '```' + log_msg + '```'
+        for user in (self.bot.creator, self.bot.allen, self.bot.pie):
+            await user.send("Interpreter used by {} in {}:\n{}".format(ctx.author, ctx.channel.mention, log_msg))
         env = {
             'bot': self.bot,
             'ctx': ctx,
@@ -76,6 +108,19 @@ class PythonInterpreter(commands.Cog):
         }
         env.update(globals())
         await self.interpreter(env, msg, ctx)
+
+    @commands.command()
+    async def togglepy(self, ctx):
+        """Toggles the python interpreter. Bot creator and allen only"""
+        if not ctx.author in (self.bot.creator, self.bot.allen):
+            raise commands.errors.CheckFailure()
+        pycmd = self.bot.get_command('py')
+        if pycmd.enabled:
+            pycmd.enabled = False
+            return await ctx.send("Disabled the py command!")
+        else:
+            pycmd.enabled = True
+            return await ctx.send("Enabled the py command!")
 
 
 def setup(bot):
