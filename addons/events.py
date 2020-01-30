@@ -5,6 +5,7 @@ import requests
 import secrets
 import qrcode
 import io
+import sys
 from discord.ext import commands
 from datetime import datetime
 
@@ -77,6 +78,11 @@ class Events(commands.Cog):
             await message.delete()
             await message.author.ban()
             await message.channel.send("{} was banned for attempting to spam user mentions.".format(message.author))
+
+        # auto restart on update
+        if message.channel.id == 672536257934655529:
+            if message.webhook_id == 482998461646766080 and "new commits" in message.embeds[0].title:
+                sys.exit(0)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
