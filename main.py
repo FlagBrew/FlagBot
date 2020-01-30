@@ -203,7 +203,8 @@ cogs = [
     'addons.events',
     'addons.info', 
     'addons.mod', 
-    'addons.pkhex', 
+    'addons.pkhex',
+    'addons.pyint',
     'addons.utility', 
     'addons.warns'
 ]
@@ -265,6 +266,7 @@ async def reload(ctx):
             "Info": "info",
             "Moderation": "mod",
             "pkhex": "pkhex",
+            "PythonInterpreter": "pyint",
             "Utility": "utility",
             "Warning": "warns"
         }
