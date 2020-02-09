@@ -30,5 +30,9 @@
   {
     "title": "Why can't I access the GPSS?",
     "value": "With PKSM 8.0.0, the GPSS was updated to v2.0. As such, if you haven't updated to 8.0.0+, the GPSS will not work."
+  },
+  {
+      "title": "Why doesn't PKSM scan this QR?",
+      "value": "Depends on the type of the QR:\n**GPSS**: QRs from [FlagBrew's site](https://flagbrew.org/gpss) or <#586728153985056801> have to be scanned in PKSM's GPSS section (Storage > press wifi button on bottom screen > press X)\n**PKX/PB7**: make sure loaded save matches pkm format (LGPE for pb7, otherwise gen of save matches `x` in pkx), then press L + R in Editor. *Note* that pk7 QRs may need multiple tries to scan due to 3DS's poor camera\n**Wonder Card**: use the camera in PKSM's Events section (Events > press L + R)"
   }
 ]
