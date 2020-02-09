@@ -32,7 +32,7 @@
     "value": "With PKSM 8.0.0, the GPSS was updated to v2.0. As such, if you haven't updated to 8.0.0+, the GPSS will not work."
   },
   {
-      "title": "Why doesn't PKSM scan this QR?",
-      "value": "Depends on the type of the QR:\n**GPSS**: QRs from [FlagBrew's site](https://flagbrew.org/gpss) or <#586728153985056801> have to be scanned in PKSM's GPSS section (Storage > press wifi button on bottom screen > press X)\n**PKX/PB7**: make sure loaded save matches pkm format (LGPE for pb7, otherwise gen of save matches `x` in pkx), then press L + R in Editor. *Note* that pk7 QRs may need multiple tries to scan due to 3DS's poor camera\n**Wonder Card**: use the camera in PKSM's Events section (Events > press L + R)"
+    "title": "Why doesn't PKSM scan this QR?",
+    "value": "**GPSS**: QRs from the [GPSS](https://flagbrew.org/gpss) (or <#586728153985056801>) have to be scanned in the GPSS section of PKSM. This can be accessed by opening `Storage`, then selecting the wifi button on the bottom screen, then pressing `X`.\n**PKX/PB7**: The file you're scanning *must* be of the same generation as the currently loaded save. This scanner is accessed by opening `Editor`, then pressing `L + R`. *Please note*: PK7 files are very finicky due to their size, and as such may need multiple tries.\n**Wonder Card**: These are scanned by opening `Events`, then pressing `L + R`."
   }
 ]
