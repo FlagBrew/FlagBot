@@ -30,5 +30,9 @@
   {
     "title": "Why can't I access the GPSS?",
     "value": "With PKSM 8.0.0, the GPSS was updated to v2.0. As such, if you haven't updated to 8.0.0+, the GPSS will not work."
+  },
+  {
+    "title": "Why doesn't PKSM scan this QR?",
+    "value": "**GPSS**: QRs from the [GPSS](https://flagbrew.org/gpss) (or <#586728153985056801>) have to be scanned in the GPSS section of PKSM. This can be accessed by opening `Storage`, then selecting the wifi button on the bottom screen, then pressing `X`.\n**PKX/PB7**: The file you're scanning *must* be of the same generation as the currently loaded save. This scanner is accessed by opening `Editor`, then pressing `L + R`. *Please note*: PK7 files are very finicky due to their size, and as such may need multiple tries.\n**Wonder Card**: These are scanned by opening `Events`, then pressing `L + R`."
   }
 ]
