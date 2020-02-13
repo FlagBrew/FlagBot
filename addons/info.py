@@ -230,7 +230,7 @@ class Info(commands.Cog):
     async def assets(self, ctx):
         """Gives instructions on manually downloading assets for PKSM"""
         embed = discord.Embed(title="How to manually download PKSM assets")
-        embed.description = ("1. Download the assets from [here](https://github.com/dsoldier/PKResources/tree/master/additionalassets).\n"
+        embed.description = ("1. Download the assets from [here](https://github.com/piepie62/PKResources).\n"
                              "2. Copy the assets to `/3ds/PKSM/assets/`. You may need to create the folder.\n"
                              "3. Launch PKSM, and you should be good to go.")
         await ctx.send(embed=embed)
