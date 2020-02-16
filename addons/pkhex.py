@@ -7,6 +7,7 @@ import base64
 import validators
 import os
 import urllib
+import binascii
 from exceptions import APIConnectionError
 from datetime import datetime
 from discord.ext import commands
@@ -360,20 +361,30 @@ class pkhex(commands.Cog):
         async with self.bot.session.get(self.bot.api_url) as r:
             if not r.status == 200:
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
+        upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         msg = await ctx.send("Attempting to fetch pokemon...")
         async with self.bot.session.get(self.bot.api_url + "api/v1/gpss/search/" + code) as r:
-            rj = await r.json()
-            for pkmn in rj["results"]:
-                if pkmn["code"] == code:
-                    pkmn_data = pkmn["pokemon"]
-                    embed = discord.Embed(description="[GPSS Page]({})".format(self.bot.gpss_url + "gpss/view/" + code))
-                    embed = self.embed_fields(ctx, embed, pkmn_data)
-                    embed.set_author(icon_url=pkmn_data["SpeciesSpriteURL"], name="Data for {}".format(pkmn_data["Nickname"]))
-                    embed.set_thumbnail(url=self.bot.gpss_url + "gpss/qr/{}".format(code))
-                    return await msg.edit(embed=embed, content=None)
+            async with self.bot.session.get(self.bot.api_url + "gpss/desktop/download/" + code) as download:
+                rj = await r.json()
+                for pkmn in rj["results"]:
+                    if pkmn["code"] == code:
+                        pkmn_data = pkmn["pokemon"]
+                        filename = pkmn_data["Species"] + " Code_{}".format(code)
+                        if pkmn_data["Generation"] == "LGPE":
+                            filename += ".pb7"
+                        else:
+                            filename += ".pk" + pkmn_data["Generation"]
+                        pkmn_b64 = binascii.b2a_base64(await download.read())
+                        pkmn_file = discord.File(io.BytesIO(base64.decodebytes(pkmn_b64)), filename)
+                        m = await upload_channel.send("Pokemon fetched from the GPSS by {}".format(ctx.author), file=pkmn_file)
+                        embed = discord.Embed(description="[GPSS Page]({}) | [Download link]({})".format(self.bot.gpss_url + "gpss/view/" + code, m.attachments[0].url))
+                        embed = self.embed_fields(ctx, embed, pkmn_data)
+                        embed.set_author(icon_url=pkmn_data["SpeciesSpriteURL"], name="Data for {}".format(pkmn_data["Nickname"]))
+                        embed.set_thumbnail(url=self.bot.gpss_url + "gpss/qr/{}".format(code))
+                        return await msg.edit(embed=embed, content=None)
         await msg.edit(content="There was no pokemon on the GPSS with the code `{}`.".format(code))
 
-    @commands.command(name="gpsspost")
+    @commands.command(name="gpsspost", aliases=['gpssupload'])
     async def gpss_upload(self, ctx, data=""):
         """Allows uploading a pokemon to the GPSS. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
         if not data and not ctx.message.attachments:
@@ -399,7 +410,7 @@ class pkhex(commands.Cog):
         """Legalizes a pokemon as much as possible. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
         if not data and not ctx.message.attachments:
             return await ctx.send("This command requires a pokemon be inputted!")
-        upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-file-upload on FlagBrew
+        upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         if not await self.ping_api_func() == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         msg = await ctx.send("Attempting to legalize pokemon...")
@@ -423,7 +434,7 @@ class pkhex(commands.Cog):
             filename = ctx.message.attachments[0].filename
         pokemon = discord.File(io.BytesIO(pokemon_decoded), "fixed-" + filename)
         qr = discord.File(io.BytesIO(qr_decoded), 'pokemon_qr.png')
-        m = await upload_channel.send(file=pokemon)
+        m = await upload_channel.send("Pokemon legalized by {}".format(ctx.author), file=pokemon)
         embed = discord.Embed(title="Fixed Legality Issues for {}".format(rj["Species"]), description="[Download link]({})\n".format(m.attachments[0].url))
         embed = self.list_to_embed(embed, rj["Report"])
         embed.set_thumbnail(url="attachment://pokemon_qr.png")
