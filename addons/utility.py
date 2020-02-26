@@ -279,6 +279,38 @@ class Utility(commands.Cog):
         with open('saves/faqdm.json', 'w') as f:
             json.dump(self.bot.dm_list, f, indent=4)
 
+    @commands.command(hidden=True)
+    async def togglecommand(self, ctx, command):
+        """Allows disabling of commands. Restricted to Griffin and Allen"""
+        if not ctx.author in (self.bot.creator, self.bot.allen):
+            raise commands.errors.CheckFailure()
+        elif command == "togglecommand":
+            return await ctx.send("This command cannot be disabled.")
+        elif command not in self.bot.disabled_commands:
+            try:
+                self.bot.get_command(command).enabled = False
+            except AttributeError:
+                return await ctx.send("There is no command named `{}`.".format(command))
+            self.bot.disabled_commands.append(command)
+            with open('saves/disabled_commands.json', 'w') as f:
+                json.dump(self.bot.disabled_commands, f, indent=4)
+            return await ctx.send("Successfully disabled the `{}` command.".format(command))
+        try:
+            self.bot.get_command(command).enabled = True
+        except AttributeError:
+            return await ctx.send("There is no command named `{}`.".format(command))
+        self.bot.disabled_commands.remove(command)
+        with open('saves/disabled_commands.json', 'w') as f:
+            json.dump(self.bot.disabled_commands, f, indent=4)
+        await ctx.send("Successfully re-enabled the `{}` command.".format(command))
+
+    @commands.command(hidden=True)
+    async def listdisabled(self, ctx):
+        """Lists disabled commands"""
+        if len(self.bot.disabled_commands) == 0:
+            return await ctx.send("There are currently no disabled commands.")
+        await ctx.send("```{}```".format(",\n".join(c for c in self.bot.disabled_commands)))
+
 
 def setup(bot):
     bot.add_cog(Utility(bot))
