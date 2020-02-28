@@ -58,7 +58,15 @@ if not os.path.exists('saves/warns.json'):
     data = {}
     with open('saves/warns.json', 'w') as f:
         json.dump(data, f, indent=4)
-bot.warns_dict = json.load(open('saves/warns.json', 'r'))
+with open('saves/warns.json', 'r') as f:
+    bot.warns_dict = json.load(f)
+
+if not os.path.exists('saves/disabled_commands.json'):
+    data = []
+    with open('saves/disabled_commands.json', 'w') as f:
+        json.dump(data, f, indent=4)
+with open('saves/disabled_commands.json', 'r') as f:
+    bot.disabled_commands = json.load(f)
 
 if bot.is_mongodb:
     db_address = config.db_address
@@ -150,6 +158,10 @@ async def on_error(event_method, *args, **kwargs):
 @bot.event
 async def on_ready():
     # this bot should only ever be in one server anyway
+    if len(bot.disabled_commands) > 0:
+        for c in bot.disabled_commands:
+            bot.get_command(c).enabled = False
+            print('Disabled {}'.format(c))
     for guild in bot.guilds:
         try:
             if guild.id == bot.testing_id or guild.id == bot.flagbrew_id:
@@ -285,6 +297,9 @@ async def reload(ctx):
                 if addon not in addon_dict.keys():
                     pass
                 errors += 'Failed to load addon: `{}.py` due to `{}: {}`\n'.format(addon, type(e).__name__, e)
+            if len(bot.disabled_commands) > 0:
+                for c in bot.disabled_commands:
+                    bot.get_command(c).enabled = False
         if not errors:
             await ctx.send(':white_check_mark: Extensions reloaded.')
         else:
