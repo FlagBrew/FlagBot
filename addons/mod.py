@@ -36,7 +36,10 @@ class Moderation(commands.Cog):
             pass  # bot blocked or not accepting DMs
         reason += "\n\nAction done by {} (This is to deal with audit log scraping)".format(ctx.author)
         try:
-            await ctx.guild.ban(member, delete_message_days=0, reason=reason)
+            if len(reason) > 512:
+                await ctx.guild.ban(member, delete_message_days=0, reason="Failed to log reason as length was {}. Please check bot logs.".format(len(reason)))
+            else:
+                await ctx.guild.ban(member, delete_message_days=0, reason=reason)
         except discord.Forbidden:  # i have no clue
             return await ctx.send("I don't have permission. Why don't I have permission.")
         embed = discord.Embed()
@@ -62,13 +65,16 @@ class Moderation(commands.Cog):
                 await member.send("You were kicked from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY".format(reason))
             except discord.Forbidden:
                 pass  # bot blocked or not accepting DMs
-            await member.kick(reason=reason)
+            if len(reason) > 512:
+                await member.kick(reason="Failed to log reason, as reason length was {}. Please check bot logs.".format(len(reason)))
+            else:
+                await member.kick(reason=reason)
             await ctx.send("Successfully kicked user {0.name}#{0.discriminator}!".format(member))
 
     @commands.has_permissions(ban_members=True)
     @commands.command(pass_context=True)
     async def ban(self, ctx, member: discord.User, *, reason="No reason was given."):
-        """Ban a user."""
+        """Bans a user."""
         if not member:  # Edge case in which UserConverter may fail to get a User
             return await ctx.send("Could not find user. They may no longer be in the global User cache. If you are sure this is a valid user, try `.banid` instead.")
         await self.generic_ban_things(ctx, member, reason)
