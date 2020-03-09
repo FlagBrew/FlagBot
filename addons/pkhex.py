@@ -40,7 +40,7 @@ class pkhex(commands.Cog):
             if not validators.url(data):
                 await ctx.send("That's not a real link!")
                 return 400
-            elif not data[-4:-1] == ".pk":
+            elif not data.strip("?raw=true")[-4:-1] == ".pk":
                 await ctx.send("That isn't a pkx file!")
                 return 400
             try:
