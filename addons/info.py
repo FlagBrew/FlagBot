@@ -305,6 +305,47 @@ class Info(commands.Cog):
                              "Afterwards, hit `y` on the game select screen to view the absent games menu.")
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def batchedit(self, ctx):
+        """Lists info about the batch editor"""
+        games = (
+            ":x: Diamond & Pearl\n"
+            ":x: Platinum\n"
+            ":x: HeartGold & SoulSilver\n"
+            ":x: Black & White\n"
+            ":x: Black 2 & White 2\n"
+            ":white_check_mark: X & Y\n"
+            ":x: Omega Ruby & Alpha Sapphire\n"
+            ":x: Sun & Moon\n"
+            ":x: Ultra Sun & Ultra Moon\n"
+            ":x: Let's Go Pikachu & Eevee\n"
+            ":x: Sword & Shield\n"
+            ":white_check_mark: PKSM's Bank"
+        )
+        edit_types = (
+            ":x: Original Trainer Name - 'Save-based name length not tested, but logic is nearly identical'\n"
+            ":white_check_mark: Original Trainer TID\n"
+            ":white_check_mark: Original Trainer SID\n"
+            ":white_check_mark: Original Trainer Gender\n"
+            ":white_check_mark: Level\n"
+            ":white_check_mark: Shiny\n"
+            ":white_check_mark: All IVs\n"
+            ":white_check_mark: Language\n"
+            ":white_check_mark: Pokerus\n"
+            ":white_check_mark: Nature\n"
+            ":x: Ball - 'Save-based limiting not tested'\n"
+            ":white_check_mark: PP Ups\n"
+            ":white_check_mark: Reset Moves (Move 1 is set to Pound, and moves 2 through 4 are cleared)\n"
+            ":x: Randomize PIDs - 'Gen 4 not tested, shiny retention not tested'"
+        )
+        embed = discord.Embed(title="Batch Editor Information")
+        embed.description = ("***PLEASE NOTE***: While most of these have been tested, it may have bugs that haven't been found. "
+                          "If it errors, immediately stop editing your save *without* saving changes, as there is a failure case that could break your boxes.")
+        embed.add_field(name="Game Testing Status", value=games)
+        embed.add_field(name="Editing Types", value=edit_types)
+        embed.set_footer(text="❌ means implementation has not yet been tested.")
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Info(bot))
