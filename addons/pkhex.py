@@ -18,6 +18,7 @@ class pkhex(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.failure_count = 0
         print('Addon "{}" loaded'.format(self.__class__.__name__))
 
     async def ping_api_func(self):
@@ -111,9 +112,11 @@ class pkhex(commands.Cog):
                 continue
             r = await self.ping_api_func()
             if not r == 200:
-                for x in (self.bot.creator, self.bot.allen):
-                    await x.send("pkhex.py was unloaded as API connection was dropped. Status code: `{}`".format(r))
-                self.bot.unload_extension("addons.pkhex")
+                self.failure_count += 1
+                if self.failure_count > 2:  # Only unload if it fails concurrently 3+ times, to prevent accidental unloads on server restarts
+                    for x in (self.bot.creator, self.bot.allen):
+                        await x.send("pkhex.py was unloaded as API connection was dropped. Status code: `{}`".format(r))
+                    self.bot.unload_extension("addons.pkhex")
             await asyncio.sleep(300)
 
     @commands.command(hidden=True)
