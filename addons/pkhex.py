@@ -116,7 +116,10 @@ class pkhex(commands.Cog):
                 if self.failure_count > 2:  # Only unload if it fails concurrently 3+ times, to prevent accidental unloads on server restarts
                     for x in (self.bot.creator, self.bot.allen):
                         await x.send("pkhex.py was unloaded as API connection was dropped. Status code: `{}`".format(r))
+                    self.failure_count = 0
                     self.bot.unload_extension("addons.pkhex")
+            else:
+                self.failure_count = 0
             await asyncio.sleep(300)
 
     @commands.command(hidden=True)
