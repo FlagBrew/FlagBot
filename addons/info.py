@@ -309,21 +309,21 @@ class Info(commands.Cog):
     async def batchedit(self, ctx):
         """Lists info about the batch editor"""
         games = (
-            ":x: Diamond & Pearl\n"
-            ":x: Platinum\n"
-            ":x: HeartGold & SoulSilver\n"
-            ":x: Black & White\n"
-            ":x: Black 2 & White 2\n"
+            ":white_check_mark: Diamond & Pearl\n"
+            ":white_check_mark: Platinum\n"
+            ":white_check_mark: HeartGold & SoulSilver\n"
+            ":white_check_mark: Black & White\n"
+            ":white_check_mark: Black 2 & White 2\n"
             ":white_check_mark: X & Y\n"
-            ":x: Omega Ruby & Alpha Sapphire\n"
-            ":x: Sun & Moon\n"
-            ":x: Ultra Sun & Ultra Moon\n"
+            ":white_check_mark: Omega Ruby & Alpha Sapphire\n"
+            ":white_check_mark: Sun & Moon\n"
+            ":white_check_mark: Ultra Sun & Ultra Moon\n"
             ":x: Let's Go Pikachu & Eevee\n"
             ":x: Sword & Shield\n"
             ":white_check_mark: PKSM's Bank"
         )
         edit_types = (
-            ":x: Original Trainer Name - 'Save-based name length not tested, but logic is nearly identical'\n"
+            ":white_check_mark: Original Trainer Name\n"
             ":white_check_mark: Original Trainer TID\n"
             ":white_check_mark: Original Trainer SID\n"
             ":white_check_mark: Original Trainer Gender\n"
@@ -333,14 +333,18 @@ class Info(commands.Cog):
             ":white_check_mark: Language\n"
             ":white_check_mark: Pokerus\n"
             ":white_check_mark: Nature\n"
-            ":x: Ball - 'Save-based limiting not tested'\n"
+            ":white_check_mark: Ball\n"
             ":white_check_mark: PP Ups\n"
             ":white_check_mark: Reset Moves (Move 1 is set to Pound, and moves 2 through 4 are cleared)\n"
-            ":x: Randomize PIDs - 'Gen 4 not tested, shiny retention not tested'"
+            ":white_check_mark: Randomize PIDs"
         )
         embed = discord.Embed(title="Batch Editor Information")
-        embed.description = ("***PLEASE NOTE***: While most of these have been tested, it may have bugs that haven't been found. "
-                          "If it errors, immediately stop editing your save *without* saving changes, as there is a failure case that could break your boxes.")
+        embed.description = (
+                            "The batch editor script for PKSM can currently be found pinned in <#278222834633801728>.\n"
+                            "Please keep in mind that the script will affect *everything* in the boxes of the loaded save, or of the selected bank.\n\n"
+                            "***PLEASE NOTE***: While most of these have been tested, the script may have bugs that haven't been found. "
+                            "If it errors, immediately stop editing your save *without* saving changes, as there is a failure case that could break your boxes."
+                            )
         embed.add_field(name="Game Testing Status", value=games)
         embed.add_field(name="Editing Types", value=edit_types)
         embed.set_footer(text="❌ means implementation has not yet been tested.")
