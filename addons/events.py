@@ -54,7 +54,11 @@ class Events(commands.Cog):
         embed = discord.Embed(title="New member!")
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
         if (datetime.now() - member.created_at).days < 1:
-            embed.description += "\n**Account was created {} days ago.".format((datetime.now() - member.created_at).days)
+            embed.description += "\n**Account was created {} days ago.**".format((datetime.now() - member.created_at).days)
+        try:
+            await member.send("Welcome to {}! Please read the rules, as you won't be able to access the majority of the server otherwise. This is an automated message, no reply is necessary.".format(self.bot.guild.name))
+        except discord.Forbidden:
+            embed.description += "\n**Failed to DM user on join.**"
         if member.guild.id == self.bot.flagbrew_id:
             try:
                 await self.bot.logs_channel.send(embed=embed)
@@ -84,6 +88,16 @@ class Events(commands.Cog):
             if message.webhook_id == 482998461646766080 and "new commits" in message.embeds[0].title:
                 sys.exit(0)
 
+        # log dm messages
+        if isinstance(message.channel, discord.abc.PrivateChannel) and not message.author == self.bot.guild.me:
+            if not message.content:
+                return
+            embed = discord.Embed(description=message.content)
+            try:
+                await self.bot.dm_logs_channel.send("New DM recieved from {} | {}.".format(message.author, message.author.id), embed=embed)
+            except discord.Forbidden:
+                pass  # beta bot can't log
+
     @commands.Cog.listener()
     async def on_message_delete(self, message):
         if isinstance(message.channel, discord.abc.GuildChannel) and message.author.id != self.bot.user.id and message.guild.id == self.bot.flagbrew_id:
@@ -92,7 +106,7 @@ class Events(commands.Cog):
                     return
                 embed = discord.Embed(description=message.content)
                 try:
-                    await self.bot.logs_channel.send("Message by {0} deleted in channel {1.mention}:".format(message.author, message.channel), embed=embed)
+                    await self.bot.logs_channel.send("Message by {} deleted in channel {}:".format(message.author, message.channel.mention), embed=embed)
                 except discord.Forbidden:
                     pass  # beta bot can't log
 
