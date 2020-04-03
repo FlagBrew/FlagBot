@@ -89,7 +89,7 @@ class Events(commands.Cog):
                 sys.exit(0)
 
         # log dm messages
-        if isinstance(message.channel, discord.abc.PrivateChannel):
+        if isinstance(message.channel, discord.abc.PrivateChannel) and not message.author == self.bot.guild.me:
             if not message.content:
                 return
             embed = discord.Embed(description=message.content)
