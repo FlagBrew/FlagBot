@@ -311,6 +311,19 @@ class Utility(commands.Cog):
             return await ctx.send("There are currently no disabled commands.")
         await ctx.send("```{}```".format(",\n".join(c for c in self.bot.disabled_commands)))
 
+    @commands.command()
+    @commands.has_any_role("Discord Moderator")
+    async def dm(self, ctx, user: discord.User, *, message):
+        """DMs a user"""
+        if user == ctx.me:
+            return await ctx.send("{} I can't DM myself, you snarky little shit.".format(ctx.author.mention))
+        try:
+            await user.send(message)
+        except discord.Forbidden:
+            await ctx.send("Failed to DM the user. Do they have me blocked? 😢")
+        else:
+            await self.bot.logs_channel.send("Message sent to {} by {}.".format(user, ctx.author), embed=discord.Embed(description=message))
+
 
 def setup(bot):
     bot.add_cog(Utility(bot))
