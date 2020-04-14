@@ -217,7 +217,8 @@ async def on_ready():
 # loads extensions
 cogs = [
     'addons.events',
-    'addons.info', 
+    'addons.info',
+    'addons.meta',
     'addons.mod', 
     'addons.pkhex',
     'addons.pyint',
@@ -280,6 +281,7 @@ async def reload(ctx):
         addon_dict = {
             "Events": "events",
             "Info": "info",
+            "Meta": "meta",
             "Moderation": "mod",
             "pkhex": "pkhex",
             "PythonInterpreter": "pyint",
