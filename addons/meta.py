@@ -49,6 +49,29 @@ class Meta(commands.Cog):
         else:
             await ctx.send("Source code for the `{}` command{} (Large source code):".format(function, " in the `" + cl + "` class" if cl in self.addons else ""), file=discord.File(io.BytesIO(src.encode("utf-8")), filename="output.txt"))
 
+    @commands.has_any_role("Bot Dev", "Discord Moderator")
+    @commands.command(hidden=True)
+    async def activity(self, ctx, activity_type=None, *, new_activity=None):
+        """Changes the bot's activity. Giving no type and status will clear the activity."""
+        activity_types = {
+            "watching": discord.ActivityType.watching,
+            "listening": discord.ActivityType.listening,
+            "playing": discord.ActivityType.playing
+        }
+        if activity_type is None and new_activity is None:
+            await self.bot.change_presence(activity=None)
+            return await ctx.send("Cleared my activity.")
+        elif not activity_type is None and new_activity is None:
+            raise commands.errors.MissingRequiredArgument(inspect.Parameter(name='new_activity', kind=inspect.Parameter.POSITIONAL_ONLY))
+        if not activity_type.lower() in activity_types:
+            return await ctx.send("`{}` is not a valid activity type. Valid activity types: `{}`.".format(activity_type, "`, `".join(x for x in activity_types)))
+        elif len(new_activity) > 30:
+            return await ctx.send("Activities must be limited to less than 30 characters. Inputted value length: {} characters.".format(len(new_activity)))
+        real_type = activity_types[activity_type.lower()]
+        activity = discord.Activity(name=new_activity, type=real_type)
+        await self.bot.change_presence(activity=activity)
+        await ctx.send("Successfully changed my activity to: `{} {}`.".format(activity_type.title(), new_activity))
+
 
 def setup(bot):
     bot.add_cog(Meta(bot))
