@@ -44,8 +44,9 @@ os.chdir(dir_path)
 
 prefix = config.prefix
 token = config.token
+default_activity = discord.Activity(name=config.default_activity, type=discord.ActivityType.watching)
 
-bot = commands.Bot(command_prefix=prefix, description=description)
+bot = commands.Bot(command_prefix=prefix, description=description, activity=default_activity)
 
 bot.is_mongodb = config.is_mongodb
 if not config.localhost_port == "":
