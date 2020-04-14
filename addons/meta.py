@@ -17,13 +17,14 @@ class Meta(commands.Cog):
         self.addons = {
             Events.__name__: Events,
             Info.__name__: Info,
-            "Meta": self,
+            self.__class__.__name__: self,
             Moderation.__name__: Moderation,
             pkhex.__name__: pkhex,
             PythonInterpreter.__name__: PythonInterpreter,
             Utility.__name__: Utility,
             Warning.__name__: Warning
         }
+        print('Addon "{}" loaded'.format(self.__class__.__name__))
 
     @commands.command(hidden=True)
     async def source(self, ctx, function, cl=None):
