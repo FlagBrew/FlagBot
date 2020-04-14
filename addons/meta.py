@@ -10,7 +10,7 @@ from addons.pyint import PythonInterpreter
 from addons.utility import Utility
 from addons.warns import Warning
 
-class Meta(commands.Cog):
+class Meta(commands.Cog, command_attrs=dict(hidden=True)):
 
     def __init__(self, bot):
         self.bot = bot
@@ -50,7 +50,7 @@ class Meta(commands.Cog):
             await ctx.send("Source code for the `{}` command{} (Large source code):".format(function, " in the `" + cl + "` class" if cl in self.addons else ""), file=discord.File(io.BytesIO(src.encode("utf-8")), filename="output.txt"))
 
     @commands.has_any_role("Bot Dev", "Discord Moderator")
-    @commands.command(hidden=True)
+    @commands.command()
     async def activity(self, ctx, activity_type=None, *, new_activity=None):
         """Changes the bot's activity. Giving no type and status will clear the activity."""
         activity_types = {
@@ -71,6 +71,18 @@ class Meta(commands.Cog):
         activity = discord.Activity(name=new_activity, type=real_type)
         await self.bot.change_presence(activity=activity)
         await ctx.send("Successfully changed my activity to: `{} {}`.".format(activity_type.title(), new_activity))
+
+    @commands.has_any_role("Bot Dev", "Discord Moderator")
+    @commands.command()
+    async def setnick(self, ctx, *, nick=None):
+        """Changes the bot's nick. Giving no nick will clear the nickname."""
+        if nick is None:
+            await ctx.me.edit(nick=None)
+            return await ctx.send("Cleared my nickname.")
+        elif len(nick) < 2 or len(nick) > 32:
+            return await ctx.send("Nicknames must be greater than or equal to 2 characters, but less than 33 characters. Inputted value length: {} characters.".format(len(nick)))
+        await ctx.me.edit(nick=nick)
+        await ctx.send("Successfully changed my nickname to: `{}`".format(nick))
 
 
 def setup(bot):
