@@ -34,7 +34,7 @@ class Meta(commands.Cog):
         command = self.bot.get_command(function)
         if command is None:
             if not cl in self.addons:
-                return await ctx.send("That isn't a command. Please supply the class name for retrieving functions.")
+                return await ctx.send("That isn't a command. Please supply a valid class name for retrieving functions.")
             try:
                 cl_obj = self.addons[cl]
                 func = getattr(cl_obj, function)
