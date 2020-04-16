@@ -232,7 +232,8 @@ class Info(commands.Cog):
         elif option == "faq":
             extra_info = " frequently asked questions"
             wiki_link_ext = "/FAQs"
-        await ctx.send("You can read PKSM's wiki{} here: <https://github.com/FlagBrew/PKSM/wiki{}>".format(extra_info, wiki_link_ext))
+        m = await ctx.send("You can read PKSM's wiki{} here: <https://github.com/FlagBrew/PKSM/wiki{}>".format(extra_info, wiki_link_ext))
+        await m.add_reaction("<:wikidiot:558815031836540940>")
 
     @commands.command()
     async def assets(self, ctx):
