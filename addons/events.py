@@ -56,7 +56,7 @@ class Events(commands.Cog):
         if (datetime.now() - member.created_at).days < 1:
             embed.description += "\n**Account was created {} days ago.**".format((datetime.now() - member.created_at).days)
         try:
-            await member.send("Welcome to {}! Please read the rules, as you won't be able to access the majority of the server otherwise. This is an automated message, no reply is necessary.".format(self.bot.guild.name))
+            await member.send("Welcome to {}! Please read the rules, as you won't be able to access the majority of the server otherwise. This is an automated message, no reply is necessary.".format(member.guild.name))
         except discord.Forbidden:
             embed.description += "\n**Failed to DM user on join.**"
         if member.guild.id == self.bot.flagbrew_id:

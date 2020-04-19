@@ -9,6 +9,7 @@ class Warning(commands.Cog):
         self.bot = bot
         if self.bot.is_mongodb:
             self.db = bot.db['flagbrew']
+        print('Addon "{}" loaded'.format(self.__class__.__name__))
 
     @commands.command()
     @commands.has_permissions(ban_members=True)

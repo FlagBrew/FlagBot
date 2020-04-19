@@ -187,6 +187,14 @@ class Info(commands.Cog):
     @commands.command()
     async def question(self, ctx):
         """Reminder for those who won't just ask their question"""
+        count = 0
+        async for message in ctx.channel.history(limit=10):
+            if message.content.startswith(self.bot.command_prefix[0] + "question") and len(message.mentions) > 0:
+                if not ctx.author in message.mentions:
+                    break
+                elif count > 0:
+                    return await ctx.send("{} read the goddamned message I sent, instead of just using the command again and spamming. If you ignore the contents of *this* message, you will be warned.".format(ctx.author.mention))
+            count += 1
         await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, "
                        "as little as they may seem, as well as assisting materials. Asking to ask wont expedite your process, and may delay assistance. "
                        "***WE ARE NOT PSYCHIC.***")
@@ -224,7 +232,8 @@ class Info(commands.Cog):
         elif option == "faq":
             extra_info = " frequently asked questions"
             wiki_link_ext = "/FAQs"
-        await ctx.send("You can read PKSM's wiki{} here: <https://github.com/FlagBrew/PKSM/wiki{}>".format(extra_info, wiki_link_ext))
+        m = await ctx.send("You can read PKSM's wiki{} here: <https://github.com/FlagBrew/PKSM/wiki{}>".format(extra_info, wiki_link_ext))
+        await m.add_reaction("<:wikidiot:558815031836540940>")
 
     @commands.command()
     async def assets(self, ctx):
