@@ -1,5 +1,6 @@
-token = "" # Bot's token as string
+token = ""  # Bot's token as string
 prefix = ['']  # List of strings. Defaults to '!' and '.' if left empty
+default_activity = "e v e r y t h i n g"  # Default activity message as string (type defaults to watching)
 secret = ""  # Website secret as string
 is_beta = False  # Used to determine if bot is beta or production
 github_username = ""  # Github username as string
