@@ -34,5 +34,9 @@
   {
     "title": "Why doesn't PKSM scan this QR?",
     "value": "**GPSS**: QRs from the [GPSS](https://flagbrew.org/gpss) (or <#586728153985056801>) have to be scanned in the GPSS section of PKSM. This can be accessed by opening `Storage`, then selecting the wifi button on the bottom screen, then pressing `X`.\n**PKX/PB7**: The file you're scanning *must* be of the same generation as the currently loaded save. This scanner is accessed by opening `Editor`, then pressing `L + R`. *Please note*: PK7 files are very finicky due to their size, and as such may need multiple tries.\n**Wonder Card**: These are scanned by opening `Events`, then pressing `L + R`."
+  },
+  {
+    "title": "Why doesn't ServePKX work? How can I send pokemon to PKSM from my PC now?",
+    "value": "ServePKX has been deprecated as of PKSM v6. There are three ways you can send pokemon to PKSM from PC now.\n**1**: (*Recommended*) Upload the pokemon to the GPSS using either the `.gpsspost` command in <#379201279479513100>, or through architdate's [Auto Legality Plugin](https://github.com/architdate/PKHeX-Plugins) for PKHeX.\n**2**: Create a QR code from the pkx file using PKHeX. Then, scan the QR code by opening `Editor` and pressing `L + R`.\n**3**: Place the pkx files you want to add at `/3ds/PKSM/inject/` and run the universal `injector.c` script."
   }
 ]
