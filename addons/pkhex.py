@@ -25,7 +25,7 @@ class pkhex(commands.Cog):
         async with self.bot.session.get(self.bot.api_url + "api/v1/bot/ping") as r:
             return r.status
 
-    async def process_file(self, ctx, data, attachments, url, is_gpss=False):
+    async def process_file(self, ctx, data, attachments, url, is_gpss=False, user_id=None):
         if not data and not attachments:
             await ctx.send("Error: No data was provided and no pkx file was attached.")
             return 400
@@ -52,7 +52,8 @@ class pkhex(commands.Cog):
                 return 400
         url = self.bot.api_url + url
         files = {'pkmn': file}
-        async with self.bot.session.post(url=url, data=files) as r:
+        headers = {'UID': user_id, 'secret': self.bot.site_secret}
+        async with self.bot.session.post(url=url, data=files, headers=headers) as r:
             if not is_gpss and (r.status == 400 or r.status == 413):
                 await ctx.send("The provided file was invalid.")
                 return 400
@@ -398,9 +399,11 @@ class pkhex(commands.Cog):
         async with self.bot.session.get(self.bot.api_url) as r:
             if not r.status == 200:
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
-        r = await self.process_file(ctx, data, ctx.message.attachments, "gpss/share", True)
+        r = await self.process_file(ctx, data, ctx.message.attachments, "gpss/share", True, str(ctx.author.id))
         code = str(r[2], encoding='utf-8')
-        if r[0] == 400:
+        if len(code) > 10:
+            return await ctx.send("There seems to have been an issue getting the code for this upload. Please check <#586728153985056801> to confirm upload. If it didn't upload, try again later. {} and {} please investigate!".format(self.bot.creator.mention, self.bot.allen.mention))
+        elif r[0] == 400:
             return await ctx.send("That file is either not a pokemon, or something went wrong.")
         elif r[0] == 413:
             return await ctx.send("That file is too large. {} and {}, please investigate.".format(self.bot.pie.mention, self.bot.allen.mention))
