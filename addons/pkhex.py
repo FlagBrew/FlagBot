@@ -52,6 +52,8 @@ class pkhex(commands.Cog):
                 return 400
         url = self.bot.api_url + url
         files = {'pkmn': file}
+        if user_id is None:
+            user_id = ""
         headers = {'UID': user_id, 'secret': self.bot.site_secret}
         async with self.bot.session.post(url=url, data=files, headers=headers) as r:
             if not is_gpss and (r.status == 400 or r.status == 413):
