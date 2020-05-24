@@ -119,6 +119,10 @@ class Info(commands.Cog):
         embed.title += f" #{faq_num}"
         current_faq = loaded_faq[faq_num - 1]
         embed.add_field(name=current_faq["title"], value=current_faq["value"], inline=False)
+        if "thumbnail" in current_faq.keys():
+            embed.set_thumbnail(url=current_faq["thumbnail"])
+        if "image" in current_faq.keys():
+            embed.set_image(url=current_faq["image"])
         await channel.send(embed=embed)
 
     @commands.command(aliases=['rtfm'])
