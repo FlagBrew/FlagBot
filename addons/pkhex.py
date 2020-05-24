@@ -402,6 +402,8 @@ class pkhex(commands.Cog):
             if not r.status == 200:
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
         r = await self.process_file(ctx, data, ctx.message.attachments, "gpss/share", True, str(ctx.author.id))
+        if r == 400:
+            return
         code = str(r[2], encoding='utf-8')
         if len(code) > 10:
             return await ctx.send("There seems to have been an issue getting the code for this upload. Please check <#586728153985056801> to confirm upload. If it didn't upload, try again later. {} and {} please investigate!".format(self.bot.creator.mention, self.bot.allen.mention))
