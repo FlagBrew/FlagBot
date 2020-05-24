@@ -280,6 +280,7 @@ async def reload(ctx):
     if ctx.author == ctx.guild.owner or ctx.author == bot.creator:
         errors = ""
         addon_dict = {
+            "DevTools": "devtools",  # not loaded by default...
             "Events": "events",
             "Info": "info",
             "Meta": "meta",
