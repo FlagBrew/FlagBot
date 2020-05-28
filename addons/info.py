@@ -171,7 +171,7 @@ class Info(commands.Cog):
                     return await ctx.author.send(embed=embed)
                 except discord.Forbidden:
                     pass  # Bot blocked, or api bug
-            elif ctx.channel is not self.bot.bot_channel:
+            elif ctx.channel is not self.bot.bot_channel and ctx.channel is not self.bot.testing_channel:
                 for user in usage_dm:
                     try:
                         await user.send("Full faq command used in {} by {}\n\nHyperlink to command invoke: {}".format(ctx.channel.mention, ctx.author, ctx.message.jump_url))
