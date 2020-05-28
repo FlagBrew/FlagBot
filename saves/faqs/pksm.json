@@ -1,7 +1,7 @@
 [
     {
         "title": "How can I check my pokemon's legality?",
-        "value": "Go to the **edit pokemon** screen, then go to the **misc** screen. Click on the wireless icon. Congrats, you've accessed the legality checker.\n\n**Bonus**: If you press the button in the bottom left after running a legality check, the server will *attempt* to legalize your pokemon. Conditions apply, please see the below image for more info.\n\n**Please note**: the legality checker requires a network connection.",
+        "value": "Go to the **edit pokemon** screen, then go to the **misc** screen. Click on the wireless icon. Congrats, you've accessed the legality checker.\n\n**Bonus**: If you press the button in the bottom left after running a legality check, the server will *attempt* to legalize your pokemon. Conditions apply, please see the below image for more info.\n\n**Please note**: the legality checker requires a network connection.\n\n**Alternative**: If you have an Android device, you can use the [GPSS Mobile app](https://play.google.com/store/apps/details?id=com.flagbrew.gpss_mobile) to check your pokemon's legality. Follow the same steps for doing a legality check, but instead of clicking the wireless icon, click the icon in the top right. Then follow the on-screen prompts.",
         "image": "https://cdn.discordapp.com/attachments/385034577636491264/714051889595023420/unknown.png"
     },
     {
