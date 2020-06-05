@@ -349,6 +349,7 @@ class pkhex(commands.Cog):
                 for loc in encs["Locations"]:
                     games = (game_dict[x] if x in game_dict.keys() else x for x in loc["Games"])
                     games_str = ", ".join(games)
+                    games_str = games_str.replace("GG", "LGPE")
                     if encs["EncounterType"] == "Egg":
                         field_values += "{} as **egg**.\n".format(games_str)
                     elif not loc["Name"] == "":
