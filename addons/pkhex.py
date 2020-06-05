@@ -288,7 +288,7 @@ class pkhex(commands.Cog):
             rj = await r.json()
             embed = discord.Embed(title="Move Lookup for {}".format(pokemon.title()), description="")
             for move in rj:
-                embed.description += "**{}** is {} learnable.\n".format(move["MoveName"].title(), "not" if not move["Learnable"] else "")
+                embed.description += "**{}** is {} learnable.\n".format(move["Name"].title(), "not" if not move["Learnable"] else "")
             await ctx.send(embed=embed)
 
     @commands.command(name='find')
