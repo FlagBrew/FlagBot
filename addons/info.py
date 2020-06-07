@@ -226,16 +226,19 @@ class Info(commands.Cog):
             wiki_link_ext = "/Bag-Editor"
         elif option == "config" or option == "configuration":
             extra_info = " entry for the config"
-            wiki_link_ext = "/Configuration"
-        elif option == "scriptdev":
-            extra_info = " entry for script development"
-            wiki_link_ext = "/Scripts-Development"
+            wiki_link_ext = "/Settings"
         elif option == "gameid":
             extra_info = " entry for game ID info"
             wiki_link_ext = "/FAQs#what-backup-folder-corresponds-to-which-game"
         elif option == "faq":
             extra_info = " frequently asked questions"
             wiki_link_ext = "/FAQs"
+        elif option == "gpss":
+            extra_info = " entry for the GPSS"
+            wiki_link_ext = "/GPSS"
+        elif option == "hex" or option == "hexeditor":
+            extra_info = " entry for the hex editor"
+            wiki_link_ext = "/Hex-Editor"
         m = await ctx.send("You can read PKSM's wiki{} here: <https://github.com/FlagBrew/PKSM/wiki{}>".format(extra_info, wiki_link_ext))
         await m.add_reaction("<:wikidiot:558815031836540940>")
 
