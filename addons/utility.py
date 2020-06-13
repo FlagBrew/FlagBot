@@ -10,6 +10,7 @@ import http
 import aiohttp
 import qrcode
 import io
+import hashlib
 
 
 class Utility(commands.Cog):
@@ -19,6 +20,12 @@ class Utility(commands.Cog):
         print('Addon "{}" loaded'.format(self.__class__.__name__))
         with open("saves/role_mentions.json", "r") as f:
             self.role_mentions_dict = json.load(f)
+        if not os.path.exists('saves/submitted_hashes.json'):
+            data = []
+            with open('saves/submitted_hashes.json', 'w') as f:
+                json.dump(data, f, indent=4)
+        with open("saves/submitted_hashes.json", "r") as f:
+            self.submitted_hashes = json.load(f)
 
     async def toggleroles(self, ctx, role, user):
         author_roles = user.roles[1:]
@@ -323,6 +330,53 @@ class Utility(commands.Cog):
             await ctx.send("Failed to DM the user. Do they have me blocked? 😢")
         else:
             await self.bot.logs_channel.send("Message sent to {} by {}.".format(user, ctx.author), embed=discord.Embed(description=message))
+
+    def get_hash(self, file): # Src: https://www.programiz.com/python-programming/examples/hash-file
+        h = hashlib.sha1()
+        chunk = 0
+        while chunk != b'':
+            chunk = file.read(1024)
+            h.update(chunk)
+        return h.hexdigest()
+
+    @commands.command(aliases=['scd'])
+    async def submit_crash_dump(self, ctx, *, description):
+        if not ctx.message.attachments or not ctx.message.attachments[0].filename.endswith(".dmp"):
+            return await ctx.send("You must provide a crash dump with this command!")
+        elif len(description.split(" ")) < 14:
+            return await ctx.send("Please give a longer description of the issue.")
+        async with self.bot.session.get(ctx.message.attachments[0].url) as r:
+            file = io.BytesIO(await r.read())
+        file_hash = self.get_hash(file)
+        if file_hash in self.submitted_hashes:
+            return await ctx.send("That crash dump has already been submitted.")
+        file.seek(0)
+        file_log = discord.File(file, filename=ctx.message.attachments[0].filename)
+        msg = await self.bot.crash_log_channel.send("Dump submitted by {}".format(ctx.author), file=file_log)
+        embed = discord.Embed(title="New Crash Dump!")
+        embed.add_field(name="Submitted By", value=ctx.author.mention)
+        embed.add_field(name="Submitted At", value=ctx.message.created_at.strftime('%b %d, %Y'))
+        async with self.bot.session.get("https://api.github.com/repos/FlagBrew/PKSM/commits/master") as r:
+            commit = await r.json()
+        commit_sha = commit["sha"][:7]
+        embed.add_field(name="Latest Commit", value=commit_sha)
+        embed.add_field(name="File Download URL", value="[Download]({})".format(msg.attachments[0].url))
+        embed.add_field(name="Description of issue", value=description, inline=False)
+        embed.set_footer(text="The hash for this file is {}".format(file_hash))
+        await self.bot.crash_dump_channel.send(embed=embed)
+        self.submitted_hashes.append(file_hash)
+        with open("saves/submitted_hashes.json", "w") as f:
+            json.dump(self.submitted_hashes, f, indent=4)
+        await ctx.send("{} your crash dump was successfully submitted!".format(ctx.author.mention))
+
+    @commands.command()
+    @commands.has_any_role("FlagBrew Team", "Bot Dev")
+    async def clear_hash(self, ctx):
+        data = []
+        with open("saves/submitted_hashes.json", "w") as f:
+            json.dump(data, f, indent=4)
+        self.submitted_hashes = []
+        await ctx.send("Cleared the submitted hashes file.")
 
 
 def setup(bot):
