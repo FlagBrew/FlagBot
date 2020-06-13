@@ -6,6 +6,7 @@ import os
 import sys
 import json
 import asyncio
+import random
 
 
 class Moderation(commands.Cog):
@@ -43,7 +44,13 @@ class Moderation(commands.Cog):
         except discord.Forbidden:  # i have no clue
             return await ctx.send("I don't have permission. Why don't I have permission.")
         embed = discord.Embed()
-        embed.set_image(url="https://i.imgur.com/tEBrxUF.jpg")
+        img_choice = random.randint(1, 26)
+        if img_choice in range(1, 13):  # ampharos
+            embed.set_image(url="https://fm1337.com/static/img/ampharos-banned.jpg")
+        if img_choice in range(13, 25):  # eevee
+            embed.set_image(url="https://fm1337.com/static/img/eevee-banned.jpg")
+        if img_choice in range(25, 27):  # giratina
+            embed.set_image(url="https://fm1337.com/static/img/giratina-banned.jpg")
         await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(member), embed=embed)
 
     @commands.has_permissions(kick_members=True)
