@@ -316,54 +316,47 @@ class Info(commands.Cog):
     async def extrasaves(self, ctx):
         """Extrasaves info"""
         embed = discord.Embed(title="How do I access my external saves?")
-        embed.description = ("Open PKSM's settings from the game select menu by pressing `x`, and go to **Misc**. Choose **Extra Saves**. "
-                             "Then, select the game you want to add a save for, choose add save, and navigate to the save. "
+        embed.description = ("Open PKSM's settings from the game select menu by pressing `x`, and go to **Misc**. Then choose **Extra Saves**.\n"
+                             "Then, select the game you want to add a save for, choose add save, and navigate to the save.\n"
                              "Afterwards, hit `y` on the game select screen to view the absent games menu.")
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=["tid"])
+    async def titleid(self, ctx):
+        """Title ID adding info"""
+        embed = discord.Embed(title="How do I access my GBA games?")
+        embed.description = ("Open PKSM's settings from the game select menu by pressing `x`, and go to **Misc**. Then choose **Title IDs**.\n"
+                             "Then, select the game you want to set a custom title ID for, and enter the game's title ID. You can check this in FBI.\n"
+                             "Afterwards, select `VC Games` at the top of the game select screen (or hit R).")
         await ctx.send(embed=embed)
 
     @commands.command()
     async def batchedit(self, ctx):
         """Lists info about the batch editor"""
-        games = (
-            ":white_check_mark: Diamond & Pearl\n"
-            ":white_check_mark: Platinum\n"
-            ":white_check_mark: HeartGold & SoulSilver\n"
-            ":white_check_mark: Black & White\n"
-            ":white_check_mark: Black 2 & White 2\n"
-            ":white_check_mark: X & Y\n"
-            ":white_check_mark: Omega Ruby & Alpha Sapphire\n"
-            ":white_check_mark: Sun & Moon\n"
-            ":white_check_mark: Ultra Sun & Ultra Moon\n"
-            ":x: Let's Go Pikachu & Eevee\n"
-            ":x: Sword & Shield\n"
-            ":white_check_mark: PKSM's Bank"
-        )
         edit_types = (
-            ":white_check_mark: Original Trainer Name\n"
-            ":white_check_mark: Original Trainer TID\n"
-            ":white_check_mark: Original Trainer SID\n"
-            ":white_check_mark: Original Trainer Gender\n"
-            ":white_check_mark: Level\n"
-            ":white_check_mark: Shiny\n"
-            ":white_check_mark: All IVs\n"
-            ":white_check_mark: Language\n"
-            ":white_check_mark: Pokerus\n"
-            ":white_check_mark: Nature\n"
-            ":white_check_mark: Ball\n"
-            ":white_check_mark: PP Ups\n"
-            ":white_check_mark: Reset Moves (Move 1 is set to Pound, and moves 2 through 4 are cleared)\n"
-            ":white_check_mark: Randomize PIDs"
+            "Original Trainer Name\n"
+            "Original Trainer TID\n"
+            "Original Trainer SID\n"
+            "Original Trainer Gender\n"
+            "Level\n"
+            "Shiny\n"
+            "All IVs\n"
+            "Language\n"
+            "Pokerus\n"
+            "Nature\n"
+            "Ball\n"
+            "PP Ups\n"
+            "Reset Moves (Move 1 is set to Pound, and moves 2 through 4 are cleared)\n"
+            "Randomize PIDs"
         )
         embed = discord.Embed(title="Batch Editor Information")
         embed.description = (
-                            "The batch editor script for PKSM can currently be found pinned in <#278222834633801728>.\n"
                             "Please keep in mind that the script will affect *everything* in the boxes of the loaded save, or of the selected bank.\n\n"
                             "***PLEASE NOTE***: While most of these have been tested, the script may have bugs that haven't been found. "
                             "If it errors, immediately stop editing your save *without* saving changes, as there is a failure case that could break your boxes."
                             )
-        embed.add_field(name="Game Testing Status", value=games)
         embed.add_field(name="Editing Types", value=edit_types)
-        embed.set_footer(text="❌ means implementation has not yet been tested.")
+        embed.set_footer(text="Please note that LGPE have not yet been tested.")
         await ctx.send(embed=embed)
 
 
