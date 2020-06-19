@@ -39,7 +39,7 @@ class Warning(commands.Cog):
         elif len(warns) == 2:
             dm_msg += "You will be automatically kicked if you are warned again."
         embed = discord.Embed(title="{} warned".format(target))
-        embed.description = "{} was warned in {} by {} for `{}`. This is warn #{}. {}".format(target, ctx.channel.mention, ctx.author, reason, len(warns), log_msg)
+        embed.description = "{} | {} was warned in {} by {} for `{}`. This is warn #{}. {}".format(target, target.id, ctx.channel.mention, ctx.author, reason, len(warns), log_msg)
         try:
             await target.send(dm_msg)
         except discord.Forbidden:
@@ -164,7 +164,7 @@ class Warning(commands.Cog):
         with open("saves/warns.json", "w") as f:
             json.dump(self.bot.warns_dict, f, indent=4)
         embed = discord.Embed(title="Warns for {} cleared".format(target))
-        embed.description = "{} had their warns cleared by {}. Warns can be found below.".format(target, ctx.author)
+        embed.description = "{} | {} had their warns cleared by {}. Warns can be found below.".format(target, target.id, ctx.author)
         count = 1
         for warn in warns:
             embed.add_field(name="Warn #{}".format(count), value="{}".format(warn))
