@@ -150,6 +150,11 @@ class Events(commands.Cog):
                 else:
                     await self.bot.fetch_user(211923158423306243).send("Could not notify user {} of token expiration.".format(before))
 
+        elif before.nick != after.nick:
+            embed = discord.Embed(title="Nickname Change!")
+            embed.description = "{} | {} changed their nickname from `{}` to `{}`.".format(before, before.id, before.nick, after.nick)
+            await self.bot.logs_channel.send(embed=embed)
+
     async def process_reactions(self, reaction):
         positive_votes = 0
         negative_votes = 0
