@@ -177,7 +177,7 @@ class Events(commands.Cog):
             embed.description = "{} | {} changed their activity.".format(before, before.id)
             embed.add_field(name="Starting Activities", value=(", ".join(bef_acts) if len(bef_acts) > 0 else "None"))
             embed.add_field(name="New Activities", value=(", ".join(aft_acts)))
-            await self.bot.testing_logs_channel.send(embed=embed)
+            await self.bot.logs_channel.send(embed=embed)
 
     async def process_reactions(self, reaction):
         positive_votes = 0
