@@ -112,6 +112,8 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
+        if not self.bot.ready:
+            return
         if before.roles != after.roles and ((self.bot.patrons_role in after.roles and self.bot.patrons_role not in before.roles) or
                                             (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles)):
             token = secrets.token_urlsafe(16)
@@ -154,6 +156,28 @@ class Events(commands.Cog):
             embed = discord.Embed(title="Nickname Change!")
             embed.description = "{} | {} changed their nickname from `{}` to `{}`.".format(before, before.id, before.nick, after.nick)
             await self.bot.logs_channel.send(embed=embed)
+
+        elif before.activities != after.activities:
+            blacklist = [
+                "Spotify",
+                "Google Chrome",
+                "Twitter",
+                "Minecraft",
+                "YouTube",
+                "Netflix",
+                "Firefox"
+            ]
+            embed = discord.Embed(title="Activity Change! (Beta)")
+            bef_acts = [activity.name for activity in before.activities if not isinstance(activity, discord.CustomActivity) and activity.name not in blacklist]
+            aft_acts = [activity.name for activity in after.activities if not isinstance(activity, discord.CustomActivity) and activity.name not in blacklist]
+            if len(aft_acts) == 0:
+                return
+            elif bef_acts == aft_acts:
+                return
+            embed.description = "{} | {} changed their activity.".format(before, before.id)
+            embed.add_field(name="Starting Activities", value=(", ".join(bef_acts) if len(bef_acts) > 0 else "None"))
+            embed.add_field(name="New Activities", value=(", ".join(aft_acts)))
+            await self.bot.testing_logs_channel.send(embed=embed)
 
     async def process_reactions(self, reaction):
         positive_votes = 0
