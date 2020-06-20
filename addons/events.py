@@ -112,6 +112,8 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
+        if not self.bot.ready:
+            return
         if before.roles != after.roles and ((self.bot.patrons_role in after.roles and self.bot.patrons_role not in before.roles) or
                                             (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles)):
             token = secrets.token_urlsafe(16)
@@ -149,6 +151,63 @@ class Events(commands.Cog):
                     await self.bot.fetch_user(211923158423306243).send("Could not send token `{}` to user {}.".format(token, before))
                 else:
                     await self.bot.fetch_user(211923158423306243).send("Could not notify user {} of token expiration.".format(before))
+
+        elif before.nick != after.nick:
+            embed = discord.Embed(title="Nickname Change!")
+            embed.description = "{} | {} changed their nickname from `{}` to `{}`.".format(before, before.id, before.nick, after.nick)
+            await self.bot.logs_channel.send(embed=embed)
+
+        elif before.activities != after.activities:
+            has_activity = True
+            blacklist = [
+                "Spotify",
+                "Google Chrome",
+                "Twitter",
+                "Minecraft",
+                "YouTube",
+                "Netflix",
+                "Firefox"
+            ]
+            embed = discord.Embed(title="Activity Change!", colour=discord.Colour.blue())
+            bef_custom = ()
+            aft_custom = ()
+            for activity in before.activities:
+                if isinstance(activity, discord.CustomActivity):
+                    if not activity.emoji:
+                        bef_custom = (activity.name, "No Emoji")
+                    else:
+                        bef_custom = (activity.name, activity.emoji.name)
+            for activity in after.activities:
+                if isinstance(activity, discord.CustomActivity):
+                    if not activity.emoji:
+                        aft_custom = (activity.name, "No Emoji")
+                    else:
+                        aft_custom = (activity.name, activity.emoji.name)
+            bef_acts = [activity.name for activity in before.activities if not isinstance(activity, discord.CustomActivity) and activity.name not in blacklist]
+            aft_acts = [activity.name for activity in after.activities if not isinstance(activity, discord.CustomActivity) and activity.name not in blacklist]
+            if len(aft_acts) == 0:
+                has_activity = False
+            elif bef_acts == aft_acts and bef_custom == aft_custom:
+                return
+            embed.description = "{} | {} changed their activity.".format(before, before.id)
+            embed.add_field(name="Old Activities", value=(", ".join(bef_acts) if len(bef_acts) > 0 else "None"))
+            embed.add_field(name="New Activities", value=(", ".join(aft_acts)))
+            if has_activity:
+                await self.bot.activity_logs_channel.send(embed=embed)
+            if len(aft_custom) == 0 and len(bef_custom) == 0:
+                return
+
+            if len(aft_custom) == 0:
+                return
+            elif len(bef_custom) == 0:
+                bef_custom = ("None", "None")
+            elif bef_custom[0] == aft_custom[0] and bef_custom[1] == aft_custom[1]:
+                return
+            embed_custom = discord.Embed(title="Custom Activity Change!", colour=discord.Colour.red())
+            embed_custom.description = "{} | {} changed their custom activity.".format(before, before.id)
+            embed_custom.add_field(name="Old Custom Activity", value="Name: `{}`\nEmoji: `{}`".format(bef_custom[0], bef_custom[1]))
+            embed_custom.add_field(name="New Custom Activity", value="Name: `{}`\nEmoji: `{}`".format(aft_custom[0], aft_custom[1]))
+            await self.bot.activity_logs_channel.send(embed=embed_custom)
 
     async def process_reactions(self, reaction):
         positive_votes = 0
