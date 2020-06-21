@@ -35,7 +35,10 @@ class pkhex(commands.Cog):
                 await ctx.send("The attached file was too large.")
                 return 400
             b = io.BytesIO()
-            await atch.save(b)
+            try:
+                await atch.save(b)
+            except discord.Forbidden:
+                return await ctx.send("The file seems to have been deleted, so I can't complete the task.")
             file = b.getvalue()
         else:
             if not validators.url(data):
