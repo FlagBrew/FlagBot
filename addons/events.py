@@ -155,7 +155,10 @@ class Events(commands.Cog):
         elif before.nick != after.nick:
             embed = discord.Embed(title="Nickname Change!")
             embed.description = "{} | {} changed their nickname from `{}` to `{}`.".format(before, before.id, before.nick, after.nick)
-            await self.bot.logs_channel.send(embed=embed)
+            try:
+                await self.bot.logs_channel.send(embed=embed)
+            except discord.Forbidden:
+                pass
 
         elif before.activities != after.activities:
             has_activity = True
@@ -193,7 +196,10 @@ class Events(commands.Cog):
             embed.add_field(name="Old Activities", value=(", ".join(bef_acts) if len(bef_acts) > 0 else "None"))
             embed.add_field(name="New Activities", value=(", ".join(aft_acts)))
             if has_activity:
-                await self.bot.activity_logs_channel.send(embed=embed)
+                try:
+                    await self.bot.activity_logs_channel.send(embed=embed)
+                except discord.Forbidden:
+                    pass
             if len(aft_custom) == 0 and len(bef_custom) == 0:
                 return
 
@@ -207,7 +213,10 @@ class Events(commands.Cog):
             embed_custom.description = "{} | {} changed their custom activity.".format(before, before.id)
             embed_custom.add_field(name="Old Custom Activity", value="Name: `{}`\nEmoji: `{}`".format(bef_custom[0], bef_custom[1]))
             embed_custom.add_field(name="New Custom Activity", value="Name: `{}`\nEmoji: `{}`".format(aft_custom[0], aft_custom[1]))
-            await self.bot.activity_logs_channel.send(embed=embed_custom)
+            try:
+                await self.bot.activity_logs_channel.send(embed=embed_custom)
+            except discord.Forbidden:
+                pass
 
     async def process_reactions(self, reaction):
         positive_votes = 0
