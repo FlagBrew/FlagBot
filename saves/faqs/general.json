@@ -1,7 +1,7 @@
 [
     {
         "title": "When will Virtual Console games be supported?",
-        "value": "Nobody on the FlagBrew team is interested in working on gen 1/2 support. However, if you would like to work on it yourself, and the code is up to our standards, we will merge a PR."
+        "value": "Nobody on the FlagBrew team is interested in working on gen 1/2 support. However, if you would like to work on it yourself, and the code is up to our standards, we will merge a PR. Please see [this issue](https://github.com/FlagBrew/PKSM/issues/1181) for more info."
     },
     {
         "title": "Why do I have to wait so long for new releases?",
