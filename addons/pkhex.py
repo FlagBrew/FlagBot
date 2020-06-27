@@ -253,6 +253,8 @@ class pkhex(commands.Cog):
                 embed.add_field(name="Base stats ({})".format(rj["BST"]), value="```HP:    {} Atk:   {}\nDef:   {} SpAtk: {} \nSpDef: {} Spd:   {}```".format(rj["HP"], rj["ATK"], rj["DEF"], rj["SPA"], rj["SPD"], rj["SPE"]))
                 if form == "poke ball" and species == "vivillon":
                     embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/{}/vivillon-poke-ball.png".format(shiny))
+                elif species == "minior":  # fuck you fuck you fuck you
+                    embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/normal/minior-meteor.png")
                 elif form and not species == "rockruff":
                     if species == "flabébé":
                         species = "flabebe"
