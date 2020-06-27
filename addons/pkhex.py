@@ -175,7 +175,7 @@ class pkhex(commands.Cog):
             await ctx.send("Available forms for {}: `{}`.".format(species.title(), '`, `'.join(rj)))
 
     @commands.command(name='pokeinfo', aliases=['pi'])
-    async def poke_info(self, ctx, data=""):
+    async def poke_info(self, ctx, data="", shiny="normal"):
         ("""Returns an embed with a Pokemon's nickname, species, and a few others. Takes a provided URL or attached pkx file. URL *must* be a direct download link.\n"""
         """Alternatively can take a single Pokemon as an entry, and will return basic information on the species.""")
         if not data and not ctx.message.attachments:
@@ -184,6 +184,10 @@ class pkhex(commands.Cog):
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         
         # Get info for inputted pokemon
+        with open("saves/defaultforms.json", "r", encoding="utf8") as f:
+            defaultforms = json.load(f)
+        if not shiny in ("normal", "shiny"):
+            shiny = "normal"
         if not validators.url(data) and not ctx.message.attachments:
             colours = {
                 "Red": discord.Colour.red(),
@@ -200,9 +204,15 @@ class pkhex(commands.Cog):
             url = self.bot.api_url + "api/v1/bot/query/baseinfo"
             data = data.split('-')
             species = data[0].lower()
+            if species == "flabebe":
+                species = "flabébé"
             form = ""
+            if species in defaultforms.keys():
+                form = defaultforms[species]
             if len(data) > 1:
                 form = data[1].lower()
+            elif form == "female":
+                form = "f"
             data = {
                 "species": species,
                 "form": form
@@ -239,8 +249,23 @@ class pkhex(commands.Cog):
                     egg_str += "\nEgg Group 2: {}".format(rj["EggGroups"][1])
                 embed.add_field(name="Egg Groups", value=egg_str)
                 embed.add_field(name="Base stats ({})".format(rj["BST"]), value="```HP:    {} Atk:   {}\nDef:   {} SpAtk: {} \nSpDef: {} Spd:   {}```".format(rj["HP"], rj["ATK"], rj["DEF"], rj["SPA"], rj["SPD"], rj["SPE"]))
-                embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/normal/{}.png".format(species))
-                return await ctx.send(embed=embed)
+                if " " in form:
+                    form = form.replace(" ", "-")
+                if species == "minior":  # fuck you fuck you fuck you
+                    embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/normal/minior-meteor.png")
+                elif form and not species == "rockruff":
+                    if species == "flabébé":
+                        species = "flabebe"
+                    elif form == "f":
+                        form = "female"
+                    embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/{}/{}-{}.png".format(shiny, species, form))
+                else:
+                    embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/{}/{}.png".format(shiny, species))
+                try:
+                    return await ctx.send(embed=embed)
+                except discord.HTTPException:
+                    embed.set_thumbnail(url="")
+                    return await ctx.send("{} I threw an HTTPException. This is likely due to form stupidity. So don't do that again. Otherwise, you get warned. {} and {}, for logging purposes.".format(ctx.author.mention, self.bot.creator.mention, self.bot.pie.mention), embed=embed)
 
         # Get info for inputted file
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/pkmn_info")
