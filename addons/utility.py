@@ -372,11 +372,27 @@ class Utility(commands.Cog):
     @commands.command()
     @commands.has_any_role("FlagBrew Team", "Bot Dev")
     async def clear_hash(self, ctx):
+        """Clears the submitted_hashes file"""
         data = []
         with open("saves/submitted_hashes.json", "w") as f:
             json.dump(data, f, indent=4)
         self.submitted_hashes = []
         await ctx.send("Cleared the submitted hashes file.")
+
+    @commands.command(name="toggleword")
+    @commands.has_any_role("Discord Moderator")
+    async def toggle_ban_word_from_gpss(self, ctx, word):
+        """Bans a word from the GPSS. Restricted to Discord Moderator"""
+        url = self.bot.api_url + "api/v1/bot/ban-word"
+        data = {
+            "word": word
+        }
+        async with self.bot.session.post(url=url, data=data) as r:
+            if not r.status in (200, 410):
+                return await ctx.send("Failed to post the ban code to the server. Status code: `{}`.".format(r.status))
+            elif r.status == 410:
+                return await ctx.send("Successfully unbanned the word `{}` from the GPSS.".format(word))
+            await ctx.send("Successfully banned the word `{}` from the GPSS.".format(word))
 
 
 def setup(bot):
