@@ -211,8 +211,6 @@ class pkhex(commands.Cog):
                 form = defaultforms[species]
             if len(data) > 1:
                 form = data[1].lower()
-            if form == "pokeball":
-                form = "poke ball"
             elif form == "female":
                 form = "f"
             data = {
@@ -251,9 +249,9 @@ class pkhex(commands.Cog):
                     egg_str += "\nEgg Group 2: {}".format(rj["EggGroups"][1])
                 embed.add_field(name="Egg Groups", value=egg_str)
                 embed.add_field(name="Base stats ({})".format(rj["BST"]), value="```HP:    {} Atk:   {}\nDef:   {} SpAtk: {} \nSpDef: {} Spd:   {}```".format(rj["HP"], rj["ATK"], rj["DEF"], rj["SPA"], rj["SPD"], rj["SPE"]))
-                if form == "poke ball" and species == "vivillon":
-                    embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/{}/vivillon-poke-ball.png".format(shiny))
-                elif species == "minior":  # fuck you fuck you fuck you
+                if " " in form:
+                    form = form.replace(" ", "-")
+                if species == "minior":  # fuck you fuck you fuck you
                     embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/normal/minior-meteor.png")
                 elif form and not species == "rockruff":
                     if species == "flabébé":
