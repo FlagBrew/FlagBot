@@ -387,7 +387,10 @@ class Utility(commands.Cog):
         data = {
             "word": word
         }
-        async with self.bot.session.post(url=url, data=data) as r:
+        headers = {
+            "secret": self.bot.site_secret
+        }
+        async with self.bot.session.post(url=url, data=data, headers=headers) as r:
             if not r.status in (200, 410):
                 return await ctx.send("Failed to post the banned word to the server. Status code: `{}`.".format(r.status))
             elif r.status == 410:
