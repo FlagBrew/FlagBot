@@ -10,3 +10,4 @@ FlagBrew server helper bot.
 - [kwsch](https://github.com/kwsch) - writing PKHeX.Core, which made addons.pkhex possible in the first place
 - [chenzw](https://github.com/chenzw), [architdate](https://github.com/architdate), and [Rapptz](https://github.com/Rapptz) for the python interpreter
 - [JeffPaine](https://github.com/JeffPaine) - An excellent gist for creating issues using the API, which can be found [here](https://gist.github.com/JeffPaine/3145490)
+- [wrathsoffire76](https://github.com/wrathsoffire76) - Hosting the sprites used in pokeinfo
