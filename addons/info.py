@@ -47,25 +47,26 @@ class Info(commands.Cog):
                 bytes = io.BytesIO()
                 img.save(bytes, format='PNG')
                 bytes = bytes.getvalue()
-                return bytes
+                return bytes, releases[0]["tag_name"]
 
     @commands.command(aliases=["releases", "latest"])
     async def release(self, ctx, *, app=""):
         """Returns the latest release for FlagBrew"s projects. If pulling checkpoint or pickr release, you can add "switch" to the end to get one without a qr code for ease of use"""
         img = 0
+        version = "1.0"
         if app.lower().startswith("pksm"):
             embed = discord.Embed(description=desc_temp.format(desc_pksm))
-            img = await self.gen_qr(self, "PKSM")
+            img, version = await self.gen_qr(self, "PKSM")
         elif app.lower().startswith("checkpoint"):
             embed = discord.Embed(description=desc_temp.format(desc_checkpoint))
             str_list = app.lower().split()
             if "switch" not in str_list:
-                img = await self.gen_qr(self, "Checkpoint")
+                img, version = await self.gen_qr(self, "Checkpoint")
         elif app.lower().startswith("pickr"):
             embed = discord.Embed(description=desc_temp.format(desc_pickr))
             str_list = app.lower().split()
             if "switch" not in str_list:
-                img = await self.gen_qr(self, "Pickr")
+                img, version = await self.gen_qr(self, "Pickr")
         elif app.lower().startswith("2048"):
             embed = discord.Embed(description=desc_temp.format(desc_2048))
         else:
@@ -75,6 +76,7 @@ class Info(commands.Cog):
             return await ctx.send(embed=embed)
         f = discord.File(io.BytesIO(img), filename="qr.png")
         embed.set_image(url="attachment://qr.png")
+        embed.set_footer(text="Version: {}".format(version))
         await ctx.send(file=f, embed=embed)
 
     @commands.command()
