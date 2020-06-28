@@ -252,15 +252,15 @@ class pkhex(commands.Cog):
                 if " " in form:
                     form = form.replace(" ", "-")
                 if species == "minior":  # fuck you fuck you fuck you
-                    embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/normal/minior-meteor.png")
+                    embed.set_thumbnail(url="{}/ultra-sun-ultra-moon/normal/minior-meteor.png".format(self.bot.sprite_url))
                 elif form and not species == "rockruff":
                     if species == "flabébé":
                         species = "flabebe"
                     elif form == "f":
                         form = "female"
-                    embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/{}/{}-{}.png".format(shiny, species, form))
+                    embed.set_thumbnail(url="{}/ultra-sun-ultra-moon/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form))
                 else:
-                    embed.set_thumbnail(url="https://sprites.fm1337.com/ultra-sun-ultra-moon/{}/{}.png".format(shiny, species))
+                    embed.set_thumbnail(url="{}/ultra-sun-ultra-moon/{}/{}.png".format(self.bot.sprite_url, shiny, species))
                 try:
                     return await ctx.send(embed=embed)
                 except discord.HTTPException:
