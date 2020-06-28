@@ -54,6 +54,7 @@ if not config.localhost_port == "":
 else:
     bot.api_url = config.api_url
 bot.gpss_url = config.api_url
+bot.sprite_url = config.sprite_url
 
 if not os.path.exists('saves/warns.json'):
     data = {}
