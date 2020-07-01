@@ -13,6 +13,7 @@ import argparse
 import json
 import pymongo
 import aiohttp
+import concurrent
 from exceptions import APIConnectionError
 from discord.ext import commands
 
@@ -133,6 +134,8 @@ async def on_command_error(ctx, error):
         print("Error: api_url was left blank in config.py, or the server is down. Commands in the PKHeX module will not work properly until this is rectified.")
     elif isinstance(error, commands.DisabledCommand):
         await ctx.send("This command is currently disabled.")
+    elif isinstance(error, aiohttp.client_exceptions.ServerDisconnectedError) or isinstance(error, concurrent.futures._base.TimeoutError):
+        pass  # hopefully fix the disconnect errors that keep popping up
     else:
         if ctx.command:
             await ctx.send("An error occurred while processing the `{}` command.".format(ctx.command.name))
