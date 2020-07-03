@@ -167,7 +167,11 @@ class Warning(commands.Cog):
         embed.description = "{} | {} had their warns cleared by {}. Warns can be found below.".format(target, target.id, ctx.author)
         count = 1
         for warn in warns:
-            embed.add_field(name="Warn #{}".format(count), value="{}".format(warn))
+            if type(warn['date']) is float:
+                warn_date = datetime.fromtimestamp(warn['date']).strftime("%D %H:%M:%S")  # Backwards compatibility
+            else:
+                warn_date = warn['date']
+            embed.add_field(name="Warn #{}".format(count), value="Warned By: {}\nWarned On: {}\nReason: {}".format(warn['warned_by'], warn_date, warn['reason']))
             count += 1
         try:
             await target.send("All of your warns were cleared on {}.".format(ctx.guild))
