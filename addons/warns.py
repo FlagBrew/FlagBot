@@ -1,6 +1,6 @@
 import discord
 import json
-import time
+from datetime import datetime
 from discord.ext import commands
 
 
@@ -22,7 +22,7 @@ class Warning(commands.Cog):
         self.bot.warns_dict[str(target.id)].append(
             {
                 "reason": reason,
-                "date": time.time(),
+                "date": datetime.now().strftime("%D %H:%M:%S"),
                 "warned_by": "{}".format(ctx.author),
         })
         warns = self.bot.warns_dict[str(target.id)]
@@ -105,7 +105,11 @@ class Warning(commands.Cog):
         embed = discord.Embed(title="Warn removed from {}".format(target))
         embed.add_field(name="Warn Reason:", value=warn["reason"])
         embed.add_field(name="Warned By:", value=warn["warned_by"])
-        embed.add_field(name="Warned On:", value=time.strftime('%Y-%m-%d', time.localtime(warn['date'])))
+        if type(warn['date']) is float:  # Backwards compatibility
+            warn_date = datetime.fromtimestamp(warn['date']).strftime("%D %H:%M:%S")
+        else:
+            warn_date = warn['date']
+        embed.add_field(name="Warned On:", value=warn_date)
         embed.set_footer(text="{} now has {} warn(s).".format(target.name, warns_count))
         try:
             await target.send("Warn `{}` was removed on {}. You now have {} warn(s).".format(warn['reason'], ctx.guild, warns_count))
@@ -131,7 +135,11 @@ class Warning(commands.Cog):
         embed = discord.Embed(title="Warns for {}".format(target))
         count = 1
         for warn in warns:
-            embed.add_field(name="Warn #{}".format(count), value="**Reason: {}**\n**Date: {}**".format(warn['reason'], time.strftime('%Y-%m-%d', time.localtime(warn['date']))))
+            if type(warn['date']) is float:  # Backwards compatibility
+                warn_date = datetime.fromtimestamp(warn['date']).strftime("%D %H:%M:%S")
+            else:
+                warn_date = warn['date']
+            embed.add_field(name="Warn #{}".format(count), value="**Reason: {}**\n**Date: {}**".format(warn['reason'], warn_date))
             count += 1
         if count - 1 == 0:
             return await ctx.send("{} has no warns.".format(target))
@@ -167,7 +175,11 @@ class Warning(commands.Cog):
         embed.description = "{} | {} had their warns cleared by {}. Warns can be found below.".format(target, target.id, ctx.author)
         count = 1
         for warn in warns:
-            embed.add_field(name="Warn #{}".format(count), value="{}".format(warn))
+            if type(warn['date']) is float:  # Backwards compatibility
+                warn_date = datetime.fromtimestamp(warn['date']).strftime("%D %H:%M:%S")
+            else:
+                warn_date = warn['date']
+            embed.add_field(name="Warn #{}".format(count), value="Warned By: {}\nWarned On: {}\nReason: {}".format(warn['warned_by'], warn_date, warn['reason']))
             count += 1
         try:
             await target.send("All of your warns were cleared on {}.".format(ctx.guild))
