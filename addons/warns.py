@@ -1,6 +1,7 @@
 import discord
 import json
 import time
+from datetime import datetime
 from discord.ext import commands
 
 
@@ -22,7 +23,7 @@ class Warning(commands.Cog):
         self.bot.warns_dict[str(target.id)].append(
             {
                 "reason": reason,
-                "date": time.time(),
+                "date": datetime.now().strftime("%D %H:%M:%S"),
                 "warned_by": "{}".format(ctx.author),
         })
         warns = self.bot.warns_dict[str(target.id)]
