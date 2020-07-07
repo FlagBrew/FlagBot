@@ -27,5 +27,9 @@
     {
         "title": "Why doesn't ServePKX work? How can I send pokemon to PKSM from my PC now?",
         "value": "ServePKX has been deprecated as of PKSM v6. There are three ways you can send pokemon to PKSM from PC now.\n**1**: (*Recommended*) Upload the pokemon to the GPSS using either the `.gpsspost` command in <#379201279479513100>, or through architdate's [Auto Legality Plugin](https://github.com/architdate/PKHeX-Plugins) for PKHeX.\n**2**: Create a QR code from the pkx file using PKHeX. Then, scan the QR code by opening `Editor` and pressing `L + R`.\n**3**: Place the pkx files you want to add at `/3ds/PKSM/inject/` and run the universal `injector.c` script."
+    },
+    {
+        "title": "Can I transfer mons from PKSM directly to Bank or Home?",
+        "value": "No. This would require direct interaction with Nintendo's servers, which would doubtlessly end in a C&D against PKSM (and possibly all of FlagBrew's other projects), which would then lead to the death of PKSM."
     }
 ]
