@@ -398,36 +398,6 @@ class Utility(commands.Cog):
                 return await ctx.send("Successfully unbanned the word `{}` from the GPSS.".format(word))
             await ctx.send("Successfully banned the word `{}` from the GPSS.".format(word))
 
-    @commands.command()
-    @commands.has_any_role("Bot Dev")
-    async def update_db(self, ctx):
-        """Converts all the float dates in the warn db to strftime formatted datetime objects. Bot Devs only..."""
-        user_counter = 0
-        for user in self.bot.warns_dict:
-            for warn in self.bot.warns_dict[user]:
-                print(warn)
-                old_time = warn['date']
-                if type(old_time) is not float:
-                    continue
-                new_time = datetime.fromtimestamp(old_time).strftime("%H:%M:%S")
-                warn['date'] = new_time
-            if self.bot.is_mongodb:
-                db = self.bot.db['flagbrew']
-                db['warns'].update_one(
-                    {
-                        "user": user
-                    },
-                    {
-                        "$set": {
-                            "user": user,
-                            "warns": self.bot.warns_dict[user]
-                        }
-                    }, upsert=True)
-            with open("saves/warns.json", "w") as f:
-                json.dump(self.bot.warns_dict, f, indent=4)
-            user_counter += 1
-        await ctx.send("Finished execution! Total of {} users had their warns updated.".format(user_counter))
-
 
 def setup(bot):
     bot.add_cog(Utility(bot))
