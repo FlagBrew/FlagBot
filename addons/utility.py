@@ -398,6 +398,33 @@ class Utility(commands.Cog):
                 return await ctx.send("Successfully unbanned the word `{}` from the GPSS.".format(word))
             await ctx.send("Successfully banned the word `{}` from the GPSS.".format(word))
 
+    @commands.command()
+    async def translate(self, ctx, lang):
+        """Fetches the translation file for the provided language"""
+        url = "https://raw.githubusercontent.com/FlagBrew/PKSM/master/assets/gui_strings/{}/gui.json"
+        langs = {
+            "chinese-simplified": "chs",
+            "chinese-traditional": "cht",
+            "english": "eng",
+            "french": "fre",
+            "german": "ger",
+            "italian": "ita",
+            "japanese": "jpn",
+            "korean": "kor",
+            "dutch": "nl",
+            "portuguese": "pt",
+            "romanian": "ro",
+            "spanish": "spa"
+        }
+        if not lang.lower() in langs.keys():
+            return await ctx.send("Inputted language of `{}` is not an available language. Possible languages: `{}`.".format(lang.lower(), ", ".join(l for l in langs.keys())))
+        url = url.format(langs[lang.lower()])
+        async with self.bot.session.get(url=url) as r:
+            contents = await r.read()
+            bytes_contents = io.BytesIO(contents)
+            file = discord.File(bytes_contents, "gui.json")
+            await ctx.send("{} Here's the {} language file:".format(ctx.author.mention, lang.lower()), file=file)
+
 
 def setup(bot):
     bot.add_cog(Utility(bot))
