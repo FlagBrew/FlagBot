@@ -1,5 +1,6 @@
 import discord
 import json
+import random
 from datetime import datetime
 from discord.ext import commands
 
@@ -57,8 +58,15 @@ class Warning(commands.Cog):
                 }, upsert=True)
         with open("saves/warns.json", "w") as f:
             json.dump(self.bot.warns_dict, f, indent=4)
-        await ctx.send("Warned {}. This is warn #{}. {}".format(target, len(warns), log_msg))
         if len(warns) >= 5:
+            embed = discord.Embed()
+            img_choice = random.randint(1, 26)
+            if img_choice in range(1, 13):  # ampharos
+                embed.set_image(url="https://fm1337.com/static/img/ampharos-banned.jpg")
+            if img_choice in range(13, 25):  # eevee
+                embed.set_image(url="https://fm1337.com/static/img/eevee-banned.jpg")
+            if img_choice in range(25, 27):  # giratina
+                embed.set_image(url="https://fm1337.com/static/img/giratina-banned.jpg")
             await target.ban(reason="Warn #{}".format(len(warns)))
         elif len(warns) >= 3:
             await target.kick(reason="Warn #{}".format(len(warns)))
@@ -66,6 +74,7 @@ class Warning(commands.Cog):
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta can't log
+        await ctx.send("Warned {}. This is warn #{}. {}".format(target, len(warns), log_msg), embed=embed)
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
