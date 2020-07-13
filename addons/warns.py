@@ -134,7 +134,7 @@ class Warning(commands.Cog):
     @commands.command()
     async def listwarns(self, ctx, target: discord.Member=None):
         """Allows a user to list their own warns, or a staff member to list a user's warns"""
-        if not target:
+        if not target or target == ctx.author:
             target = ctx.author
         elif target and self.bot.discord_moderator_role not in ctx.author.roles:
             raise commands.errors.CheckFailure()
