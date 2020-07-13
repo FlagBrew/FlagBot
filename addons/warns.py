@@ -74,7 +74,9 @@ class Warning(commands.Cog):
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta can't log
-        await ctx.send("Warned {}. This is warn #{}. {}".format(target, len(warns), log_msg), embed=embed)
+        if len(warns) >= 5:
+            return await ctx.send("Warned {}. This is warn #{}. {}".format(target, len(warns), log_msg), embed=embed)
+        await ctx.send("Warned {}. This is warn #{}. {}".format(target, len(warns), log_msg))
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
