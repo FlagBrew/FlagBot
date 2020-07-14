@@ -67,7 +67,7 @@ class Warning(commands.Cog):
                 embed.set_image(url="https://fm1337.com/static/img/eevee-banned.jpg")
             if img_choice in range(25, 27):  # giratina
                 embed.set_image(url="https://fm1337.com/static/img/giratina-banned.jpg")
-            await target.ban(reason="Warn #{}".format(len(warns)))
+            await target.ban(reason="Warn #{}".format(len(warns), delete_message_days=0))
         elif len(warns) >= 3:
             await target.kick(reason="Warn #{}".format(len(warns)))
         try:
@@ -139,6 +139,31 @@ class Warning(commands.Cog):
         elif target and self.bot.discord_moderator_role not in ctx.author.roles:
             raise commands.errors.CheckFailure()
             return
+        try:
+            warns = self.bot.warns_dict[str(target.id)]
+        except KeyError:
+            return await ctx.send("{} has no warns.".format(target))
+        embed = discord.Embed(title="Warns for {}".format(target))
+        count = 1
+        for warn in warns:
+            if type(warn['date']) is float:  # Backwards compatibility
+                warn_date = datetime.fromtimestamp(warn['date']).strftime("%D %H:%M:%S")
+            else:
+                warn_date = warn['date']
+            embed.add_field(name="Warn #{}".format(count), value="**Reason: {}**\n**Date: {}**".format(warn['reason'], warn_date))
+            count += 1
+        if count - 1 == 0:
+            return await ctx.send("{} has no warns.".format(target))
+        embed.set_footer(text="Total warns: {}".format(count-1))
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_any_role("Discord Moderator")
+    async def listwarnsid(self, ctx, uid):
+        """Allows a user to list their own warns, or a staff member to list a user's warns by ID"""
+        target = self.bot.fetch_user(uid)
+        if not target:
+            return await ctx.send("Couldn't find a user with that ID!")
         try:
             warns = self.bot.warns_dict[str(target.id)]
         except KeyError:
