@@ -161,7 +161,7 @@ class Warning(commands.Cog):
     @commands.has_any_role("Discord Moderator")
     async def listwarnsid(self, ctx, uid):
         """Allows a user to list their own warns, or a staff member to list a user's warns by ID"""
-        target = self.bot.fetch_user(uid)
+        target = await self.bot.fetch_user(uid)
         if not target:
             return await ctx.send("Couldn't find a user with that ID!")
         try:
