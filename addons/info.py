@@ -239,7 +239,7 @@ class Info(commands.Cog):
         elif option == "hex" or option == "hexeditor":
             extra_info = " entry for the hex editor"
             wiki_link_ext = "/Hex-Editor"
-        elif option == "bridging":
+        elif option == "bridging" or option == "bridge":
             extra_info = " on network bridging"
             wiki_link_ext = "/Basics#loading-a-save-over-a-network"
         else:
