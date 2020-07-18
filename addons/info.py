@@ -207,7 +207,7 @@ class Info(commands.Cog):
 
     @commands.command(aliases=['readthedocs', 'docs', '<:wikidiot:558815031836540940>'])
     async def wiki(self, ctx, option=""):
-        """Sends wiki link. extrasaves, storage, editor, events, scripts, bag, config, scriptdev, and faq all as options"""
+        """Sends wiki link. storage, editor, events, scripts, bag, config, gameid, faq, gpss, hex, and bridge are all options"""
         option = option.lower()
         if option == "storage":
             extra_info = " entry for the storage feature"
