@@ -420,7 +420,7 @@ class Utility(commands.Cog):
             return await ctx.send("Inputted language of `{}` is not an available language. Possible languages: `{}`.".format(lang.lower(), ", ".join(l for l in langs.keys())))
         url = url.format(langs[lang.lower()])
         async with self.bot.session.get(url=url) as r:
-            if r.status is not 200:
+            if r.status != 200:
                 return await ctx.send("Couldn't fetch tranlation file! status code: `{}`.".format(r.status))
             contents = await r.read()
             bytes_contents = io.BytesIO(contents)
