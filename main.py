@@ -282,7 +282,7 @@ async def unload(ctx, *, module):
         await ctx.send("You don't have permission to do that!")
 
 
-@bot.command()
+@bot.command(hidden=True)
 async def reload(ctx):
     """Reloads an addon."""
     bot.reload_counter += 1
