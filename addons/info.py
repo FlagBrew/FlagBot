@@ -208,8 +208,6 @@ class Info(commands.Cog):
     @commands.command(aliases=['readthedocs', 'docs', '<:wikidiot:558815031836540940>'])
     async def wiki(self, ctx, option=""):
         """Sends wiki link. extrasaves, storage, editor, events, scripts, bag, config, scriptdev, and faq all as options"""
-        extra_info = ""
-        wiki_link_ext = ""
         option = option.lower()
         if option == "storage":
             extra_info = " entry for the storage feature"
@@ -241,6 +239,12 @@ class Info(commands.Cog):
         elif option == "hex" or option == "hexeditor":
             extra_info = " entry for the hex editor"
             wiki_link_ext = "/Hex-Editor"
+        elif option == "bridging":
+            extra_info = " on network bridging"
+            wiki_link_ext = "/Basics#loading-a-save-over-a-network"
+        else:
+            extra_info = ""
+            wiki_link_ext = ""
         m = await ctx.send("You can read PKSM's wiki{} here: <https://github.com/FlagBrew/PKSM/wiki{}>".format(extra_info, wiki_link_ext))
         await m.add_reaction("<:wikidiot:558815031836540940>")
 
