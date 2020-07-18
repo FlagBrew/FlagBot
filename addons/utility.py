@@ -39,8 +39,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     async def togglerole(self, ctx, role):
-        """Allows user to toggle update roles. You can use .masstoggle to apply all roles at once.
-        Available roles: 3DS, Switch, Bot"""
+        """Allows user to toggle update roles. You can use .masstoggle to apply all roles at once. Available roles: see #welcome-and-rules, as well as 'bot'"""
         user = ctx.message.author
         role = role.lower()
         if not role in ('3ds', 'switch', 'bot'):
@@ -54,7 +53,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     async def masstoggle(self, ctx):
-        """Allows a user to toggle all possible update roles, except bot. Use .help toggleroles to see possible roles."""
+        """Allows a user to toggle both console update roles"""
         toggle_roles = [
             discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["3ds"])),
             discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict["switch"]))
