@@ -14,6 +14,7 @@ import json
 import pymongo
 import aiohttp
 import concurrent
+import psutil
 from exceptions import APIConnectionError
 from discord.ext import commands
 
@@ -359,6 +360,19 @@ async def restart(ctx):
     with open('restart.txt', 'w') as f:
         f.write(str(ctx.channel.id))
     sys.exit(0)
+
+@bot.command()
+async def about(ctx):
+    """Information about the bot"""
+    embed = discord.Embed()
+    embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in the FlagBrew server.\n"
+                            "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
+                            "Written by {}.".format(bot.creator.mention))
+    embed.set_author(name="GriffinG1", url='https://github.com/GriffinG1', icon_url='https://avatars0.githubusercontent.com/u/28538707')
+    total_mem = psutil.virtual_memory().total/float(1<<30)
+    used_mem = psutil.Process().memory_info().rss/float(1<<20)
+    embed.set_footer(text="{} MB used out of {} GB".format(round(used_mem, 2), round(total_mem, 2)))
+    await ctx.send(embed=embed)
 
 
 # Execute
