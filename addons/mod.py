@@ -53,8 +53,8 @@ class Moderation(commands.Cog):
             embed.set_image(url="https://fm1337.com/static/img/giratina-banned.jpg")
         await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(member), embed=embed)
 
-    @commands.has_permissions(kick_members=True)
     @commands.command(pass_context=True)
+    @commands.has_any_role("Discord Moderator")
     async def kick(self, ctx, member: discord.Member, *, reason="No reason was given."):
         """Kick a member."""
         if member == ctx.message.author:
@@ -78,16 +78,16 @@ class Moderation(commands.Cog):
                 await member.kick(reason=reason)
             await ctx.send("Successfully kicked user {0.name}#{0.discriminator}!".format(member))
 
-    @commands.has_permissions(ban_members=True)
     @commands.command(pass_context=True)
+    @commands.has_any_role("Discord Moderator")
     async def ban(self, ctx, member: discord.User, *, reason="No reason was given."):
         """Bans a user."""
         if not member:  # Edge case in which UserConverter may fail to get a User
             return await ctx.send("Could not find user. They may no longer be in the global User cache. If you are sure this is a valid user, try `.banid` instead.")
         await self.generic_ban_things(ctx, member, reason)
 
-    @commands.has_permissions(ban_members=True)
     @commands.command(pass_context=True)
+    @commands.has_any_role("Discord Moderator")
     async def banid(self, ctx, member: int, *, reason="No reason was given."):
         """Ban a user with their user ID.
 
@@ -97,8 +97,8 @@ class Moderation(commands.Cog):
             return await ctx.send("This is not a valid discord user.")
         await self.generic_ban_things(ctx, member, reason)
 
-    @commands.has_permissions(ban_members=True)
     @commands.command(aliases=['p', 'clear', 'clean'])
+    @commands.has_any_role("Discord Moderator")
     async def purge(self, ctx, amount=0):
         """Purge x amount of messages"""
         await ctx.message.delete()
