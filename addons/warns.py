@@ -13,7 +13,7 @@ class Warning(commands.Cog):
         print('Addon "{}" loaded'.format(self.__class__.__name__))
 
     @commands.command()
-    @commands.has_permissions(ban_members=True)
+    @commands.has_any_role("Discord Moderator")
     async def warn(self, ctx, target: discord.Member, *, reason="No reason was given"):
         """Warns a user. Kicks at 3 and 4 warnings, bans at 5"""
         try:
@@ -79,7 +79,7 @@ class Warning(commands.Cog):
         await ctx.send("Warned {}. This is warn #{}. {}".format(target, len(warns), log_msg))
 
     @commands.command()
-    @commands.has_permissions(ban_members=True)
+    @commands.has_any_role("Discord Moderator")
     async def delwarn(self, ctx, target: discord.Member, *, warn):
         """Deletes a users warn. Can take the warn number, or the warn reason"""
         try:
@@ -160,7 +160,7 @@ class Warning(commands.Cog):
     @commands.command()
     @commands.has_any_role("Discord Moderator")
     async def listwarnsid(self, ctx, uid):
-        """Allows a user to list their own warns, or a staff member to list a user's warns by ID"""
+        """Allows a staff member to list a user's warns by ID"""
         target = await self.bot.fetch_user(uid)
         if not target:
             return await ctx.send("Couldn't find a user with that ID!")
@@ -183,7 +183,7 @@ class Warning(commands.Cog):
         await ctx.send(embed=embed)
     
     @commands.command()
-    @commands.has_permissions(ban_members=True)
+    @commands.has_any_role("Discord Moderator")
     async def clearwarns(self, ctx, target: discord.Member):
         """Clears all of a users warns"""
         try:

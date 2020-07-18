@@ -39,7 +39,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     async def togglerole(self, ctx, role):
-        """Allows user to toggle update roles. You can use .masstoggle to apply all roles at once. Available roles: see #welcome-and-rules, as well as 'bot'"""
+        """Allows user to toggle update roles. Available roles: see #welcome-and-rules, as well as 'bot'"""
         user = ctx.message.author
         role = role.lower()
         if not role in ('3ds', 'switch', 'bot'):
@@ -51,7 +51,7 @@ class Utility(commands.Cog):
             info_string = "You will now receive pings for {} updates!".format(role)
         await ctx.send(user.mention + ' ' + info_string)
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def masstoggle(self, ctx):
         """Allows a user to toggle both console update roles"""
         toggle_roles = [
@@ -341,6 +341,7 @@ class Utility(commands.Cog):
 
     @commands.command(aliases=['scd'])
     async def submit_crash_dump(self, ctx, *, description):
+        """Allows submitting a PKSM crash dump. Must provide a dump file, and a description. Abusers will be warned."""
         if not ctx.message.attachments or not ctx.message.attachments[0].filename.endswith(".dmp"):
             return await ctx.send("You must provide a crash dump with this command!")
         elif len(description.split(" ")) < 14:
@@ -419,7 +420,7 @@ class Utility(commands.Cog):
             return await ctx.send("Inputted language of `{}` is not an available language. Possible languages: `{}`.".format(lang.lower(), ", ".join(l for l in langs.keys())))
         url = url.format(langs[lang.lower()])
         async with self.bot.session.get(url=url) as r:
-            if r.status is not 200:
+            if r.status != 200:
                 return await ctx.send("Couldn't fetch tranlation file! status code: `{}`.".format(r.status))
             contents = await r.read()
             bytes_contents = io.BytesIO(contents)

@@ -100,6 +100,7 @@ class PythonInterpreter(commands.Cog):
         await self.interpreter(env, msg, ctx)
 
     @commands.command()
+    @commands.has_any_role("Discord Moderator", "Bot Dev")
     async def togglepy(self, ctx):
         """Toggles the python interpreter. Bot creator and allen only"""
         if not ctx.author in (self.bot.creator, self.bot.allen):
@@ -113,6 +114,7 @@ class PythonInterpreter(commands.Cog):
             return await ctx.send("Enabled the py command!")
 
     @commands.command(name='bp')
+    @commands.has_any_role("Discord Moderator", "Bot Dev")
     async def banphrase(self, ctx, phrase):
         """Bans a phrase from the interpreter"""
         if not ctx.author in (self.bot.creator, self.bot.allen):
@@ -125,6 +127,7 @@ class PythonInterpreter(commands.Cog):
         await ctx.send("Added `{}` to the banned phrase list.".format(phrase))
 
     @commands.command(name='ubp')
+    @commands.has_any_role("Discord Moderator", "Bot Dev")
     async def unbanphrase(self, ctx, phrase):
         """Unbans a phrase from the interpreter"""
         if not ctx.author in (self.bot.creator, self.bot.allen):
