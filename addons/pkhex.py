@@ -174,6 +174,26 @@ class pkhex(commands.Cog):
                 return await ctx.send("No forms available for `{}`.".format(species.title()))
             await ctx.send("Available forms for {}: `{}`.".format(species.title(), '`, `'.join(rj)))
 
+    def set_sprite_thumbnail(self, mon_info=None, shiny=None, form=None, species=None):
+        if mon_info:
+            shiny = "shiny" if mon_info["IsShiny"] else "normal"
+            form = mon_info["Form"].lower()
+            species = mon_info["Species"].lower()
+        if " " in form:
+            form = form.replace(" ", "-")
+        if species == "minior":  # fuck you fuck you fuck you
+            url = "{}/ultra-sun-ultra-moon/normal/minior-meteor.png".format(self.bot.sprite_url)
+        elif form and not species == "rockruff":
+            if species == "flabébé":
+                species = "flabebe"
+            elif form == "f":
+                form = "female"
+            url = "{}/ultra-sun-ultra-moon/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
+        else:
+            url = "{}/ultra-sun-ultra-moon/{}/{}.png".format(self.bot.sprite_url, shiny, species)
+        print(url)
+        return url
+
     @commands.command(name='pokeinfo', aliases=['pi'])
     async def poke_info(self, ctx, data="", shiny="normal"):
         ("""Returns an embed with a Pokemon's nickname, species, and a few others. Takes a provided URL or attached pkx file. URL *must* be a direct download link.\n"""
@@ -249,18 +269,7 @@ class pkhex(commands.Cog):
                     egg_str += "\nEgg Group 2: {}".format(rj["EggGroups"][1])
                 embed.add_field(name="Egg Groups", value=egg_str)
                 embed.add_field(name="Base stats ({})".format(rj["BST"]), value="```HP:    {} Atk:   {}\nDef:   {} SpAtk: {} \nSpDef: {} Spd:   {}```".format(rj["HP"], rj["ATK"], rj["DEF"], rj["SPA"], rj["SPD"], rj["SPE"]))
-                if " " in form:
-                    form = form.replace(" ", "-")
-                if species == "minior":  # fuck you fuck you fuck you
-                    embed.set_thumbnail(url="{}/ultra-sun-ultra-moon/normal/minior-meteor.png".format(self.bot.sprite_url))
-                elif form and not species == "rockruff":
-                    if species == "flabébé":
-                        species = "flabebe"
-                    elif form == "f":
-                        form = "female"
-                    embed.set_thumbnail(url="{}/ultra-sun-ultra-moon/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form))
-                else:
-                    embed.set_thumbnail(url="{}/ultra-sun-ultra-moon/{}/{}.png".format(self.bot.sprite_url, shiny, species))
+                embed.set_thumbnail(url=self.set_sprite_thumbnail(shiny=shiny, species=species, form=form))
                 try:
                     return await ctx.send(embed=embed)
                 except discord.HTTPException:
@@ -417,7 +426,7 @@ class pkhex(commands.Cog):
                         m = await upload_channel.send("Pokemon fetched from the GPSS by {}".format(ctx.author), file=pkmn_file)
                         embed = discord.Embed(description="[GPSS Page]({}) | [Download link]({})".format(self.bot.gpss_url + "gpss/view/" + code, m.attachments[0].url))
                         embed = self.embed_fields(ctx, embed, pkmn_data)
-                        embed.set_author(icon_url=pkmn_data["SpeciesSpriteURL"], name="Data for {}".format(pkmn_data["Nickname"]))
+                        embed.set_author(icon_url=self.set_sprite_thumbnail(mon_info=pkmn_data), name="Data for {}".format(pkmn_data["Nickname"]))
                         embed.set_thumbnail(url=self.bot.gpss_url + "gpss/qr/{}".format(code))
                         return await msg.edit(embed=embed, content=None)
         await msg.edit(content="There was no pokemon on the GPSS with the code `{}`.".format(code))
