@@ -492,6 +492,77 @@ class pkhex(commands.Cog):
         await msg.delete()
         await ctx.send(embed=embed, file=qr)
 
+    @commands.command(enabled=False)
+    async def convert(self, ctx, gen: int, *, shs):
+        """Converts a given showdown set into a pkx from a given generation. WIP."""
+        if gen < 1 or gen > 8:
+            return await ctx.send("There is no generation {}.".format(gen))
+        elif shs.count("\n") == 0:
+            return await ctx.send("You must provide your set in a new-line split format. Providing just a species is blocked.")
+        shs = shs.replace("`", "")
+        # url = self.bot.api_url + "api/v1/bot/convert"  # update endpoint later if it changes
+        # data = {
+        #     "set": shs,
+        #     "gen": gen
+        # }
+        # pkx = None
+        # colour = None
+        # sprite = None
+        # async with self.bot.session.post(url=url, data=data) as r:  # Revisit once networking is implemented
+        #     if not r.status == 200:
+        #         return await ctx.send("Failed: Error Code `{}`".format(r.status))
+        #     rj = await r.json()
+        #     colour = rj["Colour"]
+        #     sprite = rj["Sprite"]
+        #     b64 = rj["pkx"].encode("ascii")
+        #     pkx = base64.decodebytes(b64)
+        set_lbl = shs.split("\n")
+        species = set_lbl.pop(0)
+        held_item = ""
+        gender = ""
+        if species.count("@") > 0:
+            tmp = species.split("@")
+            species = tmp[0]
+            held_item = tmp[1]
+        if species.count("(M)") > 0:
+            gender = "Male"
+            species = species.replace("(M)", "")
+        elif species.count("(F)") > 0:
+            gender = "Female"
+            species = species.replace("(F)", "")
+        set_dict = {}
+        moves = []
+        for item in set_lbl:
+            if item.count(":") == 0:
+                if item.startswith("-"):
+                    moves.append(item)
+                continue
+            contents = item.split(":")
+            if contents[0].lower() in ("ivs", "evs"):
+                contents[0] = contents[0][0].upper() + contents[0][1].upper() + "s"
+            else:
+                contents[0] = contents[0].lower().capitalize()
+            set_dict[contents[0]] = contents[1]
+        print(set_lbl)
+        print(set_dict)
+        embed = discord.Embed(title="{}".format(species), description="[PKX Download Link]({})".format("https://google.com"))  # replace URL with message attach url once network stuff handled
+        embed.add_field(name="Generation", value=gen)
+        if held_item:
+            embed.add_field(name="Held Item", value=held_item)
+        if gender:
+            embed.add_field(name="Gender", value=gender)
+        for key in set_dict.keys():
+            if key in ("IVs", "EVs"):
+                set_dict[key] = "\n".join(set_dict[key].split("/"))
+                continue
+            embed.add_field(name=key, value=set_dict[key])
+        if "IVs" in set_dict.keys():
+            embed.add_field(name="IVs", value=set_dict["IVs"])
+        if "EVs" in set_dict.keys():
+            embed.add_field(name="EVs", value=set_dict["EVs"])
+        if len(moves) > 0:
+            embed.add_field(name="Moves", value="\n".join(moves))
+        await ctx.send(embed=embed)
 
 def setup(bot):
     pkh = pkhex(bot)
