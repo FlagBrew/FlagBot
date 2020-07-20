@@ -217,8 +217,8 @@ class Events(commands.Cog):
                 await self.bot.activity_logs_channel.send(embed=embed_custom)
             except discord.Forbidden:
                 pass
-            except discord.errors.HTTPException:
-                await self.bot.err_logs_channel.send("Failed to log activity for user {} with before activity list of {} and after activity list of {}. Cause?".format(before, before.activities, after.activities))
+            except discord.HTTPException:
+                await self.bot.err_logs_channel.send("Failed to log activity for user `{}` (`{}`) with before activity list of `{}` and after activity list of `{}`. Cause?".format(before, before.id, before.activities, after.activities))
 
     async def process_reactions(self, reaction):
         positive_votes = 0
