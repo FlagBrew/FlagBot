@@ -203,6 +203,9 @@ class Events(commands.Cog):
                     await self.bot.activity_logs_channel.send(embed=embed)
                 except discord.Forbidden:
                     pass
+                except Exception as e:
+                    err_embed = discord.Embed(description=e)
+                    await self.bot.err_logs_channel.send("Failed to log activity for user `{}` (`{}`) with before activity list of `{}` and after activity list of `{}`. Cause?".format(before, before.id, before.activities, after.activities), embed=err_embed)
             if len(aft_custom) == 0 and len(bef_custom) == 0:
                 return
 
