@@ -349,7 +349,7 @@ class Info(commands.Cog):
                             "If it errors, immediately stop editing your save *without* saving changes, as there is a failure case that could break your boxes."
                             )
         embed.add_field(name="Editing Types", value=edit_types)
-        embed.set_footer(text="Please note that LGPE have not yet been tested.")
+        embed.set_footer(text="Please note that LGPE and SWSH have not yet been tested.")
         await ctx.send(embed=embed)
 
 
