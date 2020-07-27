@@ -191,7 +191,6 @@ class pkhex(commands.Cog):
             url = "{}/ultra-sun-ultra-moon/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
         else:
             url = "{}/ultra-sun-ultra-moon/{}/{}.png".format(self.bot.sprite_url, shiny, species)
-        print(url)
         return url
 
     @commands.command(name='pokeinfo', aliases=['pi'])
