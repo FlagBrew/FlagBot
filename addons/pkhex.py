@@ -561,6 +561,7 @@ class pkhex(commands.Cog):
                 set_dict[key] = "\n".join(set_dict[key].split("/"))
                 continue
             embed.add_field(name=key, value=set_dict[key])
+        embed.add_field(name=u"\u200B", value=u"\u200B", inline=False)
         if "IVs" in set_dict.keys():
             embed.add_field(name="IVs", value=set_dict["IVs"])
         if "EVs" in set_dict.keys():
