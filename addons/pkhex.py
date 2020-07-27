@@ -536,6 +536,9 @@ class pkhex(commands.Cog):
             if item.count(":") == 0:
                 if item.startswith("-"):
                     moves.append(item)
+                elif item.lower().endswith("nature"):
+                    item.replace("Nature", "")
+                    set_dict["Nature"] = item
                 continue
             contents = item.split(":")
             if contents[0].lower() in ("ivs", "evs"):
