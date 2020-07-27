@@ -191,7 +191,6 @@ class pkhex(commands.Cog):
             url = "{}/ultra-sun-ultra-moon/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
         else:
             url = "{}/ultra-sun-ultra-moon/{}/{}.png".format(self.bot.sprite_url, shiny, species)
-        print(url)
         return url
 
     @commands.command(name='pokeinfo', aliases=['pi'])
@@ -536,6 +535,9 @@ class pkhex(commands.Cog):
             if item.count(":") == 0:
                 if item.startswith("-"):
                     moves.append(item)
+                elif item.lower().endswith("nature"):
+                    item.replace("Nature", "")
+                    set_dict["Nature"] = item
                 continue
             contents = item.split(":")
             if contents[0].lower() in ("ivs", "evs"):
@@ -543,9 +545,11 @@ class pkhex(commands.Cog):
             else:
                 contents[0] = contents[0].lower().capitalize()
             set_dict[contents[0]] = contents[1]
-        print(set_lbl)
-        print(set_dict)
+        temp_sprite_url = self.set_sprite_thumbnail(shiny="normal", form="", species=species.lower()).replace(" ", "")  # temporary till network stuff done, don't want to try and handle forms or splitting nick here
         embed = discord.Embed(title="{}".format(species), description="[PKX Download Link]({})".format("https://google.com"))  # replace URL with message attach url once network stuff handled
+        print(temp_sprite_url)
+        if validators.url(temp_sprite_url):
+            embed.set_thumbnail(url=temp_sprite_url)
         embed.add_field(name="Generation", value=gen)
         if held_item:
             embed.add_field(name="Held Item", value=held_item)
@@ -556,6 +560,7 @@ class pkhex(commands.Cog):
                 set_dict[key] = "\n".join(set_dict[key].split("/"))
                 continue
             embed.add_field(name=key, value=set_dict[key])
+        embed.add_field(name=u"\u200B", value=u"\u200B", inline=False)
         if "IVs" in set_dict.keys():
             embed.add_field(name="IVs", value=set_dict["IVs"])
         if "EVs" in set_dict.keys():

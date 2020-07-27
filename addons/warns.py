@@ -64,9 +64,9 @@ class Warning(commands.Cog):
             if img_choice in range(1, 13):  # ampharos
                 embed.set_image(url="https://fm1337.com/static/img/ampharos-banned.jpg")
             if img_choice in range(13, 25):  # eevee
-                embed.set_image(url="https://fm1337.com/static/img/eevee-banned.jpg")
+                embed.set_image(url="https://fm1337.com/static/img/eevee-banned.png")
             if img_choice in range(25, 27):  # giratina
-                embed.set_image(url="https://fm1337.com/static/img/giratina-banned.jpg")
+                embed.set_image(url="https://fm1337.com/static/img/giratina-banned.png")
             await target.ban(reason="Warn #{}".format(len(warns), delete_message_days=0))
         elif len(warns) >= 3:
             await target.kick(reason="Warn #{}".format(len(warns)))
