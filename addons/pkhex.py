@@ -38,7 +38,8 @@ class pkhex(commands.Cog):
             try:
                 await atch.save(b)
             except discord.Forbidden:
-                return await ctx.send("The file seems to have been deleted, so I can't complete the task.")
+                await ctx.send("The file seems to have been deleted, so I can't complete the task.")
+                return 400
             file = b.getvalue()
         else:
             if not validators.url(data):

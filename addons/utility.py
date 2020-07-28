@@ -427,6 +427,30 @@ class Utility(commands.Cog):
             file = discord.File(bytes_contents, "gui.json")
             await ctx.send("{} Here's the {} language file:".format(ctx.author.mention, lang.lower()), file=file)
 
+    @commands.command(aliases=['ui', 'user'])  # Smth smth stolen from GriffinG1/Midnight but it's *my* license and I do what I want
+    async def userinfo(self, ctx, user: discord.Member=None, depth=False):
+        """Pulls a user's info. Passing no member returns your own. depth is a bool that will specify account creation and join date, and account age"""
+        if not user:
+            user = ctx.author
+        embed = discord.Embed(title="User info for {}".format(user))
+        embed.set_thumbnail(url=str(user.avatar_url))
+        embed.add_field(name="Username", value=user.name)
+        embed.add_field(name="ID", value=user.id)
+        if len(user.roles) > 1:
+            embed.add_field(name="Highest Role", value=user.top_role)
+        embed.add_field(name="Status", value=str(user.status).capitalize())
+        if len(user.activities) > 0:
+            embed.add_field(name="Activities", value="`{}`".format("`\n`".join(activity.name for activity in user.activities)))
+        if user.nick:
+            embed.add_field(name="Nickname", value=user.nick)
+        created_at_epoch = int((bin(user.id)[:-22])[2:], 2)
+        if depth:
+            embed.add_field(name=u"\u200B", value=u"\u200B", inline=False)
+            embed.add_field(name="Created At", value="{} UTC".format(datetime.fromtimestamp((created_at_epoch+1420070400000) / 1000.0).strftime('%m-%d-%Y %H:%M:%S')))
+            embed.add_field(name="Joined At", value="{} UTC".format(user.joined_at.strftime('%m-%d-%Y %H:%M:%S')))
+            embed.add_field(name="Account Age", value="{} Days".format((datetime.now() - (datetime.fromtimestamp((created_at_epoch+1420070400000) / 1000.0))).days))
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Utility(bot))
