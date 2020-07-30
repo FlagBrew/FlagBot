@@ -459,7 +459,7 @@ class Utility(commands.Cog):
                 return await ctx.send("`{}` is not representable on the 3DS".format(character))
         # string plus null terminator
         hexstring = string_to_convert.encode("utf_16_le").hex() + "0000"
-        bytelist = [s[x:x+2] for x in range(0, len(s), 2)]
+        bytelist = [hexstring[x:x+2] for x in range(0, len(hexstring), 2)]
         await ctx.send("`0x" + " 0x".join(bytelist) + "`")
 
 def setup(bot):
