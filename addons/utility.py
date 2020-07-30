@@ -451,7 +451,7 @@ class Utility(commands.Cog):
             embed.add_field(name="Account Age", value="{} Days".format((datetime.now() - (datetime.fromtimestamp((created_at_epoch+1420070400000) / 1000.0))).days))
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=["hexstring", "hexlify"])
+    @commands.command(aliases=["hexstring", "hexlify", "hs"])
     async def utf16string(self, ctx, *, string_to_convert):
         """Turns a string into its UTF-16LE format in hex, for use with PKSM's hex editor"""
         for character in string_to_convert:
