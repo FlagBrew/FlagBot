@@ -456,8 +456,11 @@ class Utility(commands.Cog):
         """Turns a string into its UTF-16LE format in hex, for use with PKSM's hex editor"""
         for character in string_to_convert:
             if not (0 <= ord(character) <= 0xD7FF or (0xE000 <= ord(character) <= 0xFFFF)):
-                return await ctx.send("{} is not representable on the 3DS".format(character))
-        await ctx.send(string_to_convert.encode("utf_16_le").hex())
+                return await ctx.send("`{}` is not representable on the 3DS".format(character))
+        # string plus null terminator
+        hexstring = string_to_convert.encode("utf_16_le").hex() + "0000"
+        bytelist = [s[x:x+2] for x in range(0, len(s), 2)]
+        await ctx.send("`0x" + " 0x".join(bytelist) + "`")
 
 def setup(bot):
     bot.add_cog(Utility(bot))
