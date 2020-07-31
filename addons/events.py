@@ -177,7 +177,8 @@ class Events(commands.Cog):
                 "Minecraft",
                 "YouTube",
                 "Netflix",
-                "Firefox"
+                "Firefox",
+                " "
             ]
             embed = discord.Embed(title="Activity Change!", colour=discord.Colour.blue())
             bef_custom = ()
@@ -190,6 +191,8 @@ class Events(commands.Cog):
                         bef_custom = (activity.name, activity.emoji.name)
             for activity in after.activities:
                 if isinstance(activity, discord.CustomActivity):
+                    if activity.name == " ":
+                        continue
                     if not activity.emoji:
                         aft_custom = (activity.name, "No Emoji")
                     else:
