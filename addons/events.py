@@ -6,6 +6,7 @@ import secrets
 import qrcode
 import io
 import sys
+import addons.helper as helper
 from discord.ext import commands
 from datetime import datetime
 
@@ -51,10 +52,17 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        try:
+            mute_exp = self.bot.mutes_dict[str(member.id)]
+        except KeyError:
+            mute_exp = ""
         embed = discord.Embed(title="New member!")
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
         if (datetime.now() - member.created_at).days < 1:
             embed.description += "\n**Account was created {} days ago.**".format((datetime.now() - member.created_at).days)
+        if mute_exp != "" and await helper.check_mute_expiry(self.bot.mutes_dict, member):
+            embed.add_field(name="Muted Until", value=mute_exp + " UTC")
+            await member.add_roles(self.bot.mute_role)
         try:
             await member.send("Welcome to {}! Please read the rules, as you won't be able to access the majority of the server otherwise. This is an automated message, no reply is necessary.".format(member.guild.name))
         except discord.Forbidden:
@@ -159,9 +167,6 @@ class Events(commands.Cog):
                 await self.bot.logs_channel.send(embed=embed)
             except discord.Forbidden:
                 pass
-            except Exception as e:
-                err_embed = discord.Embed(description=e)
-                await self.bot.err_logs_channel.send("Failed to log activity for user `{}` (`{}`) with before activity list of `{}` and after activity list of `{}`. Cause?".format(before, before.id, before.activities, after.activities), embed=err_embed)
 
         elif before.activities != after.activities:
             has_activity = True
@@ -203,9 +208,8 @@ class Events(commands.Cog):
                     await self.bot.activity_logs_channel.send(embed=embed)
                 except discord.Forbidden:
                     pass
-                except Exception as e:
-                    err_embed = discord.Embed(description=e)
-                    await self.bot.err_logs_channel.send("Failed to log activity for user `{}` (`{}`) with before activity list of `{}` and after activity list of `{}`. Cause?".format(before, before.id, before.activities, after.activities), embed=err_embed)
+                except:
+                    await self.bot.err_logs_channel.send("Failed to log activity for user `{}` (`{}`) with before activity list of `{}` and after activity list of `{}`. Cause?".format(before, before.id, before.activities, after.activities))
             if len(aft_custom) == 0 and len(bef_custom) == 0:
                 return
 
@@ -223,9 +227,8 @@ class Events(commands.Cog):
                 await self.bot.activity_logs_channel.send(embed=embed_custom)
             except discord.Forbidden:
                 pass
-            except Exception as e:
-                err_embed = discord.Embed(description=e)
-                await self.bot.err_logs_channel.send("Failed to log activity for user `{}` (`{}`) with before activity list of `{}` and after activity list of `{}`. Cause?".format(before, before.id, before.activities, after.activities), embed=err_embed)
+            except:
+                await self.bot.err_logs_channel.send("Failed to log activity for user `{}` (`{}`) with before activity list of `{}` and after activity list of `{}`. Cause?".format(before, before.id, before.activities, after.activities))
 
     async def process_reactions(self, reaction):
         positive_votes = 0
