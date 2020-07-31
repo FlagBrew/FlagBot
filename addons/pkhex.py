@@ -19,29 +19,38 @@ class pkhex(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.failure_count = 0
-        self.api_check = bot.loop.create_task(self.confirm_api_link())  # referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L23
+        self.api_check = bot.loop.create_task(self.confirm_api_link())  # loops referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L23
         print('Addon "{}" loaded'.format(self.__class__.__name__))
         
     def __unload(self):
         self.api_check.cancel()
 
     async def ping_api_func(self):
-        async with self.bot.session.get(self.bot.api_url + "api/v1/bot/ping") as r:
-            return r.status
+        try:
+            async with self.bot.session.get(self.bot.api_url + "api/v1/bot/ping") as r:
+                return r.status
+        except aiohttp.ClientConnectorError:
+            return 443
+        except aiohttp.InvalidURL:
+            return 400
 
     async def confirm_api_link(self):
-        while self is self.bot.get_cog("pkhex"):
+        while not self.bot.is_closed():
             if not self.bot.ready:
                 await asyncio.sleep(30)
                 continue
             r = await self.ping_api_func()
             if not r == 200:
                 self.failure_count += 1
-                if self.failure_count > 2:  # Only unload if it fails concurrently 3+ times, to prevent accidental unloads on server restarts
+                if self.failure_count == 3:  # Only unload if it fails concurrently 3+ times, to prevent accidental unloads on server restarts
                     for x in (self.bot.creator, self.bot.allen):
-                        await x.send("pkhex.py was unloaded as API connection was dropped. Status code: `{}`".format(r))
-                    self.failure_count = 0
-                    self.bot.unload_extension("addons.pkhex")
+                        await x.send("pkhex.py commands were disabled as API connection was dropped. Status code: `{}`".format(r))
+                    await self.bot.creator.send("confirmation")
+                    for command in self.get_commands():
+                        if not command.name == "rpc":
+                            command.enabled = False
+                    print("Finished loop")
+                    self.api_check.cancel()
             else:
                 self.failure_count = 0
             await asyncio.sleep(300)
@@ -72,7 +81,7 @@ class pkhex(commands.Cog):
             try:
                 async with self.bot.session.get(data) as r:
                     file = io.BytesIO(await r.read())
-            except aiohttp.client_exceptions.InvalidURL:
+            except aiohttp.InvalidURL:
                 await ctx.send("The provided data was not valid.")
                 return 400
         url = self.bot.api_url + url
@@ -132,6 +141,22 @@ class pkhex(commands.Cog):
                 val += x + " "
             embed.description += values[0] + val + "\n"
         return embed
+
+    @commands.command(name="rpc")
+    async def reactivate_pkhex_commands(self, ctx):
+        """Reactivates the pkhex commands. Restricted to bot creator and Allen"""
+        if not ctx.author in (self.bot.creator, self.bot.allen):
+            raise commands.errors.CheckFailure()
+        r = await self.ping_api_func()
+        if not r == 200:
+            return await ctx.send("Cancelled the command reactivation; status code from FlagBrew server is `{}`.".format(r))
+        for command in self.get_commands():
+            if command.enabled is True:
+                await ctx.send("Cancelled the command reactivation for `{}`; command already enabled.".format(command.name))
+                continue
+            command.enabled = True
+        self.api_check = self.bot.loop.create_task(self.confirm_api_link())
+        return await ctx.send("Successfully reactivated the pkhex commands.")
 
     @commands.command(hidden=True)
     async def ping_api(self, ctx):
@@ -384,7 +409,7 @@ class pkhex(commands.Cog):
             if r.status == 400:
                 return await ctx.send("Something you sent was invalid. Please double check your data and try again.")
             rj = await r.json()
-            embed = discord.Embed(title="Encounter Data for {} in Generation {}{}{}".format(pokemon.title(), generation, " with move(s) " if len(moves) > 0 else "", ", ".join([move.title() for move in moves])))
+            embed = discord.Embed(title=f"Encounter Data for {pokemon.title()} in Generation {generation}{' with move(s) ' if len(moves) > 0 else ''}{', '.join([move.title() for move in moves])}")
             for encs in rj['Encounters']:
                 field_values = ""
                 for loc in encs["Locations"]:
