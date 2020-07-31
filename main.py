@@ -66,11 +66,16 @@ with open('saves/warns.json', 'r') as f:
     bot.warns_dict = json.load(f)
 
 if not os.path.exists('saves/disabled_commands.json'):
-    data = []
     with open('saves/disabled_commands.json', 'w') as f:
-        json.dump(data, f, indent=4)
+        json.dump([], f, indent=4)
 with open('saves/disabled_commands.json', 'r') as f:
     bot.disabled_commands = json.load(f)
+
+if not os.path.exists("saves/mutes.json"):
+    with open("saves/mutes.json", "w") as f:
+        json.dump({}, f, indent=4)
+with open("saves/mutes.json", "r") as f:
+    bot.mutes_dict = json.load(f)
 
 if bot.is_mongodb:
     db_address = config.db_address
@@ -179,6 +184,7 @@ async def on_ready():
                     bot.flagbrew_team_role = discord.utils.get(guild.roles, id=482928611809165335)
                     bot.discord_moderator_role = discord.utils.get(guild.roles, id=396988600480301059)
                     bot.patrons_role = discord.utils.get(guild.roles, id=330078911704727552)
+                    bot.mute_role = discord.utils.get(guild.roles, id=519566020315185163)
                     bot.protected_roles = (discord.utils.get(guild.roles, id=279598900799864832), bot.discord_moderator_role, bot.flagbrew_team_role, discord.utils.get(guild.roles, id=381053929389031424))
                     bot.patrons_channel = discord.utils.get(guild.channels, id=381000988246540292)
                     bot.interpreter_logs_channel = discord.utils.get(guild.channels, id=672553506690826250)
