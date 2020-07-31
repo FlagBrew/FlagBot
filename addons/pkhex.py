@@ -19,11 +19,32 @@ class pkhex(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.failure_count = 0
+        self.api_check = bot.loop.create_task(self.confirm_api_link())  # referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L23
         print('Addon "{}" loaded'.format(self.__class__.__name__))
+        
+    def __unload(self):
+        self.api_check.cancel()
 
     async def ping_api_func(self):
         async with self.bot.session.get(self.bot.api_url + "api/v1/bot/ping") as r:
             return r.status
+
+    async def confirm_api_link(self):
+        while self is self.bot.get_cog("pkhex"):
+            if not self.bot.ready:
+                await asyncio.sleep(30)
+                continue
+            r = await self.ping_api_func()
+            if not r == 200:
+                self.failure_count += 1
+                if self.failure_count > 2:  # Only unload if it fails concurrently 3+ times, to prevent accidental unloads on server restarts
+                    for x in (self.bot.creator, self.bot.allen):
+                        await x.send("pkhex.py was unloaded as API connection was dropped. Status code: `{}`".format(r))
+                    self.failure_count = 0
+                    self.bot.unload_extension("addons.pkhex")
+            else:
+                self.failure_count = 0
+            await asyncio.sleep(300)
 
     async def process_file(self, ctx, data, attachments, url, is_gpss=False, user_id=None):
         if not data and not attachments:
@@ -111,23 +132,6 @@ class pkhex(commands.Cog):
                 val += x + " "
             embed.description += values[0] + val + "\n"
         return embed
-
-    async def confirm_api_link(self):
-        while self is self.bot.get_cog("pkhex"):
-            if not self.bot.ready:
-                await asyncio.sleep(30)
-                continue
-            r = await self.ping_api_func()
-            if not r == 200:
-                self.failure_count += 1
-                if self.failure_count > 2:  # Only unload if it fails concurrently 3+ times, to prevent accidental unloads on server restarts
-                    for x in (self.bot.creator, self.bot.allen):
-                        await x.send("pkhex.py was unloaded as API connection was dropped. Status code: `{}`".format(r))
-                    self.failure_count = 0
-                    self.bot.unload_extension("addons.pkhex")
-            else:
-                self.failure_count = 0
-            await asyncio.sleep(300)
 
     @commands.command(hidden=True)
     async def ping_api(self, ctx):
@@ -571,7 +575,4 @@ class pkhex(commands.Cog):
         await ctx.send(embed=embed)
 
 def setup(bot):
-    pkh = pkhex(bot)
-    loop = asyncio.get_event_loop()
-    loop.create_task(pkh.confirm_api_link())
-    bot.add_cog(pkh)
+    bot.add_cog(pkhex(bot))
