@@ -60,7 +60,7 @@ class Events(commands.Cog):
         embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
         if (datetime.now() - member.created_at).days < 1:
             embed.description += "\n**Account was created {} days ago.**".format((datetime.now() - member.created_at).days)
-        if mute_exp != "" and await helper.check_mute_expiry(self.bot.mutes_dict, member):
+        if mute_exp != "" and not await helper.check_mute_expiry(self.bot.mutes_dict, member):
             embed.add_field(name="Muted Until", value=mute_exp + " UTC")
             await member.add_roles(self.bot.mute_role)
         try:
