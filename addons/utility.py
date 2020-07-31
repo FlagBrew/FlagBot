@@ -432,23 +432,27 @@ class Utility(commands.Cog):
         """Pulls a user's info. Passing no member returns your own. depth is a bool that will specify account creation and join date, and account age"""
         if not user:
             user = ctx.author
-        embed = discord.Embed(title="User info for {}".format(user))
-        embed.set_thumbnail(url=str(user.avatar_url))
-        embed.add_field(name="Username", value=user.name)
-        embed.add_field(name="ID", value=user.id)
-        if len(user.roles) > 1:
-            embed.add_field(name="Highest Role", value=user.top_role)
-        embed.add_field(name="Status", value=str(user.status).capitalize())
-        if len(user.activities) > 0:
-            embed.add_field(name="Activities", value="`{}`".format("`\n`".join(activity.name for activity in user.activities)))
+        embed = discord.Embed(colour=user.colour)
+        embed.set_author(name="User info for {} ({})".format(user, user.id), icon_url=str(user.avatar_url))
         if user.nick:
             embed.add_field(name="Nickname", value=user.nick)
-        created_at_epoch = int((bin(user.id)[:-22])[2:], 2)
+        embed.add_field(name="Avatar Link", value="[Here]({})".format(str(user.avatar_url)))
+        status = str(user.status).capitalize()
+        if user.is_on_mobile():
+            status += " (Mobile)"
+        embed.add_field(name="Status", value=status)
+        if user.activity and not depth:
+            embed.add_field(name="Top Activity", value="`{}`".format(user.activity))
+        if len(user.roles) > 1 and not depth:
+            embed.add_field(name="Highest Role", value=user.top_role)
         if depth:
             embed.add_field(name=u"\u200B", value=u"\u200B", inline=False)
-            embed.add_field(name="Created At", value="{} UTC".format(datetime.fromtimestamp((created_at_epoch+1420070400000) / 1000.0).strftime('%m-%d-%Y %H:%M:%S')))
+            embed.add_field(name="Created At", value="{} UTC".format(user.created_at.strftime('%m-%d-%Y %H:%M:%S')))
             embed.add_field(name="Joined At", value="{} UTC".format(user.joined_at.strftime('%m-%d-%Y %H:%M:%S')))
-            embed.add_field(name="Account Age", value="{} Days".format((datetime.now() - (datetime.fromtimestamp((created_at_epoch+1420070400000) / 1000.0))).days))
+            embed.add_field(name="Account Age", value="{} Days".format((datetime.now() - (user.created_at)).days))
+            embed.add_field(name="Roles", value="`{}`".format("`, `".join(role.name for role in user.roles[1:])))
+            if len(user.activities) > 0:
+                embed.add_field(name="Activities" if len(user.activities) > 1 else "Activity", value="`{}`".format("`, `".join(str(activity.name) for activity in user.activities)), inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["hexstring", "hexlify", "hs"])
