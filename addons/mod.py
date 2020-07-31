@@ -131,6 +131,93 @@ class Moderation(commands.Cog):
         else:
             await ctx.send("Why would you wanna purge no messages?", delete_after=10)
 
+    @commands.command()
+    @commands.has_any_role("Discord Moderator")
+    async def mute(self, ctx, member: discord.Member, *, reason="No reason was given."):
+        """Mutes a user"""
+        if member == ctx.message.author:
+            return await ctx.send("You can't mute yourself, obviously")
+        elif any(r for r in self.bot.protected_roles if r in member.roles):
+            return await ctx.send("You can't mute a staff member!")
+        elif self.bot.mute_role in member.roles:
+            return await ctx.send("That member is already muted.")
+        await member.add_roles(self.bot.mute_role)
+        self.bot.mutes_dict[str(member.id)] = "Indefinite"
+        with open("saves/mutes.json", "w") as f:
+            json.dump(self.bot.mutes_dict, f, indent=4)
+        embed = discord.Embed(title="{} ({}) muted".format(member, member.id))
+        embed.description = "{} was muted by {} for:\n\n{}".format(member, ctx.message.author, reason)
+        try:
+            await self.bot.logs_channel.send(embed=embed)
+        except discord.Forbidden:
+            pass  # beta can't log
+        await ctx.send("Successfully muted {}!".format(member))
+
+    @commands.command()
+    @commands.has_any_role("Discord Moderator")
+    async def unmute(self, ctx, member: discord.Member, *, reason="No reason was given."):
+        """Unmutes a user"""
+        if member == ctx.message.author or any(r for r in self.bot.protected_roles if r in member.roles):
+            return await ctx.send("How did {} get muted...?".format(member.mention))
+        elif self.bot.mute_role not in member.roles:
+            return await ctx.send("That member isn't muted.")
+        await member.remove_roles(self.bot.mute_role)
+        self.bot.mutes_dict[str(member.id)] = ""
+        with open("saves/mutes.json", "w") as f:
+            json.dump(self.bot.mutes_dict, f, indent=4)
+        embed = discord.Embed(title="{} ({}) unmuted".format(member, member.id))
+        embed.description = "{} was unmuted by {} for:\n\n{}".format(member, ctx.message.author, reason)
+        try:
+            await self.bot.logs_channel.send(embed=embed)
+        except discord.Forbidden:
+            pass  # beta can't log
+        await ctx.send("Successfully unmuted {}!".format(member))
+
+    @commands.command(name="tmute")
+    @commands.has_any_role("Discord Moderator")
+    async def timemute(self, ctx, member: discord.Member, duration, reason="No reason was given."):
+        """Timemutes a user. Units are s, m, h, and d"""
+        if member == ctx.message.author:
+            return await ctx.send("You can't mute yourself, obviously")
+        elif any(r for r in self.bot.protected_roles if r in member.roles):
+            return await ctx.send("You can't mute a staff member!")
+        elif self.bot.mute_role in member.roles:
+            return await ctx.send("That member is already muted.")
+        curr_time = datetime.utcnow()  # Referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L223
+        try:
+            if int(duration[:-1]) == 0:
+                return await ctx.send("You can't mute for a time length of 0.")
+            elif duration.lower().endswith("s"):
+                diff = timedelta(seconds=int(duration[:-1]))
+            elif duration.lower().endswith("m"):
+                diff = timedelta(minutes=int(duration[:-1]))
+            elif duration.lower().endswith("h"):
+                diff = timedelta(hours=int(duration[:-1]))
+            elif duration.lower().endswith("d"):
+                diff = timedelta(days=int(duration[:-1]))
+            else:
+                await ctx.send("That's not an appropriate duration value.")
+                return await ctx.send_help(ctx.command)
+        except ValueError:
+            await ctx.send("You managed to throw a ValueError! Congrats! I guess. Use one of the correct values, and don't mix and match. Bitch.")
+            return await ctx.send_help(ctx.command)
+        end = curr_time + diff
+        end_str = end.strftime("%Y-%m-%d %H:%M:%S")
+        await member.add_roles(self.bot.mute_role)
+        try:
+            await member.send("You have been muted on {} for\n\n`{}`\n\nYou will be unmuted on {}.".format(ctx.guild, reason, end_str))
+        except discord.Forbidden:
+            pass  # blocked DMs
+        self.bot.mutes_dict[str(member.id)] = end_str
+        with open("saves/mutes.json", "w") as f:
+            json.dump(self.bot.mutes_dict, f, indent=4)
+        embed = discord.Embed(title="{} ({}) timemuted".format(member, member.id))
+        embed.description = "{} timemuted by {} until {} UTC for:\n\n{}".format(member, ctx.message.author, end_str, reason)
+        try:
+            await self.bot.logs_channel.send(embed=embed)
+        except discord.Forbidden:
+            pass  # beta can't log
+        await ctx.send("Successfully muted {} until `{}` UTC!".format(member, end_str))
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
