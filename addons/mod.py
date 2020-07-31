@@ -7,13 +7,36 @@ import sys
 import json
 import asyncio
 import random
+from datetime import datetime, timedelta
+import addons.helper as helper
 
 
 class Moderation(commands.Cog):
     """Bot commands for moderation."""
     def __init__(self, bot):
         self.bot = bot
+        self.mute_loop = bot.loop.create_task(self.check_mute_loop())  # loops referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L23
         print('Addon "{}" loaded'.format(self.__class__.__name__))
+        
+    def __unload(self):
+        self.mute_loop.cancel()
+
+    async def check_mute_loop(self):
+        guild = self.bot.get_guild(278222834633801728)
+        while not self.bot.is_closed():
+            for m in self.bot.mutes_dict.keys():
+                member = guild.get_member(int(m))
+                if member is None:
+                    continue
+                is_expired = await helper.check_mute_expiry(self.bot.mutes_dict, member)
+                if not is_expired or self.bot.mutes_dict[str(member.id)] == "":
+                    continue
+                await member.remove_roles(self.bot.mute_role)
+                self.bot.mutes_dict[str(member.id)] = ""
+                with open("saves/mutes.json", "w") as f:
+                    json.dump(self.bot.mutes_dict, f, indent=4)
+                await member.send("Your mute on {} has expired!".format(self.bot.guild))
+            await asyncio.sleep(1)
 
     async def generic_ban_things(self, ctx, member, reason):
         """Generic stuff that is used by both ban commands.
@@ -51,7 +74,7 @@ class Moderation(commands.Cog):
             embed.set_image(url="https://fm1337.com/static/img/eevee-banned.png")
         if img_choice in range(25, 27):  # giratina
             embed.set_image(url="https://fm1337.com/static/img/giratina-banned.png")
-        await ctx.send("Successfully banned user {0.name}#{0.discriminator}!".format(member), embed=embed)
+        await ctx.send("Successfully banned user {}!".format(member), embed=embed)
 
     @commands.command(pass_context=True)
     @commands.has_any_role("Discord Moderator")
@@ -63,7 +86,7 @@ class Moderation(commands.Cog):
             return await ctx.send("You can't kick a staff member!")
         else:
             embed = discord.Embed(title="{} kicked".format(member))
-            embed.description = "{}#{} was kicked by {} for:\n\n{}".format(member.name, member.discriminator, ctx.message.author, reason)
+            embed.description = "{} was kicked by {} for:\n\n{}".format(member, ctx.message.author, reason)
             try:
                 await self.bot.logs_channel.send(embed=embed)
             except discord.Forbidden:
@@ -76,7 +99,7 @@ class Moderation(commands.Cog):
                 await member.kick(reason="Failed to log reason, as reason length was {}. Please check bot logs.".format(len(reason)))
             else:
                 await member.kick(reason=reason)
-            await ctx.send("Successfully kicked user {0.name}#{0.discriminator}!".format(member))
+            await ctx.send("Successfully kicked user {}!".format(member))
 
     @commands.command(pass_context=True)
     @commands.has_any_role("Discord Moderator")
