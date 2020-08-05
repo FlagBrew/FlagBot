@@ -1,13 +1,14 @@
 # FlagBot
-FlagBrew server helper bot.
+Information, moderation, and general utility bot for the [FlagBrew Discord server](https://discord.gg/bGKEyfY)
 
 # Credits
-- [noirscape](https://github.com/noirscape) - secure_role_mention and ban fixes
-- [piepie62](https://github.com/piepie62) - FAQ updates
-- [SpiredMoth](https://github.com/SpiredMoth) - release aliases and beginnings of README command
-- [bernardogiordano](https://github.com/bernardogiordano) - keeping requirements.txt accurate ~~despite my best efforts~~
-- [FM1337](https://github.com/FM1337) - writing [CoreAPI](https://github.com/FlagBrew/CoreAPI) that lets addons.pkhex run
-- [kwsch](https://github.com/kwsch) - writing PKHeX.Core, which made addons.pkhex possible in the first place
-- [chenzw](https://github.com/chenzw), [architdate](https://github.com/architdate), and [Rapptz](https://github.com/Rapptz) for the python interpreter
-- [JeffPaine](https://github.com/JeffPaine) - An excellent gist for creating issues using the API, which can be found [here](https://gist.github.com/JeffPaine/3145490)
-- [wrathsoffire76](https://github.com/wrathsoffire76) - Hosting the sprites used in pokeinfo
+- [noirscape](https://github.com/noirscape) - Writing secure_role_mention and ban fixes
+- [piepie62](https://github.com/piepie62) - Many FAQ updates
+- [SpiredMoth](https://github.com/SpiredMoth) - Release aliases and beginnings of README command
+- [FM1337](https://github.com/FM1337) - Writing [CoreAPI](https://github.com/FlagBrew/CoreAPI) that lets the pkhex module run
+- [kwsch](https://github.com/kwsch) - Writing [PKHeX.Core](https://github.com/kwsch/PKHeX/tree/master/PKHeX.Core), which made the pkhex module possible in the first place
+- [architdate](https://github.com/architdate) - Writing [Auto Legality Mod](https://github.com/architdate/PKHeX-Plugins/tree/master/PKHeX.Core.AutoMod), which was also integral for the pkhex module
+- [chenzw](https://github.com/chenzw), architdate, and [Rapptz](https://github.com/Rapptz) for the python interpreter
+- [JeffPaine](https://github.com/JeffPaine) - Writing an excellent [gist](https://gist.github.com/JeffPaine/3145490) for creating GitHub issues using the API
+- [wrathsoffire76](https://github.com/wrathsoffire76) - Hosting the sprites used in pokeinfo and gpssfetch
+- [msikma](https://github.com/msikma/) - For their [pokesprite](https://github.com/msikma/pokesprite) repository, which is utilized in gpssfetch
