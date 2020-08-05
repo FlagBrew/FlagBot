@@ -142,6 +142,25 @@ class pkhex(commands.Cog):
             embed.description += values[0] + val + "\n"
         return embed
 
+    def set_sprite_thumbnail(self, mon_info=None, shiny=None, form=None, species=None):
+        if mon_info:
+            shiny = "shiny" if mon_info["IsShiny"] else "normal"
+            form = mon_info["Form"].lower()
+            species = mon_info["Species"].lower()
+        if " " in form:
+            form = form.replace(" ", "-")
+        if species == "minior":  # fuck you fuck you fuck you
+            url = "{}/ultra-sun-ultra-moon/normal/minior-meteor.png".format(self.bot.sprite_url)
+        elif form and not species == "rockruff":
+            if species == "flabébé":
+                species = "flabebe"
+            elif form == "f":
+                form = "female"
+            url = "{}/ultra-sun-ultra-moon/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
+        else:
+            url = "{}/ultra-sun-ultra-moon/{}/{}.png".format(self.bot.sprite_url, shiny, species)
+        return url
+
     @commands.command(name="rpc")
     async def reactivate_pkhex_commands(self, ctx):
         """Reactivates the pkhex commands. Restricted to bot creator and Allen"""
@@ -203,25 +222,6 @@ class pkhex(commands.Cog):
             if rj[0] == "":
                 return await ctx.send("No forms available for `{}`.".format(species.title()))
             await ctx.send("Available forms for {}: `{}`.".format(species.title(), '`, `'.join(rj)))
-
-    def set_sprite_thumbnail(self, mon_info=None, shiny=None, form=None, species=None):
-        if mon_info:
-            shiny = "shiny" if mon_info["IsShiny"] else "normal"
-            form = mon_info["Form"].lower()
-            species = mon_info["Species"].lower()
-        if " " in form:
-            form = form.replace(" ", "-")
-        if species == "minior":  # fuck you fuck you fuck you
-            url = "{}/ultra-sun-ultra-moon/normal/minior-meteor.png".format(self.bot.sprite_url)
-        elif form and not species == "rockruff":
-            if species == "flabébé":
-                species = "flabebe"
-            elif form == "f":
-                form = "female"
-            url = "{}/ultra-sun-ultra-moon/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
-        else:
-            url = "{}/ultra-sun-ultra-moon/{}/{}.png".format(self.bot.sprite_url, shiny, species)
-        return url
 
     @commands.command(name='pokeinfo', aliases=['pi'])
     async def poke_info(self, ctx, data="", shiny="normal"):
