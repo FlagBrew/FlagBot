@@ -142,7 +142,7 @@ class pkhex(commands.Cog):
             embed.description += values[0] + val + "\n"
         return embed
 
-    def set_sprite_thumbnail(self, mon_info=None, shiny=None, form=None, species=None):
+    def set_sprite_thumbnail(self, mon_info=None, shiny=None, form=None, species=None, sprite=False):
         if mon_info:
             shiny = "shiny" if mon_info["IsShiny"] else "normal"
             form = mon_info["Form"].lower()
@@ -150,16 +150,22 @@ class pkhex(commands.Cog):
         if " " in form:
             form = form.replace(" ", "-")
         if species == "minior":  # fuck you fuck you fuck you
-            url = "{}/ultra-sun-ultra-moon/normal/minior-meteor.png".format(self.bot.sprite_url)
-        elif form and not species == "rockruff":
+            return "{}/ultra-sun-ultra-moon/normal/minior-meteor.png".format(self.bot.sprite_url)
+        elif species == "sinistea" and sprite is True:
+            form = None
+        if form and not species == "rockruff":
             if species == "flabébé":
                 species = "flabebe"
             elif form == "f":
                 form = "female"
-            url = "{}/ultra-sun-ultra-moon/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
-        else:
-            url = "{}/ultra-sun-ultra-moon/{}/{}.png".format(self.bot.sprite_url, shiny, species)
-        return url
+            if not sprite:
+                return "{}/ultra-sun-ultra-moon/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
+            if form == "female":
+                return "{}/sprites/8/{}/female/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
+            return "{}/sprites/8/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
+        elif sprite:
+            return "{}/sprites/8/{}/{}.png".format(self.bot.sprite_url, shiny, species)
+        return "{}/ultra-sun-ultra-moon/{}/{}.png".format(self.bot.sprite_url, shiny, species)
 
     @commands.command(name="rpc")
     async def reactivate_pkhex_commands(self, ctx):
@@ -455,7 +461,7 @@ class pkhex(commands.Cog):
                         m = await upload_channel.send("Pokemon fetched from the GPSS by {}".format(ctx.author), file=pkmn_file)
                         embed = discord.Embed(description="[GPSS Page]({}) | [Download link]({})".format(self.bot.gpss_url + "gpss/view/" + code, m.attachments[0].url))
                         embed = self.embed_fields(ctx, embed, pkmn_data)
-                        embed.set_author(icon_url=self.set_sprite_thumbnail(mon_info=pkmn_data), name="Data for {}".format(pkmn_data["Nickname"]))
+                        embed.set_author(icon_url=self.set_sprite_thumbnail(mon_info=pkmn_data, sprite=True), name="Data for {}".format(pkmn_data["Nickname"]))
                         embed.set_thumbnail(url=self.bot.gpss_url + "gpss/qr/{}".format(code))
                         return await msg.edit(embed=embed, content=None)
         await msg.edit(content="There was no pokemon on the GPSS with the code `{}`.".format(code))
