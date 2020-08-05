@@ -123,6 +123,8 @@ class pkhex(commands.Cog):
         else:
             embed.add_field(name="Met Location", value="N/A")
         if int(data["Generation"]) > 2:
+            if data["Version"] == "":
+                return 400
             embed.add_field(name="Origin Game", value=data["Version"])
         else:
             embed.add_field(name="Origin Game", value="N/A")
@@ -318,6 +320,8 @@ class pkhex(commands.Cog):
         rj = r[1]
         embed = discord.Embed(title="Data for {}".format(rj["Nickname"]))
         embed = self.embed_fields(ctx, embed, rj)
+        if embed == 400:
+            return await ctx.send("{} Something in that pokemon is *very* wrong. Your request has been canceled. Please do not try that mon again.".format(ctx.author.mention))
         embed.set_thumbnail(url=rj["SpeciesSpriteURL"])
         embed.colour = discord.Colour.green() if rj["IllegalReasons"] == "Legal!" else discord.Colour.red()
         try:
@@ -461,6 +465,8 @@ class pkhex(commands.Cog):
                         m = await upload_channel.send("Pokemon fetched from the GPSS by {}".format(ctx.author), file=pkmn_file)
                         embed = discord.Embed(description="[GPSS Page]({}) | [Download link]({})".format(self.bot.gpss_url + "gpss/view/" + code, m.attachments[0].url))
                         embed = self.embed_fields(ctx, embed, pkmn_data)
+                        if embed == 400:
+                            return await ctx.send("Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{}: Mon was gen3+ and missing origin game. Code: `{}`".format(self.bot.pie.mention, code))
                         embed.set_author(icon_url=self.set_sprite_thumbnail(mon_info=pkmn_data, sprite=True), name="Data for {}".format(pkmn_data["Nickname"]))
                         embed.set_thumbnail(url=self.bot.gpss_url + "gpss/qr/{}".format(code))
                         return await msg.edit(embed=embed, content=None)
