@@ -8,6 +8,7 @@ import validators
 import os
 import urllib
 import binascii
+import addons.helper as helper
 from exceptions import APIConnectionError
 from datetime import datetime
 from discord.ext import commands
@@ -123,6 +124,8 @@ class pkhex(commands.Cog):
         else:
             embed.add_field(name="Met Location", value="N/A")
         if int(data["Generation"]) > 2:
+            if data["Version"] == "":
+                return 400
             embed.add_field(name="Origin Game", value=data["Version"])
         else:
             embed.add_field(name="Origin Game", value="N/A")
@@ -141,6 +144,31 @@ class pkhex(commands.Cog):
                 val += x + " "
             embed.description += values[0] + val + "\n"
         return embed
+
+    def set_sprite_thumbnail(self, mon_info=None, shiny=None, form=None, species=None, sprite=False):
+        if mon_info:
+            shiny = "shiny" if mon_info["IsShiny"] else "normal"
+            form = mon_info["Form"].lower()
+            species = mon_info["Species"].lower()
+        if " " in form:
+            form = form.replace(" ", "-")
+        if species == "minior":  # fuck you fuck you fuck you
+            return "{}/ultra-sun-ultra-moon/normal/minior-meteor.png".format(self.bot.sprite_url)
+        elif species == "sinistea" and sprite is True:
+            form = None
+        if form and not species == "rockruff":
+            if species == "flabébé":
+                species = "flabebe"
+            elif form == "f":
+                form = "female"
+            if not sprite:
+                return "{}/ultra-sun-ultra-moon/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
+            if form == "female":
+                return "{}/sprites/8/{}/female/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
+            return "{}/sprites/8/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
+        elif sprite:
+            return "{}/sprites/8/{}/{}.png".format(self.bot.sprite_url, shiny, species)
+        return "{}/ultra-sun-ultra-moon/{}/{}.png".format(self.bot.sprite_url, shiny, species)
 
     @commands.command(name="rpc")
     async def reactivate_pkhex_commands(self, ctx):
@@ -203,25 +231,6 @@ class pkhex(commands.Cog):
             if rj[0] == "":
                 return await ctx.send("No forms available for `{}`.".format(species.title()))
             await ctx.send("Available forms for {}: `{}`.".format(species.title(), '`, `'.join(rj)))
-
-    def set_sprite_thumbnail(self, mon_info=None, shiny=None, form=None, species=None):
-        if mon_info:
-            shiny = "shiny" if mon_info["IsShiny"] else "normal"
-            form = mon_info["Form"].lower()
-            species = mon_info["Species"].lower()
-        if " " in form:
-            form = form.replace(" ", "-")
-        if species == "minior":  # fuck you fuck you fuck you
-            url = "{}/ultra-sun-ultra-moon/normal/minior-meteor.png".format(self.bot.sprite_url)
-        elif form and not species == "rockruff":
-            if species == "flabébé":
-                species = "flabebe"
-            elif form == "f":
-                form = "female"
-            url = "{}/ultra-sun-ultra-moon/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
-        else:
-            url = "{}/ultra-sun-ultra-moon/{}/{}.png".format(self.bot.sprite_url, shiny, species)
-        return url
 
     @commands.command(name='pokeinfo', aliases=['pi'])
     async def poke_info(self, ctx, data="", shiny="normal"):
@@ -312,6 +321,8 @@ class pkhex(commands.Cog):
         rj = r[1]
         embed = discord.Embed(title="Data for {}".format(rj["Nickname"]))
         embed = self.embed_fields(ctx, embed, rj)
+        if embed == 400:
+            return await ctx.send("{} Something in that pokemon is *very* wrong. Your request has been canceled. Please do not try that mon again.".format(ctx.author.mention))
         embed.set_thumbnail(url=rj["SpeciesSpriteURL"])
         embed.colour = discord.Colour.green() if rj["IllegalReasons"] == "Legal!" else discord.Colour.red()
         try:
@@ -360,39 +371,6 @@ class pkhex(commands.Cog):
     @commands.command(name='find')
     async def check_encounters(self, ctx, generation: int, *, input_data):
         """Outputs the locations a given pokemon can be found. Separate data using pipes. Example: .find 6 pikachu | volt tackle"""
-        game_dict = {
-            "RD": "Red (VC)",
-            "BU": "Blue (VC)",
-            "GN": "Green (VC)",
-            "YW": "Yellow (VC)",
-            "GD": "Gold (VC)",
-            "SV": "Silver (VC)",
-            "C": "Crystal (VC)",
-            "R": "Ruby",
-            "S": "Sapphire",
-            "E": "Emerald",
-            "FR": "FireRed",
-            "LG": "LeafGreen",
-            "D": "Diamond",
-            "P": "Pearl",
-            "Pt": "Platinum",
-            "HG": "Heart Gold",
-            "SS": "Soul Silver",
-            "B": "Black",
-            "W": "White",
-            "B2": "Black 2",
-            "W2": "White 2",
-            "OR": "Omega Ruby",
-            "AS": "Alpha Sapphire",
-            "SN": "Sun",
-            "MN": "Moon",
-            "US": "Ultra Sun",
-            "UM": "Ultra Moon",
-            "GP": "Let's Go Pikachu",
-            "GE": "Let's Go Eevee",
-            "SW": "Sword",
-            "SH": "Shield"
-        }
         if not await self.ping_api_func() == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         elif not generation in range(1, 9):
@@ -413,7 +391,7 @@ class pkhex(commands.Cog):
             for encs in rj['Encounters']:
                 field_values = ""
                 for loc in encs["Locations"]:
-                    games = (game_dict[x] if x in game_dict.keys() else x for x in loc["Games"])
+                    games = (helper.game_dict[x] if x in helper.game_dict.keys() else x for x in loc["Games"])
                     games_str = ", ".join(games)
                     games_str = games_str.replace("GG", "LGPE")
                     if encs["EncounterType"] == "Egg":
@@ -455,7 +433,9 @@ class pkhex(commands.Cog):
                         m = await upload_channel.send("Pokemon fetched from the GPSS by {}".format(ctx.author), file=pkmn_file)
                         embed = discord.Embed(description="[GPSS Page]({}) | [Download link]({})".format(self.bot.gpss_url + "gpss/view/" + code, m.attachments[0].url))
                         embed = self.embed_fields(ctx, embed, pkmn_data)
-                        embed.set_author(icon_url=self.set_sprite_thumbnail(mon_info=pkmn_data), name="Data for {}".format(pkmn_data["Nickname"]))
+                        if embed == 400:
+                            return await ctx.send("Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{}: Mon was gen3+ and missing origin game. Code: `{}`".format(self.bot.pie.mention, code))
+                        embed.set_author(icon_url=self.set_sprite_thumbnail(mon_info=pkmn_data, sprite=True), name="Data for {}".format(pkmn_data["Nickname"]))
                         embed.set_thumbnail(url=self.bot.gpss_url + "gpss/qr/{}".format(code))
                         return await msg.edit(embed=embed, content=None)
         await msg.edit(content="There was no pokemon on the GPSS with the code `{}`.".format(code))
