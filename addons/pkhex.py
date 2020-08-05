@@ -8,6 +8,7 @@ import validators
 import os
 import urllib
 import binascii
+import addons.helper as helper
 from exceptions import APIConnectionError
 from datetime import datetime
 from discord.ext import commands
@@ -370,39 +371,6 @@ class pkhex(commands.Cog):
     @commands.command(name='find')
     async def check_encounters(self, ctx, generation: int, *, input_data):
         """Outputs the locations a given pokemon can be found. Separate data using pipes. Example: .find 6 pikachu | volt tackle"""
-        game_dict = {
-            "RD": "Red (VC)",
-            "BU": "Blue (VC)",
-            "GN": "Green (VC)",
-            "YW": "Yellow (VC)",
-            "GD": "Gold (VC)",
-            "SV": "Silver (VC)",
-            "C": "Crystal (VC)",
-            "R": "Ruby",
-            "S": "Sapphire",
-            "E": "Emerald",
-            "FR": "FireRed",
-            "LG": "LeafGreen",
-            "D": "Diamond",
-            "P": "Pearl",
-            "Pt": "Platinum",
-            "HG": "Heart Gold",
-            "SS": "Soul Silver",
-            "B": "Black",
-            "W": "White",
-            "B2": "Black 2",
-            "W2": "White 2",
-            "OR": "Omega Ruby",
-            "AS": "Alpha Sapphire",
-            "SN": "Sun",
-            "MN": "Moon",
-            "US": "Ultra Sun",
-            "UM": "Ultra Moon",
-            "GP": "Let's Go Pikachu",
-            "GE": "Let's Go Eevee",
-            "SW": "Sword",
-            "SH": "Shield"
-        }
         if not await self.ping_api_func() == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         elif not generation in range(1, 9):
@@ -423,7 +391,7 @@ class pkhex(commands.Cog):
             for encs in rj['Encounters']:
                 field_values = ""
                 for loc in encs["Locations"]:
-                    games = (game_dict[x] if x in game_dict.keys() else x for x in loc["Games"])
+                    games = (helper.game_dict[x] if x in helper.game_dict.keys() else x for x in loc["Games"])
                     games_str = ", ".join(games)
                     games_str = games_str.replace("GG", "LGPE")
                     if encs["EncounterType"] == "Egg":
