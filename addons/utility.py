@@ -239,7 +239,7 @@ class Utility(commands.Cog):
             db_switch = await r.json()
         content_3ds = [x['name'].replace(".txt", "") for x in db_3ds]
         content_switch = [x['name'] for x in db_switch]
-        if game_id not in content_3ds and game_id not in content_switch:
+        if not [content for content in (content_3ds, content_switch) if game_id in content]:
             return await ctx.send("That game ID isn't in the database! Please confirm the game is in the database.")
         elif game_id in content_3ds and game_id not in content_switch:
             console = "3DS"
