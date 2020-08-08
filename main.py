@@ -51,11 +51,9 @@ default_activity = discord.Activity(name=config.default_activity, type=discord.A
 bot = commands.Bot(command_prefix=prefix, description=description, activity=default_activity)
 
 bot.is_mongodb = config.is_mongodb
-if not config.localhost_port == "":
-    bot.api_url = "http://localhost:" + config.localhost_port + "/"
-else:
-    bot.api_url = config.api_url
-bot.gpss_url = config.api_url
+bot.api_url = config.api_url
+bot.flagbrew_url = config.flagbrew_url
+bot.gpss_url = config.flagbrew_url
 bot.sprite_url = config.sprite_url
 
 if not os.path.exists('saves/warns.json'):
@@ -135,7 +133,7 @@ async def on_command_error(ctx, error):
         await ctx.send("You don't have permission to use this command.")
     elif isinstance(error, discord.ext.commands.errors.CommandOnCooldown):
         await ctx.send("{} This command is on a cooldown.".format(ctx.author.mention))
-    elif isinstance(error, APIConnectionError):
+    elif isinstance(error, APIConnectionError) or isinstance(error, aiohttp.ServerDisconnectedError):
         print("Error: api_url was left blank in config.py, or the server is down. Commands in the PKHeX module will not work properly until this is rectified.")
     elif isinstance(error, commands.DisabledCommand):
         await ctx.send("This command is currently disabled.")
