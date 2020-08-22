@@ -46,7 +46,6 @@ class pkhex(commands.Cog):
                 if self.failure_count == 3:  # Only unload if it fails concurrently 3+ times, to prevent accidental unloads on server restarts
                     for x in (self.bot.creator, self.bot.allen):
                         await x.send("pkhex.py commands were disabled as API connection was dropped. Status code: `{}`".format(r))
-                    await self.bot.creator.send("confirmation")
                     for command in self.get_commands():
                         if not command.name == "rpc":
                             command.enabled = False

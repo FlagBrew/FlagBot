@@ -273,22 +273,32 @@ class Info(commands.Cog):
 
     def get_keys(self, hexval):  # thanks to architdate for the code
         final_indices = {'3ds': [], 'switch': []}
-        decval = int(hexval, 16)
+        try:
+            decval = int(hexval, 16)
+        except ValueError:
+            return 400
         while decval != 0:
             key_index = math.floor(math.log(decval, 2))
-            key_3ds = self.key_dict.get(hex(2**key_index))[0]
-            if key_3ds != "None":
-                final_indices['3ds'].append(key_3ds)
-            key_switch = self.key_dict.get(hex(2**key_index))[1]
-            if key_switch != "None" and hexval.replace('0x', '')[0] == "8":
-                final_indices['switch'].append(key_switch)
+            try:
+                key_3ds = self.key_dict.get(hex(2**key_index))[0]
+                if key_3ds != "None":
+                    final_indices['3ds'].append(key_3ds)
+                key_switch = self.key_dict.get(hex(2**key_index))[1]
+                if key_switch != "None" and hexval.replace('0x', '')[0] == "8":
+                    final_indices['switch'].append(key_switch)
+            except IndexError:
+                return 400
             decval -= 2**key_index
         return final_indices
 
     @commands.command()
     async def cheatkeys(self, ctx, key):
         """Byte decoder for sharkive codes. Input should be the second half of the line starting with DD000000"""
+        if len(key) != 8:
+            return await ctx.send("That isn't a valid key!")
         indexes = self.get_keys(key)
+        if indexes == 400:
+            return await ctx.send("That isn't a valid key!")
         embed = discord.Embed(title="Matching inputs for `{}`".format(key))
         if len(indexes["3ds"]) > 0:
             embed.add_field(name="3DS inputs", value='`' + '` + `'.join(indexes["3ds"]) + '`')
