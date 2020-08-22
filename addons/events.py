@@ -212,6 +212,11 @@ class Events(commands.Cog):
                 except discord.Forbidden:
                     pass
                 except:
+                    if len(before.activities) == 0 or len(after.activities) == 0:
+                        return
+                    else:
+                        if (len(bef_acts) > 1 and bef_acts[0] == bef_acts[1]) or (len(aft_acts) > 1 and aft_acts[0] == aft_acts[1]):
+                            return
                     await self.bot.err_logs_channel.send("Failed to log activity for user `{}` (`{}`) with before activity list of `{}` and after activity list of `{}`. Cause?".format(before, before.id, before.activities, after.activities))
             if len(aft_custom) == 0 and len(bef_custom) == 0:
                 return
