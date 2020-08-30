@@ -353,11 +353,7 @@ class Info(commands.Cog):
             "Randomize PIDs"
         )
         embed = discord.Embed(title="Batch Editor Information")
-        embed.description = (
-                            "Please keep in mind that the script will affect *everything* in the boxes of the loaded save, or of the selected bank.\n\n"
-                            "***PLEASE NOTE***: While most of these have been tested, the script may have bugs that haven't been found. "
-                            "If it errors, immediately stop editing your save *without* saving changes, as there is a failure case that could break your boxes."
-                            )
+        embed.description = "Please keep in mind that the script will affect *everything* in the boxes of the loaded save, or of the selected bank."
         embed.add_field(name="Editing Types", value=edit_types)
         embed.set_footer(text="Please note that LGPE and SWSH have not yet been tested.")
         await ctx.send(embed=embed)
