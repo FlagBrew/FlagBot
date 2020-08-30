@@ -102,6 +102,7 @@ bot.site_secret = config.secret
 bot.github_user = config.github_username
 bot.github_pass = config.github_password
 bot.ready = False
+bot.is_beta = config.is_beta
 
 bot.dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -193,7 +194,7 @@ async def on_ready():
                     bot.dm_list = json.load(f)
 
                 if guild.id == bot.testing_id:
-                    if config.is_beta:
+                    if bot.is_beta:
                         id = 614206536394342533
                     else:
                         id = 468877079023321089
@@ -255,6 +256,8 @@ for extension in cogs:
         failed_cogs.append([extension, type(e).__name__, e])
 if not failed_cogs:
     print('All addons loaded!')
+if bot.is_beta:
+    bot.load_extension('addons.devtools')  # only present in my beta environment
 
 
 @bot.command(hidden=True)
