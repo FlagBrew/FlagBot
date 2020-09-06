@@ -127,7 +127,7 @@ class Info(commands.Cog):
             loaded_faq = self.checkpoint_faq_dict
             is_category = True
         else:
-            return await ctx.send("The base faq has been deprecated. Please provide one of the three categories: `general`, `pksm`, or `checkpoint`.")
+            return await ctx.send("Available FAQ categories are `general`, `pksm`, and `checkpoint`.")
         faq_item = faq_item.replace(' ', ',').split(',')
         count = 0
         usage_dm = (self.bot.creator, self.bot.pie)  # Handles DMs on full command usage outside bot-channel
@@ -159,15 +159,16 @@ class Info(commands.Cog):
                     return await ctx.author.send(embed=embed)
                 except discord.Forbidden:
                     pass  # Bot blocked, or api bug
-            elif ctx.channel is not self.bot.bot_channel and ctx.channel is not self.bot.testing_channel:
+            elif ctx.channel not in (self.bot.bot_channel, self.bot.testing_channel):
                 for user in usage_dm:
                     try:
-                        await user.send("Full faq command used in {} by {}\n\nHyperlink to command invoke: {}".format(ctx.channel.mention, ctx.author, ctx.message.jump_url))
+                        await user.send("Full faq command was attempted to be used in {} by {}\n\nHyperlink to command invoke: {}".format(ctx.channel.mention, ctx.author, ctx.message.jump_url))
                     except discord.Forbidden:
-                        pass  # Bot blocked, or api bug
+                        pass  # Bot blocked
+                return await ctx.send("If you want to see the full faq, please use {}, as it is very spammy.".format(self.bot.bot_channel.mention))
         await ctx.send(embed=embed)
 
-    @commands.command()  # Taken from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
+    @commands.command()  # Taken (and adjusted slightly) from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
     async def vguides(self, ctx):
         """Information about video guides relating to custom firmware"""
         embed = discord.Embed(title="Why you shouldn't use video guides")
