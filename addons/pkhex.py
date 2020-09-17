@@ -104,7 +104,8 @@ class pkhex(commands.Cog):
             if content == b'':
                 content = await r.read()
             if content == b'':
-                await ctx.send("Couldn't get response content. {} and {} please investigate!".format(self.bot.creator.mention, self.bot.allen.mention))
+                # await ctx.send("Couldn't get response content. {} and {} please investigate!".format(self.bot.creator.mention, self.bot.allen.mention))
+                await ctx.send(content)
                 return 400
             return [r.status, rj, content]
 
@@ -517,6 +518,7 @@ class pkhex(commands.Cog):
         """Converts a given showdown set into a pkx from a given generation. WIP."""
         if not gen in range(1, 9):
             return await ctx.send("There is no generation {}.".format(gen))
+        showdown_set = showdown_set.replace('`', '')
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         url = self.bot.api_url + "api/showdown"
         data = {
