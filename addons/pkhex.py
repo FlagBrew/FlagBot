@@ -525,7 +525,7 @@ class pkhex(commands.Cog):
             "set": showdown_set,
             "generation": str(gen)
         }
-        async with self.bot.session.post(url=url, data=data) as r:  # Revisit once networking is implemented
+        async with self.bot.session.post(url=url, data=data) as r:
             if r.status == 400:
                 message = await r.json()
                 message = message["message"]
@@ -540,7 +540,7 @@ class pkhex(commands.Cog):
             pkx = base64.decodebytes(pk64)
             qr64 = rj["QR"].encode("ascii")
             qr = base64.decodebytes(qr64)
-        embed = discord.Embed(title="Data for {}".format(rj["Nickname"]))  # replace URL with message attach url once network stuff handled
+        embed = discord.Embed(title="Data for {}".format(rj["Nickname"]))
         embed.set_thumbnail(url=rj["SpeciesSpriteURL"])
         embed = self.embed_fields(ctx, embed, rj, is_set=True)
         pokemon_file = discord.File(io.BytesIO(pkx), "showdownset.pk" + str(gen))
