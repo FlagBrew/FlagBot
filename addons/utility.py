@@ -450,7 +450,8 @@ class Utility(commands.Cog):
             embed.add_field(name="Created At", value="{} UTC".format(user.created_at.strftime('%m-%d-%Y %H:%M:%S')))
             embed.add_field(name="Joined At", value="{} UTC".format(user.joined_at.strftime('%m-%d-%Y %H:%M:%S')))
             embed.add_field(name="Account Age", value="{} Days".format((datetime.now() - (user.created_at)).days))
-            embed.add_field(name="Roles", value="`{}`".format("`, `".join(role.name for role in user.roles[1:])))
+            if len(user.roles) > 1:
+                embed.add_field(name="Roles", value="`{}`".format("`, `".join(role.name for role in user.roles[1:])))
             if len(user.activities) > 0:
                 embed.add_field(name="Activities" if len(user.activities) > 1 else "Activity", value="`{}`".format("`, `".join(str(activity.name) for activity in user.activities)), inline=False)
         await ctx.send(embed=embed)
