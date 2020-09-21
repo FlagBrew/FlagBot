@@ -104,7 +104,8 @@ class pkhex(commands.Cog):
             if content == b'':
                 content = await r.read()
             if content == b'':
-                await ctx.send("Couldn't get response content. {} and {} please investigate!".format(self.bot.creator.mention, self.bot.allen.mention))
+                # await ctx.send("Couldn't get response content. {} and {} please investigate!".format(self.bot.creator.mention, self.bot.allen.mention))
+                await ctx.send(content)
                 return 400
             return [r.status, rj, content]
 
@@ -517,13 +518,14 @@ class pkhex(commands.Cog):
         """Converts a given showdown set into a pkx from a given generation. WIP."""
         if not gen in range(1, 9):
             return await ctx.send("There is no generation {}.".format(gen))
+        showdown_set = showdown_set.replace('`', '')
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         url = self.bot.api_url + "api/showdown"
         data = {
             "set": showdown_set,
             "generation": str(gen)
         }
-        async with self.bot.session.post(url=url, data=data) as r:  # Revisit once networking is implemented
+        async with self.bot.session.post(url=url, data=data) as r:
             if r.status == 400:
                 message = await r.json()
                 message = message["message"]
@@ -538,7 +540,7 @@ class pkhex(commands.Cog):
             pkx = base64.decodebytes(pk64)
             qr64 = rj["QR"].encode("ascii")
             qr = base64.decodebytes(qr64)
-        embed = discord.Embed(title="Data for {}".format(rj["Nickname"]))  # replace URL with message attach url once network stuff handled
+        embed = discord.Embed(title="Data for {}".format(rj["Nickname"]))
         embed.set_thumbnail(url=rj["SpeciesSpriteURL"])
         embed = self.embed_fields(ctx, embed, rj, is_set=True)
         pokemon_file = discord.File(io.BytesIO(pkx), "showdownset.pk" + str(gen))
