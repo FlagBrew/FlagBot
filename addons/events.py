@@ -122,8 +122,11 @@ class Events(commands.Cog):
     async def on_member_update(self, before, after):
         if not self.bot.ready:
             return
-        if before.roles != after.roles and ((self.bot.patrons_role in after.roles and self.bot.patrons_role not in before.roles) or
-                                            (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles)):
+
+        # Handle token stuff
+        token_roles = (self.bot.flagbrew_team_role, self.bot.patrons_role)
+        has_roles = True if len(list(role for role in token_roles if role in before.roles or role in after.roles)) > 0 else False  # True if member has one of the roles in token_roles, else False
+        if before.roles != after.roles and has_roles:
             token = secrets.token_urlsafe(16)
             data = {
                 "secret": self.bot.site_secret,
@@ -160,6 +163,7 @@ class Events(commands.Cog):
                 else:
                     await self.bot.fetch_user(211923158423306243).send("Could not notify user {} of token expiration.".format(before))
 
+        # Handle nick logging
         elif before.nick != after.nick:
             embed = discord.Embed(title="Nickname Change!")
             embed.description = "{} | {} changed their nickname from `{}` to `{}`.".format(before, before.id, before.nick, after.nick)
@@ -168,6 +172,7 @@ class Events(commands.Cog):
             except discord.Forbidden:
                 pass
 
+        # Handle activity logging
         elif before.activities != after.activities:
             has_activity = True
             blacklist = [
