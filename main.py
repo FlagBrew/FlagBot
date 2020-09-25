@@ -180,7 +180,7 @@ async def on_ready():
                     bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
                     bot.dm_logs_channel = discord.utils.get(guild.channels, id=695681340510699531)
                     bot.bot_channel = discord.utils.get(guild.channels, id=379201279479513100)
-                    bot.flagbrew_team_role = discord.utils.get(guild.roles, id=482928611809165335)
+                    bot.flagbrew_team_role = discord.utils.get(guild.roles, id=758286639784525845)
                     bot.discord_moderator_role = discord.utils.get(guild.roles, id=396988600480301059)
                     bot.patrons_role = discord.utils.get(guild.roles, id=330078911704727552)
                     bot.mute_role = discord.utils.get(guild.roles, id=519566020315185163)
