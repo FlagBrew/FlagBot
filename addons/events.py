@@ -125,7 +125,7 @@ class Events(commands.Cog):
 
         # Handle token stuff
         token_roles = (self.bot.flagbrew_team_role, self.bot.patrons_role)
-        has_roles = True if len(list(role for role in token_roles if role in before.roles or role in after.roles)) > 0 else False  # True if member has one of the roles in token_roles, else False
+        has_roles = len(list(role for role in token_roles if role in before.roles or role in after.roles)) > 0  # True if member has one of the roles in token_roles, else False
         if before.roles != after.roles and has_roles:
             token = secrets.token_urlsafe(16)
             data = {
