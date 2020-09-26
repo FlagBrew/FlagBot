@@ -514,6 +514,7 @@ class pkhex(commands.Cog):
         await ctx.send(embed=embed, file=qr)
 
     @commands.command(enabled=True)
+    @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def convert(self, ctx, gen: int, *, showdown_set):
         """Converts a given showdown set into a pkx from a given generation. WIP."""
         if not gen in range(1, 9):
