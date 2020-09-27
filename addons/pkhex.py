@@ -9,7 +9,6 @@ import os
 import urllib
 import binascii
 import addons.helper as helper
-from exceptions import APIConnectionError
 from datetime import datetime
 from discord.ext import commands
 
