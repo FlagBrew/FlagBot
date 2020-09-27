@@ -15,6 +15,7 @@ import pymongo
 import aiohttp
 import concurrent
 import psutil
+from exceptions import PKHeXMissingArgs
 from discord.ext import commands
 
 try:
@@ -137,6 +138,12 @@ async def on_command_error(ctx, error):
         await ctx.send("This command is currently disabled.")
     elif isinstance(error, aiohttp.client_exceptions.ServerDisconnectedError) or isinstance(error, concurrent.futures._base.TimeoutError):
         pass  # hopefully fix the disconnect errors that keep popping up
+    elif isinstance(error, PKHeXMissingArgs):
+        if ctx.command.name == "pokeinfo":
+            await ctx.send("This command requires a pokemon or species be given!")
+        else:
+            await ctx.send("This command requires a pokemon be inputted!")
+        await ctx.send_help(ctx.command)
     else:
         if ctx.command:
             await ctx.send("An error occurred while processing the `{}` command.".format(ctx.command.name))

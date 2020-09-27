@@ -8,6 +8,7 @@ import validators
 import os
 import urllib
 import binascii
+from exceptions import PKHeXMissingArgs
 import addons.helper as helper
 from datetime import datetime
 from discord.ext import commands
@@ -210,7 +211,7 @@ class pkhex(commands.Cog):
     async def check_legality(self, ctx, *, data=""):
         """Checks the legality of either a provided URL or attached pkx file. URL *must* be a direct download link"""
         if not data and not ctx.message.attachments:
-            return await ctx.send("This command requires a pokemon to be given!")
+            raise PKHeXMissingArgs()
         if not await self.ping_api_func() == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/bot/check")
@@ -246,7 +247,7 @@ class pkhex(commands.Cog):
         ("""Returns an embed with a Pokemon's nickname, species, and a few others. Takes a provided URL or attached pkx file. URL *must* be a direct download link.\n"""
         """Alternatively can take a single Pokemon as an entry, and will return basic information on the species.""")
         if not data and not ctx.message.attachments:
-            return await ctx.send("This command requires a pokemon be inputted!")
+            raise PKHeXMissingArgs()
         if not await self.ping_api_func() == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         
@@ -343,7 +344,7 @@ class pkhex(commands.Cog):
     async def gen_pkmn_qr(self, ctx, data=""):
         """Gens a QR code that PKSM can read. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
         if not data and not ctx.message.attachments:
-            return await ctx.send("This command requires a pokemon be inputted!")
+            raise PKHeXMissingArgs()
         if not await self.ping_api_func() == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/bot/pokemon_info")
@@ -455,7 +456,7 @@ class pkhex(commands.Cog):
     async def gpss_upload(self, ctx, data=""):
         """Allows uploading a pokemon to the GPSS. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
         if not data and not ctx.message.attachments:
-            return await ctx.send("This command requires a pokemon be inputted!")
+            raise PKHeXMissingArgs()
         async with self.bot.session.get(self.bot.flagbrew_url) as r:
             if not r.status == 200:
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
@@ -480,7 +481,7 @@ class pkhex(commands.Cog):
     async def legalize(self, ctx, data=""):
         """Legalizes a pokemon as much as possible. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
         if not data and not ctx.message.attachments:
-            return await ctx.send("This command requires a pokemon be inputted!")
+            raise PKHeXMissingArgs()
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         if not await self.ping_api_func() == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
