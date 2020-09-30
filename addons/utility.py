@@ -467,5 +467,14 @@ class Utility(commands.Cog):
         bytelist = [f"0x{hexstring[x:x+2]}" for x in range(0, len(hexstring), 2)]
         await ctx.send("`{}`".format(" ".join(bytelist)))
 
+    @commands.command()
+    async def reportspamid(self, ctx, uid: int):
+        """temp command"""
+        channel = ctx.guild.get_channel(760964250830110762)
+        embed = discord.Embed(description=f"ID reported by {ctx.author} | {ctx.author.mention}")
+        embed.add_field(name="ID", value=uid)
+        await channel.send(embed=embed)
+        await ctx.send("Successfully reported the ID!")
+
 def setup(bot):
     bot.add_cog(Utility(bot))

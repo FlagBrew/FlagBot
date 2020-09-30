@@ -357,7 +357,7 @@ class pkhex(commands.Cog):
 
     @commands.command(name='learns', aliases=['learn'])
     async def check_moves(self, ctx, generation: int, *, input_data):
-        """Checks if a given pokemon can learn moves. Separate moves using pipes. Example: .learns pikachu | quick attack | hail"""
+        """Checks if a given pokemon can learn moves. Separate moves using pipes. Example: .learns 8 pikachu | quick attack | hail"""
         if not await self.ping_api_func() == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         input_data = input_data.replace("| ", "|").replace(" |", "|").replace(" | ", "|")
@@ -376,7 +376,7 @@ class pkhex(commands.Cog):
             rj = await r.json()
             embed = discord.Embed(title="Move Lookup for {} in Generation {}".format(pokemon.title(), str(generation)), description="")
             for move in rj:
-                embed.description += "**{}** is {} learnable.\n".format(move["name"].title(), "not" if not move["learnable"] else "")
+                embed.description += "**{}** is {}learnable.\n".format(move["name"].title(), "not " if not move["learnable"] else "")
             await ctx.send(embed=embed)
 
     @commands.command(name='find')
