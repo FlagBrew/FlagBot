@@ -48,7 +48,11 @@ prefix = config.prefix
 token = config.token
 default_activity = discord.Activity(name=config.default_activity, type=discord.ActivityType.watching)
 
-bot = commands.Bot(command_prefix=prefix, description=description, activity=default_activity)
+intents = discord.Intents().all()
+intents.members = True
+intents.presences = True
+
+bot = commands.Bot(command_prefix=prefix, description=description, activity=default_activity, intents=intents)
 
 bot.is_mongodb = config.is_mongodb
 bot.api_url = config.api_url
