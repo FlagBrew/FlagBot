@@ -5,7 +5,6 @@ description = """FlagBot server helper bot by GriffinG1"""
 # import dependencies
 import os
 import discord
-import datetime
 import asyncio
 import traceback
 import sys
@@ -348,12 +347,10 @@ async def dump_role_id(ctx):
 
 @bot.command(hidden=True)  # taken from https://github.com/appu1232/Discord-Selfbot/blob/873a2500d2c518e0d25ca5a6f67828de60fbda99/cogs/misc.py#L626
 async def ping(ctx):
-    """Get response time."""
-    msgtime = ctx.message.created_at.now()
-    await (await bot.ws.ping())
-    now = datetime.datetime.now()
-    ping = now - msgtime
-    await ctx.send('🏓 Response time is {} milliseconds.'.format(str(ping.microseconds / 1000.0)))
+    """Get time between HEARTBEAT and HEARTBEAT_ACK in ms."""
+    ping = bot.latency * 1000
+    ping = round(ping, 3)
+    await ctx.send(f'🏓 Response time is {ping} milliseconds.')
 
 @bot.command(hidden=True)
 async def restart(ctx):
