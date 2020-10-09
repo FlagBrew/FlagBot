@@ -115,44 +115,42 @@ class Info(commands.Cog):
 
     @commands.command(aliases=['rtfm'])
     async def faq(self, ctx, faq_doc="", *, faq_item=""):
-        """Frequently Asked Questions. Allows numeric input for specific faq. Requires general, pksm, or checkpoint to be given as faq_doc"""
-        is_category = False
+        """Frequently Asked Questions. Allows numeric input for specific faq, or multiple numbers in a row for multiple at a time.
+        Requires general, pksm, or checkpoint to be given as faq_doc"""
         if faq_doc.lower() == "general":
             loaded_faq = self.general_faq_dict
-            is_category = True
         elif faq_doc.lower() == "pksm":
             loaded_faq = self.pksm_faq_dict
-            is_category = True
         elif faq_doc.lower() == "checkpoint":
             loaded_faq = self.checkpoint_faq_dict
-            is_category = True
         else:
             return await ctx.send("Available FAQ categories are `general`, `pksm`, and `checkpoint`.")
         faq_item = faq_item.replace(' ', ',').split(',')
-        count = 0
+        faq_item = [item for item in faq_item if not item == ""]  # stupid? yes! do i care? no! (removes any blank entries which can cause errors w/ loop)
+        last_index = -1  # used to ensure that faq entries used are next to each other during invoke
+        invoked_faqs = []  # used to track faq entries to send
         usage_dm = (self.bot.creator, self.bot.pie)  # Handles DMs on full command usage outside bot-channel
         for faq_num in faq_item:
             if not faq_num.isdigit():
-                if count == 0:
+                if len(invoked_faqs) == 0:
                     break
                 else:
-                    count += 1
                     continue
+            elif not faq_item.index(faq_num) == last_index + 1:
+                break
+            last_index = faq_item.index(faq_num)
             faq_num = int(faq_num)
-            count += 1
-            if faq_num > 0 and faq_num < len(loaded_faq) + 1:
-                await self.format_faq_embed(self, faq_num, ctx.channel, loaded_faq)
-            elif count == 1:
-                await ctx.send("Faq number {} doesn't exist.".format(faq_num))
-        if count == len(faq_item):
-            return
+            invoked_faqs.append(faq_num)
+            if faq_num > 0 and not faq_num <= len(loaded_faq):
+                return await ctx.send("Faq number {} doesn't exist.".format(faq_num))
+        for i_faq in invoked_faqs:
+            await self.format_faq_embed(self, i_faq, ctx.channel, loaded_faq)
         embed = discord.Embed(title="Frequently Asked Questions")
-        if is_category:
-            embed.title += " - {}".format("PKSM" if faq_doc.lower() == "pksm" else faq_doc.title())
+        embed.title += " - {}".format("PKSM" if faq_doc.lower() == "pksm" else faq_doc.title())
         for faq_arr in loaded_faq:
             embed.add_field(name="{}: {}".format(loaded_faq.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"], inline=False)
         if faq_item == [""]: faq_item = ["0"]
-        if not [int(val) <= len(loaded_faq) for val in faq_item if val.isdigit()] or is_category:
+        if not len(invoked_faqs) > 0:
             if ctx.author.id in self.bot.dm_list:
                 await ctx.message.delete()
                 try:
@@ -166,7 +164,7 @@ class Info(commands.Cog):
                     except discord.Forbidden:
                         pass  # Bot blocked
                 return await ctx.send("If you want to see the full faq, please use {}, as it is very spammy.".format(self.bot.bot_channel.mention))
-        await ctx.send(embed=embed)
+            await ctx.send(embed=embed)
 
     @commands.command()  # Taken (and adjusted slightly) from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
     async def vguides(self, ctx):
