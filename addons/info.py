@@ -7,6 +7,7 @@ import qrcode
 import io
 import json
 import math
+from addons.helper import faq_decorator
 from discord.ext import commands
 
 desc_temp = "You can get the latest release of {}."
@@ -47,6 +48,17 @@ class Info(commands.Cog):
                 img.save(bytes, format='PNG')
                 bytes = bytes.getvalue()
                 return bytes, releases[0]["tag_name"]
+
+    async def format_faq_embed(self, ctx, faq_num, channel, loaded_faq):
+        embed = discord.Embed(title="Frequently Asked Questions")
+        embed.title += f" #{faq_num}"
+        current_faq = loaded_faq[faq_num - 1]
+        embed.add_field(name=current_faq["title"], value=current_faq["value"], inline=False)
+        if "thumbnail" in current_faq.keys():
+            embed.set_thumbnail(url=current_faq["thumbnail"])
+        if "image" in current_faq.keys():
+            embed.set_image(url=current_faq["image"])
+        await channel.send(embed=embed)
 
     @commands.command(aliases=["releases", "latest"])
     async def release(self, ctx, *, app=""):
@@ -102,18 +114,20 @@ class Info(commands.Cog):
         """Donate here"""
         await ctx.send("You can donate to FlagBrew on Patreon here: <https://www.patreon.com/FlagBrew>.\nYou can also donate to Bernardo on Patreon here: <https://www.patreon.com/BernardoGiordano>.")
 
-    async def format_faq_embed(self, ctx, faq_num, channel, loaded_faq):
-        embed = discord.Embed(title="Frequently Asked Questions")
-        embed.title += f" #{faq_num}"
-        current_faq = loaded_faq[faq_num - 1]
-        embed.add_field(name=current_faq["title"], value=current_faq["value"], inline=False)
-        if "thumbnail" in current_faq.keys():
-            embed.set_thumbnail(url=current_faq["thumbnail"])
-        if "image" in current_faq.keys():
-            embed.set_image(url=current_faq["image"])
-        await channel.send(embed=embed)
+    faq_aliases = [  # putting this here to make keeping track ez, as well as updates
+        'rtfm',  # general usage
+        'vc',  # general faq #1 - vc support
+        'entitled',  # general faq #2 - new releases
+        'rules',  # general faq #4 - toggling roles
+        "swsh",  # pksm faq #2 - switch support
+        "emulator",  # pksm faq #3 - emulator cross-use
+        "sendpkx",  # pksm faq #7 - sending pkx files
+        "wheregame",  # checkpoint faq #2 - missing games
+        "pkcrash",  # checkpoint faq #4 - cheat crash in pkmn games
+    ]
 
-    @commands.command(aliases=['rtfm'])
+    @commands.command(aliases=faq_aliases)
+    @faq_decorator
     async def faq(self, ctx, faq_doc="", *, faq_item=""):
         """Frequently Asked Questions. Allows numeric input for specific faq, or multiple numbers in a row for multiple at a time.
         Requires general, pksm, or checkpoint to be given as faq_doc"""
@@ -157,7 +171,7 @@ class Info(commands.Cog):
                     return await ctx.author.send(embed=embed)
                 except discord.Forbidden:
                     pass  # Bot blocked, or api bug
-            elif ctx.channel not in (self.bot.bot_channel, self.bot.testing_channel):
+            elif ctx.channel not in (self.bot.bot_channel, self.bot.testing_channel) and not ctx.guild.id == 378420595190267915:
                 for user in usage_dm:
                     try:
                         await user.send("Full faq command was attempted to be used in {} by {}\n\nHyperlink to command invoke: {}".format(ctx.channel.mention, ctx.author, ctx.message.jump_url))

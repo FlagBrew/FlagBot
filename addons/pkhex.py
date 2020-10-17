@@ -118,7 +118,13 @@ class pkhex(commands.Cog):
         else:
             embed.add_field(name="Ability", value="N/A")
         if not is_set:
-            embed.add_field(name="Original Trainer", value=data["OT"])
+            ot = data["OT"]
+            sid = data["SID"]
+            tid = data["TID"]
+            if int(data["Generation"]) > 2:
+                embed.add_field(name="Original Trainer", value=f"{ot}\n({tid}/{sid})")
+            else:
+                embed.add_field(name="Original Trainer", value=f"{ot}\n({tid})")
         if not data["HT"] == "" and not is_set:
             embed.add_field(name="Handling Trainer", value=data["HT"])
         elif not is_set:
