@@ -498,12 +498,12 @@ class pkhex(commands.Cog):
         elif r[0] == 503:
             return await msg.edit(content="Legalizing is currently disabled in CoreAPI, and as such this command cannot be used currently.")
         rj = r[1]
-        if not rj["Ran"]:
+        if not rj["ran"]:
             return await msg.edit(content="That pokemon is already legal!")
-        elif not rj["Success"]:
+        elif not rj["success"]:
             return await msg.edit(content="That pokemon couldn't be legalized!")
-        pokemon_b64 = rj["Pokemon"].encode("ascii")
-        qr_b64 = rj["QR"].encode("ascii")
+        pokemon_b64 = rj["pokemon"].encode("ascii")
+        qr_b64 = rj["qr"].encode("ascii")
         pokemon_decoded = base64.decodebytes(pokemon_b64)
         qr_decoded = base64.decodebytes(qr_b64)
         if data:
@@ -513,8 +513,8 @@ class pkhex(commands.Cog):
         pokemon = discord.File(io.BytesIO(pokemon_decoded), "fixed-" + filename)
         qr = discord.File(io.BytesIO(qr_decoded), 'pokemon_qr.png')
         m = await upload_channel.send("Pokemon legalized by {}".format(ctx.author), file=pokemon)
-        embed = discord.Embed(title="Fixed Legality Issues for {}".format(rj["Species"]), description="[Download link]({})\n".format(m.attachments[0].url))
-        embed = self.list_to_embed(embed, rj["Report"])
+        embed = discord.Embed(title="Fixed Legality Issues for {}".format(rj["species"]), description="[Download link]({})\n".format(m.attachments[0].url))
+        embed = self.list_to_embed(embed, rj["report"])
         embed.set_thumbnail(url="attachment://pokemon_qr.png")
         await msg.delete()
         await ctx.send(embed=embed, file=qr)
