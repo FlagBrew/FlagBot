@@ -49,8 +49,9 @@ class Info(commands.Cog):
                 bytes = bytes.getvalue()
                 return bytes, releases[0]["tag_name"]
 
-    async def format_faq_embed(self, ctx, faq_num, channel, loaded_faq):
+    async def format_faq_embed(self, ctx, faq_num, channel, loaded_faq, faq_doc):
         embed = discord.Embed(title="Frequently Asked Questions")
+        embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()}"
         embed.title += f" #{faq_num}"
         current_faq = loaded_faq[faq_num - 1]
         embed.add_field(name=current_faq["title"], value=current_faq["value"], inline=False)
@@ -158,7 +159,7 @@ class Info(commands.Cog):
             if faq_num > 0 and not faq_num <= len(loaded_faq):
                 return await ctx.send("Faq number {} doesn't exist.".format(faq_num))
         for i_faq in invoked_faqs:
-            await self.format_faq_embed(self, i_faq, ctx.channel, loaded_faq)
+            await self.format_faq_embed(self, i_faq, ctx.channel, loaded_faq, faq_doc)
         embed = discord.Embed(title="Frequently Asked Questions")
         embed.title += " - {}".format("PKSM" if faq_doc.lower() == "pksm" else faq_doc.title())
         for faq_arr in loaded_faq:
