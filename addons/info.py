@@ -123,6 +123,7 @@ class Info(commands.Cog):
         "swsh",  # pksm faq #2 - switch support
         "emulator",  # pksm faq #3 - emulator cross-use
         "sendpkx",  # pksm faq #7 - sending pkx files
+        "addcode", "fixcheat",  # checkpoint faq #1 - pls add cheat
         "wheregame",  # checkpoint faq #2 - missing games
         "pkcrash",  # checkpoint faq #4 - cheat crash in pkmn games
     ]

@@ -39,6 +39,9 @@ def faq_decorator(func):
         elif ctx.invoked_with == "sendpkx":
             faq_doc = "pksm"
             faq_item = "7"
+        elif ctx.invoked_with == "addcode" or ctx.invoked_with == "fixcheat":
+            faq_doc = "checkpoint"
+            faq_item = "1"
         elif ctx.invoked_with == "wheregame":
             faq_doc = "checkpoint"
             faq_item = "2"
