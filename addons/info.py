@@ -49,8 +49,9 @@ class Info(commands.Cog):
                 bytes = bytes.getvalue()
                 return bytes, releases[0]["tag_name"]
 
-    async def format_faq_embed(self, ctx, faq_num, channel, loaded_faq):
+    async def format_faq_embed(self, ctx, faq_num, channel, loaded_faq, faq_doc):
         embed = discord.Embed(title="Frequently Asked Questions")
+        embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()}"
         embed.title += f" #{faq_num}"
         current_faq = loaded_faq[faq_num - 1]
         embed.add_field(name=current_faq["title"], value=current_faq["value"], inline=False)
@@ -122,6 +123,8 @@ class Info(commands.Cog):
         "swsh",  # pksm faq #2 - switch support
         "emulator",  # pksm faq #3 - emulator cross-use
         "sendpkx",  # pksm faq #7 - sending pkx files
+        "wc3", "gen3events",  # pksm faq #9 - gen 3 events
+        "addcode", "fixcheat",  # checkpoint faq #1 - pls add cheat
         "wheregame",  # checkpoint faq #2 - missing games
         "pkcrash",  # checkpoint faq #4 - cheat crash in pkmn games
     ]
@@ -158,7 +161,7 @@ class Info(commands.Cog):
             if faq_num > 0 and not faq_num <= len(loaded_faq):
                 return await ctx.send("Faq number {} doesn't exist.".format(faq_num))
         for i_faq in invoked_faqs:
-            await self.format_faq_embed(self, i_faq, ctx.channel, loaded_faq)
+            await self.format_faq_embed(self, i_faq, ctx.channel, loaded_faq, faq_doc)
         embed = discord.Embed(title="Frequently Asked Questions")
         embed.title += " - {}".format("PKSM" if faq_doc.lower() == "pksm" else faq_doc.title())
         for faq_arr in loaded_faq:
