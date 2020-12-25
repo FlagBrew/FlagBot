@@ -7,7 +7,7 @@ import qrcode
 import io
 import json
 import math
-from addons.helper import faq_decorator
+from addons.helper import faq_decorator, restricted_to_bot
 from discord.ext import commands
 
 desc_temp = "You can get the latest release of {}."
@@ -308,6 +308,7 @@ class Info(commands.Cog):
         return final_indices
 
     @commands.command()
+    @restricted_to_bot
     async def cheatkeys(self, ctx, key):
         """Byte decoder for sharkive codes. Input should be the second half of the line starting with DD000000"""
         if len(key) != 8:

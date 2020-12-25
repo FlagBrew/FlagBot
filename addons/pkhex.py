@@ -10,6 +10,7 @@ import urllib
 import binascii
 from exceptions import PKHeXMissingArgs
 import addons.helper as helper
+from addons.helper import restricted_to_bot
 from datetime import datetime
 from discord.ext import commands
 
@@ -249,6 +250,7 @@ class pkhex(commands.Cog):
             await ctx.send("Available forms for {}: `{}`.".format(species.title(), '`, `'.join(rj)))
 
     @commands.command(name='pokeinfo', aliases=['pi'])
+    @restricted_to_bot
     async def poke_info(self, ctx, data="", shiny="normal"):
         ("""Returns an embed with a Pokemon's nickname, species, and a few others. Takes a provided URL or attached pkx file. URL *must* be a direct download link.\n"""
         """Alternatively can take a single Pokemon as an entry, and will return basic information on the species.""")
@@ -347,6 +349,7 @@ class pkhex(commands.Cog):
             return await ctx.send("There was an error showing the data for this pokemon. {}, {}, or {} please check this out!\n{} please do not delete the file. Exception below.\n\n```{}```".format(self.bot.creator.mention, self.bot.pie.mention, self.bot.allen.mention, ctx.author.mention, e))
 
     @commands.command(name='qr')
+    @restricted_to_bot
     async def gen_pkmn_qr(self, ctx, data=""):
         """Gens a QR code that PKSM can read. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
         if not data and not ctx.message.attachments:
@@ -459,6 +462,7 @@ class pkhex(commands.Cog):
         await msg.edit(content="There was no pokemon on the GPSS with the code `{}`.".format(code))
 
     @commands.command(name="gpsspost", aliases=['gpssupload'])
+    @restricted_to_bot
     async def gpss_upload(self, ctx, data=""):
         """Allows uploading a pokemon to the GPSS. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
         if not data and not ctx.message.attachments:
@@ -521,6 +525,7 @@ class pkhex(commands.Cog):
 
     @commands.command(enabled=True)
     @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
+    @restricted_to_bot
     async def convert(self, ctx, gen: int, *, showdown_set):
         """Converts a given showdown set into a pkx from a given generation. WIP."""
         if not gen in range(1, 9):
