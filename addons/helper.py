@@ -16,6 +16,16 @@ async def check_mute_expiry(mutes_dict, member):
     diff = end_time - datetime.utcnow()
     return diff.total_seconds() < 0  # Return False if expired, else True
 
+def restricted_to_bot(func):
+    @functools.wraps(func)
+    async def wrapper(*args, **kwargs):
+        func_self = args[0]  # assume self is at args[0]
+        ctx = args[1]  # and assume ctx is at args[1]
+        if not ctx.channel in (func_self.bot.bot_channel, func_self.bot.bot_channel2) and ctx.guild.id == 278222834633801728:
+            return await ctx.send(f"This command is restricted to {func_self.bot.bot_channel.mention}.")
+        await func(*args, **kwargs)
+    return wrapper
+
 def faq_decorator(func):
     @functools.wraps(func)
     async def wrapper(self, ctx, faq_doc, faq_item):
