@@ -3,6 +3,7 @@ import json
 import random
 from datetime import datetime
 from discord.ext import commands
+from addons.helper import restricted_to_bot
 
 
 class Warning(commands.Cog):
@@ -132,6 +133,7 @@ class Warning(commands.Cog):
             pass  # beta can't log
 
     @commands.command()
+    @restricted_to_bot
     async def listwarns(self, ctx, target: discord.Member=None):
         """Allows a user to list their own warns, or a staff member to list a user's warns"""
         if not target or target == ctx.author:
