@@ -28,9 +28,12 @@ def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu
     parser.add_argument("-test", "--test-run",  # test run flag for Travis
                         action="store_true",
                         help="Makes the bot quit before trying to log in")
-    parser.add_argument("-args",
+    parser.add_argument("-cmd", "--cmd-args",
                         action="store_true",
-                        help="Allows using args")
+                        help="Allows using cmd args")
+    parser.add_argument("-env", "--env-args",
+                        action="store_true",
+                        help="Allows using env args")
     return parser
 argpar, unknown = parse_cmd_arguments().parse_known_args()
 _test_run = argpar.test_run
@@ -42,39 +45,55 @@ if _test_run:
         print('faq.json or key_inputs.json is missing')  # only visible in Travis
     print("Quitting: test run")
     exit(0)
-_args_run = argpar.args
-if _args_run:
-    is_using_args = True
-    args = sys.argv[2:]
+_cmd_args_run = argpar.cmd_args
+_env_args_run = argpar.env_args
+if _cmd_args_run:
+    is_using_cmd_args = True
+    is_using_env_args = False
+    cmd_args = sys.argv[2:]
     print("Running using command line arguments...")
+elif _env_args_run:
+    is_using_env_args = True
+    is_using_cmd_args = False
+    print("Running using environment arguments...")
 else:
-    is_using_args = False
+    is_using_cmd_args = False
+    is_using_env_args = False
 
 # sets working directory to bot's folder
 dir_path = os.path.dirname(os.path.realpath(__file__))
 os.chdir(dir_path)
 
-if not is_using_args:  # handles pulling the config/args needed for creating the bot object
+if not is_using_cmd_args:  # handles pulling the config/args needed for creating the bot object
     prefix = config.prefix
     token = config.token
     default_activity = discord.Activity(name=config.default_activity, type=discord.ActivityType.watching)
+elif not is_using_env_args:
+    token, prefix = cmd_args[0:2]
     prefix = prefix.replace(" ", "").split(",")
+    default_activity = discord.Activity(name=cmd_args[2], type=discord.ActivityType.watching)
 else:
-    token, prefix = args[0:2]
-    default_activity = discord.Activity(name=args[2], type=discord.ActivityType.watching)
+    token = os.getenv("TOKEN")
+    prefix = os.getenv("PREFIX")
+    default_activity = discord.Activity(name=os.getenv("DEF_ACT"), type=discord.ActivityType.watching)
 
 intents = discord.Intents().all()
 intents.members = True
 intents.presences = True
 bot = commands.Bot(command_prefix=prefix, description=description, activity=default_activity, intents=intents)
 
-if not is_using_args:  # handles setting up the bot vars
+if not is_using_cmd_args:  # handles setting up the bot vars
     bot.is_mongodb = config.is_mongodb
     bot.api_url = config.api_url
     bot.flagbrew_url = config.flagbrew_url
     bot.sprite_url = config.sprite_url
+elif not is_using_env_args:
+    bot.is_mongodb, bot.api_url, bot.flagbrew_url, bot.sprite_url = cmd_args[3:7]
 else:
-    bot.is_mongodb, bot.api_url, bot.flagbrew_url, bot.sprite_url = args[3:7]
+    bot.is_mongodb = os.getenv("IS_MONGODB")
+    bot.api_url = os.getenv("API_URL")
+    bot.flagbrew_url = os.getenv("FLAGBREW_URL")
+    bot.sprite_url = os.getenv("SPRITE_URL")
 bot.gpss_url = bot.flagbrew_url
 
 if not os.path.exists('saves/warns.json'):
@@ -97,10 +116,12 @@ with open("saves/mutes.json", "r") as f:
     bot.mutes_dict = json.load(f)
 
 if bot.is_mongodb:
-    if not is_using_args:
+    if not is_using_cmd_args:
         db_address = config.db_address
+    elif not is_using_env_args:
+        db_address = cmd_args[7]
     else:
-        db_address = args[7]
+        db_address = os.getenv("DB_ADDRESS")
     connected = False
     try:
         # try connecting to the database
@@ -122,15 +143,20 @@ if bot.is_mongodb:
                 }
             }, upsert=True)
     
-if not is_using_args:
+if not is_using_cmd_args:
     bot.site_secret = config.secret
     bot.github_user = config.github_username
     bot.github_pass = config.github_password
     bot.ready = False
     bot.is_beta = config.is_beta
-else:
-    bot.site_secret, bot.github_user, bot.github_pass, bot.is_beta = args[8:12]
+elif not is_using_env_args:
+    bot.site_secret, bot.github_user, bot.github_pass, bot.is_beta = cmd_args[8:12]
     bot.ready = False
+else:
+    bot.site_secret = os.getenv("SECRET")
+    bot.github_user = os.getenv("GIT_USER")
+    bot.github_pass = os.getenv("GIT_PASS")
+    bot.is_beta = os.getenv("IS_BETA")
 
 bot.dir_path = os.path.dirname(os.path.realpath(__file__))
 
