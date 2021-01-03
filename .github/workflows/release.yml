@@ -1,0 +1,18 @@
+name: release
+
+on:
+  push:
+    paths-ignore: ['.gitignore', '**/*.md']
+    branches: [master]
+
+jobs:
+  docker-publish-latest:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: flagbot
+        registry: registry.external.fm1337.com:5000
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
