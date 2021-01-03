@@ -33,7 +33,6 @@ def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu
                         help="Allows using args")
     return parser
 argpar, unknown = parse_cmd_arguments().parse_known_args()
-print(unknown)
 _test_run = argpar.test_run
 if _test_run:
     try:
@@ -59,6 +58,7 @@ if not is_using_args:  # handles pulling the config/args needed for creating the
     prefix = config.prefix
     token = config.token
     default_activity = discord.Activity(name=config.default_activity, type=discord.ActivityType.watching)
+    prefix = prefix.replace(" ", "").split(",")
 else:
     token, prefix = args[0:2]
     default_activity = discord.Activity(name=args[2], type=discord.ActivityType.watching)
