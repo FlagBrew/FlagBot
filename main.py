@@ -248,9 +248,8 @@ async def on_ready():
                     bot.crash_dump_channel = discord.utils.get(guild.channels, id=721444652481249372)
                     bot.crash_log_channel = discord.utils.get(guild.channels, id=721465461518106624)
                     bot.activity_logs_channel = discord.utils.get(guild.channels, id=723705005122519071)
-
-                with open('saves/faqdm.json', 'r') as f:
-                    bot.dm_list = json.load(f)
+                    with open('saves/faqdm.json', 'r') as f:
+                        bot.dm_list = json.load(f)
 
             else:
                 try:

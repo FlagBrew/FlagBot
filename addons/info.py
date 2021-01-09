@@ -197,8 +197,12 @@ class Info(commands.Cog):
         """Reminder for those who won't just ask their question"""
         count = 0
         async for message in ctx.channel.history(limit=10):
-            if message.content.startswith(self.bot.command_prefix[0] + "question") and len(message.mentions) > 0:
-                if not ctx.author in message.mentions:
+            if message.content.startswith(self.bot.command_prefix[0] + "question") and (len(message.mentions) > 0 or message.reference is not None):
+                if len(message.mentions) == 0:
+                    msg_ref_auth = message.reference.resolved.author
+                else:
+                    msg_ref_auth = None
+                if not ctx.author in message.mentions and not ctx.author == msg_ref_auth:
                     break
                 elif count > 0:
                     return await ctx.send("{} read the goddamned message I sent, instead of just using the command again and spamming. If you ignore the contents of *this* message, you will be warned.".format(ctx.author.mention))
