@@ -230,7 +230,7 @@ async def on_ready():
             print('Disabled {}'.format(c))
     for guild in bot.guilds:
         try:
-            if guild.id == bot.testing_id or guild.id == bot.flagbrew_id:
+            if guild.id in (bot.testing_id, bot.flagbrew_id):
                 bot.guild = guild
                 bot.reload_counter = 0
                 if guild.id == bot.flagbrew_id:
@@ -248,17 +248,9 @@ async def on_ready():
                     bot.crash_dump_channel = discord.utils.get(guild.channels, id=721444652481249372)
                     bot.crash_log_channel = discord.utils.get(guild.channels, id=721465461518106624)
                     bot.activity_logs_channel = discord.utils.get(guild.channels, id=723705005122519071)
+
                 with open('saves/faqdm.json', 'r') as f:
                     bot.dm_list = json.load(f)
-
-                if guild.id == bot.testing_id:
-                    if bot.is_beta:
-                        id = 614206536394342533
-                    else:
-                        id = 468877079023321089
-                    bot.err_logs_channel = discord.utils.get(guild.channels, id=id)
-                    bot.testing_channel = discord.utils.get(guild.channels, id=385034577636491264)
-                    bot.testing_logs_channel = discord.utils.get(guild.channels, id=723665111469916242)
 
             else:
                 try:
@@ -281,6 +273,16 @@ async def on_ready():
             print("Initialized on {}.".format(guild.name))
         except:
             print("Failed to initialize on {}".format(guild.name))
+    
+    if bot.is_beta:
+        id = 614206536394342533
+    else:
+        id = 468877079023321089
+    testing_guild = discord.utils.get(bot.guilds, id=bot.testing_id)
+    bot.err_logs_channel = discord.utils.get(testing_guild.channels, id=id)
+    bot.testing_channel = discord.utils.get(testing_guild.channels, id=385034577636491264)
+    bot.testing_logs_channel = discord.utils.get(testing_guild.channels, id=723665111469916242)
+
     bot.creator = await bot.fetch_user(177939404243992578)
     bot.pie = await bot.fetch_user(307233052650635265)
     bot.allen = await bot.fetch_user(211923158423306243)
