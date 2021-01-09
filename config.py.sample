@@ -10,4 +10,3 @@ db_address = ""  # MongoDB database address as string
 api_url = ""  # API URL as string
 sprite_url = ""  # Sprite URL as string
 flagbrew_url = ""  # FlagBrew URL as string
-localhost_port = ""

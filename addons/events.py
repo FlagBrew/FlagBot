@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import discord
-import requests
 import secrets
 import qrcode
 import io
@@ -154,7 +153,7 @@ class Events(commands.Cog):
                            " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
                 url = "https://flagbrew.org/patron/remove"
                 f = None
-            requests.post(url, data=data)
+            await self.bot.session.post(url=url, data=data)
             try:
                 await before.send(message, file=f)
             except discord.Forbidden:

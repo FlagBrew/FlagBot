@@ -2,29 +2,39 @@ import discord
 import inspect
 import io
 from discord.ext import commands
-from addons.events import Events
-from addons.info import Info
-from addons.mod import Moderation
-from addons.pkhex import pkhex
-from addons.pyint import PythonInterpreter
-from addons.utility import Utility
-from addons.warns import Warning
+
+#  Revised addon loading for Meta taken from https://stackoverflow.com/a/24940613
+addons = {
+    "addons.events": "Events",
+    "addons.info": "Info",
+    "addons.mod": "Moderation",
+    "addons.pkhex": "pkhex",
+    "addons.pyint": "PythonInterpreter",
+    "addons.utility": "Utility",
+    "addons.warns": "Warning"
+    }
+keys = {}
+failed_loads = {}
+for addon in addons.keys():
+    try:
+        keys[addons[addon]] = __import__(addon, fromlist=addons[addon])
+    except Exception as e:
+        failed_loads[addons[addon]] = e
 
 class Meta(commands.Cog, command_attrs=dict(hidden=True)):
 
     def __init__(self, bot):
         self.bot = bot
-        self.addons = {
-            Events.__name__: Events,
-            Info.__name__: Info,
-            self.__class__.__name__: self,
-            Moderation.__name__: Moderation,
-            pkhex.__name__: pkhex,
-            PythonInterpreter.__name__: PythonInterpreter,
-            Utility.__name__: Utility,
-            Warning.__name__: Warning
-        }
+        self.addons = {}
+        for key in keys.keys():
+            self.addons[keys[key].__name__] = keys[key]
         print('Addon "{}" loaded'.format(self.__class__.__name__))
+
+    @commands.command(hidden=True)
+    async def failedloads(self, ctx):
+        if len(failed_loads) == 0:
+            return await ctx.send("No modules failed to load!")
+        await ctx.send(f"Failed to load: `{'`, `'.join(f'{a}` - `{e}' for a, e in failed_loads.items())}`")
 
     @commands.command(hidden=True)
     async def source(self, ctx, function, cl=None):

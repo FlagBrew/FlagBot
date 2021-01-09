@@ -174,7 +174,7 @@ class Info(commands.Cog):
                     return await ctx.author.send(embed=embed)
                 except discord.Forbidden:
                     pass  # Bot blocked, or api bug
-            elif ctx.channel not in (self.bot.bot_channel, self.bot.testing_channel) and not ctx.guild.id == 378420595190267915:
+            elif ctx.channel not in (self.bot.bot_channel, self.bot.testing_channel, self.bot.bot_channel2) and not ctx.guild.id == 378420595190267915:
                 for user in usage_dm:
                     try:
                         await user.send("Full faq command was attempted to be used in {} by {}\n\nHyperlink to command invoke: {}".format(ctx.channel.mention, ctx.author, ctx.message.jump_url))
