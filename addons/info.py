@@ -7,7 +7,7 @@ import qrcode
 import io
 import json
 import math
-from addons.helper import faq_decorator, restricted_to_bot
+from addons.helper import faq_decorator, restricted_to_bot, spam_limiter
 from discord.ext import commands
 
 desc_temp = "You can get the latest release of {}."
@@ -130,6 +130,7 @@ class Info(commands.Cog):
     ]
 
     @commands.command(aliases=faq_aliases)
+    @spam_limiter
     @faq_decorator
     async def faq(self, ctx, faq_doc="", *, faq_item=""):
         """Frequently Asked Questions. Allows numeric input for specific faq, or multiple numbers in a row for multiple at a time.
@@ -193,20 +194,9 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @spam_limiter
     async def question(self, ctx):
         """Reminder for those who won't just ask their question"""
-        count = 0
-        async for message in ctx.channel.history(limit=10):
-            if message.content.startswith(self.bot.command_prefix[0] + "question") and (len(message.mentions) > 0 or message.reference is not None):
-                if len(message.mentions) == 0:
-                    msg_ref_auth = message.reference.resolved.author
-                else:
-                    msg_ref_auth = None
-                if not ctx.author in message.mentions and not ctx.author == msg_ref_auth:
-                    break
-                elif count > 0:
-                    return await ctx.send("{} read the goddamned message I sent, instead of just using the command again and spamming. If you ignore the contents of *this* message, you will be warned.".format(ctx.author.mention))
-            count += 1
         await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, "
                        "as little as they may seem, as well as assisting materials. Asking to ask wont expedite your process, and may delay assistance. "
                        "***WE ARE NOT PSYCHIC.***")
@@ -328,6 +318,7 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['dg'])
+    @spam_limiter
     async def downgrade(self, ctx):
         """Don't. Fucking. Downgrade."""
         embed = discord.Embed(title="Should you downgrade?")
@@ -336,6 +327,7 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['es'])
+    @spam_limiter
     async def extrasaves(self, ctx):
         """Extrasaves info"""
         embed = discord.Embed(title="How do I access my external saves?")
@@ -345,6 +337,7 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["tid"])
+    @spam_limiter
     async def titleid(self, ctx):
         """Title ID adding info"""
         embed = discord.Embed(title="How do I access my GBA games?")

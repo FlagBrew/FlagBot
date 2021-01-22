@@ -16,6 +16,26 @@ async def check_mute_expiry(mutes_dict, member):
     diff = end_time - datetime.utcnow()
     return diff.total_seconds() < 0  # Return False if expired, else True
 
+def spam_limiter(func):
+    @functools.wraps(func)
+    async def wrapper(*args, **kwargs):
+        func_self = args[0]  # assume self is at args[0]
+        ctx = args[1]  # and assume ctx is at args[1]
+        count = 0
+        async for message in ctx.channel.history(limit=10):
+            if message.content.startswith(func_self.bot.command_prefix[0] + ctx.invoked_with) and (len(message.mentions) > 0 or message.reference is not None):
+                if len(message.mentions) == 0:
+                    msg_ref_auth = message.reference.resolved.author
+                else:
+                    msg_ref_auth = None
+                if not ctx.author in message.mentions and not ctx.author == msg_ref_auth:
+                    break
+                elif count > 0:
+                    return await ctx.send("{} read the goddamned message I sent, instead of just using the command again and spamming. If you ignore the contents of *this* message, you will be warned.".format(ctx.author.mention))
+            count += 1
+        await func(*args, **kwargs)
+    return wrapper
+
 def restricted_to_bot(func):
     @functools.wraps(func)
     async def wrapper(*args, **kwargs):
