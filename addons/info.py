@@ -59,6 +59,8 @@ class Info(commands.Cog):
             embed.set_thumbnail(url=current_faq["thumbnail"])
         if "image" in current_faq.keys():
             embed.set_image(url=current_faq["image"])
+        if "footer" in current_faq.keys():
+            embed.set_footer(text=current_faq["footer"])
         await channel.send(embed=embed)
 
     @commands.command(aliases=["releases", "latest"])
