@@ -5,5 +5,5 @@ git clone https://github.com/FlagBrew/FlagBot.git
 fi
 cd FlagBot
 git pull
-pip install --no-cache-dir -r requirements.txt
+pip install --no-cache-dir --upgrade -r requirements.txt
 python main.py
