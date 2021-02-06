@@ -14,14 +14,14 @@ class Events(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        print('Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'Addon "{self.__class__.__name__}" loaded')
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         # Don't let the bot be used elsewhere with the same token
         if guild.id != self.bot.testing_id and guild.id != self.bot.flagbrew_id:
             try:
-                await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
+                await guild.owner.send(f"Left your server, `{guild.name}`, as this bot should only be used on the PKSM server under this token.")
             except discord.Forbidden:
                 for channel in guild.channels:
                     if guild.me.permissions_in(channel).send_messages and isinstance(channel, discord.TextChannel):
@@ -43,8 +43,8 @@ class Events(commands.Cog):
                     break
                 else:
                     return
-            embed = discord.Embed(title="{} banned".format(user))
-            embed.description = "{} was banned by {} for:\n\n{}".format(user, admin, reason)
+            embed = discord.Embed(title=f"{user} banned")
+            embed.description = f"{user} was banned by {admin} for:\n\n{reason}"
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta bot can't log
@@ -56,14 +56,14 @@ class Events(commands.Cog):
         except KeyError:
             mute_exp = ""
         embed = discord.Embed(title="New member!")
-        embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
+        embed.description = f"{member.mention} | {member.name}#{member.discriminator} | {member.id}"
         if (datetime.now() - member.created_at).days < 1:
-            embed.description += "\n**Account was created {} days ago.**".format((datetime.now() - member.created_at).days)
+            embed.description += f"\n**Account was created {(datetime.now() - member.created_at).days} days ago.**"
         if mute_exp != "" and not await helper.check_mute_expiry(self.bot.mutes_dict, member):
             embed.add_field(name="Muted Until", value=mute_exp + " UTC")
             await member.add_roles(self.bot.mute_role)
         try:
-            await member.send("Welcome to {}! Please read the rules, as you won't be able to access the majority of the server otherwise. This is an automated message, no reply is necessary.".format(member.guild.name))
+            await member.send(f"Welcome to {member.guild.name}! Please read the rules, as you won't be able to access the majority of the server otherwise. This is an automated message, no reply is necessary.")
         except discord.Forbidden:
             embed.description += "\n**Failed to DM user on join.**"
         if member.guild.id == self.bot.flagbrew_id:
@@ -75,7 +75,7 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         embed = discord.Embed(title="Member left :(")
-        embed.description = "{} | {}#{} | {}".format(member.mention, member.name, member.discriminator, member.id)
+        embed.description = f"{member.mention} | {member.name}#{member.discriminator} | {member.id}"
         if member.guild.id == self.bot.flagbrew_id:
             try:
                 await self.bot.logs_channel.send(embed=embed)
@@ -88,7 +88,7 @@ class Events(commands.Cog):
         if len(message.mentions) > 15:
             await message.delete()
             await message.author.ban()
-            await message.channel.send("{} was banned for attempting to spam user mentions.".format(message.author))
+            await message.channel.send(f"{message.author} was banned for attempting to spam user mentions.")
 
         # auto restart on update
         if message.channel.id == 672536257934655529:
@@ -101,7 +101,7 @@ class Events(commands.Cog):
                 return
             embed = discord.Embed(description=message.content)
             try:
-                await self.bot.dm_logs_channel.send("New DM recieved from {} | {}.".format(message.author, message.author.id), embed=embed)
+                await self.bot.dm_logs_channel.send(f"New DM recieved from {message.author} | {message.author.id}.", embed=embed)
             except discord.Forbidden:
                 pass  # beta bot can't log
 
@@ -113,7 +113,7 @@ class Events(commands.Cog):
                     return
                 embed = discord.Embed(description=message.content)
                 try:
-                    await self.bot.logs_channel.send("Message by {} deleted in channel {}:".format(message.author, message.channel.mention), embed=embed)
+                    await self.bot.logs_channel.send(f"Message by {message.author} deleted in channel {message.channel.mention}:", embed=embed)
                 except discord.Forbidden:
                     pass  # beta bot can't log
 
@@ -132,14 +132,14 @@ class Events(commands.Cog):
                 "user_id": str(before.id)
             }
             if len(before.roles) < len(after.roles):
-                await self.bot.patrons_channel.send("Welcome to the super secret cool kids club {}!"
-                                                    " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.".format(after.mention))
+                await self.bot.patrons_channel.send(f"Welcome to the super secret cool kids club {after.mention}!"
+                                                    " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.")
                 url = "https://flagbrew.org/patron/generate"
                 data["token"] = token
                 message = ("Congrats on becoming a patron! You can add the token below to PKSM's config to access some special patron only stuff. It's only valid until your"
                            " patron status is cancelled, so keep up those payments!"
                            " To access the hidden Patron settings menu, press the four corners of the touch screen while on the configuration screen."
-                           " If you need any further help setting it up, ask in {}!\n\n`{}`".format(self.bot.patrons_channel.mention, token))
+                           f" If you need any further help setting it up, ask in {self.bot.patrons_channel.mention}!\n\n`{token}`")
                 qr = qrcode.QRCode(version=None)
                 qr.add_data(token)
                 qr.make(fit=True)
@@ -158,14 +158,14 @@ class Events(commands.Cog):
                 await before.send(message, file=f)
             except discord.Forbidden:
                 if len(before.roles) < len(after.roles):
-                    await self.bot.fetch_user(211923158423306243).send("Could not send token `{}` to user {}.".format(token, before))
+                    await self.bot.fetch_user(211923158423306243).send(f"Could not send token `{token}` to user {before}.")
                 else:
-                    await self.bot.fetch_user(211923158423306243).send("Could not notify user {} of token expiration.".format(before))
+                    await self.bot.fetch_user(211923158423306243).send(f"Could not notify user {before} of token expiration.")
 
         # Handle nick logging
         elif before.nick != after.nick:
             embed = discord.Embed(title="Nickname Change!")
-            embed.description = "{} | {} changed their nickname from `{}` to `{}`.".format(before, before.id, before.nick, after.nick)
+            embed.description = f"{before} | {before.id} changed their nickname from `{before.nick}` to `{after.nick}`."
             try:
                 await self.bot.logs_channel.send(embed=embed)
             except discord.Forbidden:
@@ -207,7 +207,7 @@ class Events(commands.Cog):
                 has_activity = False
             elif bef_acts == aft_acts and bef_custom == aft_custom:
                 return
-            embed.description = "{} | {} changed their activity.".format(before, before.id)
+            embed.description = f"{before} | {before.id} changed their activity."
             embed.add_field(name="Old Activities", value=(", ".join(bef_acts) if len(bef_acts) > 0 else "None"))
             embed.add_field(name="New Activities", value=(", ".join(aft_acts)))
             if has_activity:
@@ -221,7 +221,7 @@ class Events(commands.Cog):
                     else:
                         if (len(bef_acts) > 1 and bef_acts[0] == bef_acts[1]) or (len(aft_acts) > 1 and aft_acts[0] == aft_acts[1]):
                             return
-                    await self.bot.err_logs_channel.send("Failed to log activity for user `{}` (`{}`) with before activity list of `{}` and after activity list of `{}`. Cause?".format(before, before.id, before.activities, after.activities))
+                    await self.bot.err_logs_channel.send(f"Failed to log activity for user `{before}` (`{before.id}`) with before activity list of `{before.activities}` and after activity list of `{after.activities}`. Cause?")
             if len(aft_custom) == 0 and len(bef_custom) == 0:
                 return
 
@@ -232,15 +232,15 @@ class Events(commands.Cog):
             elif bef_custom[0] == aft_custom[0] and bef_custom[1] == aft_custom[1]:
                 return
             embed_custom = discord.Embed(title="Custom Activity Change!", colour=discord.Colour.red())
-            embed_custom.description = "{} | {} changed their custom activity.".format(before, before.id)
-            embed_custom.add_field(name="Old Custom Activity", value="Name: `{}`\nEmoji: `{}`".format(bef_custom[0], bef_custom[1]))
-            embed_custom.add_field(name="New Custom Activity", value="Name: `{}`\nEmoji: `{}`".format(aft_custom[0], aft_custom[1]))
+            embed_custom.description = f"{before} | {before.id} changed their custom activity."
+            embed_custom.add_field(name="Old Custom Activity", value=f"Name: `{bef_custom[0]}`\nEmoji: `{bef_custom[1]}`")
+            embed_custom.add_field(name="New Custom Activity", value=f"Name: `{aft_custom[0]}`\nEmoji: `{aft_custom[1]}`")
             try:
                 await self.bot.activity_logs_channel.send(embed=embed_custom)
             except discord.Forbidden:
                 pass
             except:
-                await self.bot.err_logs_channel.send("Failed to log activity for user `{}` (`{}`) with before activity list of `{}` and after activity list of `{}`. Cause?".format(before, before.id, before.activities, after.activities))
+                await self.bot.err_logs_channel.send(f"Failed to log activity for user `{before}` (`{before.id}`) with before activity list of `{before.activities}` and after activity list of `{after.activities}`. Cause?")
 
     async def process_reactions(self, reaction):
         positive_votes = 0
@@ -263,14 +263,14 @@ class Events(commands.Cog):
         if total_votes >= vote_barrier and not reaction.message.pinned:
             try:
                 await reaction.message.pin()
-                await self.bot.logs_channel.send("Idea pinned after passing {} votes.\nJump link: {}".format(vote_barrier, reaction.message.jump_url))
+                await self.bot.logs_channel.send(f"Idea pinned after passing {vote_barrier} votes.\nJump link: {reaction.message.jump_url}")
             except discord.HTTPException as e:
                 await reaction.message.channel.send("Error pinning message. Please make sure that there are less than 50 pins."
-                                                    " If issue persists, contact {}.\nMessage link: {}".format(self.bot.creator, reaction.message.jump_url))
+                                                    f" If issue persists, contact {self.bot.creator}.\nMessage link: {reaction.message.jump_url}")
                 await self.bot.err_logs_channel.send(e.text)
         elif total_votes < vote_barrier and reaction.message.pinned:
             await reaction.message.unpin()
-            await self.bot.logs_channel.send("Idea unpinned due to falling below {} votes.\nJump link: {}".format(vote_barrier, reaction.message.jump_url))
+            await self.bot.logs_channel.send(f"Idea unpinned due to falling below {vote_barrier} votes.\nJump link: {reaction.message.jump_url}")
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):

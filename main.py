@@ -186,7 +186,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, discord.ext.commands.errors.CheckFailure):
         await ctx.send("You don't have permission to use this command.")
     elif isinstance(error, discord.ext.commands.errors.CommandOnCooldown):
-        await ctx.send("{} This command is on a cooldown.".format(ctx.author.mention))
+        await ctx.send(f"{ctx.author.mention} This command is on a cooldown.")
     elif isinstance(error, commands.DisabledCommand):
         await ctx.send("This command is currently disabled.")
     elif isinstance(error, aiohttp.client_exceptions.ServerDisconnectedError) or isinstance(error, concurrent.futures._base.TimeoutError):
@@ -199,13 +199,13 @@ async def on_command_error(ctx, error):
         await ctx.send_help(ctx.command)
     else:
         if ctx.command:
-            await ctx.send("An error occurred while processing the `{}` command.".format(ctx.command.name))
-        print('Ignoring exception in command {0.command} in {0.message.channel}'.format(ctx))
+            await ctx.send(f"An error occurred while processing the `{ctx.command.name}` command.")
+        print(f'Ignoring exception in command {ctx.command} in {ctx.message.channel}')
         tb = traceback.format_exception(type(error), error, error.__traceback__)
         error_trace = "".join(tb)
         print(error_trace)
         embed = discord.Embed(description=error_trace.replace("__", "_\\_").replace("**", "*\\*"))
-        await bot.err_logs_channel.send("An error occurred while processing the `{}` command in channel `{}`.".format(ctx.command.name, ctx.message.channel), embed=embed)
+        await bot.err_logs_channel.send(f"An error occurred while processing the `{ctx.command.name}` command in channel `{ctx.message.channel}`.", embed=embed)
 
 
 @bot.event
@@ -213,12 +213,12 @@ async def on_error(event_method, *args, **kwargs):
     print(args[0])
     if isinstance(args[0], commands.errors.CommandNotFound):
         return
-    print("Ignoring exception in {}".format(event_method))
+    print(f"Ignoring exception in {event_method}")
     tb = traceback.format_exc()
     error_trace = "".join(tb)
     print(error_trace)
     embed = discord.Embed(description=error_trace.replace("__", "_\\_").replace("**", "*\\*"))
-    await bot.err_logs_channel.send("An error occurred while processing `{}`.".format(event_method), embed=embed)
+    await bot.err_logs_channel.send(f"An error occurred while processing `{event_method}`.", embed=embed)
 
 
 @bot.event
@@ -227,7 +227,7 @@ async def on_ready():
     if len(bot.disabled_commands) > 0:
         for c in bot.disabled_commands:
             bot.get_command(c).enabled = False
-            print('Disabled {}'.format(c))
+            print(f'Disabled {c}')
     for guild in bot.guilds:
         try:
             if guild.id in (bot.testing_id, bot.flagbrew_id):
@@ -253,7 +253,7 @@ async def on_ready():
 
             else:
                 try:
-                    await guild.owner.send("Left your server, `{}`, as this bot should only be used on the PKSM server under this token.".format(guild.name))
+                    await guild.owner.send(f"Left your server, `{guild.name}`, as this bot should only be used on the PKSM server under this token.")
                 except discord.Forbidden:
                     for channel in guild.channels:
                         if guild.me.permissions_in(channel).send_messages and isinstance(channel, discord.TextChannel):
@@ -269,9 +269,9 @@ async def on_ready():
                 os.remove('restart.txt')
             except (discord.NotFound, FileNotFoundError):
                 pass
-            print("Initialized on {}.".format(guild.name))
+            print(f"Initialized on {guild.name}.")
         except:
-            print("Failed to initialize on {}".format(guild.name))
+            print(f"Failed to initialize on {guild.name}")
     
     if bot.is_beta:
         id = 614206536394342533
@@ -307,7 +307,7 @@ for extension in cogs:
     try:
         bot.load_extension(extension)
     except Exception as e:
-        print('{} failed to load.\n{}: {}'.format(extension, type(e).__name__, e))
+        print(f'{extension} failed to load.\n{type(e).__name__}: {e}')
         failed_cogs.append([extension, type(e).__name__, e])
 if not failed_cogs:
     print('All addons loaded!')
@@ -320,9 +320,9 @@ async def load(ctx, *, module):
     """Loads an addon"""
     if ctx.author == ctx.guild.owner or ctx.author == bot.creator or ctx.author == bot.allen:
         try:
-            bot.load_extension("addons.{}".format(module))
+            bot.load_extension(f"addons.{module}")
         except Exception as e:
-            await ctx.send(':anger: Failed!\n```\n{}: {}\n```'.format(type(e).__name__, e))
+            await ctx.send(f':anger: Failed!\n```\n{type(e).__name__}: {e}\n```')
         else:
             await ctx.send(':white_check_mark: Extension loaded.')
     else:
@@ -333,9 +333,9 @@ async def unload(ctx, *, module):
     """Unloads an addon"""
     if ctx.author == ctx.guild.owner or ctx.author == bot.creator or ctx.author == bot.allen:
         try:
-            bot.unload_extension("addons.{}".format(module))
+            bot.unload_extension(f"addons.{module}")
         except Exception as e:
-            await ctx.send(':anger: Failed!\n```\n{}: {}\n```'.format(type(e).__name__, e))
+            await ctx.send(f':anger: Failed!\n```\n{type(e).__name__}: {e}\n```')
         else:
             await ctx.send(':white_check_mark: Extension unloaded.')
     else:
@@ -362,11 +362,11 @@ async def reload(ctx):
         loaded_cogs = bot.cogs.copy()
         for addon in loaded_cogs:
             try:
-                bot.reload_extension("addons.{}".format(addon_dict[addon]))
+                bot.reload_extension(f"addons.{addon_dict[addon]}")
             except Exception as e:
                 if addon not in addon_dict.keys():
                     pass
-                errors += 'Failed to load addon: `{}.py` due to `{}: {}`\n'.format(addon, type(e).__name__, e)
+                errors += f'Failed to load addon: `{addon}.py` due to `{type(e).__name__}: {e}`\n'
             if len(bot.disabled_commands) > 0:
                 for c in bot.disabled_commands:
                     bot.get_command(c).enabled = False
@@ -420,11 +420,11 @@ async def about(ctx):
     embed = discord.Embed()
     embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in the FlagBrew server.\n"
                             "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
-                            "Written by {}.".format(bot.creator.mention))
+                            f"Written by {bot.creator.mention}.")
     embed.set_author(name="GriffinG1", url='https://github.com/GriffinG1', icon_url='https://avatars0.githubusercontent.com/u/28538707')
     total_mem = psutil.virtual_memory().total/float(1<<30)
     used_mem = psutil.Process().memory_info().rss/float(1<<20)
-    embed.set_footer(text="{} MB used out of {} GB".format(round(used_mem, 2), round(total_mem, 2)))
+    embed.set_footer(text=f"{round(used_mem, 2)} MB used out of {round(total_mem, 2)} GB")
     await ctx.send(embed=embed)
 
 

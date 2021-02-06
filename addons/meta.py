@@ -28,7 +28,7 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         self.addons = {}
         for key in keys.keys():
             self.addons[keys[key].__name__] = keys[key]
-        print('Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'Addon "{self.__class__.__name__}" loaded')
 
     @commands.command(hidden=True)
     async def failedloads(self, ctx):
@@ -49,15 +49,15 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
                 cl_obj = self.addons[cl]
                 func = getattr(cl_obj, function)
             except AttributeError:
-                return await ctx.send("I couldn't find a function named `{}` in the `{}` class.".format(function, cl))
+                return await ctx.send(f"I couldn't find a function named `{function}` in the `{cl}` class.")
             src = inspect.getsource(func)
         else:
             src = inspect.getsource(command.callback)
         if len(src) < 1900:
             src = src.replace('`', r'\`')
-            await ctx.send("Source code for the `{}` command{}: ```py\n{}\n```".format(function, " in the `" + cl + "` class" if cl in self.addons else "", src))
+            await ctx.send(f"Source code for the `{function}` command{' in the `' + cl + '` class' if cl in self.addons else ''}: ```py\n{src}\n```")
         else:
-            await ctx.send("Source code for the `{}` command{} (Large source code):".format(function, " in the `" + cl + "` class" if cl in self.addons else ""), file=discord.File(io.BytesIO(src.encode("utf-8")), filename="output.txt"))
+            await ctx.send(f"Source code for the `{function}` command{' in the `' + cl + '` class' if cl in self.addons else ''} (Large source code):", file=discord.File(io.BytesIO(src.encode("utf-8")), filename="output.txt"))
 
     @commands.has_any_role("Bot Dev", "Discord Moderator")
     @commands.command()
@@ -74,13 +74,13 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         elif not activity_type is None and new_activity is None:
             raise commands.errors.MissingRequiredArgument(inspect.Parameter(name='new_activity', kind=inspect.Parameter.POSITIONAL_ONLY))
         if not activity_type.lower() in activity_types:
-            return await ctx.send("`{}` is not a valid activity type. Valid activity types: `{}`.".format(activity_type, "`, `".join(x for x in activity_types)))
+            return await ctx.send(f"`{activity_type}` is not a valid activity type. Valid activity types: `{'`, `'.join(x for x in activity_types)}`.")
         elif len(new_activity) > 30:
-            return await ctx.send("Activities must be limited to less than 30 characters. Inputted value length: {} characters.".format(len(new_activity)))
+            return await ctx.send(f"Activities must be limited to less than 30 characters. Inputted value length: {len(new_activity)} characters.")
         real_type = activity_types[activity_type.lower()]
         activity = discord.Activity(name=new_activity, type=real_type)
         await self.bot.change_presence(activity=activity)
-        await ctx.send("Successfully changed my activity to: `{} {}`.".format(activity_type.title(), new_activity))
+        await ctx.send(f"Successfully changed my activity to: `{activity_type.title()} {new_activity}`.")
 
     @commands.has_any_role("Bot Dev", "Discord Moderator")
     @commands.command()
@@ -90,9 +90,9 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             await ctx.me.edit(nick=None)
             return await ctx.send("Cleared my nickname.")
         elif len(nick) < 2 or len(nick) > 32:
-            return await ctx.send("Nicknames must be greater than or equal to 2 characters, but less than 33 characters. Inputted value length: {} characters.".format(len(nick)))
+            return await ctx.send(f"Nicknames must be greater than or equal to 2 characters, but less than 33 characters. Inputted value length: {len(nick)} characters.")
         await ctx.me.edit(nick=nick)
-        await ctx.send("Successfully changed my nickname to: `{}`".format(nick))
+        await ctx.send(f"Successfully changed my nickname to: `{nick}`")
 
 
 def setup(bot):
