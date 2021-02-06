@@ -22,7 +22,7 @@ class pkhex(commands.Cog):
         self.bot = bot
         self.failure_count = 0
         self.api_check = bot.loop.create_task(self.confirm_api_link())  # loops referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L23
-        print('Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'Addon "{self.__class__.__name__}" loaded')
         
     def __unload(self):
         self.api_check.cancel()
@@ -46,7 +46,7 @@ class pkhex(commands.Cog):
                 self.failure_count += 1
                 if self.failure_count == 3:  # Only unload if it fails concurrently 3+ times, to prevent accidental unloads on server restarts
                     for x in (self.bot.creator, self.bot.allen):
-                        await x.send("pkhex.py commands were disabled as API connection was dropped. Status code: `{}`".format(r))
+                        await x.send(f"pkhex.py commands were disabled as API connection was dropped. Status code: `{r}`")
                     for command in self.get_commands():
                         if not command.name == "rpc":
                             command.enabled = False
@@ -105,7 +105,7 @@ class pkhex(commands.Cog):
             if content == b'':
                 content = await r.read()
             if content == b'':
-                await ctx.send("Couldn't get response content. {} and {} please investigate!".format(self.bot.creator.mention, self.bot.allen.mention))
+                await ctx.send(f"Couldn't get response content. {self.bot.creator.mention} and {self.bot.allen.mention} please investigate!")
                 await ctx.send(content)
                 return 400
             return [r.status, rj, content]
@@ -147,9 +147,9 @@ class pkhex(commands.Cog):
             embed.add_field(name="Gender", value=data["Gender"])
         if is_set:
             embed.add_field(name=u"\u200B", value=u"\u200B", inline=False)
-        embed.add_field(name="EVs", value="**HP**: {}\n**Atk**: {}\n**Def**: {}\n**SpAtk**: {}\n**SpDef**: {}\n**Spd**: {}".format(data["HP_EV"], data["ATK_EV"], data["DEF_EV"], data["SPA_EV"], data["SPD_EV"], data["SPE_EV"]))
-        embed.add_field(name="IVs", value="**HP**: {}\n**Atk**: {}\n**Def**: {}\n**SpAtk**: {}\n**SpDef**: {}\n**Spd**: {}".format(data["HP_IV"], data["ATK_IV"], data["DEF_IV"], data["SPA_IV"], data["SPD_IV"], data["SPE_IV"]))
-        embed.add_field(name="Moves", value="**1**: {}\n**2**: {}\n**3**: {}\n**4**: {}".format(data["Move1"], data["Move2"], data["Move3"], data["Move4"]))
+        embed.add_field(name="EVs", value=f"**HP**: {data['HP_EV']}\n**Atk**: {data['ATK_EV']}\n**Def**: {data['DEF_EV']}\n**SpAtk**: {data['SPA_EV']}\n**SpDef**: {data['SPD_EV']}\n**Spd**: {data['SPE_EV']}")
+        embed.add_field(name="IVs", value=f"**HP**: {data['HP_IV']}\n**Atk**: {data['ATK_IV']}\n**Def**: {data['DEF_IV']}\n**SpAtk**: {data['SPA_IV']}\n**SpDef**: {data['SPD_IV']}\n**Spd**: {data['SPE_IV']}")
+        embed.add_field(name="Moves", value=f"**1**: {data['Move1']}\n**2**: {data['Move2']}\n**3**: {data['Move3']}\n**4**: {data['Move4']}")
         return embed
 
     def list_to_embed(self, embed, l):
@@ -170,7 +170,7 @@ class pkhex(commands.Cog):
         if " " in form:
             form = form.replace(" ", "-")
         if species == "minior":  # fuck you fuck you fuck you
-            return "{}/ultra-sun-ultra-moon/normal/minior-meteor.png".format(self.bot.sprite_url)
+            return f"{self.bot.sprite_url}/ultra-sun-ultra-moon/normal/minior-meteor.png"
         elif species == "sinistea" and sprite is True:
             form = None
         if form and not species == "rockruff":
@@ -179,13 +179,13 @@ class pkhex(commands.Cog):
             elif form == "f":
                 form = "female"
             if not sprite:
-                return "{}/ultra-sun-ultra-moon/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
+                return f"{self.bot.sprite_url}/ultra-sun-ultra-moon/{shiny}/{species}-{form}.png"
             if form == "female":
-                return "{}/sprites/8/{}/female/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
-            return "{}/sprites/8/{}/{}-{}.png".format(self.bot.sprite_url, shiny, species, form)
+                return f"{self.bot.sprite_url}/sprites/8/{shiny}/female/{species}-{form}.png"
+            return f"{self.bot.sprite_url}/sprites/8/{shiny}/{species}-{form}.png"
         elif sprite:
-            return "{}/sprites/8/{}/{}.png".format(self.bot.sprite_url, shiny, species)
-        return "{}/ultra-sun-ultra-moon/{}/{}.png".format(self.bot.sprite_url, shiny, species)
+            return f"{self.bot.sprite_url}/sprites/8/{shiny}/{species}.png"
+        return f"{self.bot.sprite_url}/ultra-sun-ultra-moon/{shiny}/{species}.png"
 
     @commands.command(name="rpc")
     async def reactivate_pkhex_commands(self, ctx):
@@ -194,10 +194,10 @@ class pkhex(commands.Cog):
             raise commands.errors.CheckFailure()
         r = await self.ping_api_func()
         if not r == 200:
-            return await ctx.send("Cancelled the command reactivation; status code from FlagBrew server is `{}`.".format(r))
+            return await ctx.send(f"Cancelled the command reactivation; status code from FlagBrew server is `{r}`.")
         for command in self.get_commands():
             if command.enabled is True:
-                await ctx.send("Cancelled the command reactivation for `{}`; command already enabled.".format(command.name))
+                await ctx.send(f"Cancelled the command reactivation for `{command.name}`; command already enabled.")
                 continue
             command.enabled = True
         self.api_check = self.bot.loop.create_task(self.confirm_api_link())
@@ -212,7 +212,7 @@ class pkhex(commands.Cog):
         r = await self.ping_api_func() 
         now = datetime.now()
         ping = now - msgtime
-        await ctx.send("🏓 CoreAPI response time is {} milliseconds. Current CoreAPI status code is {}.".format(str(ping.microseconds / 1000.0), r))
+        await ctx.send(f"🏓 CoreAPI response time is {str(ping.microseconds / 1000.0)} milliseconds. Current CoreAPI status code is {r}.")
 
     @commands.command(name='legality', aliases=['illegal'])
     async def check_legality(self, ctx, *, data=""):
@@ -246,8 +246,8 @@ class pkhex(commands.Cog):
                 return await ctx.send("Are you sure that's a real pokemon?")
             rj = await r.json()
             if rj[0] == "":
-                return await ctx.send("No forms available for `{}`.".format(species.title()))
-            await ctx.send("Available forms for {}: `{}`.".format(species.title(), '`, `'.join(rj)))
+                return await ctx.send(f"No forms available for `{species.title()}`.")
+            await ctx.send(f"Available forms for {species.title()}: `{'`, `'.join(rj)}`.")
 
     @commands.command(name='pokeinfo', aliases=['pi'])
     @restricted_to_bot
@@ -297,56 +297,56 @@ class pkhex(commands.Cog):
                 if not r.status == 200:
                     return await ctx.send("Are you sure that's a real pokemon (or proper form)?")
                 rj = await r.json()
-                embed = discord.Embed(title="Basic info for {}{}".format(species.title(), '-' + form.title() if form else ""), colour=colours[rj["Color"]])
-                type_str = "Type 1: {}".format(rj["Types"][0])
+                embed = discord.Embed(title=f"Basic info for {species.title()}{'-' + form.title() if form else ''}", colour=colours[rj["Color"]])
+                type_str = f"Type 1: {rj['Types'][0]}"
                 if not rj["Types"][1] == rj["Types"][0]:
-                    type_str += "\nType 2: {}".format(rj["Types"][1])
+                    type_str += f"\nType 2: {rj['Types'][1]}"
                 embed.add_field(name="Types", value=type_str)
-                ability_str = "Ability (1): {}".format(rj["Ability1"])
+                ability_str = f"Ability (1): {rj['Ability1']}"
                 if not rj["Ability2"] == rj["Ability1"]:
-                    ability_str += "\nAbility (2): {}".format(rj["Ability2"])
+                    ability_str += f"\nAbility (2): {rj['Ability2']}"
                 if rj["HasHiddenAbility"]:
-                    ability_str += "\nAbility (H): {}".format(rj["AbilityH"])
+                    ability_str += f"\nAbility (H): {rj['AbilityH']}"
                 embed.add_field(name="Abilities", value=ability_str)
-                embed.add_field(name="Height & Weight", value="{} meters\n{} kilograms".format(rj["Height"] / 100, rj["Weight"] / 10))
+                embed.add_field(name="Height & Weight", value=f"{rj['Height'] / 100} meters\n{rj['Weight'] / 10} kilograms")
                 if rj["IsDualGender"]:
                     ratio = (rj["Gender"] / 254) * 100
                     ratio = round(ratio, 2)
-                    embed.add_field(name="Gender Ratio", value="~{}% Female".format(ratio))
+                    embed.add_field(name="Gender Ratio", value=f"~{ratio}% Female")
                 else:
                     embed.add_field(name="Gender", value="Genderless" if rj["Genderless"] else "Male" if rj["OnlyMale"] else "Female")
                 embed.add_field(name="EXP Growth", value=rj["EXPGrowth"])
                 embed.add_field(name="Evolution Stage", value=rj["EvoStage"])
                 embed.add_field(name="Hatch Cycles", value=rj["HatchCycles"])
                 embed.add_field(name="Base Friendship", value=rj["BaseFriendship"])
-                embed.add_field(name="Catch Rate", value="{}/255".format(rj["CatchRate"]))
-                egg_str = "Egg Group 1: {}".format(rj["EggGroups"][0])
+                embed.add_field(name="Catch Rate", value=f"{rj['CatchRate']}/255")
+                egg_str = f"Egg Group 1: {rj['EggGroups'][0]}"
                 if not rj["EggGroups"][1] == rj["EggGroups"][0]:
-                    egg_str += "\nEgg Group 2: {}".format(rj["EggGroups"][1])
+                    egg_str += f"\nEgg Group 2: {rj['EggGroups'][1]}"
                 embed.add_field(name="Egg Groups", value=egg_str)
-                embed.add_field(name="Base stats ({})".format(rj["BST"]), value="```HP:    {} Atk:   {}\nDef:   {} SpAtk: {} \nSpDef: {} Spd:   {}```".format(rj["HP"], rj["ATK"], rj["DEF"], rj["SPA"], rj["SPD"], rj["SPE"]))
+                embed.add_field(name=f"Base stats ({rj['BST']})", value=f"```HP:    {rj['HP']} Atk:   {rj['ATK']}\nDef:   {rj['DEF']} SpAtk: {rj['SPA']} \nSpDef: {rj['SPD']} Spd:   {rj['SPE']}```")
                 embed.set_thumbnail(url=self.set_sprite_thumbnail(shiny=shiny, species=species, form=form))
                 try:
                     return await ctx.send(embed=embed)
                 except discord.HTTPException:
                     embed.set_thumbnail(url="")
-                    return await ctx.send("{} I threw an HTTPException. This is likely due to form stupidity. So don't do that again. Otherwise, you get warned. {} and {}, for logging purposes.".format(ctx.author.mention, self.bot.creator.mention, self.bot.pie.mention), embed=embed)
+                    return await ctx.send(f"{ctx.author.mention} I threw an HTTPException. This is likely due to form stupidity. So don't do that again. Otherwise, you get warned. {self.bot.creator.mention} and {self.bot.pie.mention}, for logging purposes.", embed=embed)
 
         # Get info for inputted file
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/bot/pokemon_info")
         if r == 400:
             return
         rj = r[1]
-        embed = discord.Embed(title="Data for {}".format(rj["Nickname"]))
+        embed = discord.Embed(title=f"Data for {rj['Nickname']}")
         embed = self.embed_fields(ctx, embed, rj)
         if embed == 400:
-            return await ctx.send("{} Something in that pokemon is *very* wrong. Your request has been canceled. Please do not try that mon again.".format(ctx.author.mention))
+            return await ctx.send(f"{ctx.author.mention} Something in that pokemon is *very* wrong. Your request has been canceled. Please do not try that mon again.")
         embed.set_thumbnail(url=rj["SpeciesSpriteURL"])
         embed.colour = discord.Colour.green() if rj["IllegalReasons"] == "Legal!" else discord.Colour.red()
         try:
             await ctx.send(embed=embed)
         except Exception as e:
-            return await ctx.send("There was an error showing the data for this pokemon. {}, {}, or {} please check this out!\n{} please do not delete the file. Exception below.\n\n```{}```".format(self.bot.creator.mention, self.bot.pie.mention, self.bot.allen.mention, ctx.author.mention, e))
+            return await ctx.send(f"There was an error showing the data for this pokemon. {self.bot.creator.mention}, {self.bot.pie.mention}, or {self.bot.allen.mention} please check this out!\n{ctx.author.mention} please do not delete the file. Exception below.\n\n```{e}```")
 
     @commands.command(name='qr')
     @restricted_to_bot
@@ -362,7 +362,7 @@ class pkhex(commands.Cog):
         r = r[1]
         decoded_qr = base64.decodebytes(r['QR'].encode("ascii"))
         qr = discord.File(io.BytesIO(decoded_qr), 'pokemon_qr.png')
-        await ctx.send("QR containing a {} for Generation {}".format(r["Species"], r["Generation"]), file=qr)
+        await ctx.send(f"QR containing a {r['Species']} for Generation {r['Generation']}", file=qr)
 
     @commands.command(name='learns', aliases=['learn'])
     async def check_moves(self, ctx, generation: int, *, input_data):
@@ -383,9 +383,9 @@ class pkhex(commands.Cog):
             if r.status == 400:
                 return await ctx.send("Something you sent was invalid. Please double check your data and try again.")
             rj = await r.json()
-            embed = discord.Embed(title="Move Lookup for {} in Generation {}".format(pokemon.title(), str(generation)), description="")
+            embed = discord.Embed(title=f"Move Lookup for {pokemon.title()} in Generation {str(generation)}", description="")
             for move in rj:
-                embed.description += "**{}** is {}learnable.\n".format(move["name"].title(), "not " if not move["learnable"] else "")
+                embed.description += f"**{move['name'].title()}** is {'not ' if not move['learnable'] else ''}learnable.\n"
             await ctx.send(embed=embed)
 
     @commands.command(name='find')
@@ -394,7 +394,7 @@ class pkhex(commands.Cog):
         if not await self.ping_api_func() == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         elif not generation in range(1, 9):
-            return await ctx.send("The inputted generation must be a valid integer between 1 and 8 inclusive. You entered: `{}`".format(generation))
+            return await ctx.send(f"The inputted generation must be a valid integer between 1 and 8 inclusive. You entered: `{generation}`")
         input_data = input_data.replace("| ", "|").replace(" |", "|").replace(" | ", "|")
         input_data = input_data.split("|")
         pokemon = input_data[0]
@@ -415,16 +415,16 @@ class pkhex(commands.Cog):
                     games_str = ", ".join(games)
                     games_str = games_str.replace("GG", "LGPE")
                     if encs["encounterType"] == "Egg":
-                        field_values += "{} as **egg**.\n".format(games_str)
+                        field_values += f"{games_str} as **egg**.\n"
                     elif not loc["name"] == "":
-                        field_values += "{} in **{}**.\n".format(games_str, loc["name"])
+                        field_values += f"{games_str} in **{loc['name']}**.\n"
                     elif generation == 1:
-                        field_values += "{} in **Unknown**.\n".format(games_str)
+                        field_values += f"{games_str} in **Unknown**.\n"
                         embed.set_footer(text="Please ask Kurt#6024 to add route names to gen 1 location data")
                 if field_values:
-                    embed.add_field(name="As {}".format(encs["encounterType"]), value=field_values, inline=False)
+                    embed.add_field(name=f"As {encs['encounterType']}", value=field_values, inline=False)
             if len(embed.fields) == 0:
-                return await ctx.send("Could not find matching encounter data for {} in Generation {}{}{}.".format(pokemon.title(), generation, " with move(s) " if len(moves) > 0 else "", ", ".join([move.title() for move in moves])))
+                return await ctx.send(f"Could not find matching encounter data for {pokemon.title()} in Generation {generation}{' with move(s) ' if len(moves) > 0 else ''}{', '.join([move.title() for move in moves])}.")
             await ctx.send(embed=embed)
 
     @commands.command(name="gpssfetch")
@@ -443,7 +443,7 @@ class pkhex(commands.Cog):
                 for pkmn in rj["results"]:
                     if pkmn["code"] == code:
                         pkmn_data = pkmn["pokemon"]
-                        filename = pkmn_data["Species"] + " Code_{}".format(code)
+                        filename = pkmn_data["Species"] + f" Code_{code}"
                         if pkmn_data["Generation"] == "LGPE":
                             filename += ".pb7"
                         else:
@@ -451,15 +451,15 @@ class pkhex(commands.Cog):
                         pkmn_b64 = binascii.b2a_base64(await download.read())
                         pkmn_file = discord.File(io.BytesIO(base64.decodebytes(pkmn_b64)), filename)
                         await asyncio.sleep(1)
-                        m = await upload_channel.send("Pokemon fetched from the GPSS by {}".format(ctx.author), file=pkmn_file)
-                        embed = discord.Embed(description="[GPSS Page]({}) | [Download link]({})".format(self.bot.gpss_url + "gpss/view/" + code, m.attachments[0].url))
+                        m = await upload_channel.send(f"Pokemon fetched from the GPSS by {ctx.author}", file=pkmn_file)
+                        embed = discord.Embed(description=f"[GPSS Page]({self.bot.gpss_url + 'gpss/view/' + code}) | [Download link]({m.attachments[0].url})")
                         embed = self.embed_fields(ctx, embed, pkmn_data)
                         if embed == 400:
-                            return await ctx.send("Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{}: Mon was gen3+ and missing origin game. Code: `{}`".format(self.bot.pie.mention, code))
-                        embed.set_author(icon_url=self.set_sprite_thumbnail(mon_info=pkmn_data, sprite=True), name="Data for {}".format(pkmn_data["Nickname"]))
-                        embed.set_thumbnail(url=self.bot.gpss_url + "gpss/qr/{}".format(code))
+                            return await ctx.send(f"Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{self.bot.pie.mention}: Mon was gen3+ and missing origin game. Code: `{code}`")
+                        embed.set_author(icon_url=self.set_sprite_thumbnail(mon_info=pkmn_data, sprite=True), name=f"Data for {pkmn_data['Nickname']}")
+                        embed.set_thumbnail(url=self.bot.gpss_url + f"gpss/qr/{code}")
                         return await msg.edit(embed=embed, content=None)
-        await msg.edit(content="There was no pokemon on the GPSS with the code `{}`.".format(code))
+        await msg.edit(content=f"There was no pokemon on the GPSS with the code `{code}`.")
 
     @commands.command(name="gpsspost", aliases=['gpssupload'])
     @restricted_to_bot
@@ -475,16 +475,16 @@ class pkhex(commands.Cog):
             return
         code = str(r[2], encoding='utf-8')
         if len(code) > 10:
-            return await ctx.send("There seems to have been an issue getting the code for this upload. Please check <#586728153985056801> to confirm upload. If it didn't upload, try again later. {} and {} please investigate!".format(self.bot.creator.mention, self.bot.allen.mention))
+            return await ctx.send(f"There seems to have been an issue getting the code for this upload. Please check <#586728153985056801> to confirm upload. If it didn't upload, try again later. {self.bot.creator.mention} and {self.bot.allen.mention} please investigate!")
         elif r[0] == 400:
             return await ctx.send("That file is either not a pokemon, or something went wrong.")
         elif r[0] == 413:
-            return await ctx.send("That file is too large. {} and {}, please investigate.".format(self.bot.pie.mention, self.bot.allen.mention))
+            return await ctx.send(f"That file is too large. {self.bot.pie.mention} and {self.bot.allen.mention}, please investigate.")
         elif r[0] == 503:
             return await ctx.send("GPSS uploading is currently disabled. Please try again later.")
         elif r[0] == 200:
-            return await ctx.send("The provided pokemon has already been uploaded. You can find it at: {}gpss/view/{}".format(self.bot.gpss_url, code))
-        await ctx.send("Your pokemon has been uploaded! You can find it at: {}gpss/view/{}".format(self.bot.gpss_url, code))
+            return await ctx.send(f"The provided pokemon has already been uploaded. You can find it at: {self.bot.gpss_url}gpss/view/{code}")
+        await ctx.send(f"Your pokemon has been uploaded! You can find it at: {self.bot.gpss_url}gpss/view/{code}")
 
     @commands.command()
     @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
@@ -516,8 +516,8 @@ class pkhex(commands.Cog):
             filename = ctx.message.attachments[0].filename
         pokemon = discord.File(io.BytesIO(pokemon_decoded), "fixed-" + filename)
         qr = discord.File(io.BytesIO(qr_decoded), 'pokemon_qr.png')
-        m = await upload_channel.send("Pokemon legalized by {}".format(ctx.author), file=pokemon)
-        embed = discord.Embed(title="Fixed Legality Issues for {}".format(rj["species"]), description="[Download link]({})\n".format(m.attachments[0].url))
+        m = await upload_channel.send(f"Pokemon legalized by {ctx.author}", file=pokemon)
+        embed = discord.Embed(title=f"Fixed Legality Issues for {rj['species']}", description=f"[Download link]({m.attachments[0].url})\n")
         embed = self.list_to_embed(embed, rj["report"])
         embed.set_thumbnail(url="attachment://pokemon_qr.png")
         await msg.delete()
@@ -529,7 +529,7 @@ class pkhex(commands.Cog):
     async def convert(self, ctx, gen: int, *, showdown_set):
         """Converts a given showdown set into a pkx from a given generation. WIP."""
         if not gen in range(1, 9):
-            return await ctx.send("There is no generation {}.".format(gen))
+            return await ctx.send(f"There is no generation {gen}.")
         showdown_set = showdown_set.replace('`', '')
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         url = self.bot.api_url + "api/showdown"
@@ -542,23 +542,23 @@ class pkhex(commands.Cog):
                 message = await r.json()
                 message = message["message"]
                 if message == "Your Pokemon does not exist!":
-                    return await ctx.send("{} That pokemon doesn't exist!".format(ctx.author))
+                    return await ctx.send(f"{ctx.author} That pokemon doesn't exist!")
                 else:
-                    return await ctx.send("{} Conversion failed with error code `{}` and message:\n`{}`".format(ctx.author, r.status, message))
+                    return await ctx.send(f"{ctx.author} Conversion failed with error code `{r.status}` and message:\n`{message}`")
             elif not r.status == 200:
-                    return await ctx.send("{} Conversion failed with error code `{}`.".format(ctx.author, r.status))
+                    return await ctx.send(f"{ctx.author} Conversion failed with error code `{r.status}`.")
             rj = await r.json()
             pk64 = rj["Base64"].encode("ascii")
             pkx = base64.decodebytes(pk64)
             qr64 = rj["QR"].encode("ascii")
             qr = base64.decodebytes(qr64)
-        embed = discord.Embed(title="Data for {}".format(rj["Nickname"]))
+        embed = discord.Embed(title=f"Data for {rj['Nickname']}")
         embed.set_thumbnail(url=rj["SpeciesSpriteURL"])
         embed = self.embed_fields(ctx, embed, rj, is_set=True)
         pokemon_file = discord.File(io.BytesIO(pkx), "showdownset.pk" + str(gen))
         qr_file = discord.File(io.BytesIO(qr), "qrcode.png")
-        m = await upload_channel.send("Showdown set converted by {}".format(ctx.author), files=[pokemon_file, qr_file])
-        embed.description = "[PKX Download Link]({})\n[QR Code]({})".format(m.attachments[0].url, m.attachments[1].url)
+        m = await upload_channel.send(f"Showdown set converted by {ctx.author}", files=[pokemon_file, qr_file])
+        embed.description = f"[PKX Download Link]({m.attachments[0].url})\n[QR Code]({m.attachments[1].url})"
         embed.colour = discord.Colour.green() if rj["IllegalReasons"] == "Legal!" else discord.Colour.red()
         await ctx.send(embed=embed)
 

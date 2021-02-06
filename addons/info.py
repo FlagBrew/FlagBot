@@ -22,7 +22,7 @@ class Info(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        print("Addon \"{}\" loaded".format(self.__class__.__name__))
+        print(f"Addon \"{self.__class__.__name__}\" loaded")
         with open("saves/faqs/general.json", "r") as f:
             self.general_faq_dict = json.load(f)
         with open("saves/faqs/pksm.json", "r") as f:
@@ -35,11 +35,11 @@ class Info(commands.Cog):
     async def gen_qr(self, ctx, app):
         releases = None
         async with aiohttp.ClientSession() as session:
-            url = "https://api.github.com/repos/FlagBrew/{}/releases".format(app)
+            url = f"https://api.github.com/repos/FlagBrew/{app}/releases"
             async with session.get(url) as r:
                 releases = await r.json()
         for asset in releases[0]["assets"]:
-            if asset["name"] == "{}.cia".format(app):
+            if asset["name"] == f"{app}.cia":
                 qr = qrcode.QRCode(version=None)
                 qr.add_data(asset["browser_download_url"])
                 qr.make(fit=True)
@@ -90,7 +90,7 @@ class Info(commands.Cog):
             return await ctx.send(embed=embed)
         f = discord.File(io.BytesIO(img), filename="qr.png")
         embed.set_image(url="attachment://qr.png")
-        embed.set_footer(text="Version: {}".format(version))
+        embed.set_footer(text=f"Version: {version}")
         await ctx.send(file=f, embed=embed)
 
     @commands.command()
@@ -162,13 +162,13 @@ class Info(commands.Cog):
             faq_num = int(faq_num)
             invoked_faqs.append(faq_num)
             if faq_num > 0 and not faq_num <= len(loaded_faq):
-                return await ctx.send("Faq number {} doesn't exist.".format(faq_num))
+                return await ctx.send(f"Faq number {faq_num} doesn't exist.")
         for i_faq in invoked_faqs:
             await self.format_faq_embed(self, i_faq, ctx.channel, loaded_faq, faq_doc)
         embed = discord.Embed(title="Frequently Asked Questions")
-        embed.title += " - {}".format("PKSM" if faq_doc.lower() == "pksm" else faq_doc.title())
+        embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()}"
         for faq_arr in loaded_faq:
-            embed.add_field(name="{}: {}".format(loaded_faq.index(faq_arr) + 1, faq_arr["title"]), value=faq_arr["value"], inline=False)
+            embed.add_field(name=f"{loaded_faq.index(faq_arr) + 1}: {faq_arr['title']}", value=faq_arr["value"], inline=False)
         if faq_item == [""]: faq_item = ["0"]
         if not len(invoked_faqs) > 0:
             if ctx.author.id in self.bot.dm_list:
@@ -180,10 +180,10 @@ class Info(commands.Cog):
             elif ctx.channel not in (self.bot.bot_channel, self.bot.testing_channel, self.bot.bot_channel2) and not ctx.guild.id == 378420595190267915:
                 for user in usage_dm:
                     try:
-                        await user.send("Full faq command was attempted to be used in {} by {}\n\nHyperlink to command invoke: {}".format(ctx.channel.mention, ctx.author, ctx.message.jump_url))
+                        await user.send(f"Full faq command was attempted to be used in {ctx.channel.mention} by {ctx.author}\n\nHyperlink to command invoke: {ctx.message.jump_url}")
                     except discord.Forbidden:
                         pass  # Bot blocked
-                return await ctx.send("If you want to see the full faq, please use {}, as it is very spammy.".format(self.bot.bot_channel.mention))
+                return await ctx.send(f"If you want to see the full faq, please use {self.bot.bot_channel.mention}, as it is very spammy.")
             await ctx.send(embed=embed)
 
     @commands.command()  # Taken (and adjusted slightly) from https://github.com/nh-server/Kurisu/blob/master/addons/assistance.py#L198-L205
@@ -243,7 +243,7 @@ class Info(commands.Cog):
         else:
             extra_info = ""
             wiki_link_ext = ""
-        m = await ctx.send("You can read PKSM's wiki{} here: <https://github.com/FlagBrew/PKSM/wiki{}>".format(extra_info, wiki_link_ext))
+        m = await ctx.send(f"You can read PKSM's wiki{extra_info} here: <https://github.com/FlagBrew/PKSM/wiki{wiki_link_ext}>")
         await m.add_reaction("<:wikidiot:558815031836540940>")
 
     @commands.command()
@@ -312,7 +312,7 @@ class Info(commands.Cog):
         indexes = self.get_keys(key)
         if indexes == 400:
             return await ctx.send("That isn't a valid key!")
-        embed = discord.Embed(title="Matching inputs for `{}`".format(key))
+        embed = discord.Embed(title=f"Matching inputs for `{key}`")
         if len(indexes["3ds"]) > 0:
             embed.add_field(name="3DS inputs", value='`' + '` + `'.join(indexes["3ds"]) + '`')
         if len(indexes["switch"]) > 0:

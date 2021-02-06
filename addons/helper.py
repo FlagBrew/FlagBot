@@ -31,7 +31,7 @@ def spam_limiter(func):
                 if not ctx.author in message.mentions and not ctx.author == msg_ref_auth:
                     break
                 elif count > 0:
-                    return await ctx.send("{} read the goddamned message I sent, instead of just using the command again and spamming. If you ignore the contents of *this* message, you will be warned.".format(ctx.author.mention))
+                    return await ctx.send(f"{ctx.author.mention} read the goddamned message I sent, instead of just using the command again and spamming. If you ignore the contents of *this* message, you will be warned.")
             count += 1
         await func(*args, **kwargs)
     return wrapper

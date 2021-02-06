@@ -16,7 +16,7 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.mute_loop = bot.loop.create_task(self.check_mute_loop())  # loops referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L23
-        print('Addon "{}" loaded'.format(self.__class__.__name__))
+        print(f'Addon "{self.__class__.__name__}" loaded')
         
     def __unload(self):
         self.mute_loop.cancel()
@@ -35,7 +35,7 @@ class Moderation(commands.Cog):
                 self.bot.mutes_dict[str(member.id)] = ""
                 with open("saves/mutes.json", "w") as f:
                     json.dump(self.bot.mutes_dict, f, indent=4)
-                await member.send("Your mute on {} has expired!".format(self.bot.guild))
+                await member.send(f"Your mute on {self.bot.guild} has expired!")
             await asyncio.sleep(1)
 
     async def generic_ban_things(self, ctx, member, reason):
@@ -55,13 +55,13 @@ class Moderation(commands.Cog):
         except AttributeError:
             pass  # Happens when banning via id, as they have no roles if not on guild
         try:
-            await member.send("You were banned from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, please contact a staff member".format(reason))
+            await member.send(f"You were banned from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, please contact a staff member")
         except discord.Forbidden:
             pass  # bot blocked or not accepting DMs
-        reason += "\n\nAction done by {} (This is to deal with audit log scraping)".format(ctx.author)
+        reason += f"\n\nAction done by {ctx.author} (This is to deal with audit log scraping)"
         try:
             if len(reason) > 512:
-                await ctx.guild.ban(member, delete_message_days=0, reason="Failed to log reason as length was {}. Please check bot logs.".format(len(reason)))
+                await ctx.guild.ban(member, delete_message_days=0, reason=f"Failed to log reason as length was {len(reason)}. Please check bot logs.")
             else:
                 await ctx.guild.ban(member, delete_message_days=0, reason=reason)
         except discord.Forbidden:  # i have no clue
@@ -74,7 +74,7 @@ class Moderation(commands.Cog):
             embed.set_image(url="https://fm1337.com/static/img/eevee-banned.png")
         if img_choice in range(25, 27):  # giratina
             embed.set_image(url="https://fm1337.com/static/img/giratina-banned.png")
-        await ctx.send("Successfully banned user {}!".format(member), embed=embed)
+        await ctx.send(f"Successfully banned user {member}!", embed=embed)
 
     @commands.command(pass_context=True)
     @commands.has_any_role("Discord Moderator")
@@ -85,21 +85,21 @@ class Moderation(commands.Cog):
         elif any(r for r in self.bot.protected_roles if r in member.roles):
             return await ctx.send("You can't kick a staff member!")
         else:
-            embed = discord.Embed(title="{} kicked".format(member))
-            embed.description = "{} was kicked by {} for:\n\n{}".format(member, ctx.message.author, reason)
+            embed = discord.Embed(title=f"{member} kicked")
+            embed.description = f"{member} was kicked by {ctx.message.author} for:\n\n{reason}"
             try:
                 await self.bot.logs_channel.send(embed=embed)
             except discord.Forbidden:
                 pass  # beta bot can't log
             try:
-                await member.send("You were kicked from FlagBrew for:\n\n`{}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY".format(reason))
+                await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY")
             except discord.Forbidden:
                 pass  # bot blocked or not accepting DMs
             if len(reason) > 512:
-                await member.kick(reason="Failed to log reason, as reason length was {}. Please check bot logs.".format(len(reason)))
+                await member.kick(reason=f"Failed to log reason, as reason length was {len(reason)}. Please check bot logs.")
             else:
                 await member.kick(reason=reason)
-            await ctx.send("Successfully kicked user {}!".format(member))
+            await ctx.send(f"Successfully kicked user {member}!")
 
     @commands.command(pass_context=True)
     @commands.has_any_role("Discord Moderator")
@@ -145,33 +145,33 @@ class Moderation(commands.Cog):
         self.bot.mutes_dict[str(member.id)] = "Indefinite"
         with open("saves/mutes.json", "w") as f:
             json.dump(self.bot.mutes_dict, f, indent=4)
-        embed = discord.Embed(title="{} ({}) muted".format(member, member.id))
-        embed.description = "{} was muted by {} for:\n\n{}".format(member, ctx.message.author, reason)
+        embed = discord.Embed(title=f"{member} ({member.id}) muted")
+        embed.description = f"{member} was muted by {ctx.message.author} for:\n\n{reason}"
         try:
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta can't log
-        await ctx.send("Successfully muted {}!".format(member))
+        await ctx.send(f"Successfully muted {member}!")
 
     @commands.command()
     @commands.has_any_role("Discord Moderator")
     async def unmute(self, ctx, member: discord.Member, *, reason="No reason was given."):
         """Unmutes a user"""
         if member == ctx.message.author or any(r for r in self.bot.protected_roles if r in member.roles):
-            return await ctx.send("How did {} get muted...?".format(member.mention))
+            return await ctx.send(f"How did {member.mention} get muted...?")
         elif self.bot.mute_role not in member.roles:
             return await ctx.send("That member isn't muted.")
         await member.remove_roles(self.bot.mute_role)
         self.bot.mutes_dict[str(member.id)] = ""
         with open("saves/mutes.json", "w") as f:
             json.dump(self.bot.mutes_dict, f, indent=4)
-        embed = discord.Embed(title="{} ({}) unmuted".format(member, member.id))
-        embed.description = "{} was unmuted by {} for:\n\n{}".format(member, ctx.message.author, reason)
+        embed = discord.Embed(title=f"{member} ({member.id}) unmuted")
+        embed.description = f"{member} was unmuted by {ctx.message.author} for:\n\n{reason}"
         try:
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta can't log
-        await ctx.send("Successfully unmuted {}!".format(member))
+        await ctx.send(f"Successfully unmuted {member}!")
 
     @commands.command(name="tmute")
     @commands.has_any_role("Discord Moderator")
@@ -205,19 +205,19 @@ class Moderation(commands.Cog):
         end_str = end.strftime("%Y-%m-%d %H:%M:%S")
         await member.add_roles(self.bot.mute_role)
         try:
-            await member.send("You have been muted on {} for\n\n`{}`\n\nYou will be unmuted on {}.".format(ctx.guild, reason, end_str))
+            await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.")
         except discord.Forbidden:
             pass  # blocked DMs
         self.bot.mutes_dict[str(member.id)] = end_str
         with open("saves/mutes.json", "w") as f:
             json.dump(self.bot.mutes_dict, f, indent=4)
-        embed = discord.Embed(title="{} ({}) timemuted".format(member, member.id))
-        embed.description = "{} timemuted by {} until {} UTC for:\n\n{}".format(member, ctx.message.author, end_str, reason)
+        embed = discord.Embed(title=f"{member} ({member.id}) timemuted")
+        embed.description = f"{member} timemuted by {ctx.message.author} until {end_str} UTC for:\n\n{reason}"
         try:
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta can't log
-        await ctx.send("Successfully muted {} until `{}` UTC!".format(member, end_str))
+        await ctx.send(f"Successfully muted {member} until `{end_str}` UTC!")
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
