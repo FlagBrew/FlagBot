@@ -111,45 +111,46 @@ class pkhex(commands.Cog):
             return [r.status, rj, content]
 
     def embed_fields(self, ctx, embed, data, is_set=False):
-        embed.add_field(name="Species", value=data["Species"])
-        embed.add_field(name="Level", value=data["Level"])
-        embed.add_field(name="Nature", value=data["Nature"])
-        if int(data["Generation"]) > 2:
-            embed.add_field(name="Ability", value=data["Ability"])
+        embed.add_field(name="Species", value=data["species"])
+        embed.add_field(name="Level", value=data["level"])
+        embed.add_field(name="Nature", value=data["nature"])
+        if int(data["generation"]) > 2:
+            embed.add_field(name="Ability", value=data["ability"])
         else:
             embed.add_field(name="Ability", value="N/A")
         if not is_set:
-            ot = data["OT"]
-            sid = data["SID"]
-            tid = data["TID"]
-            if int(data["Generation"]) > 2:
+            ot = data["ot"]
+            sid = data["sid"]
+            tid = data["tid"]
+            if int(data["generation"]) > 2:
                 embed.add_field(name="Original Trainer", value=f"{ot}\n({tid}/{sid})")
             else:
                 embed.add_field(name="Original Trainer", value=f"{ot}\n({tid})")
-        if not data["HT"] == "" and not is_set:
-            embed.add_field(name="Handling Trainer", value=data["HT"])
+        if not data["ht"] == "" and not is_set:
+            embed.add_field(name="Handling Trainer", value=data["ht"])
         elif not is_set:
             embed.add_field(name="Handling Trainer", value="N/A")
-        if int(data["Generation"]) > 2 and not data["MetLoc"] == "" and not is_set:
-            embed.add_field(name="Met Location", value=data["MetLoc"])
+        if int(data["generation"]) > 2 and not data["met_loc"] == "" and not is_set:
+            embed.add_field(name="Met Location", value=data["met_loc"])
         elif not is_set:
             embed.add_field(name="Met Location", value="N/A")
-        if int(data["Generation"]) > 2:
-            if data["Version"] == "":
+        if int(data["generation"]) > 2:
+            if data["version"] == "":
                 return 400
-            embed.add_field(name="Origin Game", value=data["Version"])
+            embed.add_field(name="Origin Game", value=data["version"])
         else:
             embed.add_field(name="Origin Game", value="N/A")
-        embed.add_field(name="Captured In", value=data["Ball"])
-        if data["HeldItem"] != "(None)" and is_set:
-            embed.add_field(name="Held Item", value=data["HeldItem"])
+        embed.add_field(name="Captured In", value=data["ball"])
+        if data["held_item"] != "(None)" and is_set:
+            embed.add_field(name="Held Item", value=data["held_item"])
         if is_set:
-            embed.add_field(name="Gender", value=data["Gender"])
+            embed.add_field(name="Gender", value=data["gender"])
         if is_set:
             embed.add_field(name=u"\u200B", value=u"\u200B", inline=False)
-        embed.add_field(name="EVs", value=f"**HP**: {data['HP_EV']}\n**Atk**: {data['ATK_EV']}\n**Def**: {data['DEF_EV']}\n**SpAtk**: {data['SPA_EV']}\n**SpDef**: {data['SPD_EV']}\n**Spd**: {data['SPE_EV']}")
-        embed.add_field(name="IVs", value=f"**HP**: {data['HP_IV']}\n**Atk**: {data['ATK_IV']}\n**Def**: {data['DEF_IV']}\n**SpAtk**: {data['SPA_IV']}\n**SpDef**: {data['SPD_IV']}\n**Spd**: {data['SPE_IV']}")
-        embed.add_field(name="Moves", value=f"**1**: {data['Move1']}\n**2**: {data['Move2']}\n**3**: {data['Move3']}\n**4**: {data['Move4']}")
+        embed.add_field(name="EVs", value=f"**HP**: {data['hp_ev']}\n**Atk**: {data['atk_ev']}\n**Def**: {data['def_ev']}\n**SpAtk**: {data['spa_ev']}\n**SpDef**: {data['spd_ev']}\n**Spd**: {data['spe_ev']}")
+        embed.add_field(name="IVs", value=f"**HP**: {data['hp_iv']}\n**Atk**: {data['atk_iv']}\n**Def**: {data['def_iv']}\n**SpAtk**: {data['spa_iv']}\n**SpDef**: {data['spd_iv']}\n**Spd**: {data['spe_iv']}")
+        moves = data["moves"]
+        embed.add_field(name="Moves", value=f"**1**: {moves[0]['move_name']}\n**2**: {moves[1]['move_name']}\n**3**: {moves[2]['move_name']}\n**4**: {moves[3]['move_name']}")
         return embed
 
     def list_to_embed(self, embed, l):
@@ -203,7 +204,7 @@ class pkhex(commands.Cog):
         self.api_check = self.bot.loop.create_task(self.confirm_api_link())
         return await ctx.send("Successfully reactivated the pkhex commands.")
 
-    @commands.command(hidden=True)
+    @commands.command(hidden=True, aliases=["pingapi"])
     async def ping_api(self, ctx):
         """Pings the CoreAPI server"""
         if not ctx.author in (self.bot.creator, self.bot.allen):
@@ -225,7 +226,7 @@ class pkhex(commands.Cog):
         if r == 400:
             return
         rj = r[1]
-        reasons = rj["IllegalReasons"].split("\n")
+        reasons = rj["illegal_reasons"].split("\n")
         if reasons[0] == "Legal!":
             return await ctx.send("That Pokemon is legal!")
         embed = discord.Embed(title="Legality Issues", description="", colour=discord.Colour.red())
@@ -297,34 +298,34 @@ class pkhex(commands.Cog):
                 if not r.status == 200:
                     return await ctx.send("Are you sure that's a real pokemon (or proper form)?")
                 rj = await r.json()
-                embed = discord.Embed(title=f"Basic info for {species.title()}{'-' + form.title() if form else ''}", colour=colours[rj["Color"]])
-                type_str = f"Type 1: {rj['Types'][0]}"
-                if not rj["Types"][1] == rj["Types"][0]:
-                    type_str += f"\nType 2: {rj['Types'][1]}"
+                embed = discord.Embed(title=f"Basic info for {species.title()}{'-' + form.title() if form else ''}", colour=colours[rj["color"]])
+                type_str = f"Type 1: {rj['types'][0]}"
+                if not rj["types"][1] == rj["types"][0]:
+                    type_str += f"\nType 2: {rj['types'][1]}"
                 embed.add_field(name="Types", value=type_str)
-                ability_str = f"Ability (1): {rj['Ability1']}"
-                if not rj["Ability2"] == rj["Ability1"]:
-                    ability_str += f"\nAbility (2): {rj['Ability2']}"
-                if rj["HasHiddenAbility"]:
-                    ability_str += f"\nAbility (H): {rj['AbilityH']}"
+                ability_str = f"Ability (1): {rj['ability1']}"
+                if not rj["ability2"] == rj["ability1"]:
+                    ability_str += f"\nAbility (2): {rj['ability2']}"
+                if rj["has_hidden_ability"]:
+                    ability_str += f"\nAbility (H): {rj['ability_h']}"
                 embed.add_field(name="Abilities", value=ability_str)
-                embed.add_field(name="Height & Weight", value=f"{rj['Height'] / 100} meters\n{rj['Weight'] / 10} kilograms")
-                if rj["IsDualGender"]:
-                    ratio = (rj["Gender"] / 254) * 100
+                embed.add_field(name="Height & Weight", value=f"{rj['height'] / 100} meters\n{rj['weight'] / 10} kilograms")
+                if rj["is_dual_gender"]:
+                    ratio = (rj["gender"] / 254) * 100
                     ratio = round(ratio, 2)
                     embed.add_field(name="Gender Ratio", value=f"~{ratio}% Female")
                 else:
-                    embed.add_field(name="Gender", value="Genderless" if rj["Genderless"] else "Male" if rj["OnlyMale"] else "Female")
-                embed.add_field(name="EXP Growth", value=rj["EXPGrowth"])
-                embed.add_field(name="Evolution Stage", value=rj["EvoStage"])
-                embed.add_field(name="Hatch Cycles", value=rj["HatchCycles"])
-                embed.add_field(name="Base Friendship", value=rj["BaseFriendship"])
-                embed.add_field(name="Catch Rate", value=f"{rj['CatchRate']}/255")
-                egg_str = f"Egg Group 1: {rj['EggGroups'][0]}"
-                if not rj["EggGroups"][1] == rj["EggGroups"][0]:
-                    egg_str += f"\nEgg Group 2: {rj['EggGroups'][1]}"
+                    embed.add_field(name="Gender", value="Genderless" if rj["genderless"] else "Male" if rj["only_male"] else "Female")
+                embed.add_field(name="EXP Growth", value=rj["exp_growth"])
+                embed.add_field(name="Evolution Stage", value=rj["evo_stage"])
+                embed.add_field(name="Hatch Cycles", value=rj["hatch_cycles"])
+                embed.add_field(name="Base Friendship", value=rj["base_friendship"])
+                embed.add_field(name="Catch Rate", value=f"{rj['catch_rate']}/255")
+                egg_str = f"Egg Group 1: {rj['egg_groups'][0]}"
+                if not rj["egg_groups"][1] == rj["egg_groups"][0]:
+                    egg_str += f"\nEgg Group 2: {rj['egg_groups'][1]}"
                 embed.add_field(name="Egg Groups", value=egg_str)
-                embed.add_field(name=f"Base stats ({rj['BST']})", value=f"```HP:    {rj['HP']} Atk:   {rj['ATK']}\nDef:   {rj['DEF']} SpAtk: {rj['SPA']} \nSpDef: {rj['SPD']} Spd:   {rj['SPE']}```")
+                embed.add_field(name=f"Base stats ({rj['bst']})", value=f"```HP:    {rj['hp']} Atk:   {rj['atk']}\nDef:   {rj['def']} SpAtk: {rj['spa']} \nSpDef: {rj['spd']} Spd:   {rj['spe']}```")
                 embed.set_thumbnail(url=self.set_sprite_thumbnail(shiny=shiny, species=species, form=form))
                 try:
                     return await ctx.send(embed=embed)
@@ -337,12 +338,12 @@ class pkhex(commands.Cog):
         if r == 400:
             return
         rj = r[1]
-        embed = discord.Embed(title=f"Data for {rj['Nickname']}")
+        embed = discord.Embed(title=f"Data for {rj['nickname']}")
         embed = self.embed_fields(ctx, embed, rj)
         if embed == 400:
             return await ctx.send(f"{ctx.author.mention} Something in that pokemon is *very* wrong. Your request has been canceled. Please do not try that mon again.")
-        embed.set_thumbnail(url=rj["SpeciesSpriteURL"])
-        embed.colour = discord.Colour.green() if rj["IllegalReasons"] == "Legal!" else discord.Colour.red()
+        embed.set_thumbnail(url=rj["species_sprite_url"])
+        embed.colour = discord.Colour.green() if rj["illegal_reasons"] == "Legal!" else discord.Colour.red()
         try:
             await ctx.send(embed=embed)
         except Exception as e:
@@ -360,9 +361,9 @@ class pkhex(commands.Cog):
         if r == 400:
             return
         r = r[1]
-        decoded_qr = base64.decodebytes(r['QR'].encode("ascii"))
+        decoded_qr = base64.decodebytes(r['qr'].encode("ascii"))
         qr = discord.File(io.BytesIO(decoded_qr), 'pokemon_qr.png')
-        await ctx.send(f"QR containing a {r['Species']} for Generation {r['Generation']}", file=qr)
+        await ctx.send(f"QR containing a {r['species']} for Generation {r['generation']}", file=qr)
 
     @commands.command(name='learns', aliases=['learn'])
     async def check_moves(self, ctx, generation: int, *, input_data):
@@ -443,7 +444,7 @@ class pkhex(commands.Cog):
                 for pkmn in rj["results"]:
                     if pkmn["code"] == code:
                         pkmn_data = pkmn["pokemon"]
-                        filename = pkmn_data["Species"] + f" Code_{code}"
+                        filename = pkmn_data["species"] + f" Code_{code}"
                         if pkmn_data["Generation"] == "LGPE":
                             filename += ".pb7"
                         else:
@@ -456,7 +457,7 @@ class pkhex(commands.Cog):
                         embed = self.embed_fields(ctx, embed, pkmn_data)
                         if embed == 400:
                             return await ctx.send(f"Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{self.bot.pie.mention}: Mon was gen3+ and missing origin game. Code: `{code}`")
-                        embed.set_author(icon_url=self.set_sprite_thumbnail(mon_info=pkmn_data, sprite=True), name=f"Data for {pkmn_data['Nickname']}")
+                        embed.set_author(icon_url=self.set_sprite_thumbnail(mon_info=pkmn_data, sprite=True), name=f"Data for {pkmn_data['nickname']}")
                         embed.set_thumbnail(url=self.bot.gpss_url + f"gpss/qr/{code}")
                         return await msg.edit(embed=embed, content=None)
         await msg.edit(content=f"There was no pokemon on the GPSS with the code `{code}`.")
@@ -548,18 +549,18 @@ class pkhex(commands.Cog):
             elif not r.status == 200:
                     return await ctx.send(f"{ctx.author} Conversion failed with error code `{r.status}`.")
             rj = await r.json()
-            pk64 = rj["Base64"].encode("ascii")
+            pk64 = rj["base64"].encode("ascii")
             pkx = base64.decodebytes(pk64)
-            qr64 = rj["QR"].encode("ascii")
+            qr64 = rj["qr"].encode("ascii")
             qr = base64.decodebytes(qr64)
-        embed = discord.Embed(title=f"Data for {rj['Nickname']}")
-        embed.set_thumbnail(url=rj["SpeciesSpriteURL"])
+        embed = discord.Embed(title=f"Data for {rj['nickname']}")
+        embed.set_thumbnail(url=rj["species_sprite_url"])
         embed = self.embed_fields(ctx, embed, rj, is_set=True)
         pokemon_file = discord.File(io.BytesIO(pkx), "showdownset.pk" + str(gen))
         qr_file = discord.File(io.BytesIO(qr), "qrcode.png")
         m = await upload_channel.send(f"Showdown set converted by {ctx.author}", files=[pokemon_file, qr_file])
         embed.description = f"[PKX Download Link]({m.attachments[0].url})\n[QR Code]({m.attachments[1].url})"
-        embed.colour = discord.Colour.green() if rj["IllegalReasons"] == "Legal!" else discord.Colour.red()
+        embed.colour = discord.Colour.green() if rj["illegal_reasons"] == "Legal!" else discord.Colour.red()
         await ctx.send(embed=embed)
 
 def setup(bot):
