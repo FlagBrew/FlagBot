@@ -105,7 +105,7 @@ class pkhex(commands.Cog):
             if content == b'':
                 content = await r.read()
             if content == b'':
-                # await ctx.send("Couldn't get response content. {} and {} please investigate!".format(self.bot.creator.mention, self.bot.allen.mention))
+                await ctx.send("Couldn't get response content. {} and {} please investigate!".format(self.bot.creator.mention, self.bot.allen.mention))
                 await ctx.send(content)
                 return 400
             return [r.status, rj, content]
