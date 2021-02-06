@@ -200,7 +200,7 @@ async def on_command_error(ctx, error):
     else:
         if ctx.command:
             await ctx.send(f"An error occurred while processing the `{ctx.command.name}` command.")
-        print('Ignoring exception in command {0.command} in {0.message.channel}'.format(ctx))
+        print(f'Ignoring exception in command {ctx.command} in {ctx.message.channel}')
         tb = traceback.format_exception(type(error), error, error.__traceback__)
         error_trace = "".join(tb)
         print(error_trace)
@@ -420,7 +420,7 @@ async def about(ctx):
     embed = discord.Embed()
     embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in the FlagBrew server.\n"
                             "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
-                            "Written by {}.".format(bot.creator.mention))
+                            f"Written by {bot.creator.mention}.")
     embed.set_author(name="GriffinG1", url='https://github.com/GriffinG1', icon_url='https://avatars0.githubusercontent.com/u/28538707')
     total_mem = psutil.virtual_memory().total/float(1<<30)
     used_mem = psutil.Process().memory_info().rss/float(1<<20)

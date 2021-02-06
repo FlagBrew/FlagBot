@@ -132,14 +132,14 @@ class Events(commands.Cog):
                 "user_id": str(before.id)
             }
             if len(before.roles) < len(after.roles):
-                await self.bot.patrons_channel.send("Welcome to the super secret cool kids club {}!"
-                                                    " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.".format(after.mention))
+                await self.bot.patrons_channel.send(f"Welcome to the super secret cool kids club {after.mention}!"
+                                                    " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.")
                 url = "https://flagbrew.org/patron/generate"
                 data["token"] = token
                 message = ("Congrats on becoming a patron! You can add the token below to PKSM's config to access some special patron only stuff. It's only valid until your"
                            " patron status is cancelled, so keep up those payments!"
                            " To access the hidden Patron settings menu, press the four corners of the touch screen while on the configuration screen."
-                           " If you need any further help setting it up, ask in {}!\n\n`{}`".format(self.bot.patrons_channel.mention, token))
+                           f" If you need any further help setting it up, ask in {self.bot.patrons_channel.mention}!\n\n`{token}`")
                 qr = qrcode.QRCode(version=None)
                 qr.add_data(token)
                 qr.make(fit=True)
@@ -266,7 +266,7 @@ class Events(commands.Cog):
                 await self.bot.logs_channel.send(f"Idea pinned after passing {vote_barrier} votes.\nJump link: {reaction.message.jump_url}")
             except discord.HTTPException as e:
                 await reaction.message.channel.send("Error pinning message. Please make sure that there are less than 50 pins."
-                                                    " If issue persists, contact {}.\nMessage link: {}".format(self.bot.creator, reaction.message.jump_url))
+                                                    f" If issue persists, contact {self.bot.creator}.\nMessage link: {reaction.message.jump_url}")
                 await self.bot.err_logs_channel.send(e.text)
         elif total_votes < vote_barrier and reaction.message.pinned:
             await reaction.message.unpin()
