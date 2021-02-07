@@ -472,6 +472,20 @@ class Utility(commands.Cog):
                 embed.add_field(name="Activities" if len(user.activities) > 1 else "Activity", value=f"`{'`, `'.join(str(activity.name) for activity in user.activities)}`", inline=False)
         await ctx.send(embed=embed)
 
+    @commands.command(aliases=['si', 'guild', 'gi', 'server', 'serverinfo'])
+    @restricted_to_bot
+    async def guildinfo(self, ctx, depth=False):
+        embed = discord.Embed()
+        embed.set_author(name=f"Guild info for {ctx.guild.name} ({ctx.guild.id})", icon_url=str(ctx.guild.icon_url))
+        embed.add_field(name="Guild Owner", value=f"{ctx.guild.owner} ({ctx.guild.owner.mention})")
+        embed.add_field(name="Highest Role", value=f"{ctx.guild.roles[-1].name} ({ctx.guild.roles[-1].id})")
+        embed.add_field(name="Member Count", value=str(ctx.guild.member_count))
+        if depth:
+            embed.add_field(name="Emoji Slots", value=f"{len(ctx.guild.emojis)}/{ctx.guild.emoji_limit} slots used")
+            embed.add_field(name="Created At", value=f"{ctx.guild.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC")
+            embed.add_field(name="Total Boosts", value=f"{ctx.guild.premium_subscription_count} boosters (Current level: {ctx.guild.premium_tier})")
+        await ctx.send(embed=embed)
+
     @commands.command(aliases=["hexstring", "hexlify", "hs"])
     async def utf16string(self, ctx, *, string_to_convert):
         """Turns a string into its UTF-16LE format in hex, for use with PKSM's hex editor"""
