@@ -18,7 +18,7 @@ class Moderation(commands.Cog):
         self.mute_loop = bot.loop.create_task(self.check_mute_loop())  # loops referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L23
         print(f'Addon "{self.__class__.__name__}" loaded')
         
-    def __unload(self):
+    def cog_unload(self):
         self.mute_loop.cancel()
 
     async def check_mute_loop(self):

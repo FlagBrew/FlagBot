@@ -24,7 +24,7 @@ class pkhex(commands.Cog):
         self.api_check = bot.loop.create_task(self.confirm_api_link())  # loops referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L23
         print(f'Addon "{self.__class__.__name__}" loaded')
         
-    def __unload(self):
+    def cog_unload(self):
         self.api_check.cancel()
 
     async def ping_api_func(self):
@@ -50,7 +50,6 @@ class pkhex(commands.Cog):
                     for command in self.get_commands():
                         if not command.name == "rpc":
                             command.enabled = False
-                    print("Finished loop")
                     self.api_check.cancel()
             else:
                 self.failure_count = 0
