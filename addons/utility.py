@@ -483,7 +483,7 @@ class Utility(commands.Cog):
         if depth:
             embed.add_field(name="Emoji Slots", value=f"{len(ctx.guild.emojis)}/{ctx.guild.emoji_limit} slots used")
             since_creation = (datetime.now() - ctx.guild.created_at).days
-            embed.add_field(name="Created At", value=f"{ctx.guild.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC\n({round(since_creation/365)} years, {since_creation%365} days)")
+            embed.add_field(name="Created At", value=f"{ctx.guild.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC\n({since_creation//365} years, {since_creation%365} days)")
             embed.add_field(name="Total Boosts", value=f"{ctx.guild.premium_subscription_count} boosters (Current level: {ctx.guild.premium_tier})")
         await ctx.send(embed=embed)
 
