@@ -110,7 +110,8 @@ class pkhex(commands.Cog):
                 return 400
             return [r.status, rj, content]
 
-    def embed_fields(self, ctx, embed, data, is_set=False):
+    def embed_fields(self, ctx, embed, data, is_set=False, is_gpss=False):
+        print(data)
         embed.add_field(name="Species", value=data["species"])
         embed.add_field(name="Level", value=data["level"])
         embed.add_field(name="Nature", value=data["nature"])
@@ -126,7 +127,7 @@ class pkhex(commands.Cog):
                 embed.add_field(name="Original Trainer", value=f"{ot}\n({tid}/{sid})")
             else:
                 embed.add_field(name="Original Trainer", value=f"{ot}\n({tid})")
-        if not data["ht"] == "" and not is_set:
+        if "ht" in data.keys() and not data["ht"] == "" and not is_set:
             embed.add_field(name="Handling Trainer", value=data["ht"])
         elif not is_set:
             embed.add_field(name="Handling Trainer", value="N/A")
@@ -147,8 +148,13 @@ class pkhex(commands.Cog):
             embed.add_field(name="Gender", value=data["gender"])
         if is_set:
             embed.add_field(name=u"\u200B", value=u"\u200B", inline=False)
-        embed.add_field(name="EVs", value=f"**HP**: {data['hp_ev']}\n**Atk**: {data['atk_ev']}\n**Def**: {data['def_ev']}\n**SpAtk**: {data['spa_ev']}\n**SpDef**: {data['spd_ev']}\n**Spd**: {data['spe_ev']}")
-        embed.add_field(name="IVs", value=f"**HP**: {data['hp_iv']}\n**Atk**: {data['atk_iv']}\n**Def**: {data['def_iv']}\n**SpAtk**: {data['spa_iv']}\n**SpDef**: {data['spd_iv']}\n**Spd**: {data['spe_iv']}")
+        if not is_gpss:
+            embed.add_field(name="EVs", value=f"**HP**: {data['hp_ev']}\n**Atk**: {data['atk_ev']}\n**Def**: {data['def_ev']}\n**SpAtk**: {data['spa_ev']}\n**SpDef**: {data['spd_ev']}\n**Spd**: {data['spe_ev']}")
+            embed.add_field(name="IVs", value=f"**HP**: {data['hp_iv']}\n**Atk**: {data['atk_iv']}\n**Def**: {data['def_iv']}\n**SpAtk**: {data['spa_iv']}\n**SpDef**: {data['spd_iv']}\n**Spd**: {data['spe_iv']}")
+        else:
+            stats = data['stats']
+            embed.add_field(name="EVs", value=f"**HP**: {stats[0]['stat_ev']}\n**Atk**: {stats[1]['stat_ev']}\n**Def**: {stats[2]['stat_ev']}\n**SpAtk**: {stats[3]['stat_ev']}\n**SpDef**: {stats[4]['stat_ev']}\n**Spd**: {stats[5]['stat_ev']}")
+            embed.add_field(name="IVs", value=f"**HP**: {stats[0]['stat_iv']}\n**Atk**: {stats[1]['stat_iv']}\n**Def**: {stats[2]['stat_iv']}\n**SpAtk**: {stats[3]['stat_iv']}\n**SpDef**: {stats[4]['stat_iv']}\n**Spd**: {stats[5]['stat_iv']}")
         moves = data["moves"]
         embed.add_field(name="Moves", value=f"**1**: {moves[0]['move_name']}\n**2**: {moves[1]['move_name']}\n**3**: {moves[2]['move_name']}\n**4**: {moves[3]['move_name']}")
         return embed
@@ -162,31 +168,6 @@ class pkhex(commands.Cog):
                 val += x + " "
             embed.description += values[0] + val + "\n"
         return embed
-
-    def set_sprite_thumbnail(self, mon_info=None, shiny=None, form=None, species=None, sprite=False):
-        if mon_info:
-            shiny = "shiny" if mon_info["IsShiny"] else "normal"
-            form = mon_info["Form"].lower()
-            species = mon_info["Species"].lower()
-        if " " in form:
-            form = form.replace(" ", "-")
-        if species == "minior":  # fuck you fuck you fuck you
-            return f"{self.bot.sprite_url}/ultra-sun-ultra-moon/normal/minior-meteor.png"
-        elif species == "sinistea" and sprite is True:
-            form = None
-        if form and not species == "rockruff":
-            if species == "flabébé":
-                species = "flabebe"
-            elif form == "f":
-                form = "female"
-            if not sprite:
-                return f"{self.bot.sprite_url}/ultra-sun-ultra-moon/{shiny}/{species}-{form}.png"
-            if form == "female":
-                return f"{self.bot.sprite_url}/sprites/8/{shiny}/female/{species}-{form}.png"
-            return f"{self.bot.sprite_url}/sprites/8/{shiny}/{species}-{form}.png"
-        elif sprite:
-            return f"{self.bot.sprite_url}/sprites/8/{shiny}/{species}.png"
-        return f"{self.bot.sprite_url}/ultra-sun-ultra-moon/{shiny}/{species}.png"
 
     @commands.command(name="rpc")
     async def reactivate_pkhex_commands(self, ctx):
@@ -292,13 +273,14 @@ class pkhex(commands.Cog):
                 form = "f"
             data = {
                 "pkmn": species,
-                "form": form
+                "form": form,
+                "shiny": shiny
             }
             async with self.bot.session.post(url=url, data=data) as r:
                 if not r.status == 200:
                     return await ctx.send("Are you sure that's a real pokemon (or proper form)?")
                 rj = await r.json()
-                embed = discord.Embed(title=f"Basic info for {species.title()}{'-' + form.title() if form else ''}", colour=colours[rj["color"]])
+                embed = discord.Embed(colour=colours[rj["color"]])
                 type_str = f"Type 1: {rj['types'][0]}"
                 if not rj["types"][1] == rj["types"][0]:
                     type_str += f"\nType 2: {rj['types'][1]}"
@@ -326,7 +308,7 @@ class pkhex(commands.Cog):
                     egg_str += f"\nEgg Group 2: {rj['egg_groups'][1]}"
                 embed.add_field(name="Egg Groups", value=egg_str)
                 embed.add_field(name=f"Base stats ({rj['bst']})", value=f"```HP:    {rj['hp']} Atk:   {rj['atk']}\nDef:   {rj['def']} SpAtk: {rj['spa']} \nSpDef: {rj['spd']} Spd:   {rj['spe']}```")
-                embed.set_thumbnail(url=self.set_sprite_thumbnail(shiny=shiny, species=species, form=form))
+                embed.set_author(name=f"Basic info for {species.title()}{'-' + form.title() if form else ''}", icon_url=rj['species_sprite_url'])
                 try:
                     return await ctx.send(embed=embed)
                 except discord.HTTPException:
@@ -338,11 +320,11 @@ class pkhex(commands.Cog):
         if r == 400:
             return
         rj = r[1]
-        embed = discord.Embed(title=f"Data for {rj['nickname']}")
+        embed = discord.Embed()
         embed = self.embed_fields(ctx, embed, rj)
         if embed == 400:
             return await ctx.send(f"{ctx.author.mention} Something in that pokemon is *very* wrong. Your request has been canceled. Please do not try that mon again.")
-        embed.set_thumbnail(url=rj["species_sprite_url"])
+        embed.set_author(name=f"Data for {rj['nickname']}", icon_url=rj["species_sprite_url"])
         embed.colour = discord.Colour.green() if rj["illegal_reasons"] == "Legal!" else discord.Colour.red()
         try:
             await ctx.send(embed=embed)
@@ -438,28 +420,27 @@ class pkhex(commands.Cog):
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         msg = await ctx.send("Attempting to fetch pokemon...")
-        async with self.bot.session.get(self.bot.flagbrew_url + "api/v1/gpss/search/" + code) as r:
-            async with self.bot.session.get(self.bot.flagbrew_url + "gpss/desktop/download/" + code) as download:
-                rj = await r.json()
-                for pkmn in rj["results"]:
-                    if pkmn["code"] == code:
-                        pkmn_data = pkmn["pokemon"]
-                        filename = pkmn_data["species"] + f" Code_{code}"
-                        if pkmn_data["Generation"] == "LGPE":
-                            filename += ".pb7"
-                        else:
-                            filename += ".pk" + pkmn_data["Generation"]
-                        pkmn_b64 = binascii.b2a_base64(await download.read())
-                        pkmn_file = discord.File(io.BytesIO(base64.decodebytes(pkmn_b64)), filename)
-                        await asyncio.sleep(1)
-                        m = await upload_channel.send(f"Pokemon fetched from the GPSS by {ctx.author}", file=pkmn_file)
-                        embed = discord.Embed(description=f"[GPSS Page]({self.bot.gpss_url + 'gpss/view/' + code}) | [Download link]({m.attachments[0].url})")
-                        embed = self.embed_fields(ctx, embed, pkmn_data)
-                        if embed == 400:
-                            return await ctx.send(f"Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{self.bot.pie.mention}: Mon was gen3+ and missing origin game. Code: `{code}`")
-                        embed.set_author(icon_url=self.set_sprite_thumbnail(mon_info=pkmn_data, sprite=True), name=f"Data for {pkmn_data['nickname']}")
-                        embed.set_thumbnail(url=self.bot.gpss_url + f"gpss/qr/{code}")
-                        return await msg.edit(embed=embed, content=None)
+        async with self.bot.session.get(self.bot.flagbrew_url + "api/v1/gpss/view/" + code) as r:
+            rj = await r.json()
+            code_data = rj["pokemon"]
+            pkmn_data = code_data["pokemon"]
+            filename = pkmn_data["species"] + f" Code_{code}"
+            if pkmn_data["generation"] == "LGPE":
+                filename += ".pb7"
+            else:
+                filename += ".pk" + pkmn_data["generation"]
+            pk64 = code_data["base_64"].encode("ascii")
+            pkx = base64.decodebytes(pk64)
+            pkmn_file = discord.File(io.BytesIO(pkx), filename)
+            await asyncio.sleep(1)
+            m = await upload_channel.send(f"Pokemon fetched from the GPSS by {ctx.author}", file=pkmn_file)
+            embed = discord.Embed(description=f"[GPSS Page]({self.bot.gpss_url + 'gpss/view/' + code}) | [Download link]({m.attachments[0].url})")
+            embed = self.embed_fields(ctx, embed, pkmn_data, False, True)
+            if embed == 400:
+                return await ctx.send(f"Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{self.bot.pie.mention}: Mon was gen3+ and missing origin game. Code: `{code}`")
+            embed.set_author(icon_url=pkmn_data["species_sprite_url"], name=f"Data for {pkmn_data['nickname']}")
+            embed.set_thumbnail(url=self.bot.gpss_url + f"gpss/qr/{code}")
+            return await msg.edit(embed=embed, content=None)
         await msg.edit(content=f"There was no pokemon on the GPSS with the code `{code}`.")
 
     @commands.command(name="gpsspost", aliases=['gpssupload'])

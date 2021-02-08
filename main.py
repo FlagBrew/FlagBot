@@ -86,14 +86,12 @@ if not is_using_cmd_args:  # handles setting up the bot vars
     bot.is_mongodb = config.is_mongodb
     bot.api_url = config.api_url
     bot.flagbrew_url = config.flagbrew_url
-    bot.sprite_url = config.sprite_url
 elif not is_using_env_args:
-    bot.is_mongodb, bot.api_url, bot.flagbrew_url, bot.sprite_url = cmd_args[3:7]
+    bot.is_mongodb, bot.api_url, bot.flagbrew_url = cmd_args[3:6]
 else:
     bot.is_mongodb = os.getenv("IS_MONGODB")
     bot.api_url = os.getenv("API_URL")
     bot.flagbrew_url = os.getenv("FLAGBREW_URL")
-    bot.sprite_url = os.getenv("SPRITE_URL")
 bot.gpss_url = bot.flagbrew_url
 
 if not os.path.exists('saves/warns.json'):
@@ -119,7 +117,7 @@ if bot.is_mongodb:
     if not is_using_cmd_args:
         db_address = config.db_address
     elif not is_using_env_args:
-        db_address = cmd_args[7]
+        db_address = cmd_args[6]
     else:
         db_address = os.getenv("DB_ADDRESS")
     connected = False
@@ -150,7 +148,7 @@ if not is_using_cmd_args:
     bot.ready = False
     bot.is_beta = config.is_beta
 elif not is_using_env_args:
-    bot.site_secret, bot.github_user, bot.github_pass, bot.is_beta = cmd_args[8:12]
+    bot.site_secret, bot.github_user, bot.github_pass, bot.is_beta = cmd_args[7:11]
     bot.ready = False
 else:
     bot.site_secret = os.getenv("SECRET")
