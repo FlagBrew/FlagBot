@@ -28,9 +28,12 @@ class pkhex(commands.Cog):
         self.api_check.cancel()
 
     async def ping_api_func(self):
+        timeout = aiohttp.ClientTimeout(total=3)
         try:
-            async with self.bot.session.get(self.bot.api_url + "api/ping") as r:
-                return r.status
+            async with self.bot.session.get(self.bot.api_url + "api/ping", timeout=timeout) as r:
+                return r
+        except asyncio.exceptions.TimeoutError:
+            return 408
         except aiohttp.ClientConnectorError:
             return 443
         except aiohttp.InvalidURL:
@@ -42,11 +45,15 @@ class pkhex(commands.Cog):
                 await asyncio.sleep(30)
                 continue
             r = await self.ping_api_func()
-            if not r == 200:
+            if not isinstance(r, aiohttp.ClientResponse):
+                status = r
+            else:
+                status = r.status
+            if not status == 200:
                 self.failure_count += 1
                 if self.failure_count == 3:  # Only unload if it fails concurrently 3+ times, to prevent accidental unloads on server restarts
                     for x in (self.bot.creator, self.bot.allen):
-                        await x.send(f"pkhex.py commands were disabled as API connection was dropped. Status code: `{r}`")
+                        await x.send(f"pkhex.py commands were disabled as API connection was dropped. Status code: `{status}`")
                     for command in self.get_commands():
                         if not command.name == "rpc":
                             command.enabled = False
@@ -175,8 +182,12 @@ class pkhex(commands.Cog):
         if not ctx.author in (self.bot.creator, self.bot.allen):
             raise commands.errors.CheckFailure()
         r = await self.ping_api_func()
-        if not r == 200:
-            return await ctx.send(f"Cancelled the command reactivation; status code from FlagBrew server is `{r}`.")
+        if not isinstance(r, aiohttp.ClientResponse):
+            status = r
+        else:
+            status = r.status
+        if not status == 200:
+            return await ctx.send(f"Cancelled the command reactivation; status code from FlagBrew server is `{status}`.")
         for command in self.get_commands():
             if command.enabled is True:
                 await ctx.send(f"Cancelled the command reactivation for `{command.name}`; command already enabled.")
@@ -191,7 +202,9 @@ class pkhex(commands.Cog):
         if not ctx.author in (self.bot.creator, self.bot.allen):
             raise commands.errors.CheckFailure()
         msgtime = ctx.message.created_at.now()
-        r = await self.ping_api_func() 
+        r = await self.ping_api_func()
+        if not isinstance(r, aiohttp.ClientResponse):
+            return await ctx.send(f"Current CoreAPI status code is {r}.")
         now = datetime.now()
         ping = now - msgtime
         embed = discord.Embed()
@@ -212,7 +225,8 @@ class pkhex(commands.Cog):
         """Checks the legality of either a provided URL or attached pkx file. URL *must* be a direct download link"""
         if not data and not ctx.message.attachments:
             raise PKHeXMissingArgs()
-        if not await self.ping_api_func() == 200:
+        ping = await self.ping_api_func()
+        if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/bot/check")
         if r == 400:
@@ -228,7 +242,8 @@ class pkhex(commands.Cog):
     @commands.command(name='forms')
     async def check_forms(self, ctx, species):
         """Returns a list of a given Pokemon's forms."""
-        if not await self.ping_api_func() == 200:
+        ping = await self.ping_api_func()
+        if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         url = self.bot.api_url + "api/PokemonForms"
         data = {
@@ -249,7 +264,8 @@ class pkhex(commands.Cog):
         """Alternatively can take a single Pokemon as an entry, and will return basic information on the species.""")
         if not data and not ctx.message.attachments:
             raise PKHeXMissingArgs()
-        if not await self.ping_api_func() == 200:
+        ping = await self.ping_api_func()
+        if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         
         # Get info for inputted pokemon
@@ -348,7 +364,8 @@ class pkhex(commands.Cog):
         """Gens a QR code that PKSM can read. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
         if not data and not ctx.message.attachments:
             raise PKHeXMissingArgs()
-        if not await self.ping_api_func() == 200:
+        ping = await self.ping_api_func()
+        if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/bot/pokemon_info")
         if r == 400:
@@ -361,7 +378,8 @@ class pkhex(commands.Cog):
     @commands.command(name='learns', aliases=['learn'])
     async def check_moves(self, ctx, generation: int, *, input_data):
         """Checks if a given pokemon can learn moves. Separate moves using pipes. Example: .learns 8 pikachu | quick attack | hail"""
-        if not await self.ping_api_func() == 200:
+        ping = await self.ping_api_func()
+        if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         input_data = input_data.replace("| ", "|").replace(" |", "|").replace(" | ", "|")
         input_data = input_data.split("|")
@@ -385,7 +403,8 @@ class pkhex(commands.Cog):
     @commands.command(name='find')
     async def check_encounters(self, ctx, generation: int, *, input_data):
         """Outputs the locations a given pokemon can be found. Separate data using pipes. Example: .find 6 pikachu | volt tackle"""
-        if not await self.ping_api_func() == 200:
+        ping = await self.ping_api_func()
+        if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         elif not generation in range(1, 9):
             return await ctx.send(f"The inputted generation must be a valid integer between 1 and 8 inclusive. You entered: `{generation}`")
@@ -486,7 +505,8 @@ class pkhex(commands.Cog):
         if not data and not ctx.message.attachments:
             raise PKHeXMissingArgs()
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
-        if not await self.ping_api_func() == 200:
+        ping = await self.ping_api_func()
+        if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         msg = await ctx.send("Attempting to legalize pokemon...")
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/auto_legality")
