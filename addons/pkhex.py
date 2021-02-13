@@ -194,7 +194,18 @@ class pkhex(commands.Cog):
         r = await self.ping_api_func() 
         now = datetime.now()
         ping = now - msgtime
-        await ctx.send(f"🏓 CoreAPI response time is {str(ping.microseconds / 1000.0)} milliseconds. Current CoreAPI status code is {r}.")
+        embed = discord.Embed()
+        embed.add_field(name="CoreAPI Response Time", value=f"{str(ping.microseconds / 1000.0)} milliseconds.")
+        embed.add_field(name="CoreAPI Status Code", value=r.status)
+        if r.status == 200:
+            embed.colour = discord.Colour.green()
+            embed.add_field(name="CoreAPI PKHeX.Core Version", value=r.headers["X-PKHeX-Version"], inline=False)
+            embed.add_field(name="CoreAPI AutoMod.Core Version", value=r.headers["X-ALM-Version"])
+        else:
+            embed.colour = discord.Colour.red()
+            embed.add_field(name="CoreAPI PKHeX.Core Version", value="N/A", inline=False)
+            embed.add_field(name="CoreAPI AutoMod.Core Version", value="N/A")
+        await ctx.send(embed=embed)
 
     @commands.command(name='legality', aliases=['illegal'])
     async def check_legality(self, ctx, *, data=""):
