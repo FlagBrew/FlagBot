@@ -76,6 +76,25 @@ class Moderation(commands.Cog):
             embed.set_image(url="https://fm1337.com/static/img/giratina-banned.png")
         await ctx.send(f"Successfully banned user {member}!", embed=embed)
 
+    @commands.Cog.listener()
+    async def on_member_ban(self, guild, user):
+        try:
+            async for ban in guild.audit_logs(limit=20, action=discord.AuditLogAction.ban):  # 20 to handle multiple staff bans in quick succession
+                if ban.target == user:
+                    if ban.reason:
+                        reason = ban.reason
+                    else:
+                        reason = "No reason was given. Please do that in the future!"
+                    admin = ban.user
+                    break
+                else:
+                    return
+            embed = discord.Embed(title=f"{user} banned")
+            embed.description = f"{user} was banned by {admin} for:\n\n{reason}"
+            await self.bot.logs_channel.send(embed=embed)
+        except discord.Forbidden:
+            pass  # beta bot can't log
+
     @commands.command(pass_context=True)
     @commands.has_any_role("Discord Moderator")
     async def kick(self, ctx, member: discord.Member, *, reason="No reason was given."):
