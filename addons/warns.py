@@ -1,6 +1,7 @@
 import discord
 import json
 import random
+import io
 from datetime import datetime
 from discord.ext import commands
 from addons.helper import restricted_to_bot
@@ -17,6 +18,7 @@ class Warning(commands.Cog):
     @commands.has_any_role("Discord Moderator")
     async def warn(self, ctx, target: discord.Member, *, reason="No reason was given"):
         """Warns a user. Kicks at 3 and 4 warnings, bans at 5"""
+        has_attch = bool(ctx.message.attachments)
         try:
             self.bot.warns_dict[str(target.id)]
         except KeyError:
@@ -43,7 +45,12 @@ class Warning(commands.Cog):
         embed = discord.Embed(title=f"{target} warned")
         embed.description = f"{target} | {target.id} was warned in {ctx.channel.mention} by {ctx.author} for `{reason}`. This is warn #{len(warns)}. {log_msg}"
         try:
-            await target.send(dm_msg)
+            if has_attch:
+                img_bytes = await ctx.message.attachments[0].read()
+                img = io.BytesIO(img_bytes)
+                await target.send(dm_msg, file=discord.File(img))
+            else:
+                await target.send(dm_msg)
         except discord.Forbidden:
             embed.description += "\n**Could not DM user.**"
         if self.bot.is_mongodb:
