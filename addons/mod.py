@@ -7,6 +7,7 @@ import sys
 import json
 import asyncio
 import random
+import io
 from datetime import datetime, timedelta
 import addons.helper as helper
 
@@ -45,7 +46,7 @@ class Moderation(commands.Cog):
         member -> discord.User object, can be limited.
         reason -> reason to ban
         """
-
+        has_attch = bool(ctx.message.attachments)
         if member.id == ctx.message.author.id:
             return await ctx.send("You can't ban yourself, obviously")
         try:
@@ -55,7 +56,12 @@ class Moderation(commands.Cog):
         except AttributeError:
             pass  # Happens when banning via id, as they have no roles if not on guild
         try:
-            await member.send(f"You were banned from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, please contact a staff member")
+            if has_attch:
+                img_bytes = await ctx.message.attachments[0].read()
+                img = io.BytesIO(img_bytes)
+                await member.send(f"You were banned from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, please contact a staff member.", file=discord.File(img))
+            else:
+                await member.send(f"You were banned from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, please contact a staff member.")
         except discord.Forbidden:
             pass  # bot blocked or not accepting DMs
         reason += f"\n\nAction done by {ctx.author} (This is to deal with audit log scraping)"
@@ -99,6 +105,7 @@ class Moderation(commands.Cog):
     @commands.has_any_role("Discord Moderator")
     async def kick(self, ctx, member: discord.Member, *, reason="No reason was given."):
         """Kick a member."""
+        has_attch = bool(ctx.message.attachments)
         if member == ctx.message.author:
             return await ctx.send("You can't kick yourself, obviously")
         elif any(r for r in self.bot.protected_roles if r in member.roles):
@@ -111,7 +118,12 @@ class Moderation(commands.Cog):
             except discord.Forbidden:
                 pass  # beta bot can't log
             try:
-                await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY")
+                if has_attch:
+                    img_bytes = await ctx.message.attachments[0].read()
+                    img = io.BytesIO(img_bytes)
+                    await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY", file=discord.File(img))
+                else:
+                    await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY")
             except discord.Forbidden:
                 pass  # bot blocked or not accepting DMs
             if len(reason) > 512:
@@ -154,6 +166,7 @@ class Moderation(commands.Cog):
     @commands.has_any_role("Discord Moderator")
     async def mute(self, ctx, member: discord.Member, *, reason="No reason was given."):
         """Mutes a user"""
+        has_attch = bool(ctx.message.attachments)
         if member == ctx.message.author:
             return await ctx.send("You can't mute yourself, obviously")
         elif any(r for r in self.bot.protected_roles if r in member.roles):
@@ -166,6 +179,15 @@ class Moderation(commands.Cog):
             json.dump(self.bot.mutes_dict, f, indent=4)
         embed = discord.Embed(title=f"{member} ({member.id}) muted")
         embed.description = f"{member} was muted by {ctx.message.author} for:\n\n{reason}"
+        try:
+            if has_attch:
+                img_bytes = await ctx.message.attachments[0].read()
+                img = io.BytesIO(img_bytes)
+                await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`", file=discord.File(img))
+            else:
+                await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`")
+        except discord.Forbidden:
+            pass  # blocked DMs
         try:
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
@@ -186,6 +208,7 @@ class Moderation(commands.Cog):
             json.dump(self.bot.mutes_dict, f, indent=4)
         embed = discord.Embed(title=f"{member} ({member.id}) unmuted")
         embed.description = f"{member} was unmuted by {ctx.message.author} for:\n\n{reason}"
+        await member.send(f"You were unmuted on FlagBrew.")
         try:
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
@@ -196,6 +219,7 @@ class Moderation(commands.Cog):
     @commands.has_any_role("Discord Moderator")
     async def timemute(self, ctx, member: discord.Member, duration, reason="No reason was given."):
         """Timemutes a user. Units are s, m, h, and d"""
+        has_attch = bool(ctx.message.attachments)
         if member == ctx.message.author:
             return await ctx.send("You can't mute yourself, obviously")
         elif any(r for r in self.bot.protected_roles if r in member.roles):
@@ -224,7 +248,12 @@ class Moderation(commands.Cog):
         end_str = end.strftime("%Y-%m-%d %H:%M:%S")
         await member.add_roles(self.bot.mute_role)
         try:
-            await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.")
+            if has_attch:
+                img_bytes = await ctx.message.attachments[0].read()
+                img = io.BytesIO(img_bytes)
+                await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.", file=discord.File(img))
+            else:
+                await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.")
         except discord.Forbidden:
             pass  # blocked DMs
         self.bot.mutes_dict[str(member.id)] = end_str
