@@ -420,8 +420,8 @@ async def about(ctx):
     """Information about the bot"""
     embed = discord.Embed()
     embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in the FlagBrew server.\n"
-                             "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
-                              f"Written by {bot.creator.mention}.")
+                            "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
+                            f"Written by {bot.creator.mention}.")
     embed.set_author(name="GriffinG1", url='https://github.com/GriffinG1', icon_url='https://avatars0.githubusercontent.com/u/28538707')
     total_mem = psutil.virtual_memory().total/float(1<<30)
     used_mem = psutil.Process().memory_info().rss/float(1<<20)
