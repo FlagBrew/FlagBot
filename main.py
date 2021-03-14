@@ -116,16 +116,21 @@ with open("saves/mutes.json", "r") as f:
 if bot.is_mongodb:
     if not is_using_cmd_args:
         db_address = config.db_address
+        db_username = config.db_username
+        db_password = config.db_password
     elif not is_using_env_args:
         db_address = cmd_args[6]
     else:
         db_address = os.getenv("DB_ADDRESS")
+        db_username = os.getenv("DB_USERNAME")
+        db_password = os.getenv("DB_PASSWORD")
     connected = False
     try:
         # try connecting to the database
-        bot.db = pymongo.MongoClient(db_address, serverSelectionTimeoutMS=3000)
+        bot.db = pymongo.MongoClient(f"mongodb://{db_username}:{db_password}@{db_address}", serverSelectionTimeoutMS=3000)
         # try get server info, if the server is down it will error out after 3 seconds
         bot.db.server_info()
+        bot.db = bot.db['flagbrew2']
         connected = True
     except pymongo.errors.ServerSelectionTimeoutError:
         # when the database connection fails
@@ -133,14 +138,13 @@ if bot.is_mongodb:
     # sync the database with the warns file on start up, only if the database is online
     if connected:
         for warn in bot.warns_dict:
-            bot.db['flagbrew']['warns'].update_one({"user": warn}, 
-            { 
+            bot.db['warns'].update_one({"user": warn}, 
+            {
                 "$set": {
                     "user": warn,
                     "warns": bot.warns_dict[warn]
                 }
             }, upsert=True)
-    
 if not is_using_cmd_args:
     bot.site_secret = config.secret
     bot.github_user = config.github_username
@@ -270,7 +274,6 @@ async def on_ready():
             print(f"Initialized on {guild.name}.")
         except:
             print(f"Failed to initialize on {guild.name}")
-    
     if bot.is_beta:
         id = 614206536394342533
     else:
@@ -292,10 +295,10 @@ cogs = [
     'addons.events',
     'addons.info',
     'addons.meta',
-    'addons.mod', 
+    'addons.mod',
     'addons.pkhex',
     'addons.pyint',
-    'addons.utility', 
+    'addons.utility',
     'addons.warns'
 ]
 
