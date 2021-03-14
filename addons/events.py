@@ -128,7 +128,6 @@ class Events(commands.Cog):
         has_roles = len(list(role for role in token_roles if role in before.roles or role in after.roles)) > 0  # True if member has one of the roles in token_roles, else False
         if before.roles != after.roles and has_roles:
             token = secrets.token_urlsafe(16)
-
             self.db['patrons'].update_one(
                 {
                     "discord_id": str(before.id)
@@ -139,7 +138,6 @@ class Events(commands.Cog):
                         "code": token
                     }
                 }, upsert=True)
-                
             if len(before.roles) < len(after.roles):
                 await self.bot.patrons_channel.send(f"Welcome to the super secret cool kids club {after.mention}!"
                                                     " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.")

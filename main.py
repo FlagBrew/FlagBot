@@ -139,13 +139,12 @@ if bot.is_mongodb:
     if connected:
         for warn in bot.warns_dict:
             bot.db['warns'].update_one({"user": warn}, 
-                                       {
+            {
                 "$set": {
                     "user": warn,
                     "warns": bot.warns_dict[warn]
                 }
             }, upsert=True)
-
 if not is_using_cmd_args:
     bot.site_secret = config.secret
     bot.github_user = config.github_username
@@ -275,7 +274,6 @@ async def on_ready():
             print(f"Initialized on {guild.name}.")
         except:
             print(f"Failed to initialize on {guild.name}")
-
     if bot.is_beta:
         id = 614206536394342533
     else:
@@ -422,8 +420,8 @@ async def about(ctx):
     """Information about the bot"""
     embed = discord.Embed()
     embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in the FlagBrew server.\n"
-                         "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
-                         f"Written by {bot.creator.mention}.")
+                             "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
+                              f"Written by {bot.creator.mention}.")
     embed.set_author(name="GriffinG1", url='https://github.com/GriffinG1', icon_url='https://avatars0.githubusercontent.com/u/28538707')
     total_mem = psutil.virtual_memory().total/float(1<<30)
     used_mem = psutil.Process().memory_info().rss/float(1<<20)
