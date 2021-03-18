@@ -47,8 +47,9 @@ class Warning(commands.Cog):
         try:
             if has_attch:
                 img_bytes = await ctx.message.attachments[0].read()
-                img = io.BytesIO(img_bytes)
-                await target.send(dm_msg, file=discord.File(img))
+                img = discord.File(io.BytesIO(img_bytes), 'warn_image.png')
+                await target.send(dm_msg, file=img)
+                embed.set_thumbnail(url="attachment://warn_image.png")
             else:
                 await target.send(dm_msg)
         except discord.Forbidden:

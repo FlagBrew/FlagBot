@@ -120,8 +120,9 @@ class Moderation(commands.Cog):
             try:
                 if has_attch:
                     img_bytes = await ctx.message.attachments[0].read()
-                    img = io.BytesIO(img_bytes)
-                    await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY", file=discord.File(img))
+                    img = discord.File(io.BytesIO(img_bytes), 'kick_image.png')
+                    await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY", file=img)
+                    embed.set_thumbnail(url="attachment://kick_image.png")
                 else:
                     await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY")
             except discord.Forbidden:
@@ -182,8 +183,9 @@ class Moderation(commands.Cog):
         try:
             if has_attch:
                 img_bytes = await ctx.message.attachments[0].read()
-                img = io.BytesIO(img_bytes)
-                await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`", file=discord.File(img))
+                img = discord.File(io.BytesIO(img_bytes), 'mute_image.png')
+                await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`", file=img)
+                embed.set_thumbnail(url="attachment://mute_image.png")
             else:
                 await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`")
         except discord.Forbidden:
@@ -247,11 +249,14 @@ class Moderation(commands.Cog):
         end = curr_time + diff
         end_str = end.strftime("%Y-%m-%d %H:%M:%S")
         await member.add_roles(self.bot.mute_role)
+        embed = discord.Embed(title=f"{member} ({member.id}) timemuted")
+        embed.description = f"{member} timemuted by {ctx.message.author} until {end_str} UTC for:\n\n{reason}"
         try:
             if has_attch:
                 img_bytes = await ctx.message.attachments[0].read()
-                img = io.BytesIO(img_bytes)
-                await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.", file=discord.File(img))
+                img = discord.File(io.BytesIO(img_bytes), 'mute_image.png')
+                await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.", file=img)
+                embed.set_thumbnail(url="attachment://mute_image.png")
             else:
                 await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.")
         except discord.Forbidden:
@@ -259,8 +264,6 @@ class Moderation(commands.Cog):
         self.bot.mutes_dict[str(member.id)] = end_str
         with open("saves/mutes.json", "w") as f:
             json.dump(self.bot.mutes_dict, f, indent=4)
-        embed = discord.Embed(title=f"{member} ({member.id}) timemuted")
-        embed.description = f"{member} timemuted by {ctx.message.author} until {end_str} UTC for:\n\n{reason}"
         try:
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
