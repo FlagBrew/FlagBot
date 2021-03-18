@@ -16,6 +16,7 @@ class Moderation(commands.Cog):
     """Bot commands for moderation."""
     def __init__(self, bot):
         self.bot = bot
+        self.ban_attch_dict = {}
         self.mute_loop = bot.loop.create_task(self.check_mute_loop())  # loops referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L23
         print(f'Addon "{self.__class__.__name__}" loaded')
         
@@ -58,8 +59,9 @@ class Moderation(commands.Cog):
         try:
             if has_attch:
                 img_bytes = await ctx.message.attachments[0].read()
-                img = io.BytesIO(img_bytes)
-                await member.send(f"You were banned from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, please contact a staff member.", file=discord.File(img))
+                img = discord.File(io.BytesIO(img_bytes))
+                await member.send(f"You were banned from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, please contact a staff member.", file=img)
+                self.ban_attch_dict[str(member.id)] = io.BytesIO(img_bytes)
             else:
                 await member.send(f"You were banned from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, please contact a staff member.")
         except discord.Forbidden:
@@ -97,7 +99,12 @@ class Moderation(commands.Cog):
                     return
             embed = discord.Embed(title=f"{user} banned")
             embed.description = f"{user} was banned by {admin} for:\n\n{reason}"
-            await self.bot.logs_channel.send(embed=embed)
+            if user.id in self.ban_attch_dict.keys():
+                img = discord.File(self.ban_attch_dict[str(user.id)], 'ban_image.png')
+                embed.set_thumbnail(url="attachment://ban_image.png")
+            else:
+                img = None
+            await self.bot.logs_channel.send(embed=embed, file=img)
         except discord.Forbidden:
             pass  # beta bot can't log
 
