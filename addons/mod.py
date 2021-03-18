@@ -100,7 +100,7 @@ class Moderation(commands.Cog):
             embed = discord.Embed(title=f"{user} banned")
             embed.description = f"{user} was banned by {admin} for:\n\n{reason}"
             if user.id in self.ban_attch_dict.keys():
-                img = discord.File(self.ban_attch_dict[str(user.id)], 'ban_image.png')
+                img = discord.File(self.ban_attch_dict.pop(str(user.id)), 'ban_image.png')
                 embed.set_thumbnail(url="attachment://ban_image.png")
             else:
                 img = None
