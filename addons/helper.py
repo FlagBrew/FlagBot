@@ -44,7 +44,8 @@ def restricted_to_bot(func):
         if ctx.author in (func_self.bot.allen, func_self.bot.creator, func_self.bot.pie):
             pass
         elif not ctx.channel in (func_self.bot.bot_channel, func_self.bot.bot_channel2) and ctx.guild.id == 278222834633801728:
-            return await ctx.send(f"This command is restricted to {func_self.bot.bot_channel.mention}.")
+            await ctx.message.delete()
+            return await ctx.send(f"{ctx.author.mention} This command is restricted to {func_self.bot.bot_channel.mention}.")
         await func(*args, **kwargs)
     return wrapper
 
