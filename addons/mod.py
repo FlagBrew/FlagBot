@@ -114,10 +114,6 @@ class Moderation(commands.Cog):
             embed = discord.Embed(title=f"{member} kicked")
             embed.description = f"{member} was kicked by {ctx.message.author} for:\n\n{reason}"
             try:
-                await self.bot.logs_channel.send(embed=embed)
-            except discord.Forbidden:
-                pass  # beta bot can't log
-            try:
                 if has_attch:
                     img_bytes = await ctx.message.attachments[0].read()
                     img = discord.File(io.BytesIO(img_bytes), 'kick_image.png')
@@ -125,8 +121,13 @@ class Moderation(commands.Cog):
                     embed.set_thumbnail(url="attachment://kick_image.png")
                 else:
                     await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY")
+                    img = None
             except discord.Forbidden:
                 pass  # bot blocked or not accepting DMs
+            try:
+                await self.bot.logs_channel.send(embed=embed, file=img)
+            except discord.Forbidden:
+                pass  # beta bot can't log
             if len(reason) > 512:
                 await member.kick(reason=f"Failed to log reason, as reason length was {len(reason)}. Please check bot logs.")
             else:
@@ -188,10 +189,11 @@ class Moderation(commands.Cog):
                 embed.set_thumbnail(url="attachment://mute_image.png")
             else:
                 await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`")
+                img = None
         except discord.Forbidden:
             pass  # blocked DMs
         try:
-            await self.bot.logs_channel.send(embed=embed)
+            await self.bot.logs_channel.send(embed=embed, file=img)
         except discord.Forbidden:
             pass  # beta can't log
         await ctx.send(f"Successfully muted {member}!")
@@ -259,13 +261,14 @@ class Moderation(commands.Cog):
                 embed.set_thumbnail(url="attachment://mute_image.png")
             else:
                 await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.")
+                img = None
         except discord.Forbidden:
             pass  # blocked DMs
         self.bot.mutes_dict[str(member.id)] = end_str
         with open("saves/mutes.json", "w") as f:
             json.dump(self.bot.mutes_dict, f, indent=4)
         try:
-            await self.bot.logs_channel.send(embed=embed)
+            await self.bot.logs_channel.send(embed=embed, file=img)
         except discord.Forbidden:
             pass  # beta can't log
         await ctx.send(f"Successfully muted {member} until `{end_str}` UTC!")

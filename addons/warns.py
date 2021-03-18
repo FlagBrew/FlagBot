@@ -52,6 +52,7 @@ class Warning(commands.Cog):
                 embed.set_thumbnail(url="attachment://warn_image.png")
             else:
                 await target.send(dm_msg)
+                img = None
         except discord.Forbidden:
             embed.description += "\n**Could not DM user.**"
         if self.bot.is_mongodb:
@@ -80,7 +81,7 @@ class Warning(commands.Cog):
         elif len(warns) >= 3:
             await target.kick(reason=f"Warn #{len(warns)}")
         try:
-            await self.bot.logs_channel.send(embed=embed)
+            await self.bot.logs_channel.send(embed=embed, file=img)
         except discord.Forbidden:
             pass  # beta can't log
         if len(warns) >= 5:
