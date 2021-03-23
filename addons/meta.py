@@ -94,6 +94,24 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         await ctx.me.edit(nick=nick)
         await ctx.send(f"Successfully changed my nickname to: `{nick}`")
 
+    @commands.command(name="license")
+    async def flagbot_license(self, ctx):
+        embed = discord.Embed(title="FlagBot's License")
+        embed.description = ("FlagBrew's discord server moderation + utility bot"
+                            "\nCopyright (C) **2018-2021** | **GriffinG1**"
+                            "\n\nThis program is free software: you can redistribute it and/or modify\n"
+                            "it under the terms of the GNU Affero General Public License as published\n"
+                            "by the Free Software Foundation, either version 3 of the License, or\n"
+                            "(at your option) any later version.\n"
+                            "This program is distributed in the hope that it will be useful,\n"
+                            "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+                            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
+                            "See the GNU Affero General Public License for more details.\n"
+                            "A copy of the GNU Affero General Public License is available "
+                            "[in the program's repository](https://github.com/GriffinG1/FlagBot/blob/master/LICENSE)."
+                            )
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Meta(bot))
