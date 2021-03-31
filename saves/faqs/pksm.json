@@ -14,7 +14,7 @@
     },
     {
         "title": "How can I edit my trainer data?",
-        "value": "There's a script you can use: `Scripts` > press `Y` > `Edit Trainer Info.c`. Fair warning that there's a chance your save may be banned for doing this."
+        "value": "There's a script you can use: `Scripts` > press `Y` > `Edit Trainer Info.c`. Just follow the on-screen prompts from there."
     },
     {
         "title": "PKSM is erroring with Archive::init on launch, how can I fix it?",
