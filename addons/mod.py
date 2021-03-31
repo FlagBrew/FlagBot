@@ -173,6 +173,8 @@ class Moderation(commands.Cog):
                 def purge_specific_user(m):
                     return m.author == user
                 purged = await ctx.channel.purge(limit=amount, check=purge_specific_user)
+                if len(purged) == 0:
+                    return await ctx.send(f"Could not find any messages by {user} ({user.id}) to purge.")
                 await ctx.send(f"Purged {len(purged)} messages by {user} ({user.id}).")
         else:
             await ctx.send("Why would you wanna purge no messages?", delete_after=10)
