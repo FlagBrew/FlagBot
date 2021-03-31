@@ -636,7 +636,7 @@ class Utility(commands.Cog):
             data = {}
             for c in ctx.guild.channels:
                 data[c.id] = c.name
-            with open('saves/layout_beta.json', 'w') as f:
+            with open('saves/layout.json', 'w') as f:
                 json.dump(data, f, indent=4)
         with open('saves/new_layout.json', 'r') as f:
             new = json.load(f)
