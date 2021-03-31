@@ -162,12 +162,18 @@ class Moderation(commands.Cog):
 
     @commands.command(aliases=['p', 'clear', 'clean'])
     @commands.has_any_role("Discord Moderator")
-    async def purge(self, ctx, amount=0):
+    async def purge(self, ctx, amount=0, user: discord.User = None):
         """Purge x amount of messages"""
         await ctx.message.delete()
         await asyncio.sleep(2)
         if amount > 0:
-            await ctx.channel.purge(limit=amount)
+            if not user:
+                await ctx.channel.purge(limit=amount)
+            else:
+                def purge_specific_user(m):
+                    return m.author == user
+                purged = await ctx.channel.purge(limit=amount, check=purge_specific_user)
+                await ctx.send(f"Purged {len(purged)} messages by {user} ({user.id}).")
         else:
             await ctx.send("Why would you wanna purge no messages?", delete_after=10)
 
