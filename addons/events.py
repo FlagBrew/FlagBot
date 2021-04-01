@@ -112,7 +112,7 @@ class Events(commands.Cog):
                 "secret": self.bot.site_secret,
                 "user_id": str(before.id)
             }
-            if len(before.roles) < len(after.roles):
+            if len(before.roles) < len(after.roles) and (self.bot.patrons_role not in before.roles and self.bot.patrons_role in after.roles):
                 await self.bot.patrons_channel.send(f"Welcome to the super secret cool kids club {after.mention}!"
                                                     " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.")
                 url = "https://flagbrew.org/patron/generate"
@@ -129,7 +129,7 @@ class Events(commands.Cog):
                 img.save(bytes, format='PNG')
                 bytes = bytes.getvalue()
                 f = discord.File(io.BytesIO(bytes), filename="qr.png")
-            else:
+            elif len(before.roles) > len(after.roles) and (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles):
                 message = ("Unfortunately, your patreon subscription has been cancelled, or stopped renewing automatically. This means your token, and the special features,"
                            " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
                 url = "https://flagbrew.org/patron/remove"
