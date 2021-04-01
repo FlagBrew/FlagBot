@@ -642,6 +642,8 @@ class Utility(commands.Cog):
             new = json.load(f)
         for ch in new.keys():
             channel = ctx.guild.get_channel(int(ch))
+            if channel.name == new[ch]:
+                continue
             await channel.edit(name=new[ch])
             await asyncio.sleep(3)
         if bool(ctx.message.attachments):
@@ -657,6 +659,8 @@ class Utility(commands.Cog):
             old = json.load(f)
         for ch in old.keys():
             channel = ctx.guild.get_channel(int(ch))
+            if channel.name == old[ch]:
+                continue
             await channel.edit(name=old[ch])
             await asyncio.sleep(3)
         async with self.bot.session.get(url='https://avatars.githubusercontent.com/u/42673825?s=200&v=4') as r:
