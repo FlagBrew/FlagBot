@@ -62,8 +62,14 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         else:
             await ctx.send(f"Source code for the `{function}` command{' in the `' + cl + '` class' if cl in self.addons else ''} (Large source code):", file=discord.File(io.BytesIO(src.encode("utf-8")), filename="output.txt"))
 
+    @commands.group()
     @commands.has_any_role("Bot Dev", "Discord Moderator")
-    @commands.command()
+    async def botedit(self, ctx):
+        """Main handler for bot editing commands"""
+        if ctx.invoked_subcommand is None:
+            return await ctx.send("Possible subcommands: `activity`, `nick`, and `icon`.")
+
+    @botedit.command()
     async def activity(self, ctx, activity_type=None, *, new_activity=None):
         """Changes the bot's activity. Giving no type and status will clear the activity."""
         activity_types = {
@@ -85,9 +91,8 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         await self.bot.change_presence(activity=activity)
         await ctx.send(f"Successfully changed my activity to: `{activity_type.title()} {new_activity}`.")
 
-    @commands.has_any_role("Bot Dev", "Discord Moderator")
-    @commands.command()
-    async def setnick(self, ctx, *, nick=None):
+    @botedit.command()
+    async def nick(self, ctx, *, nick=None):
         """Changes the bot's nick. Giving no nick will clear the nickname."""
         if nick is None:
             await ctx.me.edit(nick=None)
@@ -97,9 +102,8 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         await ctx.me.edit(nick=nick)
         await ctx.send(f"Successfully changed my nickname to: `{nick}`")
 
-    @commands.has_any_role("Bot Dev", "Discord Moderator")
-    @commands.command()
-    async def seticon(self, ctx):
+    @botedit.command()
+    async def icon(self, ctx):
         """Changes the bot's icon. Attach a JPG or PNG to change it to that. Giving no attachment will revert to the FlagBrew icon."""
         if bool(ctx.message.attachments):
             icon = await ctx.message.attachments[0].read()
