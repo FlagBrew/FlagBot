@@ -1,6 +1,8 @@
 import discord
 import inspect
 import io
+import json
+import asyncio
 from discord.ext import commands
 
 #  Revised addon loading for Meta taken from https://stackoverflow.com/a/24940613
@@ -111,6 +113,46 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
                             "[in the program's repository](https://github.com/GriffinG1/FlagBot/blob/master/LICENSE)."
                             )
         await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_any_role("Admin", "Bot Dev")
+    async def surprise(self, ctx):
+        """Happy April 1st! Pass in image attachment for server icon change"""
+        if not os.path.exists('saves/layout.json'):
+            data = {}
+            for c in ctx.guild.channels:
+                data[c.id] = c.name
+            with open('saves/layout.json', 'w') as f:
+                json.dump(data, f, indent=4)
+        with open('saves/new_layout.json', 'r') as f:
+            new = json.load(f)
+        for ch in new.keys():
+            channel = ctx.guild.get_channel(int(ch))
+            if channel.name == new[ch]:
+                continue
+            await channel.edit(name=new[ch])
+            await asyncio.sleep(3)
+        if bool(ctx.message.attachments):
+            img_bytes = await ctx.message.attachments[0].read()
+        await ctx.guild.edit(icon=img_bytes)
+        await ctx.send("Updated the channel list.")
+
+    @commands.command()
+    @commands.has_any_role("Admin", "Bot Dev")
+    async def revert(self, ctx):
+        """April 1st is over"""
+        with open('saves/layout.json', 'r') as f:
+            old = json.load(f)
+        for ch in old.keys():
+            channel = ctx.guild.get_channel(int(ch))
+            if channel.name == old[ch]:
+                continue
+            await channel.edit(name=old[ch])
+            await asyncio.sleep(3)
+        async with self.bot.session.get(url='https://avatars.githubusercontent.com/u/42673825?s=200&v=4') as r:
+            r_data = await r.read()
+            await ctx.guild.edit(icon=r_data)
+        await ctx.send("Reverted back the channel list.")
 
 
 def setup(bot):
