@@ -3,6 +3,7 @@ import inspect
 import io
 import json
 import asyncio
+import os
 from discord.ext import commands
 
 #  Revised addon loading for Meta taken from https://stackoverflow.com/a/24940613
@@ -95,6 +96,18 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             return await ctx.send(f"Nicknames must be greater than or equal to 2 characters, but less than 33 characters. Inputted value length: {len(nick)} characters.")
         await ctx.me.edit(nick=nick)
         await ctx.send(f"Successfully changed my nickname to: `{nick}`")
+
+    @commands.has_any_role("Bot Dev", "Discord Moderator")
+    @commands.command()
+    async def seticon(self, ctx):
+        """Changes the bot's icon. Attach a JPG or PNG to change it to that. Giving no attachment will revert to the FlagBrew icon."""
+        if bool(ctx.message.attachments):
+            icon = await ctx.message.attachments[0].read()
+        else:
+            async with self.bot.session.get(url='https://avatars.githubusercontent.com/u/42673825?s=200&v=4') as r:
+                icon = await r.read()
+        await self.bot.user.edit(avatar=icon)
+        await ctx.send(f"Successfully changed my icon. Due to Discord's cache, this may require a reload to view.")
 
     @commands.command(name="license")
     async def flagbot_license(self, ctx):
