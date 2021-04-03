@@ -1,6 +1,7 @@
 import discord
 import json
 import random
+import io
 from datetime import datetime
 from discord.ext import commands
 from addons.helper import restricted_to_bot
@@ -17,6 +18,7 @@ class Warning(commands.Cog):
     @commands.has_any_role("Discord Moderator")
     async def warn(self, ctx, target: discord.Member, *, reason="No reason was given"):
         """Warns a user. Kicks at 3 and 4 warnings, bans at 5"""
+        has_attch = bool(ctx.message.attachments)
         try:
             self.bot.warns_dict[str(target.id)]
         except KeyError:
@@ -43,7 +45,14 @@ class Warning(commands.Cog):
         embed = discord.Embed(title=f"{target} warned")
         embed.description = f"{target} | {target.id} was warned in {ctx.channel.mention} by {ctx.author} for `{reason}`. This is warn #{len(warns)}. {log_msg}"
         try:
-            await target.send(dm_msg)
+            if has_attch:
+                img_bytes = await ctx.message.attachments[0].read()
+                img = discord.File(io.BytesIO(img_bytes), 'warn_image.png')
+                await target.send(dm_msg, file=img)
+                embed.set_thumbnail(url="attachment://warn_image.png")
+            else:
+                await target.send(dm_msg)
+                img = None
         except discord.Forbidden:
             embed.description += "\n**Could not DM user.**"
         if self.bot.is_mongodb:
@@ -72,7 +81,7 @@ class Warning(commands.Cog):
         elif len(warns) >= 3:
             await target.kick(reason=f"Warn #{len(warns)}")
         try:
-            await self.bot.logs_channel.send(embed=embed)
+            await self.bot.logs_channel.send(embed=embed, file=img)
         except discord.Forbidden:
             pass  # beta can't log
         if len(warns) >= 5:

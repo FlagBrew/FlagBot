@@ -32,25 +32,6 @@ class Events(commands.Cog):
                 await guild.leave()
 
     @commands.Cog.listener()
-    async def on_member_ban(self, guild, user):
-        try:
-            async for ban in guild.audit_logs(limit=20, action=discord.AuditLogAction.ban):  # 20 to handle multiple staff bans in quick succession
-                if ban.target == user:
-                    if ban.reason:
-                        reason = ban.reason
-                    else:
-                        reason = "No reason was given. Please do that in the future!"
-                    admin = ban.user
-                    break
-                else:
-                    return
-            embed = discord.Embed(title=f"{user} banned")
-            embed.description = f"{user} was banned by {admin} for:\n\n{reason}"
-            await self.bot.logs_channel.send(embed=embed)
-        except discord.Forbidden:
-            pass  # beta bot can't log
-
-    @commands.Cog.listener()
     async def on_member_join(self, member):
         try:
             mute_exp = self.bot.mutes_dict[str(member.id)]
@@ -153,11 +134,14 @@ class Events(commands.Cog):
                 img.save(bytes, format='PNG')
                 bytes = bytes.getvalue()
                 f = discord.File(io.BytesIO(bytes), filename="qr.png")
-            else:
+            elif len(before.roles) > len(after.roles) and (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles):
                 message = ("Unfortunately, your patreon subscription has been cancelled, or stopped renewing automatically. This means your token, and the special features,"
                            " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
                 self.db['patrons'].delete_one({"discord_id": str(before.id)})
                 f = None
+            else:
+                return  # cancel out for none of this shit
+            await self.bot.session.post(url=url, data=data)
             try:
                 await before.send(message, file=f)
             except discord.Forbidden:

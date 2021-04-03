@@ -12,6 +12,7 @@ import aiohttp
 import qrcode
 import io
 import hashlib
+import validators
 from addons.helper import restricted_to_bot
 
 
@@ -366,7 +367,7 @@ class Utility(commands.Cog):
         file.seek(0)
         file_log = discord.File(file, filename=ctx.message.attachments[0].filename)
         msg = await self.bot.crash_log_channel.send(f"Dump submitted by {ctx.author}", file=file_log)
-        embed = discord.Embed(title="New Crash Dump!")
+        embed = discord.Embed(title="New Crash Dump!", colour=discord.Colour.green())
         embed.add_field(name="Submitted By", value=ctx.author.mention)
         embed.add_field(name="Submitted At", value=ctx.message.created_at.strftime('%b %d, %Y'))
         async with self.bot.session.get("https://api.github.com/repos/FlagBrew/PKSM/commits/master") as r:
@@ -374,6 +375,7 @@ class Utility(commands.Cog):
         commit_sha = commit["sha"][:7]
         embed.add_field(name="Latest Commit", value=commit_sha)
         embed.add_field(name="File Download URL", value=f"[Download]({msg.attachments[0].url})")
+        embed.add_field(name="Resolution Status", value="Received")
         embed.add_field(name="Description of issue", value=description, inline=False)
         embed.set_footer(text=f"The hash for this file is {file_hash}")
         await self.bot.crash_dump_channel.send(embed=embed)
@@ -381,6 +383,40 @@ class Utility(commands.Cog):
         with open("saves/submitted_hashes.json", "w") as f:
             json.dump(self.submitted_hashes, f, indent=4)
         await ctx.send(f"{ctx.author.mention} your crash dump was successfully submitted!")
+
+    @commands.command(aliases=['ccs'])
+    @commands.has_any_role("FlagBrew Team", "Bot Dev")
+    @commands.cooldown(rate=1, per=10.0, type=commands.BucketType.channel)
+    async def change_crash_status(self, ctx, message_id: int, new_value):
+        """Allows changing the resolution status of a crash report. Permissible values: received, unreproducible, reproducible, duplicate, fixed, closed"""
+        if not new_value.lower() in ("received", "unreproducible", "reproducible", "duplicate", "fixed", "closed"):
+            return await ctx.send(f"`{new_value}` is not a permissible value for crash status. Permissible values: `received`, `unreproducible`, `reproducible`, `duplicate`, `fixed`, and `closed`.")
+        try:
+            message = await self.bot.crash_dump_channel.fetch_message(message_id)
+        except (discord.NotFound, discord.HTTPException):
+            return await ctx.send(f"There was an issue finding a crash report with a message ID of `{message_id}`. Please double check the ID.")
+        old_embed = message.embeds[0]
+        if new_value.title() == old_embed.fields[4].value:
+            return await ctx.send(f"That crash report already is set to `{new_value.title()}`!")
+        new_embed = discord.Embed(title=old_embed.title)
+        for i in range(4):
+            new_embed.add_field(name=old_embed.fields[i].name, value=old_embed.fields[i].value)
+        new_embed.add_field(name=old_embed.fields[4].name, value=new_value.title())
+        new_embed.add_field(name=old_embed.fields[5].name, value=old_embed.fields[5].value, inline=False)
+        if new_value.lower() == "received":
+            new_embed.colour = discord.Colour.green()
+        elif new_value.lower() == "unreproducible":
+            new_embed.colour = discord.Colour.red()
+        elif new_value.lower() == "reproducible":
+            new_embed.colour = discord.Colour.dark_green()
+        elif new_value.lower() == "duplicate":
+            new_embed.colour = discord.Colour.gold()
+        elif new_value.lower() == "fixed":
+            new_embed.colour = discord.Colour.purple()
+        elif new_value.lower() == "closed":
+            new_embed.colour = discord.Colour.magenta()
+        await message.edit(embed=new_embed)
+        await ctx.send(f"Successfully changed the crash report's status from `{old_embed.fields[4].value}` to `{new_value.title()}`!\nJump link to the edited crash: {message.jump_url}")
 
     @commands.command()
     @restricted_to_bot
@@ -470,6 +506,21 @@ class Utility(commands.Cog):
                 embed.add_field(name="Activities" if len(user.activities) > 1 else "Activity", value=f"`{'`, `'.join(str(activity.name) for activity in user.activities)}`", inline=False)
         await ctx.send(embed=embed)
 
+    @commands.command(aliases=['si', 'guild', 'gi', 'server', 'serverinfo'])
+    @restricted_to_bot
+    async def guildinfo(self, ctx, depth=False):
+        embed = discord.Embed()
+        embed.set_author(name=f"Guild info for {ctx.guild.name} ({ctx.guild.id})", icon_url=str(ctx.guild.icon_url))
+        embed.add_field(name="Guild Owner", value=f"{ctx.guild.owner} ({ctx.guild.owner.mention})")
+        embed.add_field(name="Highest Role", value=f"{ctx.guild.roles[-1].name} ({ctx.guild.roles[-1].id})")
+        embed.add_field(name="Member Count", value=str(ctx.guild.member_count))
+        if depth:
+            embed.add_field(name="Emoji Slots", value=f"{len(ctx.guild.emojis)}/{ctx.guild.emoji_limit} slots used")
+            since_creation = (datetime.now() - ctx.guild.created_at).days
+            embed.add_field(name="Created At", value=f"{ctx.guild.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC\n({since_creation//365} years, {since_creation%365} days)")
+            embed.add_field(name="Total Boosts", value=f"{ctx.guild.premium_subscription_count} boosters (Current level: {ctx.guild.premium_tier})")
+        await ctx.send(embed=embed)
+
     @commands.command(aliases=["hexstring", "hexlify", "hs"])
     async def utf16string(self, ctx, *, string_to_convert):
         """Turns a string into its UTF-16LE format in hex, for use with PKSM's hex editor"""
@@ -480,6 +531,100 @@ class Utility(commands.Cog):
         hexstring = string_to_convert.encode("utf_16_le").hex() + "0000"
         bytelist = [f"0x{hexstring[x:x+2]}" for x in range(0, len(hexstring), 2)]
         await ctx.send(f"`{' '.join(bytelist)}`")
+
+    @commands.group()
+    async def emote(self, ctx):
+        """Main handler for emote commands"""
+        if ctx.invoked_subcommand is None:
+            return await ctx.send("Possible subcommands: `add`, `addurl`, `delete`, `steal`, and `view`.")
+
+    @emote.command()
+    @commands.has_any_role("Bot Dev", "Discord Moderator")
+    async def add(self, ctx, name, *, role_ids=None):
+        """Allows adding an attached emote to the server. Pass in a list of role IDs to restrict the emote"""
+        roles = []
+        if len(name) > 16:
+            return await ctx.send("Emote names must be 16 characters or less.")
+        elif len(ctx.message.attachments) < 1:
+            return await ctx.send("You need to attach an image.")
+        if role_ids is not None:
+            role_ids = role_ids.replace(' ', '').split(',')
+            role_ids += [482900527730917376, 483024700767993866]
+            roles = [ctx.guild.get_role(int(role)) for role in role_ids]
+        roles = [r for r in roles if r]  # Clears out None values
+        image = await ctx.message.attachments[0].read()
+        if len(image) > 256000:
+            await ctx.send("Images need to be smaller than 256 kb.")
+            return await ctx.send("https://tenor.com/view/eric-andre-bitch-gif-11075039")
+        try:
+            e = await ctx.guild.create_custom_emoji(name=name, image=image, roles=roles)
+        except discord.InvalidArgument:
+            return await ctx.send("You didn't attach a JPG, PNG, or GIF. Fuck you.")
+        msg = f"Successfully added the emote `{name}` {str(e)}!"
+        if len(roles) > 0:
+            msg += f"\nThis emote is restricted to: `{'`, `'.join(role.name for role in roles if not 'FlagBot' in role.name)}`"
+        await ctx.send(msg)
+
+    @emote.command()
+    @commands.has_any_role("Bot Dev", "Discord Moderator")
+    async def addurl(self, ctx, name, url: str, *, role_ids=None):
+        """Allows adding a emote by URL. Pass in a list of role IDs to restrict the emote"""
+        roles = []
+        if len(name) > 16:
+            return await ctx.send("Emote names must be 16 characters or less.")
+        elif not validators.url(url):
+            await ctx.send("That's not a real link!")
+        if role_ids is not None:
+            role_ids = role_ids.replace(' ', '').split(',')
+            role_ids += [482900527730917376, 483024700767993866]
+            roles = [ctx.guild.get_role(int(role)) for role in role_ids]
+        roles = [r for r in roles if r]  # Clears out None values
+        async with self.bot.session.get(url=url) as r:
+            e = await ctx.guild.create_custom_emoji(name=name, image=(await r.content.read()), roles=roles)
+        msg = f"Successfully added the emote `{name}` {str(e)}!"
+        if len(roles) > 0:
+            msg += f"\nThis emote is restricted to: `{'`, `'.join(role.name for role in roles if not 'FlagBot' in role.name)}`"
+        await ctx.send(msg)
+
+    @emote.command()
+    @commands.has_any_role("Bot Dev", "Discord Moderator")
+    async def steal(self, ctx, emote: discord.PartialEmoji, *, role_ids=None):
+        """Allows stealing a emote from another server. Pass in a list of role IDs to restrict the emote"""
+        name = emote.name
+        roles = []
+        if role_ids is not None:
+            role_ids = role_ids.replace(' ', '').split(',')
+            role_ids += [482900527730917376, 483024700767993866]
+            roles = [ctx.guild.get_role(int(role)) for role in role_ids]
+        roles = [r for r in roles if r]  # Clears out None values
+        async with self.bot.session.get(url=str(emote.url)) as r:
+            e = await ctx.guild.create_custom_emoji(name=name, image=(await r.content.read()), roles=roles)
+        msg = f"Successfully added the emote `{name}` {str(e)}!"
+        if len(roles) > 0:
+            msg += f"\nThis emote is restricted to: `{'`, `'.join(role.name for role in roles if not 'FlagBot' in role.name)}`"
+        await ctx.send(msg)
+
+    @emote.command(aliases=['del'])
+    @commands.has_any_role("Bot Dev", "Discord Moderator")
+    async def delete(self, ctx, emote: discord.Emoji):
+        """Allows removing a provided emote"""
+        for e in ctx.guild.emojis:
+            if e == emote:
+                await e.delete()
+                break
+        await ctx.send(f"Successfully deleted the emote `{emote.name}`.")
+
+    @emote.command()
+    async def view(self, ctx, emote: discord.Emoji):
+        """Allows viewing the properties of a server emote"""
+        embed = discord.Embed(title=f"Emote properties for {emote} ({emote.id})")
+        embed.add_field(name="Emote Name", value=emote.name)
+        embed.add_field(name="Emote Link", value=f"[Here]({str(emote.url)})")
+        if len(emote.roles) > 0:
+            embed.add_field(name="Permitted Roles", value=f"`{'`, `'.join(r.name for r in emote.roles if not 'FlagBot' in r.name)}`", inline=False)
+        embed.add_field(name="Added On", value=f"{emote.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC", inline=False)
+        await ctx.send(embed=embed)
+            
 
 def setup(bot):
     bot.add_cog(Utility(bot))

@@ -9,3 +9,5 @@ disabled_commands.json
 addons/devtools.py
 submitted_hashes.json
 saves/mutes.json
+saves/layout.json
+saves/new_layout.json
