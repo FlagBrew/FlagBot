@@ -4,6 +4,7 @@ import io
 import json
 import asyncio
 import os
+import sys, inspect
 from discord.ext import commands
 
 #  Revised addon loading for Meta taken from https://stackoverflow.com/a/24940613
@@ -29,8 +30,12 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
         self.addons = {}
-        for key in keys.keys():
-            self.addons[keys[key].__name__] = keys[key]
+        for key, val in keys.items():
+            members = inspect.getmembers(keys[key], inspect.isclass)
+            for cl in members:
+                if not cl[0] in addons.values():
+                    continue
+                self.addons[val.__name__] = cl
         print(f'Addon "{self.__class__.__name__}" loaded')
 
     @commands.command(hidden=True)
@@ -42,14 +47,16 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
     @commands.command(hidden=True)
     async def source(self, ctx, function, cl=None):
         """Gets the source code of a function / command. Limited to bot creator."""
+        print(self.addons)
         if not ctx.author == self.bot.creator:
             raise commands.errors.CheckFailure()
         command = self.bot.get_command(function)
         if command is None:
-            if not cl in self.addons:
+            if not cl.startswith("addons."): cl = "addons." + cl
+            if not cl in self.addons.keys():
                 return await ctx.send("That isn't a command. Please supply a valid class name for retrieving functions.")
             try:
-                cl_obj = self.addons[cl]
+                cl_obj = self.addons[cl][1]
                 func = getattr(cl_obj, function)
             except AttributeError:
                 return await ctx.send(f"I couldn't find a function named `{function}` in the `{cl}` class.")
@@ -60,7 +67,7 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             src = src.replace('`', r'\`')
             await ctx.send(f"Source code for the `{function}` command{' in the `' + cl + '` class' if cl in self.addons else ''}: ```py\n{src}\n```")
         else:
-            await ctx.send(f"Source code for the `{function}` command{' in the `' + cl + '` class' if cl in self.addons else ''} (Large source code):", file=discord.File(io.BytesIO(src.encode("utf-8")), filename="output.txt"))
+            await ctx.send(f"Source code for the `{function}` command{' in the `' + cl + '` class' if cl in self.addons else ''} (Large source code):", file=discord.File(io.BytesIO(src.encode("utf-8")), filename="output.py"))
 
     @commands.group()
     @commands.has_any_role("Bot Dev", "Discord Moderator")
