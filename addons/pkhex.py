@@ -120,7 +120,6 @@ class pkhex(commands.Cog):
             return [r.status, rj, content]
 
     def embed_fields(self, ctx, embed, data, is_set=False, is_gpss=False):
-        print(data)
         embed.add_field(name="Species", value=data["species"])
         embed.add_field(name="Level", value=data["level"])
         embed.add_field(name="Nature", value=data["nature"])
@@ -153,8 +152,6 @@ class pkhex(commands.Cog):
         embed.add_field(name="Captured In", value=data["ball"])
         if data["held_item"] != "(None)" and is_set:
             embed.add_field(name="Held Item", value=data["held_item"])
-        if is_set:
-            embed.add_field(name="Gender", value=data["gender"])
         if is_set:
             embed.add_field(name=u"\u200B", value=u"\u200B", inline=False)
         if not is_gpss:
@@ -353,7 +350,7 @@ class pkhex(commands.Cog):
         embed = self.embed_fields(ctx, embed, rj)
         if embed == 400:
             return await ctx.send(f"{ctx.author.mention} Something in that pokemon is *very* wrong. Your request has been canceled. Please do not try that mon again.")
-        embed.set_author(name=f"Data for {rj['nickname']}", icon_url=rj["species_sprite_url"])
+        embed.set_author(name=f"Data for {rj['nickname']} ({rj['gender']})", icon_url=rj["species_sprite_url"])
         embed.colour = discord.Colour.green() if rj["illegal_reasons"] == "Legal!" else discord.Colour.red()
         try:
             await ctx.send(embed=embed)
@@ -470,7 +467,7 @@ class pkhex(commands.Cog):
             embed = self.embed_fields(ctx, embed, pkmn_data, False, True)
             if embed == 400:
                 return await ctx.send(f"Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{self.bot.pie.mention}: Mon was gen3+ and missing origin game. Code: `{code}`")
-            embed.set_author(icon_url=pkmn_data["species_sprite_url"], name=f"Data for {pkmn_data['nickname']}")
+            embed.set_author(icon_url=pkmn_data["species_sprite_url"], name=f"Data for {pkmn_data['nickname']} ({pkmn_data['gender']})")
             embed.set_thumbnail(url=self.bot.gpss_url + f"gpss/qr/{code}")
             return await msg.edit(embed=embed, content=None)
         await msg.edit(content=f"There was no pokemon on the GPSS with the code `{code}`.")
@@ -567,7 +564,7 @@ class pkhex(commands.Cog):
             pkx = base64.decodebytes(pk64)
             qr64 = rj["qr"].encode("ascii")
             qr = base64.decodebytes(qr64)
-        embed = discord.Embed(title=f"Data for {rj['nickname']}")
+        embed = discord.Embed(title=f"Data for {rj['nickname']} ({rj['gender']})")
         embed.set_thumbnail(url=rj["species_sprite_url"])
         embed = self.embed_fields(ctx, embed, rj, is_set=True)
         pokemon_file = discord.File(io.BytesIO(pkx), "showdownset.pk" + str(gen))
