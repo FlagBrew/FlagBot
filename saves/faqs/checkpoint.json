@@ -14,5 +14,9 @@
     {
         "title": "I'm crashing when using cheats with a Pokemon game. What should I do?",
         "value": "This is due to a kernel bug. Luma's cheat engine would need to be redesigned to fix this, which would cause another bug elsewhere. As such, there is no solution to this problem at this time besides using another console."
+    },
+    {
+        "title": "Why does Checkpoint crash with error code 2144-0001?",
+        "value": "Due to recent changes made in Atmosphere 0.19.0, any app that uses homebrew extensions requires recompiling. Checkpoint is not currently stable enough to merit an official release, and as such one has not been made. In the meantime, you can use [SciresM's build](https://github.com/SciresM/Checkpoint/releases/tag/ams-19-compat) of Checkpoint.\n**Please Note**: Stability is __not__ guaranteed with this build. It may or may not crash, and there is not much we can do about it."
     }
 ]
