@@ -508,7 +508,7 @@ class pkhex(commands.Cog):
         if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         msg = await ctx.send("Attempting to legalize pokemon...")
-        r = await self.process_file(ctx, data, ctx.message.attachments, "api/v2/bot/auto_legality")
+        r = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/auto_legality")
         if r == 400:
             return
         elif r[0] == 503:
