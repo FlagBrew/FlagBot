@@ -429,24 +429,6 @@ class Utility(commands.Cog):
         self.submitted_hashes = []
         await ctx.send("Cleared the submitted hashes file.")
 
-    @commands.command(name="toggleword")
-    @commands.has_any_role("Discord Moderator")
-    async def toggle_ban_word_from_gpss(self, ctx, word):
-        """Bans a word from the GPSS. Restricted to Discord Moderator"""
-        url = self.bot.api_url + "api/v1/bot/ban-word"
-        data = {
-            "word": word
-        }
-        headers = {
-            "secret": self.bot.site_secret
-        }
-        async with self.bot.session.post(url=url, data=data, headers=headers) as r:
-            if not r.status in (200, 410):
-                return await ctx.send(f"Failed to post the banned word to the server. Status code: `{r.status}`.")
-            elif r.status == 410:
-                return await ctx.send(f"Successfully unbanned the word `{word}` from the GPSS.")
-            await ctx.send(f"Successfully banned the word `{word}` from the GPSS.")
-
     @commands.command()
     async def translate(self, ctx, lang):
         """Fetches the translation file for the provided language"""
