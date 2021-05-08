@@ -22,9 +22,9 @@ class pkhex(commands.Cog):
         self.bot = bot
         self.failure_count = 0
         self.api_check = bot.loop.create_task(self.confirm_api_link())  # loops referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L23
-        self.db = bot.db
         if bot.is_mongodb:
             next(command for command in self.get_commands() if command.name == "genqr").enabled = True
+            self.db = bot.db
         print(f'Addon "{self.__class__.__name__}" loaded')
         
     def cog_unload(self):
@@ -450,29 +450,29 @@ class pkhex(commands.Cog):
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         msg = await ctx.send("Attempting to fetch pokemon...")
         try:
-        async with self.bot.session.get(self.bot.flagbrew_url + "api/v2/gpss/view/" + code) as r:
-            rj = await r.json()
-            code_data = rj["pokemon"]
-            pkmn_data = code_data["pokemon"]
-            filename = pkmn_data["species"] + f" Code_{code}"
-            if pkmn_data["generation"] == "LGPE":
-                filename += ".pb7"
-            else:
-                filename += ".pk" + pkmn_data["generation"]
-            pk64 = code_data["base_64"].encode("ascii")
-            pkx = base64.decodebytes(pk64)
-            pkmn_file = discord.File(io.BytesIO(pkx), filename)
-            await asyncio.sleep(1)
-            m = await upload_channel.send(f"Pokemon fetched from the GPSS by {ctx.author}", file=pkmn_file)
-            embed = discord.Embed(description=f"[GPSS Page]({self.bot.gpss_url + 'gpss/view/' + code}) | [Download link]({m.attachments[0].url})")
-            embed = self.embed_fields(ctx, embed, pkmn_data, False, True)
-            if embed == 400:
-                return await ctx.send(f"Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{self.bot.pie.mention}: Mon was gen3+ and missing origin game. Code: `{code}`")
-            embed.set_author(icon_url=pkmn_data["species_sprite_url"], name=f"Data for {pkmn_data['nickname']} ({pkmn_data['gender']})")
-            embed.set_thumbnail(url=self.bot.gpss_url + f"gpss/qr/{code}")
-            return await msg.edit(embed=embed, content=None)
+            async with self.bot.session.get(self.bot.flagbrew_url + "api/v2/gpss/view/" + code) as r:
+                rj = await r.json()
+                code_data = rj["pokemon"]
+                pkmn_data = code_data["pokemon"]
+                filename = pkmn_data["species"] + f" Code_{code}"
+                if pkmn_data["generation"] == "LGPE":
+                    filename += ".pb7"
+                else:
+                    filename += ".pk" + pkmn_data["generation"]
+                pk64 = code_data["base_64"].encode("ascii")
+                pkx = base64.decodebytes(pk64)
+                pkmn_file = discord.File(io.BytesIO(pkx), filename)
+                await asyncio.sleep(1)
+                m = await upload_channel.send(f"Pokemon fetched from the GPSS by {ctx.author}", file=pkmn_file)
+                embed = discord.Embed(description=f"[GPSS Page]({self.bot.gpss_url + 'gpss/view/' + code}) | [Download link]({m.attachments[0].url})")
+                embed = self.embed_fields(ctx, embed, pkmn_data, False, True)
+                if embed == 400:
+                    return await ctx.send(f"Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{self.bot.pie.mention}: Mon was gen3+ and missing origin game. Code: `{code}`")
+                embed.set_author(icon_url=pkmn_data["species_sprite_url"], name=f"Data for {pkmn_data['nickname']} ({pkmn_data['gender']})")
+                embed.set_thumbnail(url=self.bot.gpss_url + f"gpss/qr/{code}")
+                return await msg.edit(embed=embed, content=None)
         except aiohttp.ContentTypeError:
-        await msg.edit(content=f"There was no pokemon on the GPSS with the code `{code}`.")
+            await msg.edit(content=f"There was no pokemon on the GPSS with the code `{code}`.")
 
     @commands.command(name="gpsspost", aliases=['gpssupload'])
     @restricted_to_bot
@@ -580,6 +580,8 @@ class pkhex(commands.Cog):
     @commands.has_any_role("Patron", "FlagBrew Team")
     async def genenerate_qr(self, ctx, app, ext):
         """Generates a Patron QR code for installing via FBI"""
+        if not self.bot.is_mongodb:
+            return await ctx.send("No DB available, cancelling...")
         async with self.bot.session.get(self.bot.flagbrew_url) as r:
             if not r.status == 200:
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")

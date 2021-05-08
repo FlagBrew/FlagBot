@@ -20,7 +20,8 @@ class Utility(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.db = bot.db
+        if bot.is_mongodb:
+            self.db = bot.db
         print(f'Addon "{self.__class__.__name__}" loaded')
         with open("saves/role_mentions.json", "r") as f:
             self.role_mentions_dict = json.load(f)
@@ -179,6 +180,8 @@ class Utility(commands.Cog):
     @restricted_to_bot
     async def regen_token(self, ctx, user: discord.Member):
         """Regenerates a patron's token"""
+        if not self.bot.is_mongodb:
+            return await ctx.send("No DB available, cancelling...")
         new_token = secrets.token_urlsafe(16)
         self.db['patrons'].update_one(
             {
@@ -205,6 +208,8 @@ class Utility(commands.Cog):
     @restricted_to_bot
     async def delete_token(self, ctx, user: discord.Member, *, reason="No reason provided"):
         """Deletes a patron's token"""
+        if not self.bot.is_mongodb:
+            return await ctx.send("No DB available, cancelling...")
         self.db['patrons'].delete_one({"discord_id": str(user.id)})
         message = f"Your patron token has been revoked for reason: `{reason}`. If you feel this has been done in error, please contact a member of the FlagBrew team."
         try:
@@ -218,6 +223,8 @@ class Utility(commands.Cog):
     @restricted_to_bot
     async def generate_token(self, ctx, user: discord.Member):
         """Generates a patron token. If user already in system, use regen_token"""
+        if not self.bot.is_mongodb:
+            return await ctx.send("No DB available, cancelling...")
         token = secrets.token_urlsafe(16)
         self.db['patrons'].update_one(
             {
