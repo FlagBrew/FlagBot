@@ -449,7 +449,7 @@ class pkhex(commands.Cog):
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         msg = await ctx.send("Attempting to fetch pokemon...")
-        async with self.bot.session.get(self.bot.flagbrew_url + "api/v1/gpss/view/" + code) as r:
+        async with self.bot.session.get(self.bot.flagbrew_url + "api/v2/gpss/view/" + code) as r:
             rj = await r.json()
             code_data = rj["pokemon"]
             pkmn_data = code_data["pokemon"]
@@ -508,7 +508,7 @@ class pkhex(commands.Cog):
         if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         msg = await ctx.send("Attempting to legalize pokemon...")
-        r = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/auto_legality")
+        r = await self.process_file(ctx, data, ctx.message.attachments, "api/v2/bot/auto_legality")
         if r == 400:
             return
         elif r[0] == 503:
@@ -598,14 +598,14 @@ class pkhex(commands.Cog):
         async with self.bot.session.get(f"https://api.github.com/repos/FlagBrew/{accepted_apps[app.lower()]}/commits/master") as h:
             commit = await h.json()
         commit_sha = commit["sha"][:7]
-        url = f"{self.bot.flagbrew_url}api/v1/patreon/update-qr/{app}/{commit_sha}/{ext.lower()}"
+        url = f"{self.bot.flagbrew_url}api/v2/patreon/update-qr/{app}/{commit_sha}/{ext.lower()}"
         async with self.bot.session.get(url=url, headers=headers) as r:
             if not r.status == 200:
                 return await ctx.send("Failed to get the QR.")
             qr_bytes = await r.read()
             qr = discord.File(io.BytesIO(qr_bytes), 'patron_qr.png')
             embed = discord.Embed(title=f"Patron Build for {accepted_apps[app.lower()]}")
-            embed.add_field(name="Direct Download", value=f"[Here]({self.bot.flagbrew_url}api/v1/patreon/update/{patron_code}/{accepted_apps[app]}/{commit_sha}/{ext})")
+            embed.add_field(name="Direct Download", value=f"[Here]({self.bot.flagbrew_url}api/v2/patreon/update/{patron_code}/{accepted_apps[app]}/{commit_sha}/{ext})")
             embed.add_field(name="File Type", value=ext.upper())
             embed.set_footer(text=f"Commit Hash: {commit_sha}")
             embed.set_image(url="attachment://patron_qr.png")
