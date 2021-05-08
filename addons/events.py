@@ -14,6 +14,7 @@ class Events(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.db = bot.db
         print(f'Addon "{self.__class__.__name__}" loaded')
 
     @commands.Cog.listener()
@@ -108,15 +109,19 @@ class Events(commands.Cog):
         has_roles = len(list(role for role in token_roles if role in before.roles or role in after.roles)) > 0  # True if member has one of the roles in token_roles, else False
         if before.roles != after.roles and has_roles:
             token = secrets.token_urlsafe(16)
-            data = {
-                "secret": self.bot.site_secret,
-                "user_id": str(before.id)
-            }
-            if len(before.roles) < len(after.roles) and (self.bot.patrons_role not in before.roles and self.bot.patrons_role in after.roles):
+            self.db['patrons'].update_one(
+                {
+                    "discord_id": str(before.id)
+                },
+                {
+                    "$set": {
+                        "discord_id": str(before.id),
+                        "code": token
+                    }
+                }, upsert=True)
+            if len(before.roles) < len(after.roles):
                 await self.bot.patrons_channel.send(f"Welcome to the super secret cool kids club {after.mention}!"
                                                     " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.")
-                url = "https://flagbrew.org/patron/generate"
-                data["token"] = token
                 message = ("Congrats on becoming a patron! You can add the token below to PKSM's config to access some special patron only stuff. It's only valid until your"
                            " patron status is cancelled, so keep up those payments!"
                            " To access the hidden Patron settings menu, press the four corners of the touch screen while on the configuration screen."
@@ -132,7 +137,7 @@ class Events(commands.Cog):
             elif len(before.roles) > len(after.roles) and (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles):
                 message = ("Unfortunately, your patreon subscription has been cancelled, or stopped renewing automatically. This means your token, and the special features,"
                            " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
-                url = "https://flagbrew.org/patron/remove"
+                self.db['patrons'].delete_one({"discord_id": str(before.id)})
                 f = None
             else:
                 return  # cancel out for none of this shit
