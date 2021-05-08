@@ -449,6 +449,7 @@ class pkhex(commands.Cog):
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         msg = await ctx.send("Attempting to fetch pokemon...")
+        try:
         async with self.bot.session.get(self.bot.flagbrew_url + "api/v2/gpss/view/" + code) as r:
             rj = await r.json()
             code_data = rj["pokemon"]
@@ -470,6 +471,7 @@ class pkhex(commands.Cog):
             embed.set_author(icon_url=pkmn_data["species_sprite_url"], name=f"Data for {pkmn_data['nickname']} ({pkmn_data['gender']})")
             embed.set_thumbnail(url=self.bot.gpss_url + f"gpss/qr/{code}")
             return await msg.edit(embed=embed, content=None)
+        except aiohttp.ContentTypeError:
         await msg.edit(content=f"There was no pokemon on the GPSS with the code `{code}`.")
 
     @commands.command(name="gpsspost", aliases=['gpssupload'])
