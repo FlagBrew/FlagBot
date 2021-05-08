@@ -508,6 +508,17 @@ class Utility(commands.Cog):
                 embed.add_field(name="Activities" if len(user.activities) > 1 else "Activity", value=f"`{'`, `'.join(str(activity.name) for activity in user.activities)}`", inline=False)
         await ctx.send(embed=embed)
 
+    @commands.command(aliases=['fui'])  # Fetches discord.User instead of discord.Member
+    @restricted_to_bot
+    async def fetch_user_info(self, ctx, user: discord.User):
+        """Pulls a discord.User instead of discord.Member. More limited than userinfo"""
+        embed = discord.Embed(colour=user.colour)
+        embed.set_author(name=f"User info for {user} ({user.id})", icon_url=str(user.avatar_url))
+        embed.add_field(name="Avatar Link", value=f"[Here]({str(user.avatar_url)})")
+        embed.add_field(name="Created At", value=f"{user.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC")
+        embed.add_field(name="On FlagBrew?", value=str("FlagBrew" in [guild.name for guild in user.mutual_guilds]))
+        await ctx.send(embed=embed)
+
     @commands.command(aliases=['si', 'guild', 'gi', 'server', 'serverinfo'])
     @restricted_to_bot
     async def guildinfo(self, ctx, depth=False):
