@@ -582,7 +582,8 @@ class pkhex(commands.Cog):
             if not r.status == 200:
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
         accepted_apps = {
-            "pksm": "PKSM"
+            "pksm": "PKSM",
+            "checkpoint": "Checkpoint"
         }
         if not app.lower() in accepted_apps.keys():
             return await ctx.send(f"The application `{app}` is not currently supported. Sorry.")
