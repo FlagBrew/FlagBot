@@ -23,7 +23,6 @@ class pkhex(commands.Cog):
         self.failure_count = 0
         self.api_check = bot.loop.create_task(self.confirm_api_link())  # loops referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L23
         if bot.is_mongodb:
-            next(command for command in self.get_commands() if command.name == "genqr").enabled = True
             self.db = bot.db
         print(f'Addon "{self.__class__.__name__}" loaded')
         
@@ -576,7 +575,7 @@ class pkhex(commands.Cog):
         embed.colour = discord.Colour.green() if rj["illegal_reasons"] == "Legal!" else discord.Colour.red()
         await ctx.send(embed=embed)
 
-    @commands.command(name='genqr', enabled=False)
+    @commands.command(name='genqr')
     @commands.has_any_role("Patron", "FlagBrew Team")
     async def genenerate_qr(self, ctx, app, ext):
         """Generates a Patron QR code for installing via FBI"""
@@ -600,21 +599,25 @@ class pkhex(commands.Cog):
         headers = {
             "patreon": patron_code
         } 
-        async with self.bot.session.get(f"https://api.github.com/repos/FlagBrew/{accepted_apps[app.lower()]}/commits/master") as h:
+        async with self.bot.session.get(f"{self.bot.flagbrew_url}api/v2/patreon/update-check/{accepted_apps[app.lower()]}", headers=headers) as h:
             commit = await h.json()
-        commit_sha = commit["sha"][:7]
-        url = f"{self.bot.flagbrew_url}api/v2/patreon/update-qr/{app}/{commit_sha}/{ext.lower()}"
+        commit_sha = commit['hash']
+        url = f"{self.bot.flagbrew_url}api/v2/patreon/update-qr/{accepted_apps[app.lower()]}/{commit_sha}/{ext.lower()}"
         async with self.bot.session.get(url=url, headers=headers) as r:
             if not r.status == 200:
                 return await ctx.send("Failed to get the QR.")
             qr_bytes = await r.read()
             qr = discord.File(io.BytesIO(qr_bytes), 'patron_qr.png')
             embed = discord.Embed(title=f"Patron Build for {accepted_apps[app.lower()]}")
-            embed.add_field(name="Direct Download", value=f"[Here]({self.bot.flagbrew_url}api/v2/patreon/update/{patron_code}/{accepted_apps[app]}/{commit_sha}/{ext})")
+            embed.add_field(name="Direct Download", value=f"[Here]({self.bot.flagbrew_url}api/v2/patreon/update/{patron_code}/{accepted_apps[app.lower()]}/{commit_sha}/{ext})")
             embed.add_field(name="File Type", value=ext.upper())
             embed.set_footer(text=f"Commit Hash: {commit_sha}")
             embed.set_image(url="attachment://patron_qr.png")
-            await ctx.send(embed=embed, file=qr)
+            try:
+                await ctx.author.send(embed=embed, file=qr)
+            except discord.Forbidden:
+                return await ctx.send(f"Failed to DM you {ctx.author.mention}. Are your DMs closed?")
+            await ctx.send(f"{ctx.author.mention} I have DM'd you the QR code.")
 
 def setup(bot):
     bot.add_cog(pkhex(bot))
