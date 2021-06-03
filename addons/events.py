@@ -141,7 +141,6 @@ class Events(commands.Cog):
                 f = None
             else:
                 return  # cancel out for none of this shit
-            await self.bot.session.post(url=url, data=data)
             try:
                 await before.send(message, file=f)
             except discord.Forbidden:

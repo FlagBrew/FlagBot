@@ -230,7 +230,7 @@ class pkhex(commands.Cog):
         if r == 400:
             return
         rj = r[1]
-        reasons = rj["illegal_reasons"].split("\n")
+        reasons = rj["IllegalReasons"].split("\n")
         if reasons[0] == "Legal!":
             return await ctx.send("That Pokemon is legal!")
         embed = discord.Embed(title="Legality Issues", description="", colour=discord.Colour.red())
@@ -350,7 +350,7 @@ class pkhex(commands.Cog):
         if embed == 400:
             return await ctx.send(f"{ctx.author.mention} Something in that pokemon is *very* wrong. Your request has been canceled. Please do not try that mon again.")
         embed.set_author(name=f"Data for {rj['nickname']} ({rj['gender']})", icon_url=rj["species_sprite_url"])
-        embed.colour = discord.Colour.green() if rj["illegal_reasons"] == "Legal!" else discord.Colour.red()
+        embed.colour = discord.Colour.green() if rj["IllegalReasons"] == "Legal!" else discord.Colour.red()
         try:
             await ctx.send(embed=embed)
         except Exception as e:
@@ -463,7 +463,7 @@ class pkhex(commands.Cog):
                 pkmn_file = discord.File(io.BytesIO(pkx), filename)
                 await asyncio.sleep(1)
                 m = await upload_channel.send(f"Pokemon fetched from the GPSS by {ctx.author}", file=pkmn_file)
-                embed = discord.Embed(description=f"[GPSS Page]({self.bot.gpss_url + 'gpss/view/' + code}) | [Download link]({m.attachments[0].url})")
+                embed = discord.Embed(description=f"[GPSS Page]({self.bot.gpss_url + 'gpss/' + code}) | [Download link]({m.attachments[0].url})")
                 embed = self.embed_fields(ctx, embed, pkmn_data, False, True)
                 if embed == 400:
                     return await ctx.send(f"Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{self.bot.pie.mention}: Mon was gen3+ and missing origin game. Code: `{code}`")
@@ -572,12 +572,12 @@ class pkhex(commands.Cog):
         qr_file = discord.File(io.BytesIO(qr), "qrcode.png")
         m = await upload_channel.send(f"Showdown set converted by {ctx.author}", files=[pokemon_file, qr_file])
         embed.description = f"[PKX Download Link]({m.attachments[0].url})\n[QR Code]({m.attachments[1].url})"
-        embed.colour = discord.Colour.green() if rj["illegal_reasons"] == "Legal!" else discord.Colour.red()
+        embed.colour = discord.Colour.green() if rj["IllegalReasons"] == "Legal!" else discord.Colour.red()
         await ctx.send(embed=embed)
 
     @commands.command(name='genqr')
     @commands.has_any_role("Patron", "FlagBrew Team")
-    async def genenerate_qr(self, ctx, app, ext):
+    async def generate_qr(self, ctx, app, ext):
         """Generates a Patron QR code for installing via FBI"""
         if not self.bot.is_mongodb:
             return await ctx.send("No DB available, cancelling...")
