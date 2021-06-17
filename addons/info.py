@@ -374,6 +374,28 @@ class Info(commands.Cog):
         embed.set_footer(text="Please note that LGPE and SWSH have not yet been tested.")
         await ctx.send(embed=embed)
 
+    @commands.command(aliases=["shinylocked"])
+    async def shinylocks(self, ctx):
+        """Lists all shiny locked encounters"""
+        encs = {
+            "Colosseum": "Any non-Shadow Pokemon",
+            "XD: Gale of Darkness": "All Shadow Pokemon",
+            "Black and White": "Reshiram, Victini, and Zekrom",
+            "Black 2 and White 2": "Reshiram and Zekrom",
+            "X and Y": "Articuno, Mewtwo, Moltres, Xerneas, Yveltal, Zapdos, and Zygarde",
+            "Omega Ruby and Alpha Sapphire": "Deoxys, Groudon, Kyogre, and Rayquaza",
+            "Sun and Moon": "Cosmog, Lunala, Necrozma, Solgaleo, all 4 Tapus, and all 7 Ultra Beasts",
+            "Ultra Sun and Ultra Moon": "Cosmog, Lunala, Necrozma, Solgaleo, all 4 Tapus, and Zygarde",
+            "Let's Go Eevee and Pikachu": "Partner Eevee and Partner Pikachu",
+            "Sword and Shield (Base Game)": "The gift Charmander, Eternatus, All 3 starters, the gift Toxel, the battle tower Type: Null, the Wedgehurst Slowpoke, Zacian, and Zamazenta",
+            "Sword and Shield (Isle of Armour)": "Every gift Pokemon",
+            "Sword and Shield (The Crown Tundra)": "Galarian Articuno, Calyrex, the gift Cosmog, Glastrier, Keldeo, Galarian Moltres, the gift Poipole, Spectrier, and Galarian Zapdos"
+        }
+        embed = discord.Embed(title="Shiny Locked Encounters", description="[Source](https://www.serebii.net/games/shiny.shtml)")
+        for key, val in encs.items():
+            embed.add_field(name=key, value=val, inline=False)
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Info(bot))
