@@ -99,7 +99,23 @@ class Events(commands.Cog):
                     ref = message.reference.resolved
                     embed.add_field(name="Replied To:", value=f"[{ref.author}]({ref.jump_url}) ({ref.author.id})")
                 try:
-                    await self.bot.logs_channel.send(f"Message by {message.author} deleted in channel {message.channel.mention}:", embed=embed)
+                    await self.bot.logs_channel.send(f"Message by {message.author} ({message.author.id}) deleted in channel {message.channel.mention}:", embed=embed)
+                except discord.Forbidden:
+                    pass  # beta bot can't log
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        if isinstance(before.channel, discord.abc.GuildChannel) and before.author.id != self.bot.user.id and before.guild.id == self.bot.flagbrew_id:
+            if before.channel != self.bot.logs_channel:
+                embed = discord.Embed()
+                embed.add_field(name="Original Message", value=before.content, inline=False)
+                embed.add_field(name="Edited Message", value=after.content, inline=False)
+                embed.add_field(name="Jump URL", value=f"[Here]({before.jump_url})", inline=False)
+                if before.reference is not None:
+                    ref = before.reference.resolved
+                    embed.add_field(name="Replied To:", value=f"[{ref.author}]({ref.jump_url}) ({ref.author.id})")
+                try:
+                    await self.bot.logs_channel.send(f"Message by {before.author} ({before.author.id}) edited in channel {before.channel.mention}:", embed=embed)
                 except discord.Forbidden:
                     pass  # beta bot can't log
 
