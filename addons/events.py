@@ -92,9 +92,12 @@ class Events(commands.Cog):
     async def on_message_delete(self, message):
         if isinstance(message.channel, discord.abc.GuildChannel) and message.author.id != self.bot.user.id and message.guild.id == self.bot.flagbrew_id:
             if message.channel != self.bot.logs_channel:
-                if not message.content:
+                if not message.content or message.type == discord.MessageType.pins_add:
                     return
                 embed = discord.Embed(description=message.content)
+                if message.reference is not None:
+                    ref = message.reference.resolved
+                    embed.add_field(name="Replied To:", value=f"[{ref.author}]({ref.jump_url}) ({ref.author.id})")
                 try:
                     await self.bot.logs_channel.send(f"Message by {message.author} deleted in channel {message.channel.mention}:", embed=embed)
                 except discord.Forbidden:
