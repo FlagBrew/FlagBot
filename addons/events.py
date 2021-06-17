@@ -15,7 +15,7 @@ class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         if bot.is_mongodb:
-        self.db = bot.db
+            self.db = bot.db
         print(f'Addon "{self.__class__.__name__}" loaded')
 
     @commands.Cog.listener()
