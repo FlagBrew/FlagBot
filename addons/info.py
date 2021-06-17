@@ -378,6 +378,7 @@ class Info(commands.Cog):
     async def shinylocks(self, ctx):
         """Lists all shiny locked encounters"""
         encs = {
+            "VC Red, Blue, and Yellow": "Any tall grass, cave, or surfing encounters",
             "Colosseum": "Any non-Shadow Pokemon",
             "XD: Gale of Darkness": "All Shadow Pokemon",
             "Black and White": "Reshiram, Victini, and Zekrom",
