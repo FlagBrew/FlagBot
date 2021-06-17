@@ -14,6 +14,7 @@ class Events(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        if bot.is_mongodb:
         self.db = bot.db
         print(f'Addon "{self.__class__.__name__}" loaded')
 
@@ -101,7 +102,7 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        if not self.bot.ready:
+        if not self.bot.ready or self.bot.is_mongodb:
             return
 
         # Handle token stuff
