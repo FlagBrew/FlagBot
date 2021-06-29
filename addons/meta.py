@@ -52,8 +52,8 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             raise commands.errors.CheckFailure()
         command = self.bot.get_command(function)
         if command is None:
-            if not cl.startswith("addons."): cl = "addons." + cl
-            if not cl in self.addons.keys():
+            if cl and not cl.startswith("addons."): cl = "addons." + cl
+            if not cl or not cl in self.addons.keys():
                 return await ctx.send("That isn't a command. Please supply a valid class name for retrieving functions.")
             try:
                 cl_obj = self.addons[cl][1]
