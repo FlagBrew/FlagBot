@@ -102,9 +102,9 @@ class Moderation(commands.Cog):
             if user.id in self.ban_attch_dict.keys():
                 img = discord.File(self.ban_attch_dict.pop(str(user.id)), 'ban_image.png')
                 embed.set_thumbnail(url="attachment://ban_image.png")
+                await self.bot.logs_channel.send(embed=embed, file=img)
             else:
-                img = None
-            await self.bot.logs_channel.send(embed=embed, file=img)
+                await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta bot can't log
 
@@ -125,14 +125,16 @@ class Moderation(commands.Cog):
                     img_bytes = await ctx.message.attachments[0].read()
                     img = discord.File(io.BytesIO(img_bytes), 'kick_image.png')
                     await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY", file=img)
-                    embed.set_thumbnail(url="attachment://kick_image.png")
                 else:
                     await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY")
-                    img = None
             except discord.Forbidden:
                 pass  # bot blocked or not accepting DMs
             try:
-                await self.bot.logs_channel.send(embed=embed, file=img)
+                if has_attch:
+                    embed.set_thumbnail(url="attachment://kick_image.png")
+                    await self.bot.logs_channel.send(embed=embed, file=img)
+                else:
+                    await self.bot.logs_channel.send(embed=embed)
             except discord.Forbidden:
                 pass  # beta bot can't log
             if len(reason) > 512:
@@ -201,14 +203,16 @@ class Moderation(commands.Cog):
                 img_bytes = await ctx.message.attachments[0].read()
                 img = discord.File(io.BytesIO(img_bytes), 'mute_image.png')
                 await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`", file=img)
-                embed.set_thumbnail(url="attachment://mute_image.png")
             else:
                 await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`")
-                img = None
         except discord.Forbidden:
             pass  # blocked DMs
         try:
-            await self.bot.logs_channel.send(embed=embed, file=img)
+            if has_attch:
+                embed.set_thumbnail(url="attachment://mute_image.png")
+                await self.bot.logs_channel.send(embed=embed, file=img)
+            else:
+                await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta can't log
         await ctx.send(f"Successfully muted {member}!")
@@ -273,17 +277,19 @@ class Moderation(commands.Cog):
                 img_bytes = await ctx.message.attachments[0].read()
                 img = discord.File(io.BytesIO(img_bytes), 'mute_image.png')
                 await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.", file=img)
-                embed.set_thumbnail(url="attachment://mute_image.png")
             else:
                 await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.")
-                img = None
         except discord.Forbidden:
             pass  # blocked DMs
         self.bot.mutes_dict[str(member.id)] = end_str
         with open("saves/mutes.json", "w") as f:
             json.dump(self.bot.mutes_dict, f, indent=4)
         try:
-            await self.bot.logs_channel.send(embed=embed, file=img)
+            if has_attch:
+                embed.set_thumbnail(url="attachment://mute_image.png")
+                await self.bot.logs_channel.send(embed=embed, file=img)
+            else:
+                await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta can't log
         await ctx.send(f"Successfully muted {member} until `{end_str}` UTC!")

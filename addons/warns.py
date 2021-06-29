@@ -49,10 +49,8 @@ class Warning(commands.Cog):
                 img_bytes = await ctx.message.attachments[0].read()
                 img = discord.File(io.BytesIO(img_bytes), 'warn_image.png')
                 await target.send(dm_msg, file=img)
-                embed.set_thumbnail(url="attachment://warn_image.png")
             else:
                 await target.send(dm_msg)
-                img = None
         except discord.Forbidden:
             embed.description += "\n**Could not DM user.**"
         if self.bot.is_mongodb:
@@ -81,7 +79,11 @@ class Warning(commands.Cog):
         elif len(warns) >= 3:
             await target.kick(reason=f"Warn #{len(warns)}")
         try:
-            await self.bot.logs_channel.send(embed=embed, file=img)
+            if has_attch:
+                embed.set_thumbnail(url="attachment://warn_image.png")
+                await self.bot.logs_channel.send(embed=embed, file=img)
+            else:
+                await self.bot.logs_channnel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta can't log
         if len(warns) >= 5:
