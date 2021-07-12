@@ -142,7 +142,7 @@ class PythonInterpreter(commands.Cog):
     @commands.command(name='lbp')
     @commands.has_any_role("Bot Dev", "FlagBrew Team", "Discord Moderator")
     async def listbannedphrases(self, ctx):
-        split_list = "\n".join(self.banned_phrases)
+        split_list = "\n".join(sorted(self.banned_phrases))
         await ctx.send(f"Banned phrases:\n```{self.banned_phrases[0]}\n{split_list}```")
 
 
