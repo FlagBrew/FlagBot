@@ -83,7 +83,7 @@ class Warning(commands.Cog):
                 embed.set_thumbnail(url="attachment://warn_image.png")
                 await self.bot.logs_channel.send(embed=embed, file=img)
             else:
-                await self.bot.logs_channnel.send(embed=embed)
+                await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta can't log
         if len(warns) >= 5:
