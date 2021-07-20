@@ -368,9 +368,16 @@ class Info(commands.Cog):
             "Reset Moves (Move 1 is set to Pound, and moves 2 through 4 are cleared)\n"
             "Randomize PIDs"
         )
+        beta_types = (
+            "Set Met Date\n"
+            "Set Egg Date\n"
+            "Remove All Ribbons (Untested)"
+            )
         embed = discord.Embed(title="Batch Editor Information")
         embed.description = "Please keep in mind that the script will affect *everything* in the boxes of the loaded save, or of the selected bank."
         embed.add_field(name="Editing Types", value=edit_types)
+        if len(beta_types) > 0:
+            embed.add_field(name="Beta Types", value=f"**These batch edit options are not included in the latest release. You can get the beta version of the script from the pins in <#389780983869603852>**.\n\n{beta_types}", inline=False)
         embed.set_footer(text="Please note that LGPE and SWSH have not yet been tested.")
         await ctx.send(embed=embed)
 
