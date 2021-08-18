@@ -166,20 +166,18 @@ class Moderation(commands.Cog):
     @commands.has_any_role("Discord Moderator")
     async def purge(self, ctx, amount=0, user: discord.User = None):
         """Purge x amount of messages. Supply user ID to target"""
-        await ctx.message.delete()
-        await asyncio.sleep(2)
         if amount <= 0:
             return await ctx.send("Why would you wanna purge no messages?", delete_after=10)
         if user:
             def purge_specific_user(m):
                 return m.author == user
             await self.bot.logs_channel.send(f"{ctx.author} ({ctx.author.id}) cleared {amount} messages by {user} ({user.id}) in {ctx.channel.mention}.")
-            purged = await ctx.channel.purge(limit=amount, check=purge_specific_user)
+            purged = await ctx.channel.purge(limit=amount, check=purge_specific_user, before=ctx.message)
             if len(purged) == 0:
                 return await ctx.send(f"Could not find any messages by {user} ({user.id}) to purge.")
             return await ctx.send(f"Purged {len(purged)} messages by {user} ({user.id}).")
         await self.bot.logs_channel.send(f"{ctx.author} ({ctx.author.id}) cleared {amount} messages in {ctx.channel.mention}.")
-        await ctx.channel.purge(limit=amount)
+        await ctx.channel.purge(limit=amount, before=ctx.message)
 
     @commands.command()
     @commands.has_any_role("Discord Moderator")
