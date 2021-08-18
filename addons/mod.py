@@ -179,6 +179,27 @@ class Moderation(commands.Cog):
         await self.bot.logs_channel.send(f"{ctx.author} ({ctx.author.id}) cleared {amount} messages in {ctx.channel.mention}.")
         await ctx.channel.purge(limit=amount, before=ctx.message)
 
+    @commands.command(aliases=['psince', 'clearsince', 'cleansince'])
+    @commands.has_any_role("Discord Moderator", "Bot Dev")
+    async def purgesince(self, ctx, start_id: int, user: discord.User = None):
+        """Purge all messages since x message ID. Message must be cached. Supply user ID to target"""
+        start_message = discord.utils.find(lambda m: m.id == start_id, self.bot.cached_messages)
+        if start_message is None:
+            return await ctx.send(f"Could not find a message with ID `{start_id}`.")
+        if user:
+            def purge_specific_user(u):
+                return u.author == user
+            await self.bot.logs_channel.send(f"{ctx.author} ({ctx.author.id}) cleared all messages by {user} ({user.id}) after `{start_message.created_at.strftime('%Y-%m-%d %H:%M:%S')}` in {ctx.channel.mention}.")
+            purged = await ctx.channel.purge(before=ctx.message, after=start_message, check=purge_specific_user)
+            if len(purged) == 0:
+                return await ctx.send(f"Could not find any messages by {user} ({user.id}) after message with ID `{start_id}` to purge.")
+            return await ctx.send(f"Purged {len(purged)} messages by {user} ({user.id}) since `{start_message.created_at.strftime('%Y-%m-%d %H:%M:%S')}`.")
+        await self.bot.logs_channel.send(f"{ctx.author} ({ctx.author.id}) cleared all messages after `{start_message.created_at.strftime('%Y-%m-%d %H:%M:%S')}` in {ctx.channel.mention}.")
+        purged = await ctx.channel.purge(before=ctx.message, after=start_message)
+        if len(purged) == 0:
+            return await ctx.send(f"Could not find any messages after message with ID `{start_id}` to purge.")
+        return await ctx.send(f"Purged {len(purged)} messages since `{start_message.created_at.strftime('%Y-%m-%d %H:%M:%S')}`.")
+
     @commands.command()
     @commands.has_any_role("Discord Moderator")
     async def mute(self, ctx, member: discord.Member, *, reason="No reason was given."):
