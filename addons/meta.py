@@ -47,7 +47,6 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
     @commands.command(hidden=True)
     async def source(self, ctx, function, cl=None):
         """Gets the source code of a function / command. Limited to bot creator."""
-        print(self.addons)
         if not ctx.author == self.bot.creator:
             raise commands.errors.CheckFailure()
         command = self.bot.get_command(function)

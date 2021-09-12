@@ -121,53 +121,54 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        if not self.bot.ready or self.bot.is_mongodb:
+        if not self.bot.ready:
             return
 
         # Handle token stuff
-        token_roles = (self.bot.flagbrew_team_role, self.bot.patrons_role)
-        has_roles = len(list(role for role in token_roles if role in before.roles or role in after.roles)) > 0  # True if member has one of the roles in token_roles, else False
-        if before.roles != after.roles and has_roles:
-            token = secrets.token_urlsafe(16)
-            self.db['patrons'].update_one(
-                {
-                    "discord_id": str(before.id)
-                },
-                {
-                    "$set": {
-                        "discord_id": str(before.id),
-                        "code": token
-                    }
-                }, upsert=True)
-            if len(before.roles) < len(after.roles):
-                await self.bot.patrons_channel.send(f"Welcome to the super secret cool kids club {after.mention}!"
-                                                    " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.")
-                message = ("Congrats on becoming a patron! You can add the token below to PKSM's config to access some special patron only stuff. It's only valid until your"
-                           " patron status is cancelled, so keep up those payments!"
-                           " To access the hidden Patron settings menu, press the four corners of the touch screen while on the configuration screen."
-                           f" If you need any further help setting it up, ask in {self.bot.patrons_channel.mention}!\n\n`{token}`")
-                qr = qrcode.QRCode(version=None)
-                qr.add_data(token)
-                qr.make(fit=True)
-                img = qr.make_image(fill_color="black", back_color="white")
-                bytes = io.BytesIO()
-                img.save(bytes, format='PNG')
-                bytes = bytes.getvalue()
-                f = discord.File(io.BytesIO(bytes), filename="qr.png")
-            elif len(before.roles) > len(after.roles) and (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles):
-                message = ("Unfortunately, your patreon subscription has been cancelled, or stopped renewing automatically. This means your token, and the special features,"
-                           " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
-                self.db['patrons'].delete_one({"discord_id": str(before.id)})
-                f = None
-            else:
-                return  # cancel out for none of this shit
-            try:
-                await before.send(message, file=f)
-            except discord.Forbidden:
+        if self.bot.is_mongodb:
+            token_roles = (self.bot.flagbrew_team_role, self.bot.patrons_role)
+            has_roles = len(list(role for role in token_roles if role in before.roles or role in after.roles)) > 0  # True if member has one of the roles in token_roles, else False
+            if before.roles != after.roles and has_roles:
+                token = secrets.token_urlsafe(16)
+                self.db['patrons'].update_one(
+                    {
+                        "discord_id": str(before.id)
+                    },
+                    {
+                        "$set": {
+                            "discord_id": str(before.id),
+                            "code": token
+                        }
+                    }, upsert=True)
                 if len(before.roles) < len(after.roles):
-                    await self.bot.fetch_user(211923158423306243).send(f"Could not send token `{token}` to user {before}.")
+                    await self.bot.patrons_channel.send(f"Welcome to the super secret cool kids club {after.mention}!"
+                                                        " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.")
+                    message = ("Congrats on becoming a patron! You can add the token below to PKSM's config to access some special patron only stuff. It's only valid until your"
+                            " patron status is cancelled, so keep up those payments!"
+                            " To access the hidden Patron settings menu, press the four corners of the touch screen while on the configuration screen."
+                            f" If you need any further help setting it up, ask in {self.bot.patrons_channel.mention}!\n\n`{token}`")
+                    qr = qrcode.QRCode(version=None)
+                    qr.add_data(token)
+                    qr.make(fit=True)
+                    img = qr.make_image(fill_color="black", back_color="white")
+                    bytes = io.BytesIO()
+                    img.save(bytes, format='PNG')
+                    bytes = bytes.getvalue()
+                    f = discord.File(io.BytesIO(bytes), filename="qr.png")
+                elif len(before.roles) > len(after.roles) and (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles):
+                    message = ("Unfortunately, your patreon subscription has been cancelled, or stopped renewing automatically. This means your token, and the special features,"
+                            " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
+                    self.db['patrons'].delete_one({"discord_id": str(before.id)})
+                    f = None
                 else:
-                    await self.bot.fetch_user(211923158423306243).send(f"Could not notify user {before} of token expiration.")
+                    return  # cancel out for none of this shit
+                try:
+                    await before.send(message, file=f)
+                except discord.Forbidden:
+                    if len(before.roles) < len(after.roles):
+                        await self.bot.fetch_user(211923158423306243).send(f"Could not send token `{token}` to user {before}.")
+                    else:
+                        await self.bot.fetch_user(211923158423306243).send(f"Could not notify user {before} of token expiration.")
 
         # Handle nick logging
         elif before.nick != after.nick:
