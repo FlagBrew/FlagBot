@@ -118,6 +118,12 @@ class Events(commands.Cog):
                     await self.bot.logs_channel.send(f"Message by {before.author} ({before.author.id}) edited in channel {before.channel.mention}:", embed=embed)
                 except discord.Forbidden:
                     pass  # beta bot can't log
+                except discord.HTTPException:  # spooky missing message content?
+                    try:
+                        await self.bot.err_logs_channel.send(f"Failed to log a message edit... Spooky.\nBefore: `{before}`\nAfter: `{after}`")
+                    except Exception as e:
+                        await self.bot.err_logs_channel.send("Failed to log a message edit... and the error. Weird. Exception below.")
+                        await self.bot.err_logs_channel.send(e)
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
