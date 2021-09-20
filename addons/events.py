@@ -106,7 +106,7 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
         if isinstance(before.channel, discord.abc.GuildChannel) and before.author.id != self.bot.user.id and before.guild.id == self.bot.flagbrew_id:
-            if before.channel != self.bot.logs_channel:
+            if before.channel != self.bot.logs_channel and not before.author.bot:
                 embed = discord.Embed()
                 embed.add_field(name="Original Message", value=before.content, inline=False)
                 embed.add_field(name="Edited Message", value=after.content, inline=False)
