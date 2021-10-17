@@ -82,9 +82,13 @@ class Events(commands.Cog):
         if isinstance(message.channel, discord.abc.PrivateChannel) and not message.author == self.bot.guild.me:
             if not message.content:
                 return
+            guild = self.bot.get_guild(self.bot.flagbrew_id)
+            member = guild.get_member(message.author.id)
+            if 885261003544223744 in (role.id for role in member.roles):
+                return
             embed = discord.Embed(description=message.content)
             try:
-                await self.bot.dm_logs_channel.send(f"New DM recieved from {message.author} | {message.author.id}.", embed=embed)
+                await self.bot.dm_logs_channel.send(f"New DM received from {message.author} | {message.author.id}.", embed=embed)
             except discord.Forbidden:
                 pass  # beta bot can't log
 
