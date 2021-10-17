@@ -24,7 +24,7 @@ class Moderation(commands.Cog):
         self.mute_loop.cancel()
 
     async def check_mute_loop(self):
-        guild = self.bot.get_guild(278222834633801728)
+        guild = self.bot.get_guild(self.bot.flagbrew_id)
         while not self.bot.is_closed():
             for m in self.bot.mutes_dict.keys():
                 member = guild.get_member(int(m))
