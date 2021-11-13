@@ -6,7 +6,7 @@
     },
     {
         "title": "When are we getting PKSM on Switch? What about LGPE or Sword & Shield support?",
-        "value": "You can access LGPE saves by bridging PKSM on 3DS to Checkpoint on Switch. SwSh will be supported after the next Checkpoint update (3.7.4 at the time of writing). This is the best you'll get for now, possibly ever if you annoy ~~our lord and savior, Giratina~~ the FlagBrew team."
+        "value": "You can access LGPE saves by bridging PKSM on 3DS to Checkpoint on Switch. SwSh is provisionally supported, however the bridge is not currently fully functional due to variable save sizes. This will require a PKSM update to fully resolve. No, there is still no ETA. This is the best you'll get for now, possibly ever if you annoy ~~our lord and savior, Giratina~~ the FlagBrew team."
     },
     {
         "title": "I'm attempting to use a save that was used in an emulator at some point, and it won't load. What do I do?",
