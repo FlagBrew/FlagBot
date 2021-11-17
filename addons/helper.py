@@ -75,6 +75,9 @@ def faq_decorator(func):
         elif ctx.invoked_with == "wc3" or ctx.invoked_with == "gen3events":
             faq_doc = "pksm"
             faq_item = "9"
+        elif ctx.invoked_with == "romhacks":
+            faq_doc = "pksm"
+            faq_item = "10"
         elif ctx.invoked_with == "addcode" or ctx.invoked_with == "fixcheat":
             faq_doc = "checkpoint"
             faq_item = "1"

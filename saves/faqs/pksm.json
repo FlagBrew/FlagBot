@@ -35,5 +35,9 @@
     {
         "title": "How do I use Generation 3 wondercards?",
         "value": "Gen 3 events do not exist as wondercards, outside of the unsupported (fake) wc3 format. There are two different methods for accessing gen 3 events, depending on what they require.\n**1**: For any events that directly give you a pokemon, you will want to use the universal `injector.c` script by putting the pk3 file, found from [EventsGallery](https://github.com/ProjectPokemon/EventsGallery), at `/3ds/PKSM/inject/` and then running the script.\n**2**: For events that give you an item so you can get a pokemon (ex the Old Sea Map), you'll want to use the beta scripts pinned in <#389780983869603852>. This can be done by putting the script at `/3ds/PKSM/scripts/universal/`, then running it in PKSM."
+    },
+    {
+        "title": "Does PKSM work with rom hacks?",
+        "value": "No. PKSM is only designed to work with the official, unmodified games. If the rom hack does not alter the standard save format, then PKSM *might* work with saves from it, with no guarantees. We will not be adding official support for any rom hacks."
     }
 ]

@@ -487,7 +487,8 @@ class pkhex(commands.Cog):
             return
         code = str(r[2], encoding='utf-8')
         if len(code) > 10:
-            return await ctx.send(f"There seems to have been an issue getting the code for this upload. Please check <#586728153985056801> to confirm upload. If it didn't upload, try again later. {self.bot.creator.mention} and {self.bot.allen.mention} please investigate!")
+            await ctx.send(f"There seems to have been an issue getting the code for this upload. Please check <#586728153985056801> to confirm upload. If it didn't upload, try again later. {self.bot.creator.mention} and {self.bot.allen.mention} please investigate!")
+            return await self.bot.err_logs_channel.send(f"Error processing GPSS upload in {ctx.channel.mention}. Code length greater than 10. Code: `{code}`")
         elif r[0] == 400:
             return await ctx.send("That file is either not a pokemon, or something went wrong.")
         elif r[0] == 413:
