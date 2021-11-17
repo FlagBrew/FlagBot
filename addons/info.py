@@ -126,6 +126,7 @@ class Info(commands.Cog):
         "emulator",  # pksm faq #3 - emulator cross-use
         "sendpkx",  # pksm faq #7 - sending pkx files
         "wc3", "gen3events",  # pksm faq #9 - gen 3 events
+        "romhacks",  # pksm faq #10 - rom hack support
         "addcode", "fixcheat",  # checkpoint faq #1 - pls add cheat
         "wheregame",  # checkpoint faq #2 - missing games
         "pkcrash",  # checkpoint faq #4 - cheat crash in pkmn games
