@@ -482,7 +482,7 @@ class pkhex(commands.Cog):
         async with self.bot.session.get(self.bot.flagbrew_url) as r:
             if not r.status == 200:
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
-        r = await self.process_file(ctx, data, ctx.message.attachments, "gpss/upload/pokemon", True, str(ctx.author.id))
+        r = await self.process_file(ctx, data, ctx.message.attachments, "api/v2/gpss/upload/pokemon", True, str(ctx.author.id))
         if r == 400:
             return
         code = str(r[2], encoding='utf-8')
