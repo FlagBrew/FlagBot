@@ -485,18 +485,20 @@ class pkhex(commands.Cog):
         r = await self.process_file(ctx, data, ctx.message.attachments, "api/v2/gpss/upload/pokemon", True, str(ctx.author.id))
         if r == 400:
             return
-        code = str(r[2], encoding='utf-8')
-        if len(code) > 10:
-            await ctx.send(f"There seems to have been an issue getting the code for this upload. Please check <#586728153985056801> to confirm upload. If it didn't upload, try again later. {self.bot.creator.mention} and {self.bot.allen.mention} please investigate!")
-            return await self.bot.err_logs_channel.send(f"Error processing GPSS upload in {ctx.channel.mention}. Code length greater than 10. Code: `{code}`")
-        elif r[0] == 400:
-            return await ctx.send("That file is either not a pokemon, or something went wrong.")
-        elif r[0] == 413:
-            return await ctx.send(f"That file is too large. {self.bot.pie.mention} and {self.bot.allen.mention}, please investigate.")
-        elif r[0] == 503:
+        returned_data = r[2]
+        code = returned_data['code']
+        uploaded = returned_data['uploaded']
+        if r[0] == 503:
             return await ctx.send("GPSS uploading is currently disabled. Please try again later.")
-        elif r[0] == 200:
-            return await ctx.send(f"The provided pokemon has already been uploaded. You can find it at: {self.bot.gpss_url}gpss/view/{code}")
+        elif not uploaded:
+            error = returned_data['error']
+            if error == "Failed to get pkmn info from CoreAPI, error details: There is an error in your provided information!":
+                return await ctx.send("That file is either not a pokemon, or something went wrong.")
+            elif error == "Your Pokemon is already uploaded":
+                return await ctx.send(f"The provided pokemon has already been uploaded. You can find it at: {self.bot.gpss_url}gpss/view/{code}")
+            else:
+                await ctx.send(f"There seems to have been an issue getting the code for this upload. Please check <#586728153985056801> to confirm upload. If it didn't upload, try again later. {self.bot.creator.mention} and {self.bot.allen.mention} please investigate!")
+                return await self.bot.err_logs_channel.send(f"Error processing GPSS upload in {ctx.channel.mention}. Code length greater than 10. Code: `{code}`")
         await ctx.send(f"Your pokemon has been uploaded! You can find it at: {self.bot.gpss_url}gpss/view/{code}")
 
     @commands.command()
