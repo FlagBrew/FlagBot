@@ -86,12 +86,14 @@ if not is_using_cmd_args:  # handles setting up the bot vars
     bot.is_mongodb = config.is_mongodb
     bot.api_url = config.api_url
     bot.flagbrew_url = config.flagbrew_url
+    bot.star_count = config.star_count
 elif not is_using_env_args:
     bot.is_mongodb, bot.api_url, bot.flagbrew_url = cmd_args[3:6]
 else:
     bot.is_mongodb = os.getenv("IS_MONGODB")
     bot.api_url = os.getenv("API_URL")
     bot.flagbrew_url = os.getenv("FLAGBREW_URL")
+    bot.star_count = os.getenv("STAR_COUNT")
 bot.gpss_url = bot.flagbrew_url
 
 if not os.path.exists('saves/warns.json'):
@@ -153,6 +155,7 @@ if not is_using_cmd_args:
     bot.is_beta = config.is_beta
 elif not is_using_env_args:
     bot.site_secret, bot.github_user, bot.github_pass, bot.is_beta = cmd_args[7:11]
+    bot.star_count = cmd_args[11]
     bot.ready = False
 else:
     bot.site_secret = os.getenv("SECRET")
@@ -250,6 +253,7 @@ async def on_ready():
                     bot.crash_dump_channel = discord.utils.get(guild.channels, id=721444652481249372)
                     bot.crash_log_channel = discord.utils.get(guild.channels, id=721465461518106624)
                     bot.activity_logs_channel = discord.utils.get(guild.channels, id=723705005122519071)
+                    bot.starboard_channel = discord.utils.get(guild.channels, id=917235490590187531)
                     with open('saves/faqdm.json', 'r') as f:
                         bot.dm_list = json.load(f)
 
@@ -298,6 +302,7 @@ cogs = [
     'addons.mod',
     'addons.pkhex',
     'addons.pyint',
+    'addons.starboard',
     'addons.utility',
     'addons.warns'
 ]
@@ -357,6 +362,7 @@ async def reload(ctx):
             "Moderation": "mod",
             "pkhex": "pkhex",
             "PythonInterpreter": "pyint",
+            "Starboard": "starboard",
             "Utility": "utility",
             "Warning": "warns"
         }
