@@ -7,7 +7,6 @@ import base64
 import validators
 import os
 import urllib
-import binascii
 from exceptions import PKHeXMissingArgs
 import addons.helper as helper
 from addons.helper import restricted_to_bot
@@ -350,7 +349,7 @@ class pkhex(commands.Cog):
         if embed == 400:
             return await ctx.send(f"{ctx.author.mention} Something in that pokemon is *very* wrong. Your request has been canceled. Please do not try that mon again.")
         embed.set_author(name=f"Data for {rj['nickname']} ({rj['gender']})", icon_url=rj["species_sprite_url"])
-        embed.colour = discord.Colour.green() if rj["IllegalReasons"] == "Legal!" else discord.Colour.red()
+        embed.colour = discord.Colour.green() if rj["illegal_reasons"] == "Legal!" else discord.Colour.red()
         try:
             await ctx.send(embed=embed)
         except Exception as e:
