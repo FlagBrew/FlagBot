@@ -78,6 +78,8 @@ else:
     default_activity = discord.Activity(name=os.getenv("DEF_ACT"), type=discord.ActivityType.watching)
 
 intents = discord.Intents().all()
+print(intents.members)
+print(intents.presences)
 intents.members = True
 intents.presences = True
 bot = commands.Bot(command_prefix=prefix, description=description, activity=default_activity, intents=intents)

@@ -405,6 +405,16 @@ class Info(commands.Cog):
             embed.add_field(name=key, value=val, inline=False)
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def pksmdata(self, ctx):
+        """Instructions on backing up and restoring PKSM's data"""
+        embed = discord.Embed()
+        embed.description = "PKSM's data is stored in ExtData. As such, the only way to interact with it is via [Checkpoint](https://github.com/FlagBrew/Checkpoint)."
+        embed.add_field(name="Backing Up", value="To back up PKSM's ExtData, simply open Checkpoint, press `X`, find PKSM, and hit `Backup`.")
+        embed.add_field(name="Restoring", value="To restore PKSM's ExtData, simply open Checkpoint, press `X`, find PKSM, choose your backup, and hit `Restore`.")
+        embed.add_field(name="Manual Restore", value="If you haven't made a backup and something happens to your bank, you can use the one-time backup PKSM automatically makes.\n1. Get your bank backup files from `/3ds/PKSM/backup/`. They will end with either `.bnk.bak` or `.bnk.bak.old`.\n2. Copy those files to `/3ds/Checkpoint/saves/0xEC100 PKSM/<folder name here>/<files go here>`. Create a folder if one does not exist.\n3. Remove `.bak`/`.bak.old` from the end of the file extension.\n4. Restore in Checkpoint per the above steps.\n\n**Please Note**: This backup is overwritten every time you save your bank. If you screw something up in your bank, then open it up again and save it, your backup will be gone.", inline=False)
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Info(bot))
