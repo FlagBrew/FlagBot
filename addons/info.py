@@ -206,7 +206,7 @@ class Info(commands.Cog):
 
     @commands.command(aliases=['readthedocs', 'docs', '<:wikidiot:558815031836540940>'])
     async def wiki(self, ctx, option=""):
-        """Sends wiki link. storage, editor, events, scripts, bag, config, gameid, faq, gpss, hex, and bridge are all options"""
+        """Sends wiki link. storage, editor, events, scripts, bag, config, gameid, faq, gpss, hex, bridge, and gbainject are all options"""
         option = option.lower()
         if option == "storage":
             extra_info = " entry for the storage feature"
@@ -241,6 +241,9 @@ class Info(commands.Cog):
         elif option == "bridging" or option == "bridge":
             extra_info = " on network bridging"
             wiki_link_ext = "/Basics#loading-a-save-over-a-network"
+        elif option == "gbainject":
+            extra_info = " on creating a GBA inject"
+            wiki_link_ext = "/GBA-Injection"
         else:
             extra_info = ""
             wiki_link_ext = ""
