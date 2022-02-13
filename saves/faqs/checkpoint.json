@@ -17,6 +17,7 @@
     },
     {
         "title": "I'm crashing using Checkpoint 3.8.0 on 3DS, what's going on?",
-        "value": "For an unknown reason, Checkpoint is bugged on some consoles and will not launch. The only current solution is to use [3.7.4](https://github.com/FlagBrew/Checkpoint/releases/tag/v3.7.4) until it's figured out.\n\nIf you'd like to help troubleshoot this, please save the crash dump it throws and upload it to the corresponding issue for your console's region:\n[North America](https://github.com/FlagBrew/Checkpoint/issues/433)\n[Europe](https://github.com/FlagBrew/Checkpoint/issues/436)\n[Japan](https://github.com/FlagBrew/Checkpoint/issues/432)"
+        "value": "For an unknown reason, Checkpoint is bugged on some consoles and will not launch. The only current solution is to use [3.7.4](https://github.com/FlagBrew/Checkpoint/releases/tag/v3.7.4) until it's figured out.\n\nIf you'd like to help troubleshoot this, please save the crash dump it throws and upload it to the corresponding issue for your console's region:\n[North America](https://github.com/FlagBrew/Checkpoint/issues/433)\n[Europe](https://github.com/FlagBrew/Checkpoint/issues/436)\n[Japan](https://github.com/FlagBrew/Checkpoint/issues/432)",
+        "image": "https://cdn.discordapp.com/attachments/377425394866847744/942325638960934952/qr.png"
     }
 ]
