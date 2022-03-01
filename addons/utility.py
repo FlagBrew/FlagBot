@@ -295,11 +295,11 @@ class Utility(commands.Cog):
     @restricted_to_bot
     async def toggledmfaq(self, ctx):
         """Allows a user to toggle getting the faq dm'd to them instead of it posting in channel"""
-        if str(ctx.author.id) in self.bot.dm_list:
-            self.bot.dm_list.remove(str(ctx.author.id))
+        if ctx.author.id in self.bot.dm_list:
+            self.bot.dm_list.remove(ctx.author.id)
             await ctx.send("You will no longer have the FAQ dm'd to you.")
         else:
-            self.bot.dm_list.append(str(ctx.author.id))
+            self.bot.dm_list.append(ctx.author.id)
             await ctx.send("You'll now have the FAQ dm'd to you on use instead.")
         with open('saves/faqdm.json', 'w') as f:
             json.dump(self.bot.dm_list, f, indent=4)
