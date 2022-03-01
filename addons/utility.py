@@ -295,7 +295,7 @@ class Utility(commands.Cog):
     @restricted_to_bot
     async def toggledmfaq(self, ctx):
         """Allows a user to toggle getting the faq dm'd to them instead of it posting in channel"""
-        if ctx.author.id in self.bot.dm_list:
+        if str(ctx.author.id) in self.bot.dm_list:
             self.bot.dm_list.remove(ctx.author.id)
             await ctx.send("You will no longer have the FAQ dm'd to you.")
         else:
@@ -436,7 +436,7 @@ class Utility(commands.Cog):
         self.submitted_hashes = []
         await ctx.send("Cleared the submitted hashes file.")
 
-    @commands.command()
+    @commands.command(enabled=False)
     async def translate(self, ctx, lang):
         """Fetches the translation file for the provided language"""
         url = "https://raw.githubusercontent.com/FlagBrew/PKSM/master/assets/gui_strings/{}/gui.json"
