@@ -92,7 +92,7 @@ class Warning(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator")
-    async def delwarn(self, ctx, target: discord.Member, *, warn):
+    async def delwarn(self, ctx, target: discord.User, *, warn):
         """Deletes a users warn. Can take the warn number, or the warn reason"""
         try:
             warnings = len(self.bot.warns_dict[str(target.id)])
@@ -145,7 +145,7 @@ class Warning(commands.Cog):
 
     @commands.command()
     @restricted_to_bot
-    async def listwarns(self, ctx, target: discord.Member=None):
+    async def listwarns(self, ctx, target: discord.User=None):
         """Allows a user to list their own warns, or a staff member to list a user's warns"""
         if not target or target == ctx.author:
             target = ctx.author
@@ -172,32 +172,7 @@ class Warning(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator")
-    async def listwarnsid(self, ctx, uid):
-        """Allows a staff member to list a user's warns by ID"""
-        target = await self.bot.fetch_user(uid)
-        if not target:
-            return await ctx.send("Couldn't find a user with that ID!")
-        try:
-            warns = self.bot.warns_dict[str(target.id)]
-        except KeyError:
-            return await ctx.send(f"{target} has no warns.")
-        embed = discord.Embed(title=f"Warns for {target}")
-        count = 1
-        for warn in warns:
-            if type(warn['date']) is float:  # Backwards compatibility
-                warn_date = datetime.fromtimestamp(warn['date']).strftime("%D %H:%M:%S")
-            else:
-                warn_date = warn['date']
-            embed.add_field(name=f"Warn #{count}", value=f"**Reason: {warn['reason']}**\n**Date: {warn_date}**")
-            count += 1
-        if count - 1 == 0:
-            return await ctx.send(f"{target} has no warns.")
-        embed.set_footer(text=f"Total warns: {count - 1}")
-        await ctx.send(embed=embed)
-    
-    @commands.command()
-    @commands.has_any_role("Discord Moderator")
-    async def clearwarns(self, ctx, target: discord.Member):
+    async def clearwarns(self, ctx, target: discord.User):
         """Clears all of a users warns"""
         try:
             warns = self.bot.warns_dict[str(target.id)]
