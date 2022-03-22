@@ -346,9 +346,10 @@ class Utility(commands.Cog):
         try:
             await user.send(message)
         except discord.Forbidden:
-            await ctx.send("Failed to DM the user. Do they have me blocked? 😢")
+            return await ctx.send("Failed to DM the user. Do they have me blocked? 😢")
         else:
             await self.bot.logs_channel.send(f"Message sent to {user} by {ctx.author}.", embed=discord.Embed(description=message))
+        await ctx.send(f"Successfully DMed {user}.")
 
     def get_hash(self, file): # Src: https://www.programiz.com/python-programming/examples/hash-file
         h = hashlib.sha1()
