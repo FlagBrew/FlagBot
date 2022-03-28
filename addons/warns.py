@@ -28,7 +28,7 @@ class Warning(commands.Cog):
                 "reason": reason,
                 "date": datetime.now().strftime("%D %H:%M:%S"),
                 "warned_by": f"{ctx.author}",
-        })
+            })
         warns = self.bot.warns_dict[str(target.id)]
         dm_msg = f"You were warned on {ctx.guild}.\nThe reason provided was: `{reason}`.\nThis is warn #{len(warns)}."
         log_msg = ""
@@ -145,7 +145,7 @@ class Warning(commands.Cog):
 
     @commands.command()
     @restricted_to_bot
-    async def listwarns(self, ctx, target: discord.User=None):
+    async def listwarns(self, ctx, target: discord.User = None):
         """Allows a user to list their own warns, or a staff member to list a user's warns"""
         if not target or target == ctx.author:
             target = ctx.author
@@ -213,6 +213,7 @@ class Warning(commands.Cog):
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta can't log
+
 
 def setup(bot):
     bot.add_cog(Warning(bot))

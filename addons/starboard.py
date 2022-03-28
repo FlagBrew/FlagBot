@@ -84,13 +84,13 @@ class Starboard(commands.Cog):
         existing = starboard_db.find_one({'$or': [{'message_id': message.id}, {'starboard_id': message.id}]})
         if existing:
             starboard_message = await self.get_message(self.bot.starboard_channel, existing['starboard_id'])
-            if existing['star_count']+add_value >= self.bot.star_count:
+            if existing['star_count'] + add_value >= self.bot.star_count:
                 if existing['starboard_id'] == message.id:
                     message = await self.get_message(self.bot.get_guild(self.bot.flagbrew_id).get_channel(existing['channel_id']), existing['message_id'])
                 content, embed = self.get_emoji_message(message, add_value + existing['star_count'])
                 await starboard_message.edit(content=content, embed=embed)
                 starboard_db.update_one({'message_id': message.id}, {'$inc': {'star_count': add_value}})
-            elif existing['star_count']+add_value < self.bot.star_count:
+            elif existing['star_count'] + add_value < self.bot.star_count:
                 starboard_db.delete_one({'message_id': message.id})
                 await starboard_message.delete()
         else:
@@ -159,5 +159,7 @@ class Starboard(commands.Cog):
             return await ctx.send("✅ Message `{}` removed from starboard.".format(existing['message_id']))
         else:
             return await ctx.send("❌ Message not found in starboard.")
+
+
 def setup(bot):
     bot.add_cog(Starboard(bot))

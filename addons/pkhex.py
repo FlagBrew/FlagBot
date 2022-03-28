@@ -13,6 +13,7 @@ from addons.helper import restricted_to_bot
 from datetime import datetime
 from discord.ext import commands
 
+
 class pkhex(commands.Cog):
 
     """Handles all the PKHeX Related Commands. Does not load if api_url is not defined in config"""
@@ -24,7 +25,7 @@ class pkhex(commands.Cog):
         if bot.is_mongodb:
             self.db = bot.db
         print(f'Addon "{self.__class__.__name__}" loaded')
-        
+
     def cog_unload(self):
         self.api_check.cancel()
 
@@ -163,8 +164,8 @@ class pkhex(commands.Cog):
         embed.add_field(name="Moves", value=f"**1**: {moves[0]['move_name']}\n**2**: {moves[1]['move_name']}\n**3**: {moves[2]['move_name']}\n**4**: {moves[3]['move_name']}")
         return embed
 
-    def list_to_embed(self, embed, l):
-        for x in l:
+    def list_to_embed(self, embed, input_list):
+        for x in input_list:
             values = x.split(": ")
             values[0] = "**" + values[0] + "**: "
             val = ""
@@ -176,7 +177,7 @@ class pkhex(commands.Cog):
     @commands.command(name="rpc")
     async def reactivate_pkhex_commands(self, ctx):
         """Reactivates the pkhex commands. Restricted to bot creator and Allen"""
-        if not ctx.author in (self.bot.creator, self.bot.allen):
+        if ctx.author not in (self.bot.creator, self.bot.allen):
             raise commands.errors.CheckFailure()
         r = await self.ping_api_func()
         if not isinstance(r, aiohttp.ClientResponse):
@@ -196,7 +197,7 @@ class pkhex(commands.Cog):
     @commands.command(hidden=True, aliases=["pingapi"])
     async def ping_api(self, ctx):
         """Pings the CoreAPI server"""
-        if not ctx.author in (self.bot.creator, self.bot.allen):
+        if ctx.author not in (self.bot.creator, self.bot.allen):
             raise commands.errors.CheckFailure()
         msgtime = ctx.message.created_at.now()
         r = await self.ping_api_func()
@@ -258,17 +259,17 @@ class pkhex(commands.Cog):
     @restricted_to_bot
     async def poke_info(self, ctx, data="", shiny="normal"):
         ("""Returns an embed with a Pokemon's nickname, species, and a few others. Takes a provided URL or attached pkx file. URL *must* be a direct download link.\n"""
-        """Alternatively can take a single Pokemon as an entry, and will return basic information on the species.""")
+         """Alternatively can take a single Pokemon as an entry, and will return basic information on the species.""")
         if not data and not ctx.message.attachments:
             raise PKHeXMissingArgs()
         ping = await self.ping_api_func()
         if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
-        
+
         # Get info for inputted pokemon
         with open("saves/defaultforms.json", "r", encoding="utf8") as f:
             defaultforms = json.load(f)
-        if not shiny in ("normal", "shiny"):
+        if shiny not in ("normal", "shiny"):
             shiny = "normal"
         if not validators.url(data) and not ctx.message.attachments:
             colours = {
@@ -403,7 +404,7 @@ class pkhex(commands.Cog):
         ping = await self.ping_api_func()
         if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
-        elif not generation in range(1, 9):
+        elif generation not in range(1, 9):
             return await ctx.send(f"The inputted generation must be a valid integer between 1 and 8 inclusive. You entered: `{generation}`")
         input_data = input_data.replace("| ", "|").replace(" |", "|").replace(" | ", "|")
         input_data = input_data.split("|")
@@ -543,7 +544,7 @@ class pkhex(commands.Cog):
     @restricted_to_bot
     async def convert(self, ctx, gen: int, *, showdown_set):
         """Converts a given showdown set into a pkx from a given generation. WIP."""
-        if not gen in range(1, 9):
+        if gen not in range(1, 9):
             return await ctx.send(f"There is no generation {gen}.")
         showdown_set = showdown_set.replace('`', '')
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
@@ -561,7 +562,7 @@ class pkhex(commands.Cog):
                 else:
                     return await ctx.send(f"{ctx.author} Conversion failed with error code `{r.status}` and message:\n`{message}`")
             elif not r.status == 200:
-                    return await ctx.send(f"{ctx.author} Conversion failed with error code `{r.status}`.")
+                return await ctx.send(f"{ctx.author} Conversion failed with error code `{r.status}`.")
             rj = await r.json()
             pk64 = rj["base64"].encode("ascii")
             pkx = base64.decodebytes(pk64)
@@ -595,12 +596,12 @@ class pkhex(commands.Cog):
         elif not ext.lower() in ("cia", "3dsx"):
             return await ctx.send("The only supported file types are `CIA` and `3dsx`.")
         patron_code = self.db['patrons'].find_one({"discord_id": str(ctx.author.id)})
-        if patron_code == None:
+        if patron_code is None:
             return await ctx.send("Sorry, you don't have a patron code!")
         patron_code = patron_code['code']
         headers = {
             "patreon": patron_code
-        } 
+        }
         async with self.bot.session.get(f"{self.bot.flagbrew_url}api/v2/patreon/update-check/{accepted_apps[app.lower()]}", headers=headers) as h:
             commit = await h.json()
         commit_sha = commit['hash']
@@ -620,6 +621,7 @@ class pkhex(commands.Cog):
             except discord.Forbidden:
                 return await ctx.send(f"Failed to DM you {ctx.author.mention}. Are your DMs closed?")
             await ctx.send(f"{ctx.author.mention} I have DM'd you the QR code.")
+
 
 def setup(bot):
     bot.add_cog(pkhex(bot))

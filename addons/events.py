@@ -154,9 +154,9 @@ class Events(commands.Cog):
                     await self.bot.patrons_channel.send(f"Welcome to the super secret cool kids club {after.mention}!"
                                                         " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.")
                     message = ("Congrats on becoming a patron! You can add the token below to PKSM's config to access some special patron only stuff. It's only valid until your"
-                            " patron status is cancelled, so keep up those payments!"
-                            " To access the hidden Patron settings menu, press the four corners of the touch screen while on the configuration screen."
-                            f" If you need any further help setting it up, ask in {self.bot.patrons_channel.mention}!\n\n`{token}`")
+                               " patron status is cancelled, so keep up those payments!"
+                               " To access the hidden Patron settings menu, press the four corners of the touch screen while on the configuration screen."
+                               f" If you need any further help setting it up, ask in {self.bot.patrons_channel.mention}!\n\n`{token}`")
                     qr = qrcode.QRCode(version=None)
                     qr.add_data(token)
                     qr.make(fit=True)
@@ -167,7 +167,7 @@ class Events(commands.Cog):
                     f = discord.File(io.BytesIO(bytes), filename="qr.png")
                 elif len(before.roles) > len(after.roles) and (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles):
                     message = ("Unfortunately, your patreon subscription has been cancelled, or stopped renewing automatically. This means your token, and the special features,"
-                            " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
+                               " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
                     self.db['patrons'].delete_one({"discord_id": str(before.id)})
                     f = None
                 else:
@@ -233,7 +233,7 @@ class Events(commands.Cog):
                     await self.bot.activity_logs_channel.send(embed=embed)
                 except discord.Forbidden:
                     pass
-                except:
+                except Exception:
                     if len(before.activities) == 0 or len(after.activities) == 0:
                         return
                     else:
@@ -257,7 +257,7 @@ class Events(commands.Cog):
                 await self.bot.activity_logs_channel.send(embed=embed_custom)
             except discord.Forbidden:
                 pass
-            except:
+            except Exception:
                 await self.bot.err_logs_channel.send(f"Failed to log activity for user `{before}` (`{before.id}`) with before activity list of `{before.activities}` and after activity list of `{after.activities}`. Cause?")
 
     async def process_reactions(self, reaction):

@@ -84,8 +84,7 @@ class Info(commands.Cog):
         elif app.lower().startswith("2048"):
             embed = discord.Embed(description=desc_temp.format(desc_2048))
         else:
-            embed = discord.Embed(description=desc_temp.format(desc_pksm) + "\n" + desc_temp.format(desc_checkpoint) + "\n" + desc_temp.format(desc_pickr) + "\n" +
-                                  desc_temp.format(desc_2048))
+            embed = discord.Embed(description=desc_temp.format(desc_pksm) + "\n" + desc_temp.format(desc_checkpoint) + "\n" + desc_temp.format(desc_pickr) + "\n" + desc_temp.format(desc_2048))
         if img == 0:
             return await ctx.send(embed=embed)
         f = discord.File(io.BytesIO(img), filename="qr.png")
@@ -170,7 +169,8 @@ class Info(commands.Cog):
         embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()}"
         for faq_arr in loaded_faq:
             embed.add_field(name=f"{loaded_faq.index(faq_arr) + 1}: {faq_arr['title']}", value=faq_arr["value"], inline=False)
-        if faq_item == [""]: faq_item = ["0"]
+        if faq_item == [""]:
+            faq_item = ["0"]
         if not len(invoked_faqs) > 0:
             if ctx.author.id in self.bot.dm_list:
                 await ctx.message.delete()
@@ -376,7 +376,7 @@ class Info(commands.Cog):
             "Set Met Date\n"
             "Set Egg Date\n"
             "Remove All Ribbons (Untested)"
-            )
+        )
         embed = discord.Embed(title="Batch Editor Information")
         embed.description = "Please keep in mind that the script will affect *everything* in the boxes of the loaded save, or of the selected bank."
         embed.add_field(name="Editing Types", value=edit_types)

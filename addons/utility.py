@@ -47,7 +47,7 @@ class Utility(commands.Cog):
         """Allows user to toggle update roles. Available roles: see #welcome-and-rules, as well as 'bot'"""
         user = ctx.message.author
         role = role.lower()
-        if not role in ('3ds', 'switch', 'bot'):
+        if role not in ('3ds', 'switch', 'bot'):
             return await ctx.send(f"{user.mention} That isn't a toggleable role!")
         had_role = await self.toggleroles(ctx, discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict[role])), user)
         if had_role:
@@ -77,7 +77,7 @@ class Utility(commands.Cog):
         role = discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict['bot']))
         try:
             await role.edit(mentionable=True, reason=f"{ctx.author} wanted to mention users with this role.")  # Reason -> Helps pointing out folks that abuse this
-        except:
+        except Exception:
             await role.edit(mentionable=True, reason=f"A staff member, or Griffin, wanted to mention users with this role, and I couldn't log properly. Check {self.bot.logs_channel.mention}.")  # Bypass the TypeError it kept throwing
         await ctx.channel.send(f"{role.mention}")
         await role.edit(mentionable=False, reason="Making role unmentionable again.")
@@ -88,7 +88,7 @@ class Utility(commands.Cog):
 
     @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    async def secure_role_mention(self, ctx, update_role: str, channel: discord.TextChannel=None):
+    async def secure_role_mention(self, ctx, update_role: str, channel: discord.TextChannel = None):
         """Securely mention a role. Can input a channel at the end for remote mentioning. More can be added with srm_add"""
         if not channel:
             channel = ctx.channel
@@ -103,7 +103,7 @@ class Utility(commands.Cog):
             return await ctx.send("You didn't give a valid role. Do `.srm_list` to see all available roles.")
         try:
             await role.edit(mentionable=True, reason=f"{ctx.author} wanted to mention users with this role.")  # Reason -> Helps pointing out folks that abuse this
-        except:
+        except Exception:
             await role.edit(mentionable=True, reason=f"A staff member wanted to mention users with this role, and I couldn't log properly. Check {self.bot.logs_channel.mention}.")  # Bypass the TypeError it kept throwing
         await channel.send(f"{role.mention}")
         await role.edit(mentionable=False, reason="Making role unmentionable again.")
@@ -125,7 +125,7 @@ class Utility(commands.Cog):
     @commands.command(aliases=['srm_add'])
     @commands.has_any_role("Discord Moderator")
     @restricted_to_bot
-    async def secure_role_mention_add(self, ctx, role_name, role_id:int):
+    async def secure_role_mention_add(self, ctx, role_name, role_id: int):
         """Allows adding a role to the dict for secure_role_mention. Role_name should be the name that will be used when srm is called"""
         role = discord.utils.get(ctx.guild.roles, id=role_id)
         if role is None:
@@ -144,7 +144,7 @@ class Utility(commands.Cog):
         try:
             await self.bot.logs_channel.send(f"{ctx.author} added {role_name.lower()} to the mentionable roles.")
         except discord.Forbidden:
-            pass # beta bot can't log
+            pass  # beta bot can't log
 
     @commands.command(aliases=['srm_remove'])
     @commands.has_any_role("Discord Moderator")
@@ -162,7 +162,7 @@ class Utility(commands.Cog):
         try:
             await self.bot.logs_channel.send(f"{ctx.author} removed {role_name.lower()} from the mentionable roles.")
         except discord.Forbidden:
-            pass # beta bot can't log
+            pass  # beta bot can't log
 
     def gen_token_qr(self, token):
         qr = qrcode.QRCode(version=None)
@@ -307,7 +307,7 @@ class Utility(commands.Cog):
     @commands.command(hidden=True)
     async def togglecommand(self, ctx, command):
         """Allows disabling of commands. Restricted to Griffin and Allen"""
-        if not ctx.author in (self.bot.creator, self.bot.allen):
+        if ctx.author not in (self.bot.creator, self.bot.allen):
             raise commands.errors.CheckFailure()
         elif command == "togglecommand":
             return await ctx.send("This command cannot be disabled.")
@@ -351,7 +351,7 @@ class Utility(commands.Cog):
             await self.bot.logs_channel.send(f"Message sent to {user} by {ctx.author}.", embed=discord.Embed(description=message))
         await ctx.send(f"Successfully DMed {user}.")
 
-    def get_hash(self, file): # Src: https://www.programiz.com/python-programming/examples/hash-file
+    def get_hash(self, file):  # Src: https://www.programiz.com/python-programming/examples/hash-file
         h = hashlib.sha1()
         chunk = 0
         while chunk != b'':
@@ -468,7 +468,7 @@ class Utility(commands.Cog):
 
     @commands.command(aliases=['ui', 'user'])  # Smth smth stolen from GriffinG1/Midnight but it's *my* license and I do what I want
     @restricted_to_bot
-    async def userinfo(self, ctx, user: discord.Member=None, depth=False):
+    async def userinfo(self, ctx, user: discord.Member = None, depth=False):
         """Pulls a user's info. Passing no member returns your own. depth is a bool that will specify account creation and join date, and account age"""
         if not user:
             user = ctx.author
@@ -625,7 +625,7 @@ class Utility(commands.Cog):
             embed.add_field(name="Permitted Roles", value=f"`{'`, `'.join(r.name for r in emote.roles if not 'FlagBot' in r.name)}`", inline=False)
         embed.add_field(name="Added On", value=f"{emote.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC", inline=False)
         await ctx.send(embed=embed)
-            
+
 
 def setup(bot):
     bot.add_cog(Utility(bot))

@@ -4,7 +4,8 @@ import io
 import json
 import asyncio
 import os
-import sys, inspect
+import sys
+import inspect
 from discord.ext import commands
 
 #  Revised addon loading for Meta taken from https://stackoverflow.com/a/24940613
@@ -16,7 +17,7 @@ addons = {
     "addons.pyint": "PythonInterpreter",
     "addons.utility": "Utility",
     "addons.warns": "Warning"
-    }
+}
 keys = {}
 failed_loads = {}
 for addon in addons.keys():
@@ -24,6 +25,7 @@ for addon in addons.keys():
         keys[addons[addon]] = __import__(addon, fromlist=addons[addon])
     except Exception as e:
         failed_loads[addons[addon]] = e
+
 
 class Meta(commands.Cog, command_attrs=dict(hidden=True)):
 
@@ -51,8 +53,9 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             raise commands.errors.CheckFailure()
         command = self.bot.get_command(function)
         if command is None:
-            if cl and not cl.startswith("addons."): cl = "addons." + cl
-            if not cl or not cl in self.addons.keys():
+            if cl and not cl.startswith("addons."):
+                cl = "addons." + cl
+            if not cl or cl not in self.addons.keys():
                 return await ctx.send("That isn't a command. Please supply a valid class name for retrieving functions.")
             try:
                 cl_obj = self.addons[cl][1]
@@ -86,7 +89,7 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         if activity_type is None and new_activity is None:
             await self.bot.change_presence(activity=None)
             return await ctx.send("Cleared my activity.")
-        elif not activity_type is None and new_activity is None:
+        elif activity_type is not None and new_activity is None:
             raise commands.errors.MissingRequiredArgument(inspect.Parameter(name='new_activity', kind=inspect.Parameter.POSITIONAL_ONLY))
         if not activity_type.lower() in activity_types:
             return await ctx.send(f"`{activity_type}` is not a valid activity type. Valid activity types: `{'`, `'.join(x for x in activity_types)}`.")
@@ -123,18 +126,18 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
     async def flagbot_license(self, ctx):
         embed = discord.Embed(title="FlagBot's License")
         embed.description = ("FlagBrew's discord server moderation + utility bot"
-                            "\nCopyright (C) **2018-2021** | **GriffinG1**"
-                            "\n\nThis program is free software: you can redistribute it and/or modify\n"
-                            "it under the terms of the GNU Affero General Public License as published\n"
-                            "by the Free Software Foundation, either version 3 of the License, or\n"
-                            "(at your option) any later version.\n"
-                            "This program is distributed in the hope that it will be useful,\n"
-                            "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-                            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
-                            "See the GNU Affero General Public License for more details.\n"
-                            "A copy of the GNU Affero General Public License is available "
-                            "[in the program's repository](https://github.com/GriffinG1/FlagBot/blob/master/LICENSE)."
-                            )
+                             "\nCopyright (C) **2018-2021** | **GriffinG1**"
+                             "\n\nThis program is free software: you can redistribute it and/or modify\n"
+                             "it under the terms of the GNU Affero General Public License as published\n"
+                             "by the Free Software Foundation, either version 3 of the License, or\n"
+                             "(at your option) any later version.\n"
+                             "This program is distributed in the hope that it will be useful,\n"
+                             "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+                             "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
+                             "See the GNU Affero General Public License for more details.\n"
+                             "A copy of the GNU Affero General Public License is available "
+                             "[in the program's repository](https://github.com/GriffinG1/FlagBot/blob/master/LICENSE)."
+                             )
         await ctx.send(embed=embed)
 
     @commands.command()

@@ -23,6 +23,7 @@ except ModuleNotFoundError:
     if "-args" not in sys.argv:
         print("Config not available, and '-args' not passed. Bot will not be able to run in this state.")
 
+
 def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu1232/Discord-Selfbot/blob/master/appuselfbot.py#L33
     parser = argparse.ArgumentParser(description="Flagbot")
     parser.add_argument("-test", "--test-run",  # test run flag for Travis
@@ -35,13 +36,15 @@ def parse_cmd_arguments():  # travis handler, taken from https://github.com/appu
                         action="store_true",
                         help="Allows using env args")
     return parser
+
+
 argpar, unknown = parse_cmd_arguments().parse_known_args()
 _test_run = argpar.test_run
 if _test_run:
     try:
         os.path.isfile("saves/faqs/faq.json")
         os.path.isfile("/saves/key_inputs.json")
-    except:
+    except Exception:
         print('faq.json or key_inputs.json is missing')  # only visible in Travis
     print("Quitting: test run")
     exit(0)
@@ -78,8 +81,6 @@ else:
     default_activity = discord.Activity(name=os.getenv("DEF_ACT"), type=discord.ActivityType.watching)
 
 intents = discord.Intents().all()
-print(intents.members)
-print(intents.presences)
 intents.members = True
 intents.presences = True
 bot = commands.Bot(command_prefix=prefix, description=description, activity=default_activity, intents=intents)
@@ -142,13 +143,14 @@ if bot.is_mongodb:
     # sync the database with the warns file on start up, only if the database is online
     if connected:
         for warn in bot.warns_dict:
-            bot.db['warns'].update_one({"user": warn}, 
-            {
-                "$set": {
-                    "user": warn,
-                    "warns": bot.warns_dict[warn]
-                }
-            }, upsert=True)
+            bot.db['warns'].update_one(
+                {"user": warn},
+                {
+                    "$set": {
+                        "user": warn,
+                        "warns": bot.warns_dict[warn]
+                    }
+                }, upsert=True)
 if not is_using_cmd_args:
     bot.site_secret = config.secret
     bot.github_user = config.github_username
@@ -169,6 +171,7 @@ bot.dir_path = os.path.dirname(os.path.realpath(__file__))
 
 bot.flagbrew_id = 278222834633801728
 bot.testing_id = 378420595190267915
+
 
 @bot.check  # taken and modified from https://discordpy.readthedocs.io/en/rewrite/ext/commands/commands.html#global-checks
 async def globally_block_dms(ctx):
@@ -278,7 +281,7 @@ async def on_ready():
             except (discord.NotFound, FileNotFoundError):
                 pass
             print(f"Initialized on {guild.name}.")
-        except:
+        except Exception:
             print(f"Failed to initialize on {guild.name}")
     if bot.is_beta:
         id = 614206536394342533
@@ -335,6 +338,7 @@ async def load(ctx, *, module):
             await ctx.send(':white_check_mark: Extension loaded.')
     else:
         await ctx.send("You don't have permission to do that!")
+
 
 @bot.command(hidden=True)
 async def unload(ctx, *, module):
@@ -406,12 +410,14 @@ async def dump_role_id(ctx):
     await asyncio.sleep(5.1)
     await ctx.message.delete()
 
+
 @bot.command(hidden=True)  # taken from https://github.com/appu1232/Discord-Selfbot/blob/873a2500d2c518e0d25ca5a6f67828de60fbda99/cogs/misc.py#L626
 async def ping(ctx):
     """Get time between HEARTBEAT and HEARTBEAT_ACK in ms."""
     ping = bot.latency * 1000
     ping = round(ping, 3)
     await ctx.send(f'🏓 Response time is {ping} milliseconds.')
+
 
 @bot.command(hidden=True)
 async def restart(ctx):
@@ -423,16 +429,17 @@ async def restart(ctx):
         f.write(str(ctx.channel.id))
     sys.exit(0)
 
+
 @bot.command()
 async def about(ctx):
     """Information about the bot"""
     embed = discord.Embed()
     embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in the FlagBrew server.\n"
-                            "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
-                            f"Written by {bot.creator.mention}.")
+                         "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
+                         f"Written by {bot.creator.mention}.")
     embed.set_author(name="GriffinG1", url='https://github.com/GriffinG1', icon_url='https://avatars0.githubusercontent.com/u/28538707')
-    total_mem = psutil.virtual_memory().total/float(1<<30)
-    used_mem = psutil.Process().memory_info().rss/float(1<<20)
+    total_mem = psutil.virtual_memory().total / float(1 << 30)
+    used_mem = psutil.Process().memory_info().rss / float(1 << 20)
     embed.set_footer(text=f"{round(used_mem, 2)} MB used out of {round(total_mem, 2)} GB")
     await ctx.send(embed=embed)
 

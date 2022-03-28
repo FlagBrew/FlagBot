@@ -19,7 +19,7 @@ class Moderation(commands.Cog):
         self.ban_attch_dict = {}
         self.mute_loop = bot.loop.create_task(self.check_mute_loop())  # loops referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L23
         print(f'Addon "{self.__class__.__name__}" loaded')
-        
+
     def cog_unload(self):
         self.mute_loop.cancel()
 
@@ -312,6 +312,7 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             pass  # beta can't log
         await ctx.send(f"Successfully muted {member} until `{end_str}` UTC!")
+
 
 def setup(bot):
     bot.add_cog(Moderation(bot))

@@ -53,7 +53,7 @@ class PythonInterpreter(commands.Cog):
                 else:
                     try:
                         result = f'```\n{repr(eval(body, env))}\n```'
-                    except:
+                    except Exception:
                         pass
             else:
                 self._last_result = ret
@@ -73,7 +73,6 @@ class PythonInterpreter(commands.Cog):
                     await self.bot.interpreter_logs_channel.send(f"Result: {result}")
                     for user in (self.bot.creator, self.bot.allen, self.bot.pie):
                         await user.send(f"Result: {result}")
-
 
     @commands.group(hidden=True)
     @commands.has_any_role("Bot Dev", "FlagBrew Team", "Discord Moderator")
@@ -103,7 +102,7 @@ class PythonInterpreter(commands.Cog):
     @commands.has_any_role("Discord Moderator", "Bot Dev")
     async def togglepy(self, ctx):
         """Toggles the python interpreter. Bot creator and allen only"""
-        if not ctx.author in (self.bot.creator, self.bot.allen):
+        if ctx.author not in (self.bot.creator, self.bot.allen):
             raise commands.errors.CheckFailure()
         pycmd = self.bot.get_command('py')
         if pycmd.enabled:
@@ -117,7 +116,7 @@ class PythonInterpreter(commands.Cog):
     @commands.has_any_role("Discord Moderator", "Bot Dev")
     async def banphrase(self, ctx, phrase):
         """Bans a phrase from the interpreter"""
-        if not ctx.author in (self.bot.creator, self.bot.allen):
+        if ctx.author not in (self.bot.creator, self.bot.allen):
             raise commands.errors.CheckFailure()
         if phrase in self.banned_phrases:
             return await ctx.send(f"`{phrase}` is already banned!")
@@ -130,9 +129,9 @@ class PythonInterpreter(commands.Cog):
     @commands.has_any_role("Discord Moderator", "Bot Dev")
     async def unbanphrase(self, ctx, phrase):
         """Unbans a phrase from the interpreter"""
-        if not ctx.author in (self.bot.creator, self.bot.allen):
+        if ctx.author not in (self.bot.creator, self.bot.allen):
             raise commands.errors.CheckFailure()
-        if not phrase in self.banned_phrases:
+        if phrase not in self.banned_phrases:
             return await ctx.send(f"`{phrase}` isn't a banned phrase!")
         self.banned_phrases.remove(phrase)
         with open("saves/banned_phrases.json", "w") as f:

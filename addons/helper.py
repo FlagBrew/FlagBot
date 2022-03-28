@@ -4,6 +4,7 @@ import functools
 from datetime import datetime
 from discord.ext import commands
 
+
 async def check_mute_expiry(mutes_dict, member):
     if not str(member.id) in mutes_dict.keys():
         return None
@@ -15,6 +16,7 @@ async def check_mute_expiry(mutes_dict, member):
     end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
     diff = end_time - datetime.utcnow()
     return diff.total_seconds() < 0  # Return False if expired, else True
+
 
 def spam_limiter(func):
     @functools.wraps(func)
@@ -28,13 +30,14 @@ def spam_limiter(func):
                     msg_ref_auth = message.reference.resolved.author
                 else:
                     msg_ref_auth = None
-                if not ctx.author in message.mentions and not ctx.author == msg_ref_auth:
+                if ctx.author not in message.mentions and not ctx.author == msg_ref_auth:
                     break
                 elif count > 0:
                     return await ctx.send(f"{ctx.author.mention} read the goddamned message I sent, instead of just using the command again and spamming. If you ignore the contents of *this* message, you will be warned.")
             count += 1
         await func(*args, **kwargs)
     return wrapper
+
 
 def restricted_to_bot(func):
     @functools.wraps(func)
@@ -43,11 +46,12 @@ def restricted_to_bot(func):
         ctx = args[1]  # and assume ctx is at args[1]
         if ctx.author in (func_self.bot.allen, func_self.bot.creator, func_self.bot.pie):
             pass
-        elif not ctx.channel in (func_self.bot.bot_channel, func_self.bot.bot_channel2) and ctx.guild.id == 278222834633801728:
+        elif ctx.channel not in (func_self.bot.bot_channel, func_self.bot.bot_channel2) and ctx.guild.id == 278222834633801728:
             await ctx.message.delete()
             return await ctx.send(f"{ctx.author.mention} This command is restricted to {func_self.bot.bot_channel.mention}.")
         await func(*args, **kwargs)
     return wrapper
+
 
 def faq_decorator(func):
     @functools.wraps(func)
@@ -90,36 +94,37 @@ def faq_decorator(func):
         await func(self=self, ctx=ctx, faq_doc=faq_doc, faq_item=faq_item)
     return wrapper
 
+
 game_dict = {
-            "RD": "Red (VC)",
-            "BU": "Blue (VC)",
-            "GN": "Green (VC)",
-            "YW": "Yellow (VC)",
-            "GD": "Gold (VC)",
-            "SV": "Silver (VC)",
-            "C": "Crystal (VC)",
-            "R": "Ruby",
-            "S": "Sapphire",
-            "E": "Emerald",
-            "FR": "FireRed",
-            "LG": "LeafGreen",
-            "D": "Diamond",
-            "P": "Pearl",
-            "Pt": "Platinum",
-            "HG": "Heart Gold",
-            "SS": "Soul Silver",
-            "B": "Black",
-            "W": "White",
-            "B2": "Black 2",
-            "W2": "White 2",
-            "OR": "Omega Ruby",
-            "AS": "Alpha Sapphire",
-            "SN": "Sun",
-            "MN": "Moon",
-            "US": "Ultra Sun",
-            "UM": "Ultra Moon",
-            "GP": "Let's Go Pikachu",
-            "GE": "Let's Go Eevee",
-            "SW": "Sword",
-            "SH": "Shield"
-        }
+    "RD": "Red (VC)",
+    "BU": "Blue (VC)",
+    "GN": "Green (VC)",
+    "YW": "Yellow (VC)",
+    "GD": "Gold (VC)",
+    "SV": "Silver (VC)",
+    "C": "Crystal (VC)",
+    "R": "Ruby",
+    "S": "Sapphire",
+    "E": "Emerald",
+    "FR": "FireRed",
+    "LG": "LeafGreen",
+    "D": "Diamond",
+    "P": "Pearl",
+    "Pt": "Platinum",
+    "HG": "Heart Gold",
+    "SS": "Soul Silver",
+    "B": "Black",
+    "W": "White",
+    "B2": "Black 2",
+    "W2": "White 2",
+    "OR": "Omega Ruby",
+    "AS": "Alpha Sapphire",
+    "SN": "Sun",
+    "MN": "Moon",
+    "US": "Ultra Sun",
+    "UM": "Ultra Moon",
+    "GP": "Let's Go Pikachu",
+    "GE": "Let's Go Eevee",
+    "SW": "Sword",
+    "SH": "Shield"
+}
