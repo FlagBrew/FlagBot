@@ -626,6 +626,59 @@ class Utility(commands.Cog):
         embed.add_field(name="Added On", value=f"{emote.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC", inline=False)
         await ctx.send(embed=embed)
 
+    @commands.command(aliases=['flagbrew', 'nintendohomebrew', 'nh', 'dsimode', 'twlmenu', 'reswitched', 'rs', 'projectpokemon', 'pporg', 'pkhexdev', 'pdp', 'nanquitas', 'cheathelp'])
+    @commands.cooldown(rate=1, per=10.0, type=commands.BucketType.channel)
+    async def invites(self, ctx):
+        """Invoke with the guild name to get that guild's invite. Use '.invites' to see the full list. 10 second cooldown"""
+        guild_invites = {
+            "FlagBrew": "https://discord.gg/bGKEyfY",
+            "Nintendo Homebrew": "https://discord.gg/C29hYvh",
+            "DS(i) Mode Hacking": "https://discord.gg/yD3spjv",
+            "Reswitched": "https://discord.gg/ZdqEhed",
+            "Project Pokemon": "https://discord.gg/66PzPgD",
+            "PKHeX Development Projects": "https://discord.gg/tDMvSRv",
+            "Nanquitas's Playground": "https://discord.gg/z4ZMh27"
+        }
+        if ctx.invoked_with == "invites":
+            embed = discord.Embed(title="Guild invites available via this command")
+            embed.description = """FlagBrew: `.flagbrew`
+            Nintendo Homebrew: `.nintendohomebrew`/`.nh`
+            DS(i)Mode Hacking: `.dsimode`/`.twlmenu`
+            Reswitched: `.reswitched`/`.rs`
+            Project Pokemon: `.projectpokemon`/`.pporg`
+            PKHeX Development Projects: `.pkhexdev`, `.pdp`
+            Nanquitas's Playground: `.nanquitas`/`.cheathelp`"""
+            ctx.command.reset_cooldown(ctx)
+        else:
+            embed = discord.Embed()
+            if ctx.invoked_with == "flagbrew":
+                invite = await self.bot.fetch_invite(guild_invites["FlagBrew"])
+                embed.add_field(name="Guild Description", value="FlagBrew application support", inline=False)
+            elif ctx.invoked_with in ('nintendohomebrew', 'nh'):
+                invite = await self.bot.fetch_invite(guild_invites["Nintendo Homebrew"])
+                embed.add_field(name="Guild Description", value="General Nintendo console homebrew support", inline=False)
+            elif ctx.invoked_with in ('dsimode', 'twlmenu'):
+                invite = await self.bot.fetch_invite(guild_invites["DS(i) Mode Hacking"])
+                embed.add_field(name="Guild Description", value="TWiLight Menu++ support, as well as other DS(i)Mode related topics", inline=False)
+            elif ctx.invoked_with in ('reswitched', 'rs'):
+                invite = await self.bot.fetch_invite(guild_invites["Reswitched"])
+                embed.add_field(name="Guild Description", value="Atmosphere development and support", inline=False)
+            elif ctx.invoked_with in ('projectpokemon', 'pporg'):
+                invite = await self.bot.fetch_invite(guild_invites["Project Pokemon"])
+                embed.add_field(name="Guild Description", value="Project Pokemon forums and PKHeX support", inline=False)
+            elif ctx.invoked_with in ('pkhexdev', 'pdp'):
+                invite = await self.bot.fetch_invite(guild_invites["PKHeX Development Projects"])
+                embed.add_field(name="Guild Description", value="PKHeX-Plugins and SysBot hosting support. Do not go here for non-dev base PKHeX support", inline=False)
+            elif ctx.invoked_with in ('nanquitas', 'cheathelp'):
+                invite = await self.bot.fetch_invite(guild_invites["Nanquitas's Playground"])
+                embed.add_field(name="Guild Description", value="Nanquitas's server, go here for cheat creation support", inline=False)
+            embed.title = f"Guild info and invite for {invite.guild.name}"
+            embed.add_field(name="Member Count", value=str(invite.approximate_member_count))
+            embed.add_field(name="Landing Channel", value=invite.channel.name)
+            embed.add_field(name="Invite URL", value=f"Click [here]({invite.url})")
+            embed.set_thumbnail(url=invite.guild.icon_url)
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Utility(bot))
