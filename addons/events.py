@@ -34,6 +34,8 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        if self.bot.is_beta:
+            return
         try:
             mute_exp = self.bot.mutes_dict[str(member.id)]
         except KeyError:
@@ -50,23 +52,21 @@ class Events(commands.Cog):
         except discord.Forbidden:
             embed.description += "\n**Failed to DM user on join.**"
         if member.guild.id == self.bot.flagbrew_id:
-            try:
-                await self.bot.logs_channel.send(embed=embed)
-            except discord.Forbidden:
-                pass  # beta bot can't log
+            await self.bot.logs_channel.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
+        if self.bot.is_beta:
+            return
         embed = discord.Embed(title="Member left :(")
         embed.description = f"{member.mention} | {member.name}#{member.discriminator} | {member.id}"
         if member.guild.id == self.bot.flagbrew_id:
-            try:
-                await self.bot.logs_channel.send(embed=embed)
-            except discord.Forbidden:
-                pass  # beta bot can't log
+            await self.bot.logs_channel.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        if self.bot.is_beta:
+            return
         # auto ban on 15+ pings
         if len(message.mentions) > 15:
             await message.delete()
@@ -87,13 +87,12 @@ class Events(commands.Cog):
             if 885261003544223744 in (role.id for role in member.roles):
                 return
             embed = discord.Embed(description=message.content)
-            try:
-                await self.bot.dm_logs_channel.send(f"New DM received from {message.author} | {message.author.id}.", embed=embed)
-            except discord.Forbidden:
-                pass  # beta bot can't log
+            await self.bot.dm_logs_channel.send(f"New DM received from {message.author} | {message.author.id}.", embed=embed)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
+        if self.bot.is_beta:
+            return
         if isinstance(message.channel, discord.abc.GuildChannel) and message.author.id != self.bot.user.id and message.guild.id == self.bot.flagbrew_id:
             if message.channel != self.bot.logs_channel:
                 if not message.content or message.type == discord.MessageType.pins_add:
@@ -102,13 +101,12 @@ class Events(commands.Cog):
                 if message.reference is not None:
                     ref = message.reference.resolved
                     embed.add_field(name="Replied To:", value=f"[{ref.author}]({ref.jump_url}) ({ref.author.id})")
-                try:
-                    await self.bot.logs_channel.send(f"Message by {message.author} ({message.author.id}) deleted in channel {message.channel.mention}:", embed=embed)
-                except discord.Forbidden:
-                    pass  # beta bot can't log
+                await self.bot.logs_channel.send(f"Message by {message.author} ({message.author.id}) deleted in channel {message.channel.mention}:", embed=embed)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
+        if self.bot.is_beta:
+            return
         if isinstance(before.channel, discord.abc.GuildChannel) and before.author.id != self.bot.user.id and before.guild.id == self.bot.flagbrew_id:
             if before.channel != self.bot.logs_channel and not before.author.bot:
                 embed = discord.Embed()
@@ -120,8 +118,6 @@ class Events(commands.Cog):
                     embed.add_field(name="Replied To:", value=f"[{ref.author}]({ref.jump_url}) ({ref.author.id})")
                 try:
                     await self.bot.logs_channel.send(f"Message by {before.author} ({before.author.id}) edited in channel {before.channel.mention}:", embed=embed)
-                except discord.Forbidden:
-                    pass  # beta bot can't log
                 except discord.HTTPException:  # spooky missing message content?
                     try:
                         await self.bot.err_logs_channel.send(f"Failed to log a message edit... Spooky.\nBefore: `{before}`\nAfter: `{after}`")
@@ -132,6 +128,8 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         if not self.bot.ready:
+            return
+        elif self.bot.is_beta:
             return
 
         # Handle token stuff
@@ -184,10 +182,7 @@ class Events(commands.Cog):
         elif before.nick != after.nick:
             embed = discord.Embed(title="Nickname Change!")
             embed.description = f"{before} | {before.id} changed their nickname from `{before.nick}` to `{after.nick}`."
-            try:
-                await self.bot.logs_channel.send(embed=embed)
-            except discord.Forbidden:
-                pass
+            await self.bot.logs_channel.send(embed=embed)
 
         # Handle activity logging
         elif before.activities != after.activities:
@@ -255,8 +250,6 @@ class Events(commands.Cog):
             embed_custom.add_field(name="New Custom Activity", value=f"Name: `{aft_custom[0]}`\nEmoji: `{aft_custom[1]}`")
             try:
                 await self.bot.activity_logs_channel.send(embed=embed_custom)
-            except discord.Forbidden:
-                pass
             except Exception:
                 await self.bot.err_logs_channel.send(f"Failed to log activity for user `{before}` (`{before.id}`) with before activity list of `{before.activities}` and after activity list of `{after.activities}`. Cause?")
 
