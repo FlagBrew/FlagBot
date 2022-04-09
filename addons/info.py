@@ -418,6 +418,35 @@ class Info(commands.Cog):
         embed.add_field(name="Manual Restore", value="If you haven't made a backup and something happens to your bank, you can use the one-time backup PKSM automatically makes.\n1. Get your bank backup files from `/3ds/PKSM/backup/`. They will end with either `.bnk.bak` or `.bnk.bak.old`.\n2. Copy those files to `/3ds/Checkpoint/saves/0xEC100 PKSM/<folder name here>/<files go here>`. Create a folder if one does not exist.\n3. Remove `.bak`/`.bak.old` from the end of the file extension.\n4. Restore in Checkpoint per the above steps.\n\n**Please Note**: This backup is overwritten every time you save your bank. If you screw something up in your bank, then open it up again and save it, your backup will be gone.", inline=False)
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def banrisks(self, ctx):
+        """Posts current known NS ban risks"""
+        ban_info = {
+            "guaranteed": """• Piracy of any sort (**If you're wondering whether something counts, the answer is almost certainly yes.**)
+                • Homebrew NSPs: See above.
+                • Changing user icon through homebrew
+                • Sketchy eShop behavior""",
+            "semi": """• Modding online games, except in some niche circumstances
+                • Cheating in online games
+                • Clearing error logs after they've been uploaded to Nintendo (this extends to using both emummc and sysmmc online, due to mismatched logs)""",
+            "no": """• Atmosphere, online or offline
+                • Most homebrew, online or offline
+                • Custom themes
+                • Custom sysmodules (sys-ftpd-light, missioncontrol, fizeau, etc.)
+                • Mods/cheating in offline games
+                • Overclocking with sys-clk (just don't do it competitively, for all of our sakes)
+                • emummc""",
+            "unknown": """• Modifying PRODINFO, or using the experimental PRODINFO dummying included in Atmosphere 0.11.2 and later.
+                • Using sys-tweak to change game icons (which may be sent to Nintendo)"""
+        }
+        embed = discord.Embed(title="Current known Nintendo Switch ban risks")
+        embed.add_field(name="Instant ban", value=ban_info['guaranteed'], inline=False)
+        embed.add_field(name="Ban-bait (not always an instant ban, but can get you banned/restricted)", value=ban_info['semi'], inline=False)
+        embed.add_field(name="Not a ban, so far", value=ban_info['no'], inline=False)
+        embed.add_field(name="We just don't know enough yet", value=ban_info['unknown'], inline=False)
+        embed.set_footer(text="Info taken from Val#8035's pin in ReSwitched #user-support")
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Info(bot))
