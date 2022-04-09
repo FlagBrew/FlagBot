@@ -419,6 +419,7 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @spam_limiter
     async def banrisks(self, ctx):
         """Posts current known NS ban risks"""
         ban_info = {
@@ -445,6 +446,24 @@ class Info(commands.Cog):
         embed.add_field(name="Not a ban, so far", value=ban_info['no'], inline=False)
         embed.add_field(name="We just don't know enough yet", value=ban_info['unknown'], inline=False)
         embed.set_footer(text="Info taken from Val#8035's pin in ReSwitched #user-support")
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @spam_limiter
+    async def legit(self, ctx):
+        """Information about legality versus legitimacy"""
+        embed = discord.Embed(title="Terms used by genners")
+        embed.description = "**Note**: All in the context of the official release (not emulated, no ROM hacks, etc.)"
+        embed.add_field(name="Legitimacy", value="""**Legit**: Obtained by legitimate means, no save editing involved
+            **Illegitimate**: Obtained by means that are not intended (cheats, save editing, etc.)""")
+        embed.add_field(name="Legality", value="""**Legal**: Has fully legal values, obtained either in game or via save editing
+            **Illegal**: Not a legal pokemon, any value of the pokemon isn't possible to obtain in game""")
+        embed.add_field(name="Examples", value="""**Legal and legit**: Pokemon I hatched from the daycare without any cheats or save edits
+            **Legal and not legit**: Pokemon I generated via PKHeX or PKSM
+            **Illegal and legit**: Void glitch Arceus or other pokemon obtained legitimately via a glitch
+            **Illegal and not legitimate**: Shiny Victini (a shiny locked Pokemon)""", inline=False)
+        embed.add_field(name="But I can trade this fine? Why is it illegal?", value="GameFreak has famously bad hack checks. The shiny victini example mentioned above can trade.", inline=False)
+        embed.set_footer(text="Info taken and modified from thecommondude#8240's pin in PKHeX Development Project #general-pkhex")
         await ctx.send(embed=embed)
 
 
