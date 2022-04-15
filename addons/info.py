@@ -50,17 +50,11 @@ class Info(commands.Cog):
                 return bytes, releases[0]["tag_name"]
 
     async def format_faq_embed(self, ctx, faq_num, channel, loaded_faq, faq_doc):
-        embed = discord.Embed(title="Frequently Asked Questions")
+        current_faq = loaded_faq[faq_num - 1]
+        embed = discord.Embed.from_dict(current_faq)
+        embed.title = "Frequently Asked Questions"
         embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()}"
         embed.title += f" #{faq_num}"
-        current_faq = loaded_faq[faq_num - 1]
-        embed.add_field(name=current_faq["title"], value=current_faq["value"], inline=False)
-        if "thumbnail" in current_faq.keys():
-            embed.set_thumbnail(url=current_faq["thumbnail"])
-        if "image" in current_faq.keys():
-            embed.set_image(url=current_faq["image"])
-        if "footer" in current_faq.keys():
-            embed.set_footer(text=current_faq["footer"])
         await channel.send(embed=embed)
 
     @commands.command(aliases=["releases", "latest"])
@@ -150,6 +144,8 @@ class Info(commands.Cog):
         last_index = -1  # used to ensure that faq entries used are next to each other during invoke
         invoked_faqs = []  # used to track faq entries to send
         usage_dm = (self.bot.creator, self.bot.pie)  # Handles DMs on full command usage outside bot-channel
+
+        # Handle specific FAQ entries display
         for faq_num in faq_item:
             if not faq_num.isdigit():
                 if len(invoked_faqs) == 0:
@@ -165,13 +161,15 @@ class Info(commands.Cog):
                 return await ctx.send(f"Faq number {faq_num} doesn't exist.")
         for i_faq in invoked_faqs:
             await self.format_faq_embed(self, i_faq, ctx.channel, loaded_faq, faq_doc)
-        embed = discord.Embed(title="Frequently Asked Questions")
-        embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()}"
-        for faq_arr in loaded_faq:
-            embed.add_field(name=f"{loaded_faq.index(faq_arr) + 1}: {faq_arr['title']}", value=faq_arr["value"], inline=False)
-        if faq_item == [""]:
-            faq_item = ["0"]
-        if not len(invoked_faqs) > 0:
+
+        # Handle full FAQ display
+        if len(invoked_faqs) <= 0:
+            embed = discord.Embed(title="Frequently Asked Questions")
+            embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()}"
+            for faq_arr in loaded_faq:
+                temp_emb = discord.Embed.from_dict(faq_arr)
+                for field in temp_emb.fields:
+                    embed.add_field(name=field.name, value=field.value, inline=False)
             if ctx.author.id in self.bot.dm_list:
                 await ctx.message.delete()
                 try:
