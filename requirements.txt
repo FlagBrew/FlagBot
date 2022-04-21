@@ -3,3 +3,4 @@ qrcode[pil]
 pymongo
 validators
 psutil
+importlib_metadata
