@@ -1,4 +1,3 @@
-importlib_metadata
 discord.py>=1.6.0
 qrcode[pil]
 pymongo
