@@ -464,6 +464,15 @@ class Info(commands.Cog):
         embed.set_footer(text="Info taken and modified from thecommondude#8240's pin in PKHeX Development Project #general-pkhex")
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def locklair(self, ctx):
+        """This person should not be allowed to make youtube videos."""
+        embed = discord.Embed(title="So, you're following a video by Blaine Locklair to hack your 3DS")
+        embed.add_field(name="What's the issue with video guides, and Blaine's specifically?", value="Video guides in general get outdated extremely quickly. You should only be following [this guide](https://3ds.hacks.guide) if you're hacking your 3DS, or [this guide](https://nh-server.github.io/switch-guide/) if you're hacking your Switch.\nBlaine in particular tends to just reupload the same video guide over and over again with no real change, leading to issues.", inline=False)
+        embed.add_field(name="I've followed their 3DS guide this far, what should I do now?", value="Continue on from [this page](https://3ds.hacks.guide/finalizing-setup) of the 3ds guide linked above. That will run you through getting all the files you need from the correct links.", inline=False)
+        embed.add_field(name="Well why can't I find the Checkpoint.cia file?", value="Checkpoint 3.8.0 is unstable on 3DS currently. As such, the CIA file for it was removed from the release. Please use [3.7.4](https://github.com/FlagBrew/Checkpoint/tag/v3.7.4).", inline=False)
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Info(bot))
