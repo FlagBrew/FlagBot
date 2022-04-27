@@ -153,7 +153,7 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         with open('saves/new_layout.json', 'r') as f:
             new = json.load(f)
         for ch in new.keys():
-            channel = ctx.guild.get_channel(int(ch))
+            channel = ctx.guild.get_channel(int(ch))  # currently does not support threads. unsure if I'll add support
             if channel.name == new[ch]:
                 continue
             await channel.edit(name=new[ch])
@@ -170,7 +170,7 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         with open('saves/layout.json', 'r') as f:
             old = json.load(f)
         for ch in old.keys():
-            channel = ctx.guild.get_channel(int(ch))
+            channel = ctx.guild.get_channel(int(ch))  # currently does not support threads. unsure if I'll add support
             if channel.name == old[ch]:
                 continue
             await channel.edit(name=old[ch])
@@ -181,5 +181,5 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         await ctx.send("Reverted back the channel list.")
 
 
-def setup(bot):
-    bot.add_cog(Meta(bot))
+async def setup(bot):
+    await bot.add_cog(Meta(bot))

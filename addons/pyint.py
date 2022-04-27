@@ -145,5 +145,5 @@ class PythonInterpreter(commands.Cog):
         await ctx.send(f"Banned phrases:\n```{self.banned_phrases[0]}\n{split_list}```")
 
 
-def setup(bot):
-    bot.add_cog(PythonInterpreter(bot))
+async def setup(bot):
+    await bot.add_cog(PythonInterpreter(bot))

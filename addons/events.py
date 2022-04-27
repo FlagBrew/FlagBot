@@ -7,7 +7,7 @@ import io
 import sys
 import addons.helper as helper
 from discord.ext import commands
-from datetime import datetime
+from datetime import timedelta
 
 
 class Events(commands.Cog):
@@ -26,7 +26,7 @@ class Events(commands.Cog):
                 await guild.owner.send(f"Left your server, `{guild.name}`, as this bot should only be used on the PKSM server under this token.")
             except discord.Forbidden:
                 for channel in guild.channels:
-                    if guild.me.permissions_in(channel).send_messages and isinstance(channel, discord.TextChannel):
+                    if channel.permissions_for(guild.me).send_messages and isinstance(channel, discord.TextChannel):
                         await channel.send("Left your server, as this bot should only be used on the PKSM server under this token.")
                         break
             finally:
@@ -42,8 +42,9 @@ class Events(commands.Cog):
             mute_exp = ""
         embed = discord.Embed(title="New member!")
         embed.description = f"{member.mention} | {member.name}#{member.discriminator} | {member.id}"
-        if (datetime.now() - member.created_at).days < 1:
-            embed.description += f"\n**Account was created {(datetime.now() - member.created_at).days} days ago.**"
+        within_last_week = discord.utils.utcnow() - timedelta(days=7)
+        if member.created_at > within_last_week:
+            embed.description += f"\n**Account was created {(discord.utils.utcnow() - member.created_at).days} days ago.**"
         if mute_exp != "" and not await helper.check_mute_expiry(self.bot.mutes_dict, member):
             embed.add_field(name="Muted Until", value=mute_exp + " UTC")
             await member.add_roles(self.bot.mute_role)
@@ -93,7 +94,7 @@ class Events(commands.Cog):
     async def on_message_delete(self, message):
         if self.bot.is_beta:
             return
-        if isinstance(message.channel, discord.abc.GuildChannel) and message.author.id != self.bot.user.id and message.guild.id == self.bot.flagbrew_id:
+        if isinstance(message.channel, discord.abc.GuildChannel) or isinstance(message.channel, discord.abc.Thread) and message.author.id != self.bot.user.id and message.guild.id == self.bot.flagbrew_id:
             if message.channel != self.bot.logs_channel:
                 if not message.content or message.type == discord.MessageType.pins_add:
                     return
@@ -184,7 +185,12 @@ class Events(commands.Cog):
             embed.description = f"{before} | {before.id} changed their nickname from `{before.nick}` to `{after.nick}`."
             await self.bot.logs_channel.send(embed=embed)
 
-        # Handle activity logging
+    @commands.Cog.listener()
+    async def on_presence_update(self, before, after):
+        if not self.bot.ready:
+            return
+        elif self.bot.is_beta:
+            return
         elif before.activities != after.activities:
             has_activity = True
             blacklist = [
@@ -293,6 +299,36 @@ class Events(commands.Cog):
         if reaction.message.channel.id == 509857867726192641:
             await self.process_reactions(reaction)
 
+    @commands.Cog.listener()
+    async def on_thread_create(self, thread):
+        embed = discord.Embed(title="New thread created!")
+        embed.add_field(name="Created By", value=f"{thread.owner} ({thread.owner_id})")
+        embed.add_field(name="Thread Name", value=thread.name, inline=False)
+        embed.add_field(name="Created At", value=discord.utils.format_dt(thread.created_at), inline=False)
+        await thread.join()
+        # for member in self.bot.discord_moderator_role.members:
+        #     await thread.add_user(member)
+        await self.bot.logs_channel.send(embed=embed)
 
-def setup(bot):
-    bot.add_cog(Events(bot))
+    @commands.Cog.listener()
+    async def on_thread_update(self, before, after):
+        if after.archived:
+            embed = discord.Embed(title="Thread Archived")
+            embed.add_field(name="Thread Name", value=after.name, inline=False)
+            embed.add_field(name="Archived At", value=discord.utils.format_dt(after.archive_timestamp), inline=False)
+            embed.add_field(name="Thread Owner", value=f"{after.owner} ({after.owner.id})")
+        else:
+            return
+        await self.bot.logs_channel.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_thread_delete(self, thread):
+        embed = discord.Embed(title="Thread Deleted!")
+        embed.add_field(name="Thread Name", value=thread.name, inline=False)
+        embed.add_field(name="Created At", value=discord.utils.format_dt(thread.created_at), inline=False)
+        embed.add_field(name="Thread Owner", value=f"{thread.owner} ({thread.owner_id})")
+        await self.bot.logs_channel.send(embed=embed)
+
+
+async def setup(bot):
+    await bot.add_cog(Events(bot))

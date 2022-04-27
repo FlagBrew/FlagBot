@@ -8,7 +8,7 @@ import json
 import asyncio
 import random
 import io
-from datetime import datetime, timedelta
+from datetime import timedelta
 import addons.helper as helper
 
 
@@ -268,7 +268,7 @@ class Moderation(commands.Cog):
             return await ctx.send("You can't mute a staff member!")
         elif self.bot.mute_role in member.roles:
             return await ctx.send("That member is already muted.")
-        curr_time = datetime.utcnow()  # Referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L223
+        curr_time = discord.utils.utcnow()  # Referenced from https://github.com/chenzw95/porygon/blob/aa2454336230d7bc30a7dd715e057ee51d0e1393/cogs/mod.py#L223
         try:
             if int(duration[:-1]) == 0:
                 return await ctx.send("You can't mute for a time length of 0.")
@@ -287,7 +287,7 @@ class Moderation(commands.Cog):
             await ctx.send("You managed to throw a ValueError! Congrats! I guess. Use one of the correct values, and don't mix and match. Bitch.")
             return await ctx.send_help(ctx.command)
         end = curr_time + diff
-        end_str = end.strftime("%Y-%m-%d %H:%M:%S")
+        end_str = discord.utils.format_dt(end)
         await member.add_roles(self.bot.mute_role)
         embed = discord.Embed(title=f"{member} ({member.id}) timemuted")
         embed.description = f"{member} timemuted by {ctx.message.author} until {end_str} UTC for:\n\n{reason}"
@@ -311,8 +311,8 @@ class Moderation(commands.Cog):
                 await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
             pass  # beta can't log
-        await ctx.send(f"Successfully muted {member} until `{end_str}` UTC!")
+        await ctx.send(f"Successfully muted {member} until `{end_str}`!")
 
 
-def setup(bot):
-    bot.add_cog(Moderation(bot))
+async def setup(bot):
+    await bot.add_cog(Moderation(bot))

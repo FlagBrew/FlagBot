@@ -83,6 +83,7 @@ else:
 intents = discord.Intents().all()
 intents.members = True
 intents.presences = True
+intents.messages = True
 bot = commands.Bot(command_prefix=prefix, description=description, activity=default_activity, intents=intents)
 
 if not is_using_cmd_args:  # handles setting up the bot vars
@@ -267,7 +268,7 @@ async def on_ready():
                     await guild.owner.send(f"Left your server, `{guild.name}`, as this bot should only be used on the PKSM server under this token.")
                 except discord.Forbidden:
                     for channel in guild.channels:
-                        if guild.me.permissions_in(channel).send_messages and isinstance(channel, discord.TextChannel):
+                        if channel.permissions_for(guild.me).send_messages and isinstance(channel, discord.TextChannel):
                             await channel.send("Left your server, as this bot should only be used on the PKSM server under this token.")
                             break
                 finally:
@@ -312,18 +313,19 @@ cogs = [
     'addons.warns'
 ]
 
-failed_cogs = []
 
-for extension in cogs:
-    try:
-        bot.load_extension(extension)
-    except Exception as e:
-        print(f'{extension} failed to load.\n{type(e).__name__}: {e}')
-        failed_cogs.append([extension, type(e).__name__, e])
-if not failed_cogs:
-    print('All addons loaded!')
-if bot.is_beta:
-    bot.load_extension('addons.devtools')  # only present in my beta environment
+async def setup_cogs(bot):
+    failed_cogs = []
+    for extension in cogs:
+        try:
+            await bot.load_extension(extension)
+        except Exception as e:
+            print(f'{extension} failed to load.\n{type(e).__name__}: {e}')
+            failed_cogs.append([extension, type(e).__name__, e])
+    if not failed_cogs:
+        print('All addons loaded!')
+    if bot.is_beta:
+        await bot.load_extension('addons.devtools')  # only present in my beta environment
 
 
 @bot.command(hidden=True)
@@ -331,7 +333,7 @@ async def load(ctx, *, module):
     """Loads an addon"""
     if ctx.author == ctx.guild.owner or ctx.author == bot.creator or ctx.author == bot.allen:
         try:
-            bot.load_extension(f"addons.{module}")
+            await bot.load_extension(f"addons.{module}")
         except Exception as e:
             await ctx.send(f':anger: Failed!\n```\n{type(e).__name__}: {e}\n```')
         else:
@@ -345,7 +347,7 @@ async def unload(ctx, *, module):
     """Unloads an addon"""
     if ctx.author == ctx.guild.owner or ctx.author == bot.creator or ctx.author == bot.allen:
         try:
-            bot.unload_extension(f"addons.{module}")
+            await bot.unload_extension(f"addons.{module}")
         except Exception as e:
             await ctx.send(f':anger: Failed!\n```\n{type(e).__name__}: {e}\n```')
         else:
@@ -375,7 +377,7 @@ async def reload(ctx):
         loaded_cogs = bot.cogs.copy()
         for addon in loaded_cogs:
             try:
-                bot.reload_extension(f"addons.{addon_dict[addon]}")
+                await bot.reload_extension(f"addons.{addon_dict[addon]}")
             except Exception as e:
                 if addon not in addon_dict.keys():
                     pass
@@ -445,5 +447,11 @@ async def about(ctx):
 
 
 # Execute
-print('Bot directory: ', dir_path)
-bot.run(token)
+async def main():
+    print('Bot directory: ', dir_path)
+    async with bot:
+        await setup_cogs(bot)
+        await bot.start(token)
+
+
+asyncio.run(main())

@@ -2,8 +2,6 @@
 
 import discord
 from discord.ext import commands
-from datetime import datetime
-import sys
 import os
 import json
 import secrets
@@ -473,10 +471,10 @@ class Utility(commands.Cog):
         if not user:
             user = ctx.author
         embed = discord.Embed(colour=user.colour)
-        embed.set_author(name=f"User info for {user} ({user.id})", icon_url=str(user.avatar_url))
+        embed.set_author(name=f"User info for {user} ({user.id})", icon_url=str(user.display_avatar))
         if user.nick:
             embed.add_field(name="Nickname", value=user.nick)
-        embed.add_field(name="Avatar Link", value=f"[Here]({str(user.avatar_url)})")
+        embed.add_field(name="Avatar Link", value=f"[Here]({str(user.display_avatar)})")
         status = str(user.status).capitalize()
         if user.is_on_mobile():
             status += " (Mobile)"
@@ -485,11 +483,14 @@ class Utility(commands.Cog):
             embed.add_field(name="Top Activity", value=f"`{user.activity}`")
         if len(user.roles) > 1 and not depth:
             embed.add_field(name="Highest Role", value=user.top_role)
+        embed.add_field(name="Created At", value=f"{discord.utils.format_dt(user.created_at)}")
+        embed.add_field(name="Joined At", value=f"{discord.utils.format_dt(user.joined_at)}")
+        acc_age_days = (discord.utils.utcnow() - user.created_at).days
+        acc_age_years = acc_age_days // 365
+        acc_age_months = (acc_age_days % 365) // 30
+        embed.add_field(name="Account Age", value=f"About {acc_age_years} Years, {acc_age_months} Months, {(acc_age_days % 365) % 30} Days")
         if depth:
             embed.add_field(name=u"\u200B", value=u"\u200B", inline=False)
-            embed.add_field(name="Created At", value=f"{user.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC")
-            embed.add_field(name="Joined At", value=f"{user.joined_at.strftime('%m-%d-%Y %H:%M:%S')} UTC")
-            embed.add_field(name="Account Age", value=f"{(datetime.now() - user.created_at).days} Days")
             if len(user.roles) > 1:
                 embed.add_field(name="Roles", value=f"`{'`, `'.join(role.name for role in user.roles[1:])}`")
             if len(user.activities) > 0:
@@ -501,9 +502,9 @@ class Utility(commands.Cog):
     async def fetch_user_info(self, ctx, user: discord.User):
         """Pulls a discord.User instead of discord.Member. More limited than userinfo"""
         embed = discord.Embed(colour=user.colour)
-        embed.set_author(name=f"User info for {user} ({user.id})", icon_url=str(user.avatar_url))
-        embed.add_field(name="Avatar Link", value=f"[Here]({str(user.avatar_url)})")
-        embed.add_field(name="Created At", value=f"{user.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC")
+        embed.set_author(name=f"User info for {user} ({user.id})", icon_url=str(user.display_avatar))
+        embed.add_field(name="Avatar Link", value=f"[Here]({str(user.display_avatar)})")
+        embed.add_field(name="Created At", value=f"{discord.utils.format_dt(user.created_at)}")
         embed.add_field(name="On FlagBrew?", value=str("FlagBrew" in [guild.name for guild in user.mutual_guilds]))
         await ctx.send(embed=embed)
 
@@ -517,7 +518,7 @@ class Utility(commands.Cog):
         embed.add_field(name="Member Count", value=str(ctx.guild.member_count))
         if depth:
             embed.add_field(name="Emoji Slots", value=f"{len(ctx.guild.emojis)}/{ctx.guild.emoji_limit} slots used")
-            since_creation = (datetime.now() - ctx.guild.created_at).days
+            since_creation = (discord.utils.utcnow() - ctx.guild.created_at).days
             embed.add_field(name="Created At", value=f"{ctx.guild.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC\n({since_creation//365} years, {since_creation%365} days)")
             embed.add_field(name="Total Boosts", value=f"{ctx.guild.premium_subscription_count} boosters (Current level: {ctx.guild.premium_tier})")
         await ctx.send(embed=embed)
@@ -680,5 +681,5 @@ class Utility(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(Utility(bot))
+async def setup(bot):
+    await bot.add_cog(Utility(bot))

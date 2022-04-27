@@ -10,7 +10,6 @@ import urllib
 from exceptions import PKHeXMissingArgs
 import addons.helper as helper
 from addons.helper import restricted_to_bot
-from datetime import datetime
 from discord.ext import commands
 
 
@@ -27,7 +26,7 @@ class pkhex(commands.Cog):
         print(f'Addon "{self.__class__.__name__}" loaded')
 
     def cog_unload(self):
-        self.api_check.cancel()
+        self.api_check.cancel()  # need to check on this later
 
     async def ping_api_func(self):
         timeout = aiohttp.ClientTimeout(total=3)
@@ -203,7 +202,7 @@ class pkhex(commands.Cog):
         r = await self.ping_api_func()
         if not isinstance(r, aiohttp.ClientResponse):
             return await ctx.send(f"Current CoreAPI status code is {r}.")
-        now = datetime.now()
+        now = discord.utils.utcnow()
         ping = now - msgtime
         embed = discord.Embed()
         embed.add_field(name="CoreAPI Response Time", value=f"{str(ping.microseconds / 1000.0)} milliseconds.")
@@ -623,5 +622,5 @@ class pkhex(commands.Cog):
             await ctx.send(f"{ctx.author.mention} I have DM'd you the QR code.")
 
 
-def setup(bot):
-    bot.add_cog(pkhex(bot))
+async def setup(bot):
+    await bot.add_cog(pkhex(bot))

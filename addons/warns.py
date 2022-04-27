@@ -215,5 +215,5 @@ class Warning(commands.Cog):
             pass  # beta can't log
 
 
-def setup(bot):
-    bot.add_cog(Warning(bot))
+async def setup(bot):
+    await bot.add_cog(Warning(bot))

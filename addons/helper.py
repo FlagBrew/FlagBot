@@ -14,7 +14,7 @@ async def check_mute_expiry(mutes_dict, member):
     elif end_time == "":
         return None
     end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
-    diff = end_time - datetime.utcnow()
+    diff = end_time - discord.utils.utcnow()
     return diff.total_seconds() < 0  # Return False if expired, else True
 
 
