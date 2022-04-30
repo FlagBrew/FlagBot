@@ -83,7 +83,7 @@ else:
 intents = discord.Intents().all()
 intents.members = True
 intents.presences = True
-intents.messages = True
+intents.message_content = True
 bot = commands.Bot(command_prefix=prefix, description=description, activity=default_activity, intents=intents)
 
 if not is_using_cmd_args:  # handles setting up the bot vars
