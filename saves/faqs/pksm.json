@@ -101,5 +101,18 @@
             }
         ],
         "type": "rich"
+    },
+    {
+        "image": {
+            "url": "https://cdn.discordapp.com/attachments/311376037307219968/971359014845812806/IMG_9749.jpg"
+        },
+        "fields": [
+            {
+                "inline": false,
+                "name": "How can I inject the Azure Flute?",
+                "value": "The Azure Flute can be found on one of the last pages, with a JPN name. Refer to the attached image."
+            }
+        ],
+        "type": "rich"
     }
 ]
