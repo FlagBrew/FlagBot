@@ -677,7 +677,7 @@ class Utility(commands.Cog):
             embed.add_field(name="Member Count", value=str(invite.approximate_member_count))
             embed.add_field(name="Landing Channel", value=invite.channel.name)
             embed.add_field(name="Invite URL", value=f"Click [here]({invite.url})")
-            embed.set_thumbnail(url=invite.guild.icon_url)
+            embed.set_thumbnail(url=str(invite.guild.icon))
         await ctx.send(embed=embed)
 
 
