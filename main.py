@@ -221,8 +221,8 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_error(event_method, *args, **kwargs):
-    print(kwargs[0])
-    if isinstance(kwargs[0], commands.errors.CommandNotFound):
+    print(args[0])
+    if isinstance(args[0], commands.errors.CommandNotFound):
         return
     print(f"Ignoring exception in {event_method}")
     tb = traceback.format_exc()
