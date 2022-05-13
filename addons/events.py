@@ -80,7 +80,7 @@ class Events(commands.Cog):
                 sys.exit(0)
 
         # log dm messages
-        if isinstance(message.channel, discord.abc.PrivateChannel) and not message.author == self.bot.guild.me:
+        if not isinstance(message.channel, discord.threads.Thread) and isinstance(message.channel, discord.abc.PrivateChannel) and not message.author == self.bot.guild.me:
             if not message.content:
                 return
             guild = self.bot.get_guild(self.bot.flagbrew_id)
@@ -94,15 +94,17 @@ class Events(commands.Cog):
     async def on_message_delete(self, message):
         if self.bot.is_beta:
             return
-        if isinstance(message.channel, discord.abc.GuildChannel) or isinstance(message.channel, discord.abc.Thread) and message.author.id != self.bot.user.id and message.guild.id == self.bot.flagbrew_id:
+        if isinstance(message.channel, discord.abc.GuildChannel) or isinstance(message.channel, discord.threads.Thread) and message.author.id != self.bot.user.id and message.guild.id == self.bot.flagbrew_id:
             if message.channel != self.bot.logs_channel:
                 if not message.content or message.type == discord.MessageType.pins_add:
                     return
                 embed = discord.Embed(description=message.content)
                 if message.reference is not None:
                     ref = message.reference.resolved
-                    embed.add_field(name="Replied To:", value=f"[{ref.author}]({ref.jump_url}) ({ref.author.id})")
-                await self.bot.logs_channel.send(f"Message by {message.author} ({message.author.id}) deleted in channel {message.channel.mention}:", embed=embed)
+                    embed.add_field(name="Replied To", value=f"[{'@' if len(message.mentions) > 0 and ref.author in message.mentions else ''}{ref.author}]({ref.jump_url}) ({ref.author.id})")
+                if isinstance(message.channel, discord.threads.Thread):
+                    embed.add_field(name="Thread Location", value=f"{message.channel.parent.mention} ({message.channel.parent.id})", inline=False)
+                await self.bot.logs_channel.send(f"Message by {message.author} ({message.author.id}) deleted in {'thread' if isinstance(message.channel, discord.threads.Thread) else 'channel'} {message.channel.mention}:", embed=embed)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
@@ -306,8 +308,13 @@ class Events(commands.Cog):
         embed.add_field(name="Thread Name", value=thread.name, inline=False)
         embed.add_field(name="Created At", value=discord.utils.format_dt(thread.created_at), inline=False)
         await thread.join()
-        # for member in self.bot.discord_moderator_role.members:
-        #     await thread.add_user(member)
+        auto_thread_joins = [
+            self.bot.creator,
+            self.bot.allen,
+            self.bot.pie
+        ]
+        for member in auto_thread_joins:
+            await thread.add_user(member)
         await self.bot.logs_channel.send(embed=embed)
 
     @commands.Cog.listener()
