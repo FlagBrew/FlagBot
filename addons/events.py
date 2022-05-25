@@ -187,6 +187,27 @@ class Events(commands.Cog):
             embed.description = f"{before} | {before.id} changed their nickname from `{before.nick}` to `{after.nick}`."
             await self.bot.logs_channel.send(embed=embed)
 
+        # Handle timeout application logging - can't easily log expiry rn so not gonna do that
+        elif not before.is_timed_out() and after.is_timed_out:
+            async for timeout in after.guild.audit_logs(limit=20, action=discord.AuditLogAction.member_update):  # 20 to handle multiple staff timeouts in quick succession
+                if not timeout.after.timed_out_until:
+                    return
+                elif timeout.target == after:
+                    if timeout.reason:
+                        reason = timeout.reason
+                    else:
+                        reason = "No reason was given. Please do that in the future!"
+                    admin = timeout.user
+                    break
+                else:
+                    return
+            embed = discord.Embed(title=f"{after} timed out")
+            embed.add_field(name="Member", value=f"{after.mention} ({after.id})")
+            embed.add_field(name="Timed out by", value=admin)
+            embed.add_field(name="Timed out until", value=discord.utils.format_dt(after.timed_out_until), inline=False)
+            embed.add_field(name="Reason", value=reason)
+            await self.bot.logs_channel.send(embed=embed)
+
     @commands.Cog.listener()
     async def on_presence_update(self, before, after):
         if not self.bot.ready:
