@@ -313,6 +313,50 @@ class Moderation(commands.Cog):
             pass  # beta can't log
         await ctx.send(f"Successfully muted {member} until `{end_str}`!")
 
+    @commands.command()
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
+    async def timeout(self, ctx, member: discord.Member, duration, reason="No reason was given"):
+        """Mute a user using discord's timeout function. Units are m, h, d with an upper cap of 28 days (discord limit)"""
+        has_attch = bool(ctx.message.attachments)
+        if member == ctx.message.author:
+            return await ctx.send("You can't mute yourself, obviously")
+        elif any(r for r in self.bot.protected_roles if r in member.roles):
+            return await ctx.send("You can't mute a staff member!")
+        elif member.is_timed_out():
+            return await ctx.send("That member is already timed out.")
+        curr_time = discord.utils.utcnow()
+        try:
+            if int(duration[:-1]) == 0:
+                return await ctx.send("You can't mute for a time length of 0.")
+            elif duration.lower().endswith("m"):
+                diff = timedelta(minutes=int(duration[:-1]))
+            elif duration.lower().endswith("h"):
+                diff = timedelta(hours=int(duration[:-1]))
+            elif duration.lower().endswith("d"):
+                if int(duration[:-1]) > 28:
+                    return await ctx.send("Cannot time out users for more than 28 days.")
+                diff = timedelta(days=int(duration[:-1]))
+            else:
+                await ctx.send("That's not an appropriate duration value.")
+                return await ctx.send_help(ctx.command)
+        except ValueError:
+            await ctx.send("You managed to throw a ValueError! Congrats! I guess. Use one of the correct values, and don't mix and match. Bitch.")
+            return await ctx.send_help(ctx.command)
+        end = curr_time + diff
+        end_str = discord.utils.format_dt(end)
+        try:
+            if has_attch:
+                img_bytes = await ctx.message.attachments[0].read()
+                img = discord.File(io.BytesIO(img_bytes), 'mute_image.png')
+                await member.send(f"You have been timed out on {ctx.guild} for\n\n`{reason}`\n\nYour timeout will expire on {end_str}.", file=img)
+            else:
+                await member.send(f"You have been timed out on {ctx.guild} for\n\n`{reason}`\n\nYour timeout will expire on {end_str}.")
+        except discord.Forbidden:
+            pass  # blocked DMs
+        reason += f"\n\nAction done by {ctx.author} (This is to deal with audit log scraping)"
+        await member.timeout(diff, reason=reason)
+        await ctx.send(f"Successfully timed out {member} until {end_str}!")
+
 
 async def setup(bot):
     await bot.add_cog(Moderation(bot))
