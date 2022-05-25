@@ -69,7 +69,18 @@ class Info(commands.Cog):
             embed = discord.Embed(description=desc_temp.format(desc_checkpoint))
             str_list = app.lower().split()
             if "switch" not in str_list:
-                img, version = await self.gen_qr(self, "Checkpoint")
+                # Manual formatting due to 3.8.0 being broken...
+                # img, version = await self.gen_qr(self, "Checkpoint")
+                embed.description += "\nCheckpoint 3.8.0 is currently broken on 3DS. Please use 3.7.4 found [here](https://github.com/FlagBrew/Checkpoint/releases/tag/v3.7.4)."
+                qr = qrcode.QRCode(version=None)
+                qr.add_data("https://cdn.discordapp.com/attachments/377425394866847744/942325638960934952/qr.png")
+                qr.make(fit=True)
+                qr_img = qr.make_image(fill_color="black", back_color="white")
+                bytes = io.BytesIO()
+                qr_img.save(bytes, format='PNG')
+                bytes = bytes.getvalue()
+                img = bytes
+                version = "3.7.4"
         elif app.lower().startswith("pickr"):
             embed = discord.Embed(description=desc_temp.format(desc_pickr))
             str_list = app.lower().split()
