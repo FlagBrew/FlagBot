@@ -318,6 +318,7 @@ class Moderation(commands.Cog):
     async def timeout(self, ctx, member: discord.Member, duration, reason="No reason was given"):
         """Mute a user using discord's timeout function. Units are m, h, d with an upper cap of 28 days (discord limit)"""
         has_attch = bool(ctx.message.attachments)
+        cap_msg = ""
         if member == ctx.message.author:
             return await ctx.send("You can't mute yourself, obviously")
         elif any(r for r in self.bot.protected_roles if r in member.roles):
@@ -333,8 +334,6 @@ class Moderation(commands.Cog):
             elif duration.lower().endswith("h"):
                 diff = timedelta(hours=int(duration[:-1]))
             elif duration.lower().endswith("d"):
-                if int(duration[:-1]) > 28:
-                    return await ctx.send("Cannot time out users for more than 28 days.")
                 diff = timedelta(days=int(duration[:-1]))
             else:
                 await ctx.send("That's not an appropriate duration value.")
@@ -342,6 +341,9 @@ class Moderation(commands.Cog):
         except ValueError:
             await ctx.send("You managed to throw a ValueError! Congrats! I guess. Use one of the correct values, and don't mix and match. Bitch.")
             return await ctx.send_help(ctx.command)
+        if diff.days > 28:
+            diff = timedelta(hours=672)
+            cap_msg = "\n\nTimeouts are limited to 28 days on Discord's side. The length of this timeout has been lowered to 28 days."
         end = curr_time + diff
         end_str = discord.utils.format_dt(end)
         try:
@@ -354,8 +356,8 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             pass  # blocked DMs
         reason += f"\n\nAction done by {ctx.author} (This is to deal with audit log scraping)"
-        await member.timeout(diff, reason=reason)
-        await ctx.send(f"Successfully timed out {member} until {end_str}!")
+        await member.timeout(diff - timedelta(seconds=1), reason=reason)  # Reduce diff by 1 second due to communication_disabled_until when it's *exactly* 28 days
+        await ctx.send(f"Successfully timed out {member} until {end_str}!{cap_msg}")
 
 
 async def setup(bot):
