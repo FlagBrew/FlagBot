@@ -198,7 +198,7 @@ class pkhex(commands.Cog):
         """Pings the CoreAPI server"""
         if ctx.author not in (self.bot.creator, self.bot.allen):
             raise commands.errors.CheckFailure()
-        msgtime = ctx.message.created_at.now()
+        msgtime = ctx.message.created_at
         r = await self.ping_api_func()
         if not isinstance(r, aiohttp.ClientResponse):
             return await ctx.send(f"Current CoreAPI status code is {r}.")
