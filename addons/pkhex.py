@@ -448,7 +448,7 @@ class pkhex(commands.Cog):
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         msg = await ctx.send("Attempting to fetch pokemon...")
         try:
-            async with self.bot.session.get(self.bot.flagbrew_url + "api/v2/gpss/view/" + code) as resp:
+            async with self.bot.session.get(self.bot.flagbrew_url + "api/v2/gpss/" + code) as resp:
                 resp_json = await resp.json()
                 code_data = resp_json["pokemon"]
                 pkmn_data = code_data["pokemon"]
@@ -497,11 +497,11 @@ class pkhex(commands.Cog):
             if error == "Failed to get pkmn info from CoreAPI, error details: There is an error in your provided information!":
                 return await ctx.send("That file is either not a pokemon, or something went wrong.")
             elif error == "Your Pokemon is already uploaded":
-                return await ctx.send(f"The provided pokemon has already been uploaded. You can find it at: {self.bot.gpss_url}gpss/view/{code}")
+                return await ctx.send(f"The provided pokemon has already been uploaded. You can find it at: {self.bot.gpss_url}gpss/{code}")
             else:
                 await ctx.send(f"There seems to have been an issue getting the code for this upload. Please check <#586728153985056801> to confirm upload. If it didn't upload, try again later. {self.bot.creator.mention} and {self.bot.allen.mention} please investigate!")
                 return await self.bot.err_logs_channel.send(f"Error processing GPSS upload in {ctx.channel.mention}. Code length greater than 10. Code: `{code}`")
-        await ctx.send(f"Your pokemon has been uploaded! You can find it at: {self.bot.gpss_url}gpss/view/{code}")
+        await ctx.send(f"Your pokemon has been uploaded! You can find it at: {self.bot.gpss_url}gpss/{code}")
 
     @commands.command()
     @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
