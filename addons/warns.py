@@ -15,7 +15,7 @@ class Warning(commands.Cog):
         print(f'Addon "{self.__class__.__name__}" loaded')
 
     @commands.command()
-    @commands.has_any_role("Discord Moderator")
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     async def warn(self, ctx, target: discord.Member, *, reason="No reason was given"):
         """Warns a user. Kicks at 3 and 4 warnings, bans at 5"""
         has_attch = bool(ctx.message.attachments)
@@ -91,7 +91,7 @@ class Warning(commands.Cog):
         await ctx.send(f"Warned {target}. This is warn #{len(warns)}. {log_msg}")
 
     @commands.command()
-    @commands.has_any_role("Discord Moderator")
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     async def delwarn(self, ctx, target: discord.User, *, warn):
         """Deletes a users warn. Can take the warn number, or the warn reason"""
         try:
@@ -149,7 +149,7 @@ class Warning(commands.Cog):
         """Allows a user to list their own warns, or a staff member to list a user's warns"""
         if not target or target == ctx.author:
             target = ctx.author
-        elif target and self.bot.discord_moderator_role not in ctx.author.roles:
+        elif target and not any(role for role in [self.bot.discord_moderator_role, self.bot.flagbrew_team_role] if role in ctx.author.roles):
             raise commands.errors.CheckFailure()
             return
         try:
@@ -171,7 +171,7 @@ class Warning(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    @commands.has_any_role("Discord Moderator")
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     async def clearwarns(self, ctx, target: discord.User):
         """Clears all of a users warns"""
         try:

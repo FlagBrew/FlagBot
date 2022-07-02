@@ -163,7 +163,7 @@ class Moderation(commands.Cog):
         await self.generic_ban_things(ctx, member, reason)
 
     @commands.command(aliases=['p', 'clear', 'clean'])
-    @commands.has_any_role("Discord Moderator")
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     async def purge(self, ctx, amount=0, user: discord.User = None):
         """Purge x amount of messages. Supply user ID to target"""
         if amount <= 0:

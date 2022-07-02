@@ -336,7 +336,7 @@ class Utility(commands.Cog):
         await ctx.send(f"```{split_list}```")
 
     @commands.command()
-    @commands.has_any_role("Discord Moderator")
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     async def dm(self, ctx, user: discord.User, *, message):
         """DMs a user"""
         if user == ctx.me:
