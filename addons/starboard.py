@@ -135,9 +135,9 @@ class Starboard(commands.Cog):
 
     def get_star_reaction_count(self, message):
         reactions = message.reactions
-        for r in reactions:
-            if str(r.emoji) == '⭐':
-                return r.count
+        for react in reactions:
+            if str(react.emoji) == '⭐':
+                return react.count
         return 0
 
     @commands.command(name='deletestar', aliases=['delstar'])

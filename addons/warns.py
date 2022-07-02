@@ -64,8 +64,8 @@ class Warning(commands.Cog):
                         "warns": self.bot.warns_dict[str(target.id)]
                     }
                 }, upsert=True)
-        with open("saves/warns.json", "w") as f:
-            json.dump(self.bot.warns_dict, f, indent=4)
+        with open("saves/warns.json", "w") as file:
+            json.dump(self.bot.warns_dict, file, indent=4)
         if len(warns) >= 5:
             embed = discord.Embed()
             img_choice = random.randint(1, 26)
@@ -121,8 +121,8 @@ class Warning(commands.Cog):
                         "warns": self.bot.warns_dict[str(target.id)]
                     }
                 }, upsert=True)
-        with open("saves/warns.json", "w") as f:
-            json.dump(self.bot.warns_dict, f, indent=4)
+        with open("saves/warns.json", "w") as file:
+            json.dump(self.bot.warns_dict, file, indent=4)
         await ctx.send(f"Removed warn from {target}.")
         warns_count = len(self.bot.warns_dict[str(target.id)])
         embed = discord.Embed(title=f"Warn removed from {target}")
@@ -193,8 +193,8 @@ class Warning(commands.Cog):
                         "warns": self.bot.warns_dict[str(target.id)]
                     }
                 }, upsert=True)
-        with open("saves/warns.json", "w") as f:
-            json.dump(self.bot.warns_dict, f, indent=4)
+        with open("saves/warns.json", "w") as file:
+            json.dump(self.bot.warns_dict, file, indent=4)
         embed = discord.Embed(title=f"Warns for {target} cleared")
         embed.description = f"{target} | {target.id} had their warns cleared by {ctx.author}. Warns can be found below."
         count = 1

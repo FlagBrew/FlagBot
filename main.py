@@ -102,22 +102,22 @@ bot.gpss_url = bot.flagbrew_url
 
 if not os.path.exists('saves/warns.json'):
     data = {}
-    with open('saves/warns.json', 'w') as f:
-        json.dump(data, f, indent=4)
-with open('saves/warns.json', 'r') as f:
-    bot.warns_dict = json.load(f)
+    with open('saves/warns.json', 'w') as file:
+        json.dump(data, file, indent=4)
+with open('saves/warns.json', 'r') as file:
+    bot.warns_dict = json.load(file)
 
 if not os.path.exists('saves/disabled_commands.json'):
-    with open('saves/disabled_commands.json', 'w') as f:
-        json.dump([], f, indent=4)
-with open('saves/disabled_commands.json', 'r') as f:
-    bot.disabled_commands = json.load(f)
+    with open('saves/disabled_commands.json', 'w') as file:
+        json.dump([], file, indent=4)
+with open('saves/disabled_commands.json', 'r') as file:
+    bot.disabled_commands = json.load(file)
 
 if not os.path.exists("saves/mutes.json"):
-    with open("saves/mutes.json", "w") as f:
-        json.dump({}, f, indent=4)
-with open("saves/mutes.json", "r") as f:
-    bot.mutes_dict = json.load(f)
+    with open("saves/mutes.json", "w") as file:
+        json.dump({}, file, indent=4)
+with open("saves/mutes.json", "r") as file:
+    bot.mutes_dict = json.load(file)
 
 if bot.is_mongodb:
     if not is_using_cmd_args:
@@ -260,8 +260,8 @@ async def on_ready():
                     bot.crash_log_channel = discord.utils.get(guild.channels, id=721465461518106624)
                     bot.activity_logs_channel = discord.utils.get(guild.channels, id=723705005122519071)
                     bot.starboard_channel = discord.utils.get(guild.channels, id=917235490590187531)
-                    with open('saves/faqdm.json', 'r') as f:
-                        bot.dm_list = json.load(f)
+                    with open('saves/faqdm.json', 'r') as file:
+                        bot.dm_list = json.load(file)
 
             else:
                 try:
@@ -274,8 +274,8 @@ async def on_ready():
                 finally:
                     await guild.leave()
             try:
-                with open('restart.txt', 'r') as f:
-                    restart_channel = f.readline()
+                with open('restart.txt', 'r') as file:
+                    restart_channel = file.readline()
                 c = await bot.fetch_channel(restart_channel)
                 await c.send("Successfully restarted!")
                 os.remove('restart.txt')
@@ -319,9 +319,9 @@ async def setup_cogs(bot):
     for extension in cogs:
         try:
             await bot.load_extension(extension)
-        except Exception as e:
-            print(f'{extension} failed to load.\n{type(e).__name__}: {e}')
-            failed_cogs.append([extension, type(e).__name__, e])
+        except Exception as exception:
+            print(f'{extension} failed to load.\n{type(exception).__name__}: {exception}')
+            failed_cogs.append([extension, type(exception).__name__, exception])
     if not failed_cogs:
         print('All addons loaded!')
     if bot.is_beta:
@@ -334,8 +334,8 @@ async def load(ctx, *, module):
     if ctx.author == ctx.guild.owner or ctx.author == bot.creator or ctx.author == bot.allen:
         try:
             await bot.load_extension(f"addons.{module}")
-        except Exception as e:
-            await ctx.send(f':anger: Failed!\n```\n{type(e).__name__}: {e}\n```')
+        except Exception as exception:
+            await ctx.send(f':anger: Failed!\n```\n{type(exception).__name__}: {exception}\n```')
         else:
             await ctx.send(':white_check_mark: Extension loaded.')
     else:
@@ -348,8 +348,8 @@ async def unload(ctx, *, module):
     if ctx.author == ctx.guild.owner or ctx.author == bot.creator or ctx.author == bot.allen:
         try:
             await bot.unload_extension(f"addons.{module}")
-        except Exception as e:
-            await ctx.send(f':anger: Failed!\n```\n{type(e).__name__}: {e}\n```')
+        except Exception as exception:
+            await ctx.send(f':anger: Failed!\n```\n{type(exception).__name__}: {exception}\n```')
         else:
             await ctx.send(':white_check_mark: Extension unloaded.')
     else:
@@ -378,10 +378,10 @@ async def reload(ctx):
         for addon in loaded_cogs:
             try:
                 await bot.reload_extension(f"addons.{addon_dict[addon]}")
-            except Exception as e:
+            except Exception as exception:
                 if addon not in addon_dict.keys():
                     pass
-                errors += f'Failed to load addon: `{addon}.py` due to `{type(e).__name__}: {e}`\n'
+                errors += f'Failed to load addon: `{addon}.py` due to `{type(exception).__name__}: {exception}`\n'
             if len(bot.disabled_commands) > 0:
                 for c in bot.disabled_commands:
                     bot.get_command(c).enabled = False
@@ -427,8 +427,8 @@ async def restart(ctx):
     if not ctx.author == ctx.guild.owner and not ctx.author == bot.creator and not ctx.author == bot.allen:
         return await ctx.send("You don't have permission to do that!")
     await ctx.send("Restarting...")
-    with open('restart.txt', 'w') as f:
-        f.write(str(ctx.channel.id))
+    with open('restart.txt', 'w') as file:
+        file.write(str(ctx.channel.id))
     sys.exit(0)
 
 

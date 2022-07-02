@@ -21,14 +21,14 @@ class Utility(commands.Cog):
         if bot.is_mongodb:
             self.db = bot.db
         print(f'Addon "{self.__class__.__name__}" loaded')
-        with open("saves/role_mentions.json", "r") as f:
-            self.role_mentions_dict = json.load(f)
+        with open("saves/role_mentions.json", "r") as file:
+            self.role_mentions_dict = json.load(file)
         if not os.path.exists('saves/submitted_hashes.json'):
             data = []
-            with open('saves/submitted_hashes.json', 'w') as f:
-                json.dump(data, f, indent=4)
-        with open("saves/submitted_hashes.json", "r") as f:
-            self.submitted_hashes = json.load(f)
+            with open('saves/submitted_hashes.json', 'w') as file:
+                json.dump(data, file, indent=4)
+        with open("saves/submitted_hashes.json", "r") as file:
+            self.submitted_hashes = json.load(file)
 
     async def toggleroles(self, ctx, role, user):
         author_roles = user.roles[1:]
@@ -136,8 +136,8 @@ class Utility(commands.Cog):
         if not_new:
             return await ctx.send("There's already a key with that name.")
         self.role_mentions_dict[role_name.lower()] = str(role_id)
-        with open("saves/role_mentions.json", "w") as f:
-            json.dump(self.role_mentions_dict, f, indent=4)
+        with open("saves/role_mentions.json", "w") as file:
+            json.dump(self.role_mentions_dict, file, indent=4)
         await ctx.send(f"`{role_name.lower()}` can now be mentioned via srm.")
         try:
             await self.bot.logs_channel.send(f"{ctx.author} added {role_name.lower()} to the mentionable roles.")
@@ -154,8 +154,8 @@ class Utility(commands.Cog):
         except KeyError:
             return await ctx.send("That role isn't in the dict. Please use `.srm_list` to confirm.")
         del self.role_mentions_dict[role_name.lower()]
-        with open("saves/role_mentions.json", "w") as f:
-            json.dump(self.role_mentions_dict, f, indent=4)
+        with open("saves/role_mentions.json", "w") as file:
+            json.dump(self.role_mentions_dict, file, indent=4)
         await ctx.send(f"`{role_name.lower()}` can no longer be mentioned via srm.")
         try:
             await self.bot.logs_channel.send(f"{ctx.author} removed {role_name.lower()} from the mentionable roles.")
@@ -248,10 +248,10 @@ class Utility(commands.Cog):
     @restricted_to_bot
     async def report_code(self, ctx, game_id: str, code_name: str, issue):
         """Allow reporting a broken code through the bot. Example: .report_code 00040000001B5000, 'PP Not Decrease v1.0', 'PP still decreases with code enabled'"""
-        async with self.bot.session.get("https://api.github.com/repos/FlagBrew/Sharkive/contents/3ds") as r:
-            db_3ds = await r.json()
-        async with self.bot.session.get("https://api.github.com/repos/FlagBrew/Sharkive/contents/switch") as r:
-            db_switch = await r.json()
+        async with self.bot.session.get("https://api.github.com/repos/FlagBrew/Sharkive/contents/3ds") as resp:
+            db_3ds = await resp.json()
+        async with self.bot.session.get("https://api.github.com/repos/FlagBrew/Sharkive/contents/switch") as resp:
+            db_switch = await resp.json()
         content_3ds = [x['name'].replace(".txt", "") for x in db_3ds]
         content_switch = [x['name'] for x in db_switch]
         if not [content for content in (content_3ds, content_switch) if game_id in content]:
@@ -269,13 +269,13 @@ class Utility(commands.Cog):
             "title": "Broken code submitted through bot",
             "body": issue_body
         }
-        async with self.bot.session.post(url=url, auth=session_auth, data=json.dumps(issue)) as r:
-            json_content = await r.json()
-            if r.status == 201:
+        async with self.bot.session.post(url=url, auth=session_auth, data=json.dumps(issue)) as resp:
+            json_content = await resp.json()
+            if resp.status == 201:
                 await ctx.send(f"Successfully created issue! You can find it here: https://github.com/{repo_owner}/{repo_name}/issues/{json_content['number']}")
             else:
-                status_name = http.HTTPStatus(r.status).name  # pylint: disable=no-member
-                await ctx.send(f"There was an issue creating the issue. {self.bot.creator.mention} please take a look.\n\n`{r.status}` - `{status_name}`")
+                status_name = http.HTTPStatus(resp.status).name  # pylint: disable=no-member
+                await ctx.send(f"There was an issue creating the issue. {self.bot.creator.mention} please take a look.\n\n`{resp.status}` - `{status_name}`")
 
     @commands.command(aliases=['estpurge'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
@@ -299,8 +299,8 @@ class Utility(commands.Cog):
         else:
             self.bot.dm_list.append(ctx.author.id)
             await ctx.send("You'll now have the FAQ dm'd to you on use instead.")
-        with open('saves/faqdm.json', 'w') as f:
-            json.dump(self.bot.dm_list, f, indent=4)
+        with open('saves/faqdm.json', 'w') as file:
+            json.dump(self.bot.dm_list, file, indent=4)
 
     @commands.command(hidden=True)
     async def togglecommand(self, ctx, command):
@@ -315,16 +315,16 @@ class Utility(commands.Cog):
             except AttributeError:
                 return await ctx.send(f"There is no command named `{command}`.")
             self.bot.disabled_commands.append(command)
-            with open('saves/disabled_commands.json', 'w') as f:
-                json.dump(self.bot.disabled_commands, f, indent=4)
+            with open('saves/disabled_commands.json', 'w') as file:
+                json.dump(self.bot.disabled_commands, file, indent=4)
             return await ctx.send(f"Successfully disabled the `{command}` command.")
         try:
             self.bot.get_command(command).enabled = True
         except AttributeError:
             return await ctx.send(f"There is no command named `{command}`.")
         self.bot.disabled_commands.remove(command)
-        with open('saves/disabled_commands.json', 'w') as f:
-            json.dump(self.bot.disabled_commands, f, indent=4)
+        with open('saves/disabled_commands.json', 'w') as file:
+            json.dump(self.bot.disabled_commands, file, indent=4)
         await ctx.send(f"Successfully re-enabled the `{command}` command.")
 
     @commands.command(hidden=True)
@@ -365,8 +365,8 @@ class Utility(commands.Cog):
             return await ctx.send("You must provide a crash dump with this command!")
         elif len(description.split(" ")) < 14:
             return await ctx.send("Please give a longer description of the issue.")
-        async with self.bot.session.get(ctx.message.attachments[0].url) as r:
-            file = io.BytesIO(await r.read())
+        async with self.bot.session.get(ctx.message.attachments[0].url) as resp:
+            file = io.BytesIO(await resp.read())
         file_hash = self.get_hash(file)
         if file_hash in self.submitted_hashes:
             return await ctx.send("That crash dump has already been submitted.")
@@ -376,8 +376,8 @@ class Utility(commands.Cog):
         embed = discord.Embed(title="New Crash Dump!", colour=discord.Colour.green())
         embed.add_field(name="Submitted By", value=ctx.author.mention)
         embed.add_field(name="Submitted At", value=ctx.message.created_at.strftime('%b %d, %Y'))
-        async with self.bot.session.get("https://api.github.com/repos/FlagBrew/PKSM/commits/master") as r:
-            commit = await r.json()
+        async with self.bot.session.get("https://api.github.com/repos/FlagBrew/PKSM/commits/master") as resp:
+            commit = await resp.json()
         commit_sha = commit["sha"][:7]
         embed.add_field(name="Latest Commit", value=commit_sha)
         embed.add_field(name="File Download URL", value=f"[Download]({msg.attachments[0].url})")
@@ -386,8 +386,8 @@ class Utility(commands.Cog):
         embed.set_footer(text=f"The hash for this file is {file_hash}")
         await self.bot.crash_dump_channel.send(embed=embed)
         self.submitted_hashes.append(file_hash)
-        with open("saves/submitted_hashes.json", "w") as f:
-            json.dump(self.submitted_hashes, f, indent=4)
+        with open("saves/submitted_hashes.json", "w") as file:
+            json.dump(self.submitted_hashes, file, indent=4)
         await ctx.send(f"{ctx.author.mention} your crash dump was successfully submitted!")
 
     @commands.command(aliases=['ccs'])
@@ -430,8 +430,8 @@ class Utility(commands.Cog):
     async def clear_hash(self, ctx):
         """Clears the submitted_hashes file"""
         data = []
-        with open("saves/submitted_hashes.json", "w") as f:
-            json.dump(data, f, indent=4)
+        with open("saves/submitted_hashes.json", "w") as file:
+            json.dump(data, file, indent=4)
         self.submitted_hashes = []
         await ctx.send("Cleared the submitted hashes file.")
 
@@ -456,10 +456,10 @@ class Utility(commands.Cog):
         if not lang.lower() in langs.keys():
             return await ctx.send(f"Inputted language of `{lang.lower()}` is not an available language. Possible languages: `{', '.join(l for l in langs.keys())}`.")
         url = url.format(langs[lang.lower()])
-        async with self.bot.session.get(url=url) as r:
-            if r.status != 200:
-                return await ctx.send(f"Couldn't fetch tranlation file! status code: `{r.status}`.")
-            contents = await r.read()
+        async with self.bot.session.get(url=url) as resp:
+            if resp.status != 200:
+                return await ctx.send(f"Couldn't fetch tranlation file! status code: `{resp.status}`.")
+            contents = await resp.read()
             bytes_contents = io.BytesIO(contents)
             file = discord.File(bytes_contents, "gui.json")
             await ctx.send(f"{ctx.author.mention} Here's the {lang.lower()} language file:", file=file)
@@ -553,7 +553,7 @@ class Utility(commands.Cog):
             role_ids = role_ids.replace(' ', '').split(',')
             role_ids += [482900527730917376, 483024700767993866]
             roles = [ctx.guild.get_role(int(role)) for role in role_ids]
-        roles = [r for r in roles if r]  # Clears out None values
+        roles = [role for role in roles if role]  # Clears out None values
         image = await ctx.message.attachments[0].read()
         if len(image) > 256000:
             await ctx.send("Images need to be smaller than 256 kb.")
@@ -580,9 +580,9 @@ class Utility(commands.Cog):
             role_ids = role_ids.replace(' ', '').split(',')
             role_ids += [482900527730917376, 483024700767993866]
             roles = [ctx.guild.get_role(int(role)) for role in role_ids]
-        roles = [r for r in roles if r]  # Clears out None values
-        async with self.bot.session.get(url=url) as r:
-            e = await ctx.guild.create_custom_emoji(name=name, image=(await r.content.read()), roles=roles)
+        roles = [role for role in roles if role]  # Clears out None values
+        async with self.bot.session.get(url=url) as resp:
+            e = await ctx.guild.create_custom_emoji(name=name, image=(await resp.content.read()), roles=roles)
         msg = f"Successfully added the emote `{name}` {str(e)}!"
         if len(roles) > 0:
             msg += f"\nThis emote is restricted to: `{'`, `'.join(role.name for role in roles if not 'FlagBot' in role.name)}`"
@@ -598,9 +598,9 @@ class Utility(commands.Cog):
             role_ids = role_ids.replace(' ', '').split(',')
             role_ids += [482900527730917376, 483024700767993866]
             roles = [ctx.guild.get_role(int(role)) for role in role_ids]
-        roles = [r for r in roles if r]  # Clears out None values
-        async with self.bot.session.get(url=str(emote.url)) as r:
-            e = await ctx.guild.create_custom_emoji(name=name, image=(await r.content.read()), roles=roles)
+        roles = [role for role in roles if role]  # Clears out None values
+        async with self.bot.session.get(url=str(emote.url)) as resp:
+            e = await ctx.guild.create_custom_emoji(name=name, image=(await resp.content.read()), roles=roles)
         msg = f"Successfully added the emote `{name}` {str(e)}!"
         if len(roles) > 0:
             msg += f"\nThis emote is restricted to: `{'`, `'.join(role.name for role in roles if not 'FlagBot' in role.name)}`"
@@ -623,7 +623,7 @@ class Utility(commands.Cog):
         embed.add_field(name="Emote Name", value=emote.name)
         embed.add_field(name="Emote Link", value=f"[Here]({str(emote.url)})")
         if len(emote.roles) > 0:
-            embed.add_field(name="Permitted Roles", value=f"`{'`, `'.join(r.name for r in emote.roles if not 'FlagBot' in r.name)}`", inline=False)
+            embed.add_field(name="Permitted Roles", value=f"`{'`, `'.join(role.name for role in emote.roles if not 'FlagBot' in role.name)}`", inline=False)
         embed.add_field(name="Added On", value=f"{emote.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC", inline=False)
         await ctx.send(embed=embed)
 

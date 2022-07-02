@@ -23,8 +23,8 @@ failed_loads = {}
 for addon in addons.keys():
     try:
         keys[addons[addon]] = __import__(addon, fromlist=addons[addon])
-    except Exception as e:
-        failed_loads[addons[addon]] = e
+    except Exception as exception:
+        failed_loads[addons[addon]] = exception
 
 
 class Meta(commands.Cog, command_attrs=dict(hidden=True)):
@@ -117,8 +117,8 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         if bool(ctx.message.attachments):
             icon = await ctx.message.attachments[0].read()
         else:
-            async with self.bot.session.get(url='https://avatars.githubusercontent.com/u/42673825?s=200&v=4') as r:
-                icon = await r.read()
+            async with self.bot.session.get(url='https://avatars.githubusercontent.com/u/42673825?s=200&v=4') as resp:
+                icon = await resp.read()
         await self.bot.user.edit(avatar=icon)
         await ctx.send(f"Successfully changed my icon. Due to Discord's cache, this may require a reload to view.")
 
@@ -148,10 +148,10 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             data = {}
             for c in ctx.guild.channels:
                 data[c.id] = c.name
-            with open('saves/layout.json', 'w') as f:
-                json.dump(data, f, indent=4)
-        with open('saves/new_layout.json', 'r') as f:
-            new = json.load(f)
+            with open('saves/layout.json', 'w') as file:
+                json.dump(data, file, indent=4)
+        with open('saves/new_layout.json', 'r') as file:
+            new = json.load(file)
         for ch in new.keys():
             channel = ctx.guild.get_channel(int(ch))  # currently does not support threads. unsure if I'll add support
             if channel.name == new[ch]:
@@ -167,16 +167,16 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
     @commands.has_any_role("Admin", "Bot Dev")
     async def revert(self, ctx):
         """April 1st is over"""
-        with open('saves/layout.json', 'r') as f:
-            old = json.load(f)
+        with open('saves/layout.json', 'r') as file:
+            old = json.load(file)
         for ch in old.keys():
             channel = ctx.guild.get_channel(int(ch))  # currently does not support threads. unsure if I'll add support
             if channel.name == old[ch]:
                 continue
             await channel.edit(name=old[ch])
             await asyncio.sleep(3)
-        async with self.bot.session.get(url='https://avatars.githubusercontent.com/u/42673825?s=200&v=4') as r:
-            r_data = await r.read()
+        async with self.bot.session.get(url='https://avatars.githubusercontent.com/u/42673825?s=200&v=4') as resp:
+            r_data = await resp.read()
             await ctx.guild.edit(icon=r_data)
         await ctx.send("Reverted back the channel list.")
 

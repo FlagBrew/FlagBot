@@ -35,8 +35,8 @@ class Moderation(commands.Cog):
                     continue
                 await member.remove_roles(self.bot.mute_role)
                 self.bot.mutes_dict[str(member.id)] = ""
-                with open("saves/mutes.json", "w") as f:
-                    json.dump(self.bot.mutes_dict, f, indent=4)
+                with open("saves/mutes.json", "w") as file:
+                    json.dump(self.bot.mutes_dict, file, indent=4)
                 await member.send(f"Your mute on {self.bot.guild} has expired!")
             await asyncio.sleep(1)
 
@@ -52,7 +52,7 @@ class Moderation(commands.Cog):
             return await ctx.send("You can't ban yourself, obviously")
         try:
             member_guild = ctx.guild.get_member(member.id)
-            if any(r for r in self.bot.protected_roles if r in member_guild.roles):
+            if any(role for role in self.bot.protected_roles if role in member_guild.roles):
                 return await ctx.send("That user is protected!")
         except AttributeError:
             pass  # Happens when banning via id, as they have no roles if not on guild
@@ -115,7 +115,7 @@ class Moderation(commands.Cog):
         has_attch = bool(ctx.message.attachments)
         if member == ctx.message.author:
             return await ctx.send("You can't kick yourself, obviously")
-        elif any(r for r in self.bot.protected_roles if r in member.roles):
+        elif any(role for role in self.bot.protected_roles if role in member.roles):
             return await ctx.send("You can't kick a staff member!")
         else:
             embed = discord.Embed(title=f"{member} kicked")
@@ -183,7 +183,7 @@ class Moderation(commands.Cog):
     @commands.has_any_role("Discord Moderator", "Bot Dev")
     async def purgesince(self, ctx, start_id: int, user: discord.User = None):
         """Purge all messages since x message ID. Message must be cached. Supply user ID to target"""
-        start_message = discord.utils.find(lambda m: m.id == start_id, self.bot.cached_messages)
+        start_message = discord.utils.find(lambda msg: msg.id == start_id, self.bot.cached_messages)
         if start_message is None:
             return await ctx.send(f"Could not find a message with ID `{start_id}`.")
         if user:
@@ -207,14 +207,14 @@ class Moderation(commands.Cog):
         has_attch = bool(ctx.message.attachments)
         if member == ctx.message.author:
             return await ctx.send("You can't mute yourself, obviously")
-        elif any(r for r in self.bot.protected_roles if r in member.roles):
+        elif any(role for role in self.bot.protected_roles if role in member.roles):
             return await ctx.send("You can't mute a staff member!")
         elif self.bot.mute_role in member.roles:
             return await ctx.send("That member is already muted.")
         await member.add_roles(self.bot.mute_role)
         self.bot.mutes_dict[str(member.id)] = "Indefinite"
-        with open("saves/mutes.json", "w") as f:
-            json.dump(self.bot.mutes_dict, f, indent=4)
+        with open("saves/mutes.json", "w") as file:
+            json.dump(self.bot.mutes_dict, file, indent=4)
         embed = discord.Embed(title=f"{member} ({member.id}) muted")
         embed.description = f"{member} was muted by {ctx.message.author} for:\n\n{reason}"
         try:
@@ -240,14 +240,14 @@ class Moderation(commands.Cog):
     @commands.has_any_role("Discord Moderator")
     async def unmute(self, ctx, member: discord.Member, *, reason="No reason was given."):
         """Unmutes a user"""
-        if member == ctx.message.author or any(r for r in self.bot.protected_roles if r in member.roles):
+        if member == ctx.message.author or any(role for role in self.bot.protected_roles if role in member.roles):
             return await ctx.send(f"How did {member.mention} get muted...?")
         elif self.bot.mute_role not in member.roles:
             return await ctx.send("That member isn't muted.")
         await member.remove_roles(self.bot.mute_role)
         self.bot.mutes_dict[str(member.id)] = ""
-        with open("saves/mutes.json", "w") as f:
-            json.dump(self.bot.mutes_dict, f, indent=4)
+        with open("saves/mutes.json", "w") as file:
+            json.dump(self.bot.mutes_dict, file, indent=4)
         embed = discord.Embed(title=f"{member} ({member.id}) unmuted")
         embed.description = f"{member} was unmuted by {ctx.message.author} for:\n\n{reason}"
         await member.send(f"You were unmuted on FlagBrew.")
@@ -264,7 +264,7 @@ class Moderation(commands.Cog):
         has_attch = bool(ctx.message.attachments)
         if member == ctx.message.author:
             return await ctx.send("You can't mute yourself, obviously")
-        elif any(r for r in self.bot.protected_roles if r in member.roles):
+        elif any(role for role in self.bot.protected_roles if role in member.roles):
             return await ctx.send("You can't mute a staff member!")
         elif self.bot.mute_role in member.roles:
             return await ctx.send("That member is already muted.")
@@ -301,8 +301,8 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             pass  # blocked DMs
         self.bot.mutes_dict[str(member.id)] = end_str
-        with open("saves/mutes.json", "w") as f:
-            json.dump(self.bot.mutes_dict, f, indent=4)
+        with open("saves/mutes.json", "w") as file:
+            json.dump(self.bot.mutes_dict, file, indent=4)
         try:
             if has_attch:
                 embed.set_thumbnail(url="attachment://mute_image.png")
@@ -321,7 +321,7 @@ class Moderation(commands.Cog):
         cap_msg = ""
         if member == ctx.message.author:
             return await ctx.send("You can't mute yourself, obviously")
-        elif any(r for r in self.bot.protected_roles if r in member.roles):
+        elif any(role for role in self.bot.protected_roles if role in member.roles):
             return await ctx.send("You can't mute a staff member!")
         elif member.is_timed_out():
             return await ctx.send("That member is already timed out.")

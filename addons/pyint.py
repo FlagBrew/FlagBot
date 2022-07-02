@@ -14,8 +14,8 @@ class PythonInterpreter(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._last_result = None
-        with open('saves/banned_phrases.json', 'r') as f:
-            self.banned_phrases = json.load(f)
+        with open('saves/banned_phrases.json', 'r') as file:
+            self.banned_phrases = json.load(file)
         print(f'Addon "{self.__class__.__name__}" loaded')
 
     def cleanup_code(self, content):
@@ -33,13 +33,13 @@ class PythonInterpreter(commands.Cog):
         to_compile = f"async def func():\n{textwrap.indent(body, '  ')}"
         try:
             exec(to_compile, env)
-        except Exception as e:
-            return await ctx.send(f'```\n{e.__class__.__name__}: {e}\n```')
+        except Exception as exception:
+            return await ctx.send(f'```\n{exception.__class__.__name__}: {exception}\n```')
         func = env['func']
         try:
             with redirect_stdout(stdout):
                 ret = await func()
-        except Exception as e:
+        except Exception as exception:
             value = stdout.getvalue()
             await ctx.message.add_reaction("❌")
             await ctx.send(f'```\n{value}{traceback.format_exc()}\n```')
@@ -121,8 +121,8 @@ class PythonInterpreter(commands.Cog):
         if phrase in self.banned_phrases:
             return await ctx.send(f"`{phrase}` is already banned!")
         self.banned_phrases.append(phrase)
-        with open("saves/banned_phrases.json", "w") as f:
-            json.dump(self.banned_phrases, f, indent=4)
+        with open("saves/banned_phrases.json", "w") as file:
+            json.dump(self.banned_phrases, file, indent=4)
         await ctx.send(f"Added `{phrase}` to the banned phrase list.")
 
     @commands.command(name='ubp')
@@ -134,8 +134,8 @@ class PythonInterpreter(commands.Cog):
         if phrase not in self.banned_phrases:
             return await ctx.send(f"`{phrase}` isn't a banned phrase!")
         self.banned_phrases.remove(phrase)
-        with open("saves/banned_phrases.json", "w") as f:
-            json.dump(self.banned_phrases, f, indent=4)
+        with open("saves/banned_phrases.json", "w") as file:
+            json.dump(self.banned_phrases, file, indent=4)
         await ctx.send(f"Removed `{phrase}` from the banned phrase list.")
 
     @commands.command(name='lbp')

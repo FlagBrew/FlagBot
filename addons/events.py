@@ -124,9 +124,9 @@ class Events(commands.Cog):
                 except discord.HTTPException:  # spooky missing message content?
                     try:
                         await self.bot.err_logs_channel.send(f"Failed to log a message edit... Spooky.\nBefore: `{before}`\nAfter: `{after}`")
-                    except Exception as e:
+                    except Exception as exception:
                         await self.bot.err_logs_channel.send("Failed to log a message edit... and the error. Weird. Exception below.")
-                        await self.bot.err_logs_channel.send(e)
+                        await self.bot.err_logs_channel.send(exception)
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
@@ -287,27 +287,27 @@ class Events(commands.Cog):
         negative_votes = 0
         vote_barrier = 3
         reactions = reaction.message.reactions
-        for r in reactions:
-            if '🆒' == r.emoji:
-                users = await r.users().flatten()
+        for react in reactions:
+            if '🆒' == react.emoji:
+                users = await react.users().flatten()
                 for u in users:
                     if self.bot.flagbrew_team_role in u.roles:
                         if reaction.message.pinned:
                             await reaction.message.unpin()
                         return  # Used to signify idea is implemented
-            if '✅' == r.emoji:
-                positive_votes = r.count
-            if '❌' == r.emoji:
-                negative_votes = r.count
+            if '✅' == react.emoji:
+                positive_votes = react.count
+            if '❌' == react.emoji:
+                negative_votes = react.count
         total_votes = positive_votes - negative_votes
         if total_votes >= vote_barrier and not reaction.message.pinned:
             try:
                 await reaction.message.pin()
                 await self.bot.logs_channel.send(f"Idea pinned after passing {vote_barrier} votes.\nJump link: {reaction.message.jump_url}")
-            except discord.HTTPException as e:
+            except discord.HTTPException as exception:
                 await reaction.message.channel.send("Error pinning message. Please make sure that there are less than 50 pins."
                                                     f" If issue persists, contact {self.bot.creator}.\nMessage link: {reaction.message.jump_url}")
-                await self.bot.err_logs_channel.send(e.text)
+                await self.bot.err_logs_channel.send(exception.text)
         elif total_votes < vote_barrier and reaction.message.pinned:
             await reaction.message.unpin()
             await self.bot.logs_channel.send(f"Idea unpinned due to falling below {vote_barrier} votes.\nJump link: {reaction.message.jump_url}")

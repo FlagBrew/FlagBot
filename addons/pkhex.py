@@ -31,8 +31,8 @@ class pkhex(commands.Cog):
     async def ping_api_func(self):
         timeout = aiohttp.ClientTimeout(total=3)
         try:
-            async with self.bot.session.get(self.bot.api_url + "api/ping", timeout=timeout) as r:
-                return r
+            async with self.bot.session.get(self.bot.api_url + "api/ping", timeout=timeout) as resp:
+                return resp
         except asyncio.exceptions.TimeoutError:
             return 408
         except aiohttp.ClientConnectorError:
@@ -45,11 +45,11 @@ class pkhex(commands.Cog):
             if not self.bot.ready:
                 await asyncio.sleep(30)
                 continue
-            r = await self.ping_api_func()
-            if not isinstance(r, aiohttp.ClientResponse):
-                status = r
+            resp = await self.ping_api_func()
+            if not isinstance(resp, aiohttp.ClientResponse):
+                status = resp
             else:
-                status = r.status
+                status = resp.status
             if not status == 200:
                 self.failure_count += 1
                 if self.failure_count == 3:  # Only unload if it fails concurrently 3+ times, to prevent accidental unloads on server restarts
@@ -87,8 +87,8 @@ class pkhex(commands.Cog):
                 await ctx.send("That isn't a pkx file!")
                 return 400
             try:
-                async with self.bot.session.get(data) as r:
-                    file = io.BytesIO(await r.read())
+                async with self.bot.session.get(data) as resp:
+                    file = io.BytesIO(await resp.read())
             except aiohttp.InvalidURL:
                 await ctx.send("The provided data was not valid.")
                 return 400
@@ -100,22 +100,22 @@ class pkhex(commands.Cog):
         if user_id is None:
             user_id = ""
         headers = {'UID': user_id, 'secret': self.bot.site_secret, 'source': "FlagBot"}
-        async with self.bot.session.post(url=url, data=files, headers=headers) as r:
-            if not is_gpss and (r.status == 400 or r.status == 413):
+        async with self.bot.session.post(url=url, data=files, headers=headers) as resp:
+            if not is_gpss and (resp.status == 400 or resp.status == 413):
                 await ctx.send("The provided file was invalid.")
                 return 400
             try:
-                rj = await r.json()
+                resp_json = await resp.json()
             except aiohttp.client_exceptions.ContentTypeError:
-                rj = {}
-            content = await r.content.read()
+                resp_json = {}
+            content = await resp.content.read()
             if content == b'':
-                content = await r.read()
+                content = await resp.read()
             if content == b'':
                 await ctx.send(f"Couldn't get response content. {self.bot.creator.mention} and {self.bot.allen.mention} please investigate!")
                 await ctx.send(content)
                 return 400
-            return [r.status, rj, content]
+            return [resp.status, resp_json, content]
 
     def embed_fields(self, ctx, embed, data, is_set=False, is_gpss=False):
         embed.add_field(name="Species", value=data["species"])
@@ -178,11 +178,11 @@ class pkhex(commands.Cog):
         """Reactivates the pkhex commands. Restricted to bot creator and Allen"""
         if ctx.author not in (self.bot.creator, self.bot.allen):
             raise commands.errors.CheckFailure()
-        r = await self.ping_api_func()
-        if not isinstance(r, aiohttp.ClientResponse):
-            status = r
+        resp = await self.ping_api_func()
+        if not isinstance(resp, aiohttp.ClientResponse):
+            status = resp
         else:
-            status = r.status
+            status = resp.status
         if not status == 200:
             return await ctx.send(f"Cancelled the command reactivation; status code from FlagBrew server is `{status}`.")
         for command in self.get_commands():
@@ -199,18 +199,18 @@ class pkhex(commands.Cog):
         if ctx.author not in (self.bot.creator, self.bot.allen):
             raise commands.errors.CheckFailure()
         msgtime = ctx.message.created_at
-        r = await self.ping_api_func()
-        if not isinstance(r, aiohttp.ClientResponse):
-            return await ctx.send(f"Current CoreAPI status code is {r}.")
+        resp = await self.ping_api_func()
+        if not isinstance(resp, aiohttp.ClientResponse):
+            return await ctx.send(f"Current CoreAPI status code is {resp}.")
         now = discord.utils.utcnow()
         ping = now - msgtime
         embed = discord.Embed()
         embed.add_field(name="CoreAPI Response Time", value=f"{str(ping.microseconds / 1000.0)} milliseconds.")
-        embed.add_field(name="CoreAPI Status Code", value=r.status)
-        if r.status == 200:
+        embed.add_field(name="CoreAPI Status Code", value=resp.status)
+        if resp.status == 200:
             embed.colour = discord.Colour.green()
-            embed.add_field(name="CoreAPI PKHeX.Core Version", value=r.headers["X-PKHeX-Version"], inline=False)
-            embed.add_field(name="CoreAPI AutoMod.Core Version", value=r.headers["X-ALM-Version"])
+            embed.add_field(name="CoreAPI PKHeX.Core Version", value=resp.headers["X-PKHeX-Version"], inline=False)
+            embed.add_field(name="CoreAPI AutoMod.Core Version", value=resp.headers["X-ALM-Version"])
         else:
             embed.colour = discord.Colour.red()
             embed.add_field(name="CoreAPI PKHeX.Core Version", value="N/A", inline=False)
@@ -225,11 +225,11 @@ class pkhex(commands.Cog):
         ping = await self.ping_api_func()
         if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
-        r = await self.process_file(ctx, data, ctx.message.attachments, "api/bot/check")
-        if r == 400:
+        resp = await self.process_file(ctx, data, ctx.message.attachments, "api/bot/check")
+        if resp == 400:
             return
-        rj = r[1]
-        reasons = rj["IllegalReasons"].split("\n")
+        resp_json = resp[1]
+        reasons = resp_json["IllegalReasons"].split("\n")
         if reasons[0] == "Legal!":
             return await ctx.send("That Pokemon is legal!")
         embed = discord.Embed(title="Legality Issues", description="", colour=discord.Colour.red())
@@ -246,13 +246,13 @@ class pkhex(commands.Cog):
         data = {
             "pokemon": species.lower()
         }
-        async with self.bot.session.post(url=url, data=data) as r:
-            if not r.status == 200:
+        async with self.bot.session.post(url=url, data=data) as resp:
+            if not resp.status == 200:
                 return await ctx.send("Are you sure that's a real pokemon?")
-            rj = await r.json()
-            if rj[0] == "":
+            resp_json = await resp.json()
+            if resp_json[0] == "":
                 return await ctx.send(f"No forms available for `{species.title()}`.")
-            await ctx.send(f"Available forms for {species.title()}: `{'`, `'.join(rj)}`.")
+            await ctx.send(f"Available forms for {species.title()}: `{'`, `'.join(resp_json)}`.")
 
     @commands.command(name='pokeinfo', aliases=['pi'])
     @restricted_to_bot
@@ -266,8 +266,8 @@ class pkhex(commands.Cog):
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
 
         # Get info for inputted pokemon
-        with open("saves/defaultforms.json", "r", encoding="utf8") as f:
-            defaultforms = json.load(f)
+        with open("saves/defaultforms.json", "r", encoding="utf8") as file:
+            defaultforms = json.load(file)
         if shiny not in ("normal", "shiny"):
             shiny = "normal"
         if not validators.url(data) and not ctx.message.attachments:
@@ -300,39 +300,39 @@ class pkhex(commands.Cog):
                 "form": form,
                 "shiny": shiny
             }
-            async with self.bot.session.post(url=url, data=data) as r:
-                if not r.status == 200:
+            async with self.bot.session.post(url=url, data=data) as resp:
+                if not resp.status == 200:
                     return await ctx.send("Are you sure that's a real pokemon (or proper form)?")
-                rj = await r.json()
-                embed = discord.Embed(colour=colours[rj["color"]])
-                type_str = f"Type 1: {rj['types'][0]}"
-                if not rj["types"][1] == rj["types"][0]:
-                    type_str += f"\nType 2: {rj['types'][1]}"
+                resp_json = await resp.json()
+                embed = discord.Embed(colour=colours[resp_json["color"]])
+                type_str = f"Type 1: {resp_json['types'][0]}"
+                if not resp_json["types"][1] == resp_json["types"][0]:
+                    type_str += f"\nType 2: {resp_json['types'][1]}"
                 embed.add_field(name="Types", value=type_str)
-                ability_str = f"Ability (1): {rj['ability1']}"
-                if not rj["ability2"] == rj["ability1"]:
-                    ability_str += f"\nAbility (2): {rj['ability2']}"
-                if rj["has_hidden_ability"]:
-                    ability_str += f"\nAbility (H): {rj['ability_h']}"
+                ability_str = f"Ability (1): {resp_json['ability1']}"
+                if not resp_json["ability2"] == resp_json["ability1"]:
+                    ability_str += f"\nAbility (2): {resp_json['ability2']}"
+                if resp_json["has_hidden_ability"]:
+                    ability_str += f"\nAbility (H): {resp_json['ability_h']}"
                 embed.add_field(name="Abilities", value=ability_str)
-                embed.add_field(name="Height & Weight", value=f"{rj['height'] / 100} meters\n{rj['weight'] / 10} kilograms")
-                if rj["is_dual_gender"]:
-                    ratio = (rj["gender"] / 254) * 100
+                embed.add_field(name="Height & Weight", value=f"{resp_json['height'] / 100} meters\n{resp_json['weight'] / 10} kilograms")
+                if resp_json["is_dual_gender"]:
+                    ratio = (resp_json["gender"] / 254) * 100
                     ratio = round(ratio, 2)
                     embed.add_field(name="Gender Ratio", value=f"~{ratio}% Female")
                 else:
-                    embed.add_field(name="Gender", value="Genderless" if rj["genderless"] else "Male" if rj["only_male"] else "Female")
-                embed.add_field(name="EXP Growth", value=rj["exp_growth"])
-                embed.add_field(name="Evolution Stage", value=rj["evo_stage"])
-                embed.add_field(name="Hatch Cycles", value=rj["hatch_cycles"])
-                embed.add_field(name="Base Friendship", value=rj["base_friendship"])
-                embed.add_field(name="Catch Rate", value=f"{rj['catch_rate']}/255")
-                egg_str = f"Egg Group 1: {rj['egg_groups'][0]}"
-                if not rj["egg_groups"][1] == rj["egg_groups"][0]:
-                    egg_str += f"\nEgg Group 2: {rj['egg_groups'][1]}"
+                    embed.add_field(name="Gender", value="Genderless" if resp_json["genderless"] else "Male" if resp_json["only_male"] else "Female")
+                embed.add_field(name="EXP Growth", value=resp_json["exp_growth"])
+                embed.add_field(name="Evolution Stage", value=resp_json["evo_stage"])
+                embed.add_field(name="Hatch Cycles", value=resp_json["hatch_cycles"])
+                embed.add_field(name="Base Friendship", value=resp_json["base_friendship"])
+                embed.add_field(name="Catch Rate", value=f"{resp_json['catch_rate']}/255")
+                egg_str = f"Egg Group 1: {resp_json['egg_groups'][0]}"
+                if not resp_json["egg_groups"][1] == resp_json["egg_groups"][0]:
+                    egg_str += f"\nEgg Group 2: {resp_json['egg_groups'][1]}"
                 embed.add_field(name="Egg Groups", value=egg_str)
-                embed.add_field(name=f"Base stats ({rj['bst']})", value=f"```HP:    {rj['hp']} Atk:   {rj['atk']}\nDef:   {rj['def']} SpAtk: {rj['spa']} \nSpDef: {rj['spd']} Spd:   {rj['spe']}```")
-                embed.set_author(name=f"Basic info for {species.title()}{'-' + form.title() if form else ''}", icon_url=rj['species_sprite_url'])
+                embed.add_field(name=f"Base stats ({resp_json['bst']})", value=f"```HP:    {resp_json['hp']} Atk:   {resp_json['atk']}\nDef:   {resp_json['def']} SpAtk: {resp_json['spa']} \nSpDef: {resp_json['spd']} Spd:   {resp_json['spe']}```")
+                embed.set_author(name=f"Basic info for {species.title()}{'-' + form.title() if form else ''}", icon_url=resp_json['species_sprite_url'])
                 try:
                     return await ctx.send(embed=embed)
                 except discord.HTTPException:
@@ -340,20 +340,20 @@ class pkhex(commands.Cog):
                     return await ctx.send(f"{ctx.author.mention} I threw an HTTPException. This is likely due to form stupidity. So don't do that again. Otherwise, you get warned. {self.bot.creator.mention} and {self.bot.pie.mention}, for logging purposes.", embed=embed)
 
         # Get info for inputted file
-        r = await self.process_file(ctx, data, ctx.message.attachments, "api/bot/pokemon_info")
-        if r == 400:
+        resp = await self.process_file(ctx, data, ctx.message.attachments, "api/bot/pokemon_info")
+        if resp == 400:
             return
-        rj = r[1]
+        resp_json = resp[1]
         embed = discord.Embed()
-        embed = self.embed_fields(ctx, embed, rj)
+        embed = self.embed_fields(ctx, embed, resp_json)
         if embed == 400:
             return await ctx.send(f"{ctx.author.mention} Something in that pokemon is *very* wrong. Your request has been canceled. Please do not try that mon again.")
-        embed.set_author(name=f"Data for {rj['nickname']} ({rj['gender']})", icon_url=rj["species_sprite_url"])
-        embed.colour = discord.Colour.green() if rj["illegal_reasons"] == "Legal!" else discord.Colour.red()
+        embed.set_author(name=f"Data for {resp_json['nickname']} ({resp_json['gender']})", icon_url=resp_json["species_sprite_url"])
+        embed.colour = discord.Colour.green() if resp_json["illegal_reasons"] == "Legal!" else discord.Colour.red()
         try:
             await ctx.send(embed=embed)
-        except Exception as e:
-            return await ctx.send(f"There was an error showing the data for this pokemon. {self.bot.creator.mention}, {self.bot.pie.mention}, or {self.bot.allen.mention} please check this out!\n{ctx.author.mention} please do not delete the file. Exception below.\n\n```{e}```")
+        except Exception as exception:
+            return await ctx.send(f"There was an error showing the data for this pokemon. {self.bot.creator.mention}, {self.bot.pie.mention}, or {self.bot.allen.mention} please check this out!\n{ctx.author.mention} please do not delete the file. Exception below.\n\n```{exception}```")
 
     @commands.command(name='qr')
     @restricted_to_bot
@@ -364,13 +364,13 @@ class pkhex(commands.Cog):
         ping = await self.ping_api_func()
         if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
-        r = await self.process_file(ctx, data, ctx.message.attachments, "api/bot/pokemon_info")
-        if r == 400:
+        resp = await self.process_file(ctx, data, ctx.message.attachments, "api/bot/pokemon_info")
+        if resp == 400:
             return
-        r = r[1]
-        decoded_qr = base64.decodebytes(r['qr'].encode("ascii"))
+        resp = resp[1]
+        decoded_qr = base64.decodebytes(resp['qr'].encode("ascii"))
         qr = discord.File(io.BytesIO(decoded_qr), 'pokemon_qr.png')
-        await ctx.send(f"QR containing a {r['species']} for Generation {r['generation']}", file=qr)
+        await ctx.send(f"QR containing a {resp['species']} for Generation {resp['generation']}", file=qr)
 
     @commands.command(name='learns', aliases=['learn'])
     async def check_moves(self, ctx, generation: int, *, input_data):
@@ -388,12 +388,12 @@ class pkhex(commands.Cog):
             "query": pokemon + "|" + "|".join(moves),
             "generation": str(generation)
         }
-        async with self.bot.session.post(self.bot.api_url + "api/bot/moves", data=data) as r:
-            if r.status == 400:
+        async with self.bot.session.post(self.bot.api_url + "api/bot/moves", data=data) as resp:
+            if resp.status == 400:
                 return await ctx.send("Something you sent was invalid. Please double check your data and try again.")
-            rj = await r.json()
+            resp_json = await resp.json()
             embed = discord.Embed(title=f"Move Lookup for {pokemon.title()} in Generation {str(generation)}", description="")
-            for move in rj:
+            for move in resp_json:
                 embed.description += f"**{move['name'].title()}** is {'not ' if not move['learnable'] else ''}learnable.\n"
             await ctx.send(embed=embed)
 
@@ -413,12 +413,12 @@ class pkhex(commands.Cog):
             "query": pokemon + ("|" + "|".join(moves) if not len(moves) == 0 else ""),
             "generation": generation
         }
-        async with self.bot.session.post(self.bot.api_url + "api/Encounter", data=data) as r:
-            if r.status == 400:
+        async with self.bot.session.post(self.bot.api_url + "api/Encounter", data=data) as resp:
+            if resp.status == 400:
                 return await ctx.send("Something you sent was invalid. Please double check your data and try again.")
-            rj = await r.json()
+            resp_json = await resp.json()
             embed = discord.Embed(title=f"Encounter Data for {pokemon.title()} in Generation {generation}{' with move(s) ' if len(moves) > 0 else ''}{', '.join([move.title() for move in moves])}")
-            for encs in rj['encounters']:
+            for encs in resp_json['encounters']:
                 field_values = ""
                 for loc in encs["locations"]:
                     games = (helper.game_dict[x] if x in helper.game_dict.keys() else x for x in loc["games"])
@@ -442,15 +442,15 @@ class pkhex(commands.Cog):
         """Looks up a pokemon from the GPSS using its download code"""
         if not code.isdigit():
             return await ctx.send("GPSS codes are solely comprised of numbers. Please try again.")
-        async with self.bot.session.get(self.bot.flagbrew_url) as r:
-            if not r.status == 200:
+        async with self.bot.session.get(self.bot.flagbrew_url) as resp:
+            if not resp.status == 200:
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         msg = await ctx.send("Attempting to fetch pokemon...")
         try:
-            async with self.bot.session.get(self.bot.flagbrew_url + "api/v2/gpss/view/" + code) as r:
-                rj = await r.json()
-                code_data = rj["pokemon"]
+            async with self.bot.session.get(self.bot.flagbrew_url + "api/v2/gpss/view/" + code) as resp:
+                resp_json = await resp.json()
+                code_data = resp_json["pokemon"]
                 pkmn_data = code_data["pokemon"]
                 filename = pkmn_data["species"] + f" Code_{code}"
                 if pkmn_data["generation"] == "LGPE":
@@ -478,16 +478,16 @@ class pkhex(commands.Cog):
         """Allows uploading a pokemon to the GPSS. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
         if not data and not ctx.message.attachments:
             raise PKHeXMissingArgs()
-        async with self.bot.session.get(self.bot.flagbrew_url) as r:
-            if not r.status == 200:
+        async with self.bot.session.get(self.bot.flagbrew_url) as resp:
+            if not resp.status == 200:
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
-        r = await self.process_file(ctx, data, ctx.message.attachments, "api/v2/gpss/upload/pokemon", True, str(ctx.author.id))
-        if r == 400:
+        resp = await self.process_file(ctx, data, ctx.message.attachments, "api/v2/gpss/upload/pokemon", True, str(ctx.author.id))
+        if resp == 400:
             return
-        returned_data = r[2]
+        returned_data = resp[2]
         code = returned_data['code']
         uploaded = returned_data['uploaded']
-        if r[0] == 503:
+        if resp[0] == 503:
             return await ctx.send("GPSS uploading is currently disabled. Please try again later.")
         elif not uploaded:
             error = returned_data['error']
@@ -511,18 +511,18 @@ class pkhex(commands.Cog):
         if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
         msg = await ctx.send("Attempting to legalize pokemon...")
-        r = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/auto_legality")
-        if r == 400:
+        resp = await self.process_file(ctx, data, ctx.message.attachments, "api/v1/bot/auto_legality")
+        if resp == 400:
             return
-        elif r[0] == 503:
+        elif resp[0] == 503:
             return await msg.edit(content="Legalizing is currently disabled in CoreAPI, and as such this command cannot be used currently.")
-        rj = r[1]
-        if not rj["ran"]:
+        resp_json = resp[1]
+        if not resp_json["ran"]:
             return await msg.edit(content="That pokemon is already legal!")
-        elif not rj["success"]:
+        elif not resp_json["success"]:
             return await msg.edit(content="That pokemon couldn't be legalized!")
-        pokemon_b64 = rj["pokemon"].encode("ascii")
-        qr_b64 = rj["qr"].encode("ascii")
+        pokemon_b64 = resp_json["pokemon"].encode("ascii")
+        qr_b64 = resp_json["qr"].encode("ascii")
         pokemon_decoded = base64.decodebytes(pokemon_b64)
         qr_decoded = base64.decodebytes(qr_b64)
         if data:
@@ -532,8 +532,8 @@ class pkhex(commands.Cog):
         pokemon = discord.File(io.BytesIO(pokemon_decoded), "fixed-" + filename)
         qr = discord.File(io.BytesIO(qr_decoded), 'pokemon_qr.png')
         m = await upload_channel.send(f"Pokemon legalized by {ctx.author}", file=pokemon)
-        embed = discord.Embed(title=f"Fixed Legality Issues for {rj['species']}", description=f"[Download link]({m.attachments[0].url})\n")
-        embed = self.list_to_embed(embed, rj["report"])
+        embed = discord.Embed(title=f"Fixed Legality Issues for {resp_json['species']}", description=f"[Download link]({m.attachments[0].url})\n")
+        embed = self.list_to_embed(embed, resp_json["report"])
         embed.set_thumbnail(url="attachment://pokemon_qr.png")
         await msg.delete()
         await ctx.send(embed=embed, file=qr)
@@ -552,29 +552,29 @@ class pkhex(commands.Cog):
             "set": showdown_set,
             "generation": str(gen)
         }
-        async with self.bot.session.post(url=url, data=data) as r:
-            if r.status == 400:
-                message = await r.json()
+        async with self.bot.session.post(url=url, data=data) as resp:
+            if resp.status == 400:
+                message = await resp.json()
                 message = message["message"]
                 if message == "Your Pokemon does not exist!":
                     return await ctx.send(f"{ctx.author} That pokemon doesn't exist!")
                 else:
-                    return await ctx.send(f"{ctx.author} Conversion failed with error code `{r.status}` and message:\n`{message}`")
-            elif not r.status == 200:
-                return await ctx.send(f"{ctx.author} Conversion failed with error code `{r.status}`.")
-            rj = await r.json()
-            pk64 = rj["base64"].encode("ascii")
+                    return await ctx.send(f"{ctx.author} Conversion failed with error code `{resp.status}` and message:\n`{message}`")
+            elif not resp.status == 200:
+                return await ctx.send(f"{ctx.author} Conversion failed with error code `{resp.status}`.")
+            resp_json = await resp.json()
+            pk64 = resp_json["base64"].encode("ascii")
             pkx = base64.decodebytes(pk64)
-            qr64 = rj["qr"].encode("ascii")
+            qr64 = resp_json["qr"].encode("ascii")
             qr = base64.decodebytes(qr64)
-        embed = discord.Embed(title=f"Data for {rj['nickname']} ({rj['gender']})")
-        embed.set_thumbnail(url=rj["species_sprite_url"])
-        embed = self.embed_fields(ctx, embed, rj, is_set=True)
+        embed = discord.Embed(title=f"Data for {resp_json['nickname']} ({resp_json['gender']})")
+        embed.set_thumbnail(url=resp_json["species_sprite_url"])
+        embed = self.embed_fields(ctx, embed, resp_json, is_set=True)
         pokemon_file = discord.File(io.BytesIO(pkx), "showdownset.pk" + str(gen))
         qr_file = discord.File(io.BytesIO(qr), "qrcode.png")
         m = await upload_channel.send(f"Showdown set converted by {ctx.author}", files=[pokemon_file, qr_file])
         embed.description = f"[PKX Download Link]({m.attachments[0].url})\n[QR Code]({m.attachments[1].url})"
-        embed.colour = discord.Colour.green() if rj["illegal_reasons"] == "Legal!" else discord.Colour.red()
+        embed.colour = discord.Colour.green() if resp_json["illegal_reasons"] == "Legal!" else discord.Colour.red()
         await ctx.send(embed=embed)
 
     @commands.command(name='genqr')
@@ -583,8 +583,8 @@ class pkhex(commands.Cog):
         """Generates a Patron QR code for installing via FBI"""
         if not self.bot.is_mongodb:
             return await ctx.send("No DB available, cancelling...")
-        async with self.bot.session.get(self.bot.flagbrew_url) as r:
-            if not r.status == 200:
+        async with self.bot.session.get(self.bot.flagbrew_url) as resp:
+            if not resp.status == 200:
                 return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
         accepted_apps = {
             "pksm": "PKSM",
@@ -601,14 +601,14 @@ class pkhex(commands.Cog):
         headers = {
             "patreon": patron_code
         }
-        async with self.bot.session.get(f"{self.bot.flagbrew_url}api/v2/patreon/update-check/{accepted_apps[app.lower()]}", headers=headers) as h:
-            commit = await h.json()
+        async with self.bot.session.get(f"{self.bot.flagbrew_url}api/v2/patreon/update-check/{accepted_apps[app.lower()]}", headers=headers) as commit_resp:
+            commit = await commit_resp.json()
         commit_sha = commit['hash']
         url = f"{self.bot.flagbrew_url}api/v2/patreon/update-qr/{accepted_apps[app.lower()]}/{commit_sha}/{ext.lower()}"
-        async with self.bot.session.get(url=url, headers=headers) as r:
-            if not r.status == 200:
+        async with self.bot.session.get(url=url, headers=headers) as resp:
+            if not resp.status == 200:
                 return await ctx.send("Failed to get the QR.")
-            qr_bytes = await r.read()
+            qr_bytes = await resp.read()
             qr = discord.File(io.BytesIO(qr_bytes), 'patron_qr.png')
             embed = discord.Embed(title=f"Patron Build for {accepted_apps[app.lower()]}")
             embed.add_field(name="Direct Download", value=f"[Here]({self.bot.flagbrew_url}api/v2/patreon/update/{patron_code}/{accepted_apps[app.lower()]}/{commit_sha}/{ext})")

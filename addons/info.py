@@ -23,21 +23,21 @@ class Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         print(f"Addon \"{self.__class__.__name__}\" loaded")
-        with open("saves/faqs/general.json", "r") as f:
-            self.general_faq_dict = json.load(f)
-        with open("saves/faqs/pksm.json", "r") as f:
-            self.pksm_faq_dict = json.load(f)
-        with open("saves/faqs/checkpoint.json", "r") as f:
-            self.checkpoint_faq_dict = json.load(f)
-        with open("saves/key_inputs.json", "r") as f:
-            self.key_dict = json.load(f)
+        with open("saves/faqs/general.json", "r") as file:
+            self.general_faq_dict = json.load(file)
+        with open("saves/faqs/pksm.json", "r") as file:
+            self.pksm_faq_dict = json.load(file)
+        with open("saves/faqs/checkpoint.json", "r") as file:
+            self.checkpoint_faq_dict = json.load(file)
+        with open("saves/key_inputs.json", "r") as file:
+            self.key_dict = json.load(file)
 
     async def gen_qr(self, ctx, app):
         releases = None
         async with aiohttp.ClientSession() as session:
             url = f"https://api.github.com/repos/FlagBrew/{app}/releases"
-            async with session.get(url) as r:
-                releases = await r.json()
+            async with session.get(url) as resp:
+                releases = await resp.json()
         for asset in releases[0]["assets"]:
             if asset["name"] == f"{app}.cia":
                 qr = qrcode.QRCode(version=None)
