@@ -170,8 +170,8 @@ class Utility(commands.Cog):
         bytes = io.BytesIO()
         img.save(bytes, format='PNG')
         bytes = bytes.getvalue()
-        f = discord.File(io.BytesIO(bytes), filename="qr.png")
-        return f
+        file = discord.File(io.BytesIO(bytes), filename="qr.png")
+        return file
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
@@ -350,12 +350,12 @@ class Utility(commands.Cog):
         await ctx.send(f"Successfully DMed {user}.")
 
     def get_hash(self, file):  # Src: https://www.programiz.com/python-programming/examples/hash-file
-        h = hashlib.sha1()
+        hash = hashlib.sha1()
         chunk = 0
         while chunk != b'':
             chunk = file.read(1024)
-            h.update(chunk)
-        return h.hexdigest()
+            hash.update(chunk)
+        return hash.hexdigest()
 
     @commands.command(aliases=['scd'])
     @restricted_to_bot
@@ -543,7 +543,7 @@ class Utility(commands.Cog):
     @emote.command()
     @commands.has_any_role("Bot Dev", "Discord Moderator")
     async def add(self, ctx, name, *, role_ids=None):
-        """Allows adding an attached emote to the server. Pass in a list of role IDs to restrict the emote"""
+        """Allows adding an attached emote image to the server. Pass in a list of role IDs to restrict the emote"""
         roles = []
         if len(name) > 16:
             return await ctx.send("Emote names must be 16 characters or less.")
@@ -559,10 +559,10 @@ class Utility(commands.Cog):
             await ctx.send("Images need to be smaller than 256 kb.")
             return await ctx.send("https://tenor.com/view/eric-andre-bitch-gif-11075039")
         try:
-            e = await ctx.guild.create_custom_emoji(name=name, image=image, roles=roles)
+            emoji = await ctx.guild.create_custom_emoji(name=name, image=image, roles=roles)
         except discord.InvalidArgument:
             return await ctx.send("You didn't attach a JPG, PNG, or GIF. Fuck you.")
-        msg = f"Successfully added the emote `{name}` {str(e)}!"
+        msg = f"Successfully added the emote `{name}` {str(emoji)}!"
         if len(roles) > 0:
             msg += f"\nThis emote is restricted to: `{'`, `'.join(role.name for role in roles if not 'FlagBot' in role.name)}`"
         await ctx.send(msg)
@@ -570,7 +570,7 @@ class Utility(commands.Cog):
     @emote.command()
     @commands.has_any_role("Bot Dev", "Discord Moderator")
     async def addurl(self, ctx, name, url: str, *, role_ids=None):
-        """Allows adding a emote by URL. Pass in a list of role IDs to restrict the emote"""
+        """Allows adding an emote by URL. Pass in a list of role IDs to restrict the emote"""
         roles = []
         if len(name) > 16:
             return await ctx.send("Emote names must be 16 characters or less.")
@@ -582,8 +582,8 @@ class Utility(commands.Cog):
             roles = [ctx.guild.get_role(int(role)) for role in role_ids]
         roles = [role for role in roles if role]  # Clears out None values
         async with self.bot.session.get(url=url) as resp:
-            e = await ctx.guild.create_custom_emoji(name=name, image=(await resp.content.read()), roles=roles)
-        msg = f"Successfully added the emote `{name}` {str(e)}!"
+            emoji = await ctx.guild.create_custom_emoji(name=name, image=(await resp.content.read()), roles=roles)
+        msg = f"Successfully added the emote `{name}` {str(emoji)}!"
         if len(roles) > 0:
             msg += f"\nThis emote is restricted to: `{'`, `'.join(role.name for role in roles if not 'FlagBot' in role.name)}`"
         await ctx.send(msg)
@@ -591,7 +591,7 @@ class Utility(commands.Cog):
     @emote.command()
     @commands.has_any_role("Bot Dev", "Discord Moderator")
     async def steal(self, ctx, emote: discord.PartialEmoji, *, role_ids=None):
-        """Allows stealing a emote from another server. Pass in a list of role IDs to restrict the emote"""
+        """Allows stealing an emote from another server. Pass in a list of role IDs to restrict the emote"""
         name = emote.name
         roles = []
         if role_ids is not None:
@@ -600,8 +600,8 @@ class Utility(commands.Cog):
             roles = [ctx.guild.get_role(int(role)) for role in role_ids]
         roles = [role for role in roles if role]  # Clears out None values
         async with self.bot.session.get(url=str(emote.url)) as resp:
-            e = await ctx.guild.create_custom_emoji(name=name, image=(await resp.content.read()), roles=roles)
-        msg = f"Successfully added the emote `{name}` {str(e)}!"
+            emoji = await ctx.guild.create_custom_emoji(name=name, image=(await resp.content.read()), roles=roles)
+        msg = f"Successfully added the emote `{name}` {str(emoji)}!"
         if len(roles) > 0:
             msg += f"\nThis emote is restricted to: `{'`, `'.join(role.name for role in roles if not 'FlagBot' in role.name)}`"
         await ctx.send(msg)

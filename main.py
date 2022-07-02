@@ -236,9 +236,9 @@ async def on_error(event_method, *args, **kwargs):
 async def on_ready():
     # this bot should only ever be in one server anyway
     if len(bot.disabled_commands) > 0:
-        for c in bot.disabled_commands:
-            bot.get_command(c).enabled = False
-            print(f'Disabled {c}')
+        for channel in bot.disabled_commands:
+            bot.get_command(channel).enabled = False
+            print(f'Disabled {channel}')
     for guild in bot.guilds:
         try:
             if guild.id in (bot.testing_id, bot.flagbrew_id):
@@ -276,8 +276,8 @@ async def on_ready():
             try:
                 with open('restart.txt', 'r') as file:
                     restart_channel = file.readline()
-                c = await bot.fetch_channel(restart_channel)
-                await c.send("Successfully restarted!")
+                channel = await bot.fetch_channel(restart_channel)
+                await channel.send("Successfully restarted!")
                 os.remove('restart.txt')
             except (discord.NotFound, FileNotFoundError):
                 pass

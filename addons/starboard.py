@@ -20,14 +20,13 @@ class Starboard(commands.Cog):
             self.db = bot.db
 
     def star_gradient_colour(self, stars):
-        # pylint: disable=invalid-name
-        p = stars / 13
-        if p > 1.0:
-            p = 1.0
+        percent = stars / 13
+        if percent > 1.0:
+            percent = 1.0
 
         red = 255
-        green = int((194 * p) + (253 * (1 - p)))
-        blue = int((12 * p) + (247 * (1 - p)))
+        green = int((194 * percent) + (253 * (1 - percent)))
+        blue = int((12 * percent) + (247 * (1 - percent)))
         return (red << 16) + (green << 8) + blue
 
     def star_emoji(self, stars):
@@ -67,9 +66,9 @@ class Starboard(commands.Cog):
             return self._message_cache[message_id]
         except KeyError:
             try:
-                o = discord.Object(id=message_id + 1)
+                obj = discord.Object(id=message_id + 1)
                 # don't wanna use get_message due to poor rate limit (1/1s) vs (50/1s)
-                msg = await channel.history(limit=1, before=o).next()
+                msg = await channel.history(limit=1, before=obj).next()
 
                 if msg.id != message_id:
                     return None

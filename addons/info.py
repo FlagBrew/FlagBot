@@ -92,10 +92,10 @@ class Info(commands.Cog):
             embed = discord.Embed(description=desc_temp.format(desc_pksm) + "\n" + desc_temp.format(desc_checkpoint) + "\n" + desc_temp.format(desc_pickr) + "\n" + desc_temp.format(desc_2048))
         if img == 0:
             return await ctx.send(embed=embed)
-        f = discord.File(io.BytesIO(img), filename="qr.png")
+        file = discord.File(io.BytesIO(img), filename="qr.png")
         embed.set_image(url="attachment://qr.png")
         embed.set_footer(text=f"Version: {version}")
-        await ctx.send(file=f, embed=embed)
+        await ctx.send(file=file, embed=embed)
 
     @commands.command()
     async def readme(self, ctx, app=""):
@@ -256,8 +256,8 @@ class Info(commands.Cog):
         else:
             extra_info = ""
             wiki_link_ext = ""
-        m = await ctx.send(f"You can read PKSM's wiki{extra_info} here: <https://github.com/FlagBrew/PKSM/wiki{wiki_link_ext}>")
-        await m.add_reaction("<:wikidiot:558815031836540940>")
+        msg = await ctx.send(f"You can read PKSM's wiki{extra_info} here: <https://github.com/FlagBrew/PKSM/wiki{wiki_link_ext}>")
+        await msg.add_reaction("<:wikidiot:558815031836540940>")
 
     @commands.command()
     async def assets(self, ctx):
