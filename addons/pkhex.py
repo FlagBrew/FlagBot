@@ -484,9 +484,12 @@ class pkhex(commands.Cog):
         resp = await self.process_file(ctx, data, ctx.message.attachments, "api/v2/gpss/upload/pokemon", True, str(ctx.author.id))
         if resp == 400:
             return
-        resp_json = resp.json()
-        code = resp_json['code']
-        uploaded = resp_json['uploaded']
+        resp_json = resp[1]
+        try:
+            code = resp_json['code']
+            uploaded = resp_json['uploaded']
+        except KeyError:
+            return await ctx.send(f"JSON content was empty on the response.\nStatus: {resp[0]}\nContent: {resp[2]}")
         if resp[0] == 503:
             return await ctx.send("GPSS uploading is currently disabled. Please try again later.")
         elif not uploaded:
