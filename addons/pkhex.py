@@ -448,7 +448,7 @@ class pkhex(commands.Cog):
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         msg = await ctx.send("Attempting to fetch pokemon...")
         try:
-            async with self.bot.session.get(self.bot.flagbrew_url + "api/v2/gpss/view" + code) as resp:
+            async with self.bot.session.get(self.bot.flagbrew_url + "api/v2/gpss/view/" + code) as resp:
                 resp_json = await resp.json()
                 code_data = resp_json["pokemon"]
                 pkmn_data = code_data["pokemon"]
