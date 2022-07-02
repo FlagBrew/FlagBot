@@ -72,13 +72,13 @@ class pkhex(commands.Cog):
             if atch.size > 400:
                 await ctx.send("The attached file was too large.")
                 return 400
-            b = io.BytesIO()
+            io_bytes = io.BytesIO()
             try:
-                await atch.save(b)
+                await atch.save(io_bytes)
             except discord.Forbidden:
                 await ctx.send("The file seems to have been deleted, so I can't complete the task.")
                 return 400
-            file = b.getvalue()
+            file = io_bytes.getvalue()
         else:
             if not validators.url(data):
                 await ctx.send("That's not a real link!")
@@ -461,8 +461,8 @@ class pkhex(commands.Cog):
                 pkx = base64.decodebytes(pk64)
                 pkmn_file = discord.File(io.BytesIO(pkx), filename)
                 await asyncio.sleep(1)
-                m = await upload_channel.send(f"Pokemon fetched from the GPSS by {ctx.author}", file=pkmn_file)
-                embed = discord.Embed(description=f"[GPSS Page]({self.bot.gpss_url + 'gpss/' + code}) | [Download link]({m.attachments[0].url})")
+                log_msg = await upload_channel.send(f"Pokemon fetched from the GPSS by {ctx.author}", file=pkmn_file)
+                embed = discord.Embed(description=f"[GPSS Page]({self.bot.gpss_url + 'gpss/' + code}) | [Download link]({log_msg.attachments[0].url})")
                 embed = self.embed_fields(ctx, embed, pkmn_data, False, True)
                 if embed == 400:
                     return await ctx.send(f"Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{self.bot.pie.mention}: Mon was gen3+ and missing origin game. Code: `{code}`")
@@ -484,13 +484,13 @@ class pkhex(commands.Cog):
         resp = await self.process_file(ctx, data, ctx.message.attachments, "api/v2/gpss/upload/pokemon", True, str(ctx.author.id))
         if resp == 400:
             return
-        returned_data = resp[2]
-        code = returned_data['code']
-        uploaded = returned_data['uploaded']
+        resp_json = resp.json()
+        code = resp_json['code']
+        uploaded = resp_json['uploaded']
         if resp[0] == 503:
             return await ctx.send("GPSS uploading is currently disabled. Please try again later.")
         elif not uploaded:
-            error = returned_data['error']
+            error = resp_json['error']
             if error == "Failed to get pkmn info from CoreAPI, error details: There is an error in your provided information!":
                 return await ctx.send("That file is either not a pokemon, or something went wrong.")
             elif error == "Your Pokemon is already uploaded":
@@ -531,8 +531,8 @@ class pkhex(commands.Cog):
             filename = ctx.message.attachments[0].filename
         pokemon = discord.File(io.BytesIO(pokemon_decoded), "fixed-" + filename)
         qr = discord.File(io.BytesIO(qr_decoded), 'pokemon_qr.png')
-        m = await upload_channel.send(f"Pokemon legalized by {ctx.author}", file=pokemon)
-        embed = discord.Embed(title=f"Fixed Legality Issues for {resp_json['species']}", description=f"[Download link]({m.attachments[0].url})\n")
+        log_msg = await upload_channel.send(f"Pokemon legalized by {ctx.author}", file=pokemon)
+        embed = discord.Embed(title=f"Fixed Legality Issues for {resp_json['species']}", description=f"[Download link]({log_msg.attachments[0].url})\n")
         embed = self.list_to_embed(embed, resp_json["report"])
         embed.set_thumbnail(url="attachment://pokemon_qr.png")
         await msg.delete()
@@ -572,8 +572,8 @@ class pkhex(commands.Cog):
         embed = self.embed_fields(ctx, embed, resp_json, is_set=True)
         pokemon_file = discord.File(io.BytesIO(pkx), "showdownset.pk" + str(gen))
         qr_file = discord.File(io.BytesIO(qr), "qrcode.png")
-        m = await upload_channel.send(f"Showdown set converted by {ctx.author}", files=[pokemon_file, qr_file])
-        embed.description = f"[PKX Download Link]({m.attachments[0].url})\n[QR Code]({m.attachments[1].url})"
+        log_msg = await upload_channel.send(f"Showdown set converted by {ctx.author}", files=[pokemon_file, qr_file])
+        embed.description = f"[PKX Download Link]({log_msg.attachments[0].url})\n[QR Code]({log_msg.attachments[1].url})"
         embed.colour = discord.Colour.green() if resp_json["illegal_reasons"] == "Legal!" else discord.Colour.red()
         await ctx.send(embed=embed)
 
