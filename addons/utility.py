@@ -351,7 +351,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    async dev say(self, ctx, channel, *, message):
+    async def say(self, ctx, channel, *, message):
         """Sends a message to the specified TextChannel"""
         channel = ctx.guild.get_channel(channel)
         if channel is None:
