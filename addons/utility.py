@@ -351,13 +351,10 @@ class Utility(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    async def say(self, ctx, channel, *, message):
+    async def say(self, ctx, channel: discord.TextChannel, *, message):
         """Sends a message to the specified TextChannel"""
-        channel = ctx.guild.get_channel(channel)
-        if channel is None:
-            return await ctx.send("That is not a channel on this guild.")
-        elif channel == ctx.channel or ctx.channel.name == "logs":
-            await ctx.send(f"Sending messages to the current channel or {channel.mention} is prohibited.")
+        if channel == ctx.channel or ctx.channel.name == "logs":
+            return await ctx.send("Sending messages to the current channel or a logs channel is prohibited.")
         message = message.replace("@everyone", "`everyone`").replace("@here", "`here`")
         await channel.send(message)
         await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=discord.Embed(description=message))
