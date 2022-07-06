@@ -360,7 +360,7 @@ class Utility(commands.Cog):
             await ctx.send(f"Sending messages to the current channel or {channel.mention} is prohibited.")
         message = message.replace("@everyone", "`everyone`").replace("@here", "`here`")
         await channel.send(message)
-            await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=discord.Embed(description=message))
+        await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=discord.Embed(description=message))
         await ctx.send(f"Successfully sent message in {channel}.")
 
     def get_hash(self, file):  # Src: https://www.programiz.com/python-programming/examples/hash-file
