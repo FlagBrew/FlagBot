@@ -349,6 +349,17 @@ class Utility(commands.Cog):
             await self.bot.logs_channel.send(f"Message sent to {user} by {ctx.author}.", embed=discord.Embed(description=message))
         await ctx.send(f"Successfully DMed {user}.")
 
+    @commands.command()
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
+    async dev say(self, ctx, channel: discord.TextChannel, *, message):
+        """Sends a message to the specified TextChannel"""
+        if channel == ctx.channel or ctx.channel.name == "logs":
+            await ctx.send(f"Sending messages to the current channel or {channel.mention} is prohibited.")
+        message = message.replace("@everyone", "`everyone`").replace("@here", "`here`")
+        await channel.send(message)
+            await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=discord.Embed(description=message))
+        await ctx.send(f"Successfully sent message in {channel}.")
+
     def get_hash(self, file):  # Src: https://www.programiz.com/python-programming/examples/hash-file
         hash = hashlib.sha1()
         chunk = 0
