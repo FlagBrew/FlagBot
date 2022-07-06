@@ -351,7 +351,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    async dev say(self, ctx, channel: discord.TextChannel, *, message):
+    async dev say(self, ctx, channel: discord.Channel, *, message):
         """Sends a message to the specified TextChannel"""
         if channel == ctx.channel or ctx.channel.name == "logs":
             await ctx.send(f"Sending messages to the current channel or {channel.mention} is prohibited.")
