@@ -163,7 +163,7 @@ class Warning(commands.Cog):
                 warn_date = datetime.fromtimestamp(warn['date']).strftime("%D %H:%M:%S")
             else:
                 warn_date = warn['date']
-            embed.add_field(name=f"Warn #{count}", value=f"**Reason: {warn['reason']}**\n**Date: {warn_date}**")
+            embed.add_field(name=f"Warn #{count}", value=f"**Reason**: {warn['reason']}\n**Date**: {warn_date}")
             count += 1
         if count - 1 == 0:
             return await ctx.send(f"{target} has no warns.")
