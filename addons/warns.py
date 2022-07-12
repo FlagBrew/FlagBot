@@ -163,7 +163,8 @@ class Warning(commands.Cog):
                 warn_date = datetime.fromtimestamp(warn['date']).strftime("%D %H:%M:%S")
             else:
                 warn_date = warn['date']
-            embed.add_field(name=f"Warn #{count}", value=f"**Reason**: {warn['reason']}\n**Date**: {warn_date}")
+            date_obj = datetime.strptime(warn_date, "%m/%d/%y %H:%M:%S")
+            embed.add_field(name=f"#{count}: {discord.utils.format_dt(date_obj)}", value=f"**Reason**: {warn['reason']}\n**Issued By**: {warn['warned_by']}")
             count += 1
         if count - 1 == 0:
             return await ctx.send(f"{target} has no warns.")
