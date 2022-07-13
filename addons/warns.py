@@ -47,8 +47,9 @@ class Warning(commands.Cog):
         try:
             if has_attch:
                 img_bytes = await ctx.message.attachments[0].read()
-                img = discord.File(io.BytesIO(img_bytes), 'warn_image.png')
-                await target.send(dm_msg, file=img)
+                warn_img = discord.File(io.BytesIO(img_bytes), 'image.png')
+                log_img = discord.File(io.BytesIO(img_bytes), 'warn_image.png')
+                await target.send(dm_msg, file=warn_img)
             else:
                 await target.send(dm_msg)
         except discord.Forbidden:
@@ -81,7 +82,7 @@ class Warning(commands.Cog):
         try:
             if has_attch:
                 embed.set_thumbnail(url="attachment://warn_image.png")
-                await self.bot.logs_channel.send(embed=embed, file=img)
+                await self.bot.logs_channel.send(embed=embed, file=log_img)
             else:
                 await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:

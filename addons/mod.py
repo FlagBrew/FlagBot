@@ -59,8 +59,8 @@ class Moderation(commands.Cog):
         try:
             if has_attch:
                 img_bytes = await ctx.message.attachments[0].read()
-                img = discord.File(io.BytesIO(img_bytes))
-                await member.send(f"You were banned from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, please contact a staff member.", file=img)
+                ban_img = discord.File(io.BytesIO(img_bytes), 'ban_image.png')
+                await member.send(f"You were banned from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, please contact a staff member.", file=ban_img)
                 self.ban_attch_dict[str(member.id)] = io.BytesIO(img_bytes)
             else:
                 await member.send(f"You were banned from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, please contact a staff member.")
@@ -100,9 +100,9 @@ class Moderation(commands.Cog):
             embed = discord.Embed(title=f"{user} banned")
             embed.description = f"{user} was banned by {admin} for:\n\n{reason}"
             if user.id in self.ban_attch_dict.keys():
-                img = discord.File(self.ban_attch_dict.pop(str(user.id)), 'ban_image.png')
+                ban_img = discord.File(self.ban_attch_dict.pop(str(user.id)), 'ban_image.png')
                 embed.set_thumbnail(url="attachment://ban_image.png")
-                await self.bot.logs_channel.send(embed=embed, file=img)
+                await self.bot.logs_channel.send(embed=embed, file=ban_img)
             else:
                 await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
@@ -123,8 +123,9 @@ class Moderation(commands.Cog):
             try:
                 if has_attch:
                     img_bytes = await ctx.message.attachments[0].read()
-                    img = discord.File(io.BytesIO(img_bytes), 'kick_image.png')
-                    await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY", file=img)
+                    kick_img = discord.File(io.BytesIO(img_bytes), 'image.png')
+                    log_img = discord.File(io.BytesIO(img_bytes), 'kick_image.png')
+                    await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY", file=kick_img)
                 else:
                     await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY")
             except discord.Forbidden:
@@ -132,7 +133,7 @@ class Moderation(commands.Cog):
             try:
                 if has_attch:
                     embed.set_thumbnail(url="attachment://kick_image.png")
-                    await self.bot.logs_channel.send(embed=embed, file=img)
+                    await self.bot.logs_channel.send(embed=embed, file=log_img)
                 else:
                     await self.bot.logs_channel.send(embed=embed)
             except discord.Forbidden:
@@ -220,8 +221,9 @@ class Moderation(commands.Cog):
         try:
             if has_attch:
                 img_bytes = await ctx.message.attachments[0].read()
-                img = discord.File(io.BytesIO(img_bytes), 'mute_image.png')
-                await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`", file=img)
+                mute_img = discord.File(io.BytesIO(img_bytes), 'image.png')
+                log_img = discord.File(io.BytesIO(img_bytes), 'mute_image.png')
+                await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`", file=mute_img)
             else:
                 await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`")
         except discord.Forbidden:
@@ -229,7 +231,7 @@ class Moderation(commands.Cog):
         try:
             if has_attch:
                 embed.set_thumbnail(url="attachment://mute_image.png")
-                await self.bot.logs_channel.send(embed=embed, file=img)
+                await self.bot.logs_channel.send(embed=embed, file=log_img)
             else:
                 await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
@@ -294,8 +296,9 @@ class Moderation(commands.Cog):
         try:
             if has_attch:
                 img_bytes = await ctx.message.attachments[0].read()
-                img = discord.File(io.BytesIO(img_bytes), 'mute_image.png')
-                await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.", file=img)
+                mute_img = discord.File(io.BytesIO(img_bytes), 'image.png')
+                log_img = discord.File(io.BytesIO(img_bytes), 'mute_image.png')
+                await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.", file=mute_img)
             else:
                 await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.")
         except discord.Forbidden:
@@ -306,7 +309,7 @@ class Moderation(commands.Cog):
         try:
             if has_attch:
                 embed.set_thumbnail(url="attachment://mute_image.png")
-                await self.bot.logs_channel.send(embed=embed, file=img)
+                await self.bot.logs_channel.send(embed=embed, file=log_img)
             else:
                 await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
@@ -349,8 +352,8 @@ class Moderation(commands.Cog):
         try:
             if has_attch:
                 img_bytes = await ctx.message.attachments[0].read()
-                img = discord.File(io.BytesIO(img_bytes), 'mute_image.png')
-                await member.send(f"You have been timed out on {ctx.guild} for\n\n`{reason}`\n\nYour timeout will expire on {end_str}.", file=img)
+                timeout_img = discord.File(io.BytesIO(img_bytes), 'image.png')
+                await member.send(f"You have been timed out on {ctx.guild} for\n\n`{reason}`\n\nYour timeout will expire on {end_str}.", file=timeout_img)
             else:
                 await member.send(f"You have been timed out on {ctx.guild} for\n\n`{reason}`\n\nYour timeout will expire on {end_str}.")
         except discord.Forbidden:

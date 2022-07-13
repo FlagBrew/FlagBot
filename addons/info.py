@@ -92,10 +92,10 @@ class Info(commands.Cog):
             embed = discord.Embed(description=desc_temp.format(desc_pksm) + "\n" + desc_temp.format(desc_checkpoint) + "\n" + desc_temp.format(desc_pickr) + "\n" + desc_temp.format(desc_2048))
         if img == 0:
             return await ctx.send(embed=embed)
-        file = discord.File(io.BytesIO(img), filename="qr.png")
+        qr_file = discord.File(io.BytesIO(img), filename="qr.png")
         embed.set_image(url="attachment://qr.png")
         embed.set_footer(text=f"Version: {version}")
-        await ctx.send(file=file, embed=embed)
+        await ctx.send(file=qr_file, embed=embed)
 
     @commands.command()
     async def readme(self, ctx, app=""):

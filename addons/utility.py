@@ -170,8 +170,8 @@ class Utility(commands.Cog):
         bytes = io.BytesIO()
         img.save(bytes, format='PNG')
         bytes = bytes.getvalue()
-        file = discord.File(io.BytesIO(bytes), filename="qr.png")
-        return file
+        qr_file = discord.File(io.BytesIO(bytes), filename="qr.png")
+        return qr_file
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
@@ -468,7 +468,7 @@ class Utility(commands.Cog):
         self.submitted_hashes = []
         await ctx.send("Cleared the submitted hashes file.")
 
-    @commands.command(enabled=False)
+    @commands.command(enabled=False)  # Currently broken due to structure changes
     async def translate(self, ctx, lang):
         """Fetches the translation file for the provided language"""
         url = "https://raw.githubusercontent.com/FlagBrew/PKSM/master/assets/gui_strings/{}/gui.json"
@@ -494,8 +494,8 @@ class Utility(commands.Cog):
                 return await ctx.send(f"Couldn't fetch tranlation file! status code: `{resp.status}`.")
             contents = await resp.read()
             bytes_contents = io.BytesIO(contents)
-            file = discord.File(bytes_contents, "gui.json")
-            await ctx.send(f"{ctx.author.mention} Here's the {lang.lower()} language file:", file=file)
+            gui_file = discord.File(bytes_contents, "gui.json")
+            await ctx.send(f"{ctx.author.mention} Here's the {lang.lower()} language file:", file=gui_file)
 
     @commands.command(aliases=['ui', 'user'])  # Smth smth stolen from GriffinG1/Midnight but it's *my* license and I do what I want
     @restricted_to_bot
