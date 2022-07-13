@@ -26,7 +26,7 @@ class Warning(commands.Cog):
         self.bot.warns_dict[str(target.id)].append(
             {
                 "reason": reason,
-                "date": datetime.now().strftime("%D %H:%M:%S"),
+                "date": datetime.now().strftime("%D %H:%M:%S"),  # trying to decide if I want to change this to a discord aware timestamp. don't want to have to update the old values or support though
                 "warned_by": f"{ctx.author}",
             })
         warns = self.bot.warns_dict[str(target.id)]
@@ -133,7 +133,8 @@ class Warning(commands.Cog):
             warn_date = datetime.fromtimestamp(warn['date']).strftime("%D %H:%M:%S")
         else:
             warn_date = warn['date']
-        embed.add_field(name="Warned On:", value=warn_date)
+        date_obj = datetime.strptime(warn_date, "%m/%d/%y %H:%M:%S")
+        embed.add_field(name="Warned On:", value=discord.utils.format_dt(date_obj))
         embed.set_footer(text=f"{target.name} now has {warns_count} warn(s).")
         try:
             await target.send(f"Warn `{warn['reason']}` was removed on {ctx.guild}. You now have {warns_count} warn(s).")
@@ -205,7 +206,8 @@ class Warning(commands.Cog):
                 warn_date = datetime.fromtimestamp(warn['date']).strftime("%D %H:%M:%S")
             else:
                 warn_date = warn['date']
-            embed.add_field(name=f"Warn #{count}", value=f"Warned By: {warn['warned_by']}\nWarned On: {warn_date}\nReason: {warn['reason']}")
+            date_obj = datetime.strptime(warn_date, "%m/%d/%y %H:%M:%S")
+            embed.add_field(name=f"#{count}: {discord.utils.format_dt(date_obj)}", value=f"**Reason**: {warn['reason']}\n**Issued By**: {warn['warned_by']}")
             count += 1
         try:
             await target.send(f"All of your warns were cleared on {ctx.guild}.")

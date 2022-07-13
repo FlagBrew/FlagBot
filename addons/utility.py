@@ -407,8 +407,8 @@ class Utility(commands.Cog):
         file_log = discord.File(file, filename=ctx.message.attachments[0].filename)
         msg = await self.bot.crash_log_channel.send(f"Dump submitted by {ctx.author}", file=file_log)
         embed = discord.Embed(title="New Crash Dump!", colour=discord.Colour.green())
-        embed.add_field(name="Submitted By", value=ctx.author.mention)
-        embed.add_field(name="Submitted At", value=ctx.message.created_at.strftime('%b %d, %Y'))
+        embed.add_field(name="Submitted By", value=f"{ctx.author} ({ctx.author.id})")
+        embed.add_field(name="Submitted At", value=discord.utils.format_dt(ctx.message.created_at))
         async with self.bot.session.get("https://api.github.com/repos/FlagBrew/PKSM/commits/master") as resp:
             commit = await resp.json()
         commit_sha = commit["sha"][:7]
@@ -545,14 +545,14 @@ class Utility(commands.Cog):
     @restricted_to_bot
     async def guildinfo(self, ctx, depth=False):
         embed = discord.Embed()
-        embed.set_author(name=f"Guild info for {ctx.guild.name} ({ctx.guild.id})", icon_url=str(ctx.guild.icon_url))
+        embed.set_author(name=f"Guild info for {ctx.guild.name} ({ctx.guild.id})", icon_url=str(ctx.guild.icon))
         embed.add_field(name="Guild Owner", value=f"{ctx.guild.owner} ({ctx.guild.owner.mention})")
         embed.add_field(name="Highest Role", value=f"{ctx.guild.roles[-1].name} ({ctx.guild.roles[-1].id})")
         embed.add_field(name="Member Count", value=str(ctx.guild.member_count))
         if depth:
             embed.add_field(name="Emoji Slots", value=f"{len(ctx.guild.emojis)}/{ctx.guild.emoji_limit} slots used")
             since_creation = (discord.utils.utcnow() - ctx.guild.created_at).days
-            embed.add_field(name="Created At", value=f"{ctx.guild.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC\n({since_creation//365} years, {since_creation%365} days)")
+            embed.add_field(name="Created At", value=f"{discord.utils.format_dt(ctx.guild.created_at)}\n({since_creation//365} years, {since_creation%365} days)")
             embed.add_field(name="Total Boosts", value=f"{ctx.guild.premium_subscription_count} boosters (Current level: {ctx.guild.premium_tier})")
         await ctx.send(embed=embed)
 
@@ -657,7 +657,7 @@ class Utility(commands.Cog):
         embed.add_field(name="Emote Link", value=f"[Here]({str(emote.url)})")
         if len(emote.roles) > 0:
             embed.add_field(name="Permitted Roles", value=f"`{'`, `'.join(role.name for role in emote.roles if not 'FlagBot' in role.name)}`", inline=False)
-        embed.add_field(name="Added On", value=f"{emote.created_at.strftime('%m-%d-%Y %H:%M:%S')} UTC", inline=False)
+        embed.add_field(name="Added On", value=f"{discord.utils.format_dt(emote.created_at)}", inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['flagbrew', 'nintendohomebrew', 'nh', 'dsimode', 'twlmenu', 'reswitched', 'rs', 'projectpokemon', 'pporg', 'pkhexdev', 'pdp', 'nanquitas', 'cheathelp'])

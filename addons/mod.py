@@ -190,16 +190,16 @@ class Moderation(commands.Cog):
         if user:
             def purge_specific_user(u):
                 return u.author == user
-            await self.bot.logs_channel.send(f"{ctx.author} ({ctx.author.id}) cleared all messages by {user} ({user.id}) after `{start_message.created_at.strftime('%Y-%m-%d %H:%M:%S')}` in {ctx.channel.mention}.")
+            await self.bot.logs_channel.send(f"{ctx.author} ({ctx.author.id}) cleared all messages by {user} ({user.id}) after {discord.utils.format_dt(start_message.created_at)} in {ctx.channel.mention}.")
             purged = await ctx.channel.purge(before=ctx.message, after=start_message, check=purge_specific_user)
             if len(purged) == 0:
                 return await ctx.send(f"Could not find any messages by {user} ({user.id}) after message with ID `{start_id}` to purge.")
-            return await ctx.send(f"Purged {len(purged)} messages by {user} ({user.id}) since `{start_message.created_at.strftime('%Y-%m-%d %H:%M:%S')}`.")
-        await self.bot.logs_channel.send(f"{ctx.author} ({ctx.author.id}) cleared all messages after `{start_message.created_at.strftime('%Y-%m-%d %H:%M:%S')}` in {ctx.channel.mention}.")
+            return await ctx.send(f"Purged {len(purged)} messages by {user} ({user.id}) since {discord.utils.format_dt(start_message.created_at)}.")
+        await self.bot.logs_channel.send(f"{ctx.author} ({ctx.author.id}) cleared all messages after {discord.utils.format_dt(start_message.created_at)} in {ctx.channel.mention}.")
         purged = await ctx.channel.purge(before=ctx.message, after=start_message)
         if len(purged) == 0:
             return await ctx.send(f"Could not find any messages after message with ID `{start_id}` to purge.")
-        return await ctx.send(f"Purged {len(purged)} messages since `{start_message.created_at.strftime('%Y-%m-%d %H:%M:%S')}`.")
+        return await ctx.send(f"Purged {len(purged)} messages since {discord.utils.format_dt(start_message.created_at)}.")
 
     @commands.command()
     @commands.has_any_role("Discord Moderator")
