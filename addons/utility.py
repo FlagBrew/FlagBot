@@ -341,12 +341,24 @@ class Utility(commands.Cog):
         """DMs a user"""
         if user == ctx.me:
             return await ctx.send(f"{ctx.author.mention} I can't DM myself, you snarky little shit.")
-        try:
-            await user.send(message)
-        except discord.Forbidden:
-            return await ctx.send("Failed to DM the user. Do they have me blocked? 😢")
+        has_attch = bool(ctx.message.attachments)
+        embed = discord.Embed(description=message)
+        if has_attch:
+            img_bytes = await ctx.message.attachments[0].read()
+            client_img = discord.File(io.BytesIO(img_bytes), 'image.png')
+            log_img = discord.File(io.BytesIO(img_bytes), 'dm_image.png')
+            embed.set_thumbnail(url="attachment://dm_image.png")
+            try:
+                await user.send(message, file=client_img)
+            except discord.Forbidden:
+                return await ctx.send("Failed to DM the user. Do they have me blocked? 😢")
+            await self.bot.logs_channel.send(f"Message sent to {user} by {ctx.author}.", embed=embed, file=log_img)
         else:
-            await self.bot.logs_channel.send(f"Message sent to {user} by {ctx.author}.", embed=discord.Embed(description=message))
+            try:
+                await user.send(message)
+            except discord.Forbidden:
+                return await ctx.send("Failed to DM the user. Do they have me blocked? 😢")
+            await self.bot.logs_channel.send(f"Message sent to {user} by {ctx.author}.", embed=embed)
         await ctx.send(f"Successfully DMed {user}.")
 
     @commands.command()
@@ -356,9 +368,19 @@ class Utility(commands.Cog):
         if channel == ctx.channel or ctx.channel.name == "logs":
             return await ctx.send("Sending messages to the current channel or a logs channel is prohibited.")
         message = message.replace("@everyone", "`everyone`").replace("@here", "`here`")
-        await channel.send(message)
-        await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=discord.Embed(description=message))
-        await ctx.send(f"Successfully sent message in {channel}.")
+        has_attch = bool(ctx.message.attachments)
+        embed = discord.Embed(description=message)
+        if has_attch:
+            img_bytes = await ctx.message.attachments[0].read()
+            channel_img = discord.File(io.BytesIO(img_bytes), 'image.png')
+            log_img = discord.File(io.BytesIO(img_bytes), 'channel_send_image.png')
+            embed.set_thumbnail(url="attachment://channel_send_image.png")
+            await channel.send(message, file=channel_img)
+            await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=embed, file=log_img)
+        else:
+            await channel.send(message)
+            await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=embed)
+        await ctx.send(f"Successfully sent message in {channel.mention}.")
 
     def get_hash(self, file):  # Src: https://www.programiz.com/python-programming/examples/hash-file
         hash = hashlib.sha1()
