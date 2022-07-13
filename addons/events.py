@@ -165,16 +165,16 @@ class Events(commands.Cog):
                     bytes = io.BytesIO()
                     img.save(bytes, format='PNG')
                     bytes = bytes.getvalue()
-                    file = discord.File(io.BytesIO(bytes), filename="qr.png")
+                    qr_file = discord.File(io.BytesIO(bytes), filename="qr.png")
                 elif len(before.roles) > len(after.roles) and (self.bot.patrons_role in before.roles and self.bot.patrons_role not in after.roles):
                     message = ("Unfortunately, your patreon subscription has been cancelled, or stopped renewing automatically. This means your token, and the special features,"
                                " have all expired. If you do end up renewing your subscription at a later date, you will recieve a new token.")
                     self.db['patrons'].delete_one({"discord_id": str(before.id)})
-                    file = None
+                    qr_file = None
                 else:
                     return  # cancel out for none of this shit
                 try:
-                    await before.send(message, file=file)
+                    await before.send(message, file=qr_file)
                 except discord.Forbidden:
                     if len(before.roles) < len(after.roles):
                         await self.bot.fetch_user(211923158423306243).send(f"Could not send token `{token}` to user {before}.")

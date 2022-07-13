@@ -9,6 +9,7 @@ import json
 import math
 from addons.helper import faq_decorator, restricted_to_bot, spam_limiter
 from discord.ext import commands
+from datetime import datetime
 
 desc_temp = "You can get the latest release of {}."
 desc_pksm = "PKSM [here](https://github.com/FlagBrew/PKSM/releases/latest)"
@@ -449,7 +450,8 @@ class Info(commands.Cog):
             "unknown": """• Modifying PRODINFO, or using the experimental PRODINFO dummying included in Atmosphere 0.11.2 and later.
                 • Using sys-tweak to change game icons (which may be sent to Nintendo)"""
         }
-        embed = discord.Embed(title="Current known Nintendo Switch ban risks")
+        last_updated = datetime.strptime("2021-12-02", "%Y-%m-%d")
+        embed = discord.Embed(title="Current known Nintendo Switch ban risks", description=f"Last updated on: {discord.utils.format_dt(last_updated, style='D')}")
         embed.add_field(name="Instant ban", value=ban_info['guaranteed'], inline=False)
         embed.add_field(name="Ban-bait (not always an instant ban, but can get you banned/restricted)", value=ban_info['semi'], inline=False)
         embed.add_field(name="Not a ban, so far", value=ban_info['no'], inline=False)
