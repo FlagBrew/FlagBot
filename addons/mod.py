@@ -252,7 +252,10 @@ class Moderation(commands.Cog):
             json.dump(self.bot.mutes_dict, file, indent=4)
         embed = discord.Embed(title=f"{member} ({member.id}) unmuted")
         embed.description = f"{member} was unmuted by {ctx.message.author} for:\n\n{reason}"
-        await member.send(f"You were unmuted on FlagBrew.")
+        try:
+            await member.send(f"You were unmuted on FlagBrew.")
+        except discord.Forbidden:
+            pass  # blocked DMs
         try:
             await self.bot.logs_channel.send(embed=embed)
         except discord.Forbidden:
@@ -261,7 +264,7 @@ class Moderation(commands.Cog):
 
     @commands.command(name="tmute")
     @commands.has_any_role("Discord Moderator")
-    async def timemute(self, ctx, member: discord.Member, duration, reason="No reason was given."):
+    async def timemute(self, ctx, member: discord.Member, duration, *, reason="No reason was given."):
         """Timemutes a user. Units are s, m, h, and d"""
         has_attch = bool(ctx.message.attachments)
         if member == ctx.message.author:
@@ -303,7 +306,7 @@ class Moderation(commands.Cog):
                 await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.")
         except discord.Forbidden:
             pass  # blocked DMs
-        self.bot.mutes_dict[str(member.id)] = end_str
+        self.bot.mutes_dict[str(member.id)] = end.strftime("%Y-%m-%d %H:%M:%S")
         with open("saves/mutes.json", "w") as file:
             json.dump(self.bot.mutes_dict, file, indent=4)
         try:
@@ -318,7 +321,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    async def timeout(self, ctx, member: discord.Member, duration, reason="No reason was given"):
+    async def timeout(self, ctx, member: discord.Member, duration, *, reason="No reason was given"):
         """Mute a user using discord's timeout function. Units are m, h, d with an upper cap of 28 days (discord limit)"""
         has_attch = bool(ctx.message.attachments)
         cap_msg = ""
