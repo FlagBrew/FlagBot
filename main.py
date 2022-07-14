@@ -101,9 +101,8 @@ else:
 bot.gpss_url = bot.flagbrew_url
 
 if not os.path.exists('saves/warns.json'):
-    data = {}
     with open('saves/warns.json', 'w') as file:
-        json.dump(data, file, indent=4)
+        json.dump({}, file, indent=4)
 with open('saves/warns.json', 'r') as file:
     bot.warns_dict = json.load(file)
 
@@ -113,10 +112,10 @@ if not os.path.exists('saves/disabled_commands.json'):
 with open('saves/disabled_commands.json', 'r') as file:
     bot.disabled_commands = json.load(file)
 
-if not os.path.exists("saves/mutes.json"):
-    with open("saves/mutes.json", "w") as file:
+if not os.path.exists('saves/mutes.json'):
+    with open('saves/mutes.json', 'w') as file:
         json.dump({}, file, indent=4)
-with open("saves/mutes.json", "r") as file:
+with open('saves/mutes.json', 'r') as file:
     bot.mutes_dict = json.load(file)
 
 if bot.is_mongodb:
