@@ -48,6 +48,9 @@ class Events(commands.Cog):
         if mute_exp != "" and not await helper.check_mute_expiry(self.bot.mutes_dict, member):
             embed.add_field(name="Muted Until", value=mute_exp + " UTC")
             await member.add_roles(self.bot.mute_role)
+        if member.id in self.bot.gpss_bans_array:
+            embed.description += "\n**User is GPSS Banned.**"
+            await member.add_roles(self.bot.gpss_banned_role)
         try:
             await member.send(f"Welcome to {member.guild.name}! Please read the rules, as you won't be able to access the majority of the server otherwise. This is an automated message, no reply is necessary.")
         except discord.Forbidden:

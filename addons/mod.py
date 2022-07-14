@@ -365,6 +365,67 @@ class Moderation(commands.Cog):
         await member.timeout(diff - timedelta(seconds=1), reason=reason)  # Reduce diff by 1 second due to communication_disabled_until when it's *exactly* 28 days
         await ctx.send(f"Successfully timed out {member} until {end_str}!{cap_msg}")
 
+    @commands.command()
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
+    async def gpssban(self, ctx, member: discord.Member, *, reason="No reason was given"):
+        """Bans a user from using gpsspost"""
+        has_attch = bool(ctx.message.attachments)
+        if member == ctx.message.author:
+            return await ctx.send("You can't ban yourself from using `gpsspost`.")
+        elif any(role for role in self.bot.protected_roles if role in member.roles):
+            return await ctx.send("You can't ban a staff member from using `gpsspost`.")
+        elif self.bot.gpss_banned_role in member.roles:
+            return await ctx.send("User is already banned from using `gpsspost`.")
+        await member.add_roles(self.bot.gpss_banned_role)
+        self.bot.gpss_bans_array.append(member.id)
+        with open("saves/gpss-bans.json", "w") as file:
+            json.dump(self.bot.gpss_bans_array, file, indent=4)
+        embed = discord.Embed(title=f"{member} ({member.id}) banned from using `gpsspost`")
+        embed.description = f"{member} was banned from using the `gpsspost` command by {ctx.message.author} for:\n\n{reason}"
+        try:
+            if has_attch:
+                img_bytes = await ctx.message.attachments[0].read()
+                gpss_ban_img = discord.File(io.BytesIO(img_bytes), 'image.png')
+                log_img = discord.File(io.BytesIO(img_bytes), 'gpss_ban_image.png')
+                await member.send(f"You were banned from using the `gpsspost` command on FlagBrew for:\n\n`{reason}`", file=gpss_ban_img)
+            else:
+                await member.send(f"You were banned from using the `gpsspost` command on FlagBrew for:\n\n`{reason}`")
+        except discord.Forbidden:
+            pass  # blocked DMs
+        try:
+            if has_attch:
+                embed.set_thumbnail(url="attachment://gpss_ban_image.png")
+                await self.bot.logs_channel.send(embed=embed, file=log_img)
+            else:
+                await self.bot.logs_channel.send(embed=embed)
+        except discord.Forbidden:
+            pass  # beta can't log
+        await ctx.send(f"Successfully banned {member} from using the `gpsspost` command!")
+
+    @commands.command()
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
+    async def ungpssban(self, ctx, member: discord.Member, *, reason="No reason was given."):
+        """Unbans a user from using gpsspost"""
+        if member == ctx.message.author or any(role for role in self.bot.protected_roles if role in member.roles):
+            return await ctx.send(f"How did {member.mention} get banned from `gpsspost`...?")
+        elif self.bot.gpss_banned_role not in member.roles:
+            return await ctx.send("That member can already use `gpsspost`.")
+        await member.remove_roles(self.bot.gpss_banned_role)
+        self.bot.gpss_bans_array.remove(member.id)
+        with open("saves/gpss-bans.json", "w") as file:
+            json.dump(self.bot.gpss_bans_array, file, indent=4)
+        embed = discord.Embed(title=f"{member} ({member.id}) unbanned from `gpsspost`")
+        embed.description = f"{member} was unbanned from using the `gpsspost` command by {ctx.message.author} for:\n\n{reason}"
+        try:
+            await member.send(f"You can now use the `gpsspost` command on FlagBrew again.")
+        except discord.Forbidden:
+            pass  # blocked DMs
+        try:
+            await self.bot.logs_channel.send(embed=embed)
+        except discord.Forbidden:
+            pass  # beta can't log
+        await ctx.send(f"Successfully unbanned {member} from using the `gpsspost` command!")
+
 
 async def setup(bot):
     await bot.add_cog(Moderation(bot))

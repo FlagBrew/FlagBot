@@ -118,6 +118,12 @@ if not os.path.exists('saves/mutes.json'):
 with open('saves/mutes.json', 'r') as file:
     bot.mutes_dict = json.load(file)
 
+if not os.path.exists('saves/gpss-bans.json'):
+    with open('saves/gpss-bans.json', 'w') as file:
+        json.dump([], file, indent=4)
+with open('saves/gpss-bans.json', 'r') as file:
+    bot.gpss_bans_array = json.load(file)
+
 if bot.is_mongodb:
     if not is_using_cmd_args:
         db_address = config.db_address
@@ -252,6 +258,7 @@ async def on_ready():
                     bot.discord_moderator_role = discord.utils.get(guild.roles, id=396988600480301059)
                     bot.patrons_role = discord.utils.get(guild.roles, id=330078911704727552)
                     bot.mute_role = discord.utils.get(guild.roles, id=519566020315185163)
+                    bot.gpss_banned_role = discord.utils.get(guild.roles, id=997256131841884241)
                     bot.protected_roles = (discord.utils.get(guild.roles, id=279598900799864832), bot.discord_moderator_role, bot.flagbrew_team_role, discord.utils.get(guild.roles, id=381053929389031424))
                     bot.patrons_channel = discord.utils.get(guild.channels, id=381000988246540292)
                     bot.interpreter_logs_channel = discord.utils.get(guild.channels, id=672553506690826250)

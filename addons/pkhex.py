@@ -476,6 +476,9 @@ class pkhex(commands.Cog):
     @restricted_to_bot
     async def gpss_upload(self, ctx, data=""):
         """Allows uploading a pokemon to the GPSS. Takes a provided URL or attached pkx file. URL *must* be a direct download link"""
+        if self.bot.gpss_banned_role in ctx.author.roles:
+            raise commands.errors.CheckFailure()
+            return
         if not data and not ctx.message.attachments:
             raise PKHeXMissingArgs()
         async with self.bot.session.get(self.bot.flagbrew_url) as resp:
