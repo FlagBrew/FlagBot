@@ -99,7 +99,7 @@ class pkhex(commands.Cog):
         files = {'pkmn': file}
         if user_id is None:
             user_id = ""
-        headers = {'UID': user_id, 'secret': self.bot.site_secret, 'source': "FlagBot"}
+        headers = {'discord-user': str(user_id), 'secret': self.bot.site_secret, 'source': "FlagBot"}
         async with self.bot.session.post(url=url, data=files, headers=headers) as resp:
             if not is_gpss and (resp.status == 400 or resp.status == 413):
                 await ctx.send("The provided file was invalid.")
@@ -488,6 +488,7 @@ class pkhex(commands.Cog):
         try:
             code = resp_json['code']
             uploaded = resp_json['uploaded']
+            approved = resp_json['approved']
         except KeyError:
             return await ctx.send(f"JSON content was empty on the response.\nStatus: {resp[0]}\nContent: {resp[2]}")
         if resp[0] == 503:
@@ -501,6 +502,8 @@ class pkhex(commands.Cog):
             else:
                 await ctx.send(f"There seems to have been an issue getting the code for this upload. Please check <#586728153985056801> to confirm upload. If it didn't upload, try again later. {self.bot.creator.mention} and {self.bot.allen.mention} please investigate!")
                 return await self.bot.err_logs_channel.send(f"Error processing GPSS upload in {ctx.channel.mention}. Code length greater than 10. Code: `{code}`")
+        elif not approved:
+            return await ctx.send(f"Your pokemon has been uploaded, but currently is waiting on approval. If it is approved, you can find it at: {self.bot.gpss_url}gpss/{code}")
         await ctx.send(f"Your pokemon has been uploaded! You can find it at: {self.bot.gpss_url}gpss/{code}")
 
     @commands.command()
