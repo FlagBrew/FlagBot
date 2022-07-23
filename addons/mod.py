@@ -125,9 +125,9 @@ class Moderation(commands.Cog):
                     img_bytes = await ctx.message.attachments[0].read()
                     kick_img = discord.File(io.BytesIO(img_bytes), 'image.png')
                     log_img = discord.File(io.BytesIO(img_bytes), 'kick_image.png')
-                    await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY", file=kick_img)
+                    await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/95U8FEKZFZ", file=kick_img)
                 else:
-                    await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/bGKEyfY")
+                    await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/95U8FEKZFZ")
             except discord.Forbidden:
                 pass  # bot blocked or not accepting DMs
             try:

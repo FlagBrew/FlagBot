@@ -36,7 +36,7 @@ class Warning(commands.Cog):
             dm_msg += "\nYou were banned for this warn. If you believe this was in error, please contact FlagBrew via email at `flagbrewinfo@gmail.com`."
             log_msg += "They were banned as a result of this warn."
         elif len(warns) >= 3:
-            dm_msg += "\nYou were kicked for this warn. If you would like to rejoin the server, here is a permanent invite: https://discord.gg/bGKEyfY."
+            dm_msg += "\nYou were kicked for this warn. If you would like to rejoin the server, here is a permanent invite: https://discord.gg/95U8FEKZFZ."
             if len(warns) == 4:
                 dm_msg += "\nYou will be automatically banned if you are warned again."
             log_msg += "They were kicked as a result of this warn."

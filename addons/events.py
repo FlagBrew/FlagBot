@@ -5,6 +5,7 @@ import secrets
 import qrcode
 import io
 import sys
+import json
 import addons.helper as helper
 from discord.ext import commands
 from datetime import timedelta
@@ -34,8 +35,8 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        if self.bot.is_beta:
-            return
+        # if self.bot.is_beta:
+        #     return
         try:
             mute_exp = self.bot.mutes_dict[str(member.id)]
         except KeyError:
@@ -55,8 +56,19 @@ class Events(commands.Cog):
             await member.send(f"Welcome to {member.guild.name}! Please read the rules, as you won't be able to access the majority of the server otherwise. This is an automated message, no reply is necessary.")
         except discord.Forbidden:
             embed.description += "\n**Failed to DM user on join.**"
+        kick_invite_uses = (inv.uses for inv in (await member.guild.invites()) if inv.code == '95U8FEKZFZ')
+        try:
+            kick_invite_count = self.bot.persistent_vars_dict['kick_invite_count']
+        except KeyError:
+            kick_invite_count = 0
+        if next(kick_invite_uses) > kick_invite_count:
+            self.bot.persistent_vars_dict['kick_invite_count'] = kick_invite_count + 1
+            embed.description += "\n**User joined off of an invite sent with a kick.**"
+            with open('saves/persistent_vars.json', 'w') as file:
+                json.dump(self.bot.persistent_vars_dict, file, indent=4)
         if member.guild.id == self.bot.flagbrew_id:
-            await self.bot.logs_channel.send(embed=embed)
+            # await self.bot.logs_channel.send(embed=embed)
+            await self.bot.bot_channel2.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
