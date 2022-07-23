@@ -470,5 +470,5 @@ async def main():
         await setup_cogs(bot)
         await bot.start(token)
 
-
-asyncio.get_event_loop().run_until_complete(main())
+loop = asyncio.new_event_loop()
+loop.run_until_complete(main())
