@@ -67,8 +67,7 @@ class Events(commands.Cog):
             with open('saves/persistent_vars.json', 'w') as file:
                 json.dump(self.bot.persistent_vars_dict, file, indent=4)
         if member.guild.id == self.bot.flagbrew_id:
-            # await self.bot.logs_channel.send(embed=embed)
-            await self.bot.bot_channel2.send(embed=embed)
+            await self.bot.logs_channel.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
