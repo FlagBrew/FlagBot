@@ -124,6 +124,12 @@ if not os.path.exists('saves/gpss-bans.json'):
 with open('saves/gpss-bans.json', 'r') as file:
     bot.gpss_bans_array = json.load(file)
 
+if not os.path.exists('saves/persistent_vars.json'):
+    with open('saves/persistent_vars.json', 'w') as file:
+        json.dump({}, file, indent=4)
+with open('saves/persistent_vars.json', 'r') as file:
+    bot.persistent_vars_dict = json.load(file)
+
 if bot.is_mongodb:
     if not is_using_cmd_args:
         db_address = config.db_address
@@ -241,9 +247,9 @@ async def on_error(event_method, *args, **kwargs):
 async def on_ready():
     # this bot should only ever be in one server anyway
     if len(bot.disabled_commands) > 0:
-        for channel in bot.disabled_commands:
-            bot.get_command(channel).enabled = False
-            print(f'Disabled {channel}')
+        for command in bot.disabled_commands:
+            bot.get_command(command).enabled = False
+            print(f'Disabled {command}')
     for guild in bot.guilds:
         try:
             if guild.id in (bot.testing_id, bot.flagbrew_id):
@@ -273,19 +279,22 @@ async def on_ready():
                 try:
                     await guild.owner.send(f"Left your server, `{guild.name}`, as this bot should only be used on the PKSM server under this token.")
                 except discord.Forbidden:
-                    for channel in guild.channels:
-                        if channel.permissions_for(guild.me).send_messages and isinstance(channel, discord.TextChannel):
-                            await channel.send("Left your server, as this bot should only be used on the PKSM server under this token.")
+                    for command in guild.channels:
+                        if command.permissions_for(guild.me).send_messages and isinstance(command, discord.TextChannel):
+                            await command.send("Left your server, as this bot should only be used on the PKSM server under this token.")
                             break
                 finally:
                     await guild.leave()
             try:
-                with open('restart.txt', 'r') as file:
-                    restart_channel = file.readline()
-                channel = await bot.fetch_channel(restart_channel)
-                await channel.send("Successfully restarted!")
-                os.remove('restart.txt')
-            except (discord.NotFound, FileNotFoundError):
+                restart_channel = bot.persistent_vars_dict['restart_channel']
+                if restart_channel == "":
+                    raise KeyError
+                command = await bot.fetch_channel(restart_channel)
+                await command.send("Successfully restarted!")
+                bot.persistent_vars_dict['restart_channel'] = ""
+                with open('saves/persistent_vars.json', 'w') as file:
+                    json.dump(bot.persistent_vars_dict, file, indent=4)
+            except KeyError:
                 pass
             print(f"Initialized on {guild.name}.")
         except Exception:
@@ -433,9 +442,11 @@ async def restart(ctx):
     if not ctx.author == ctx.guild.owner and not ctx.author == bot.creator and not ctx.author == bot.allen:
         return await ctx.send("You don't have permission to do that!")
     await ctx.send("Restarting...")
-    with open('restart.txt', 'w') as file:
-        file.write(str(ctx.channel.id))
-    sys.exit(0)
+    bot.persistent_vars_dict['restart_channel'] = str(ctx.channel.id)
+    with open('saves/persistent_vars.json', 'w') as file:
+        json.dump(bot.persistent_vars_dict, file, indent=4)
+    await bot.session.close()
+    await bot.close()
 
 
 @bot.command()
@@ -460,4 +471,4 @@ async def main():
         await bot.start(token)
 
 
-asyncio.run(main())
+asyncio.get_event_loop().run_until_complete(main())
