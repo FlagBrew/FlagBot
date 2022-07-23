@@ -441,10 +441,13 @@ async def restart(ctx):
     """Restarts the bot."""
     if not ctx.author == ctx.guild.owner and not ctx.author == bot.creator and not ctx.author == bot.allen:
         return await ctx.send("You don't have permission to do that!")
-    await ctx.send("Restarting...")
-    bot.persistent_vars_dict['restart_channel'] = str(ctx.channel.id)
-    with open('saves/persistent_vars.json', 'w') as file:
-        json.dump(bot.persistent_vars_dict, file, indent=4)
+    if not bot.is_beta:
+        await ctx.send("Restarting...")
+        bot.persistent_vars_dict['restart_channel'] = str(ctx.channel.id)
+        with open('saves/persistent_vars.json', 'w') as file:
+            json.dump(bot.persistent_vars_dict, file, indent=4)
+    else:
+        await ctx.send("Beta shutting down...")
     await bot.session.close()
     await bot.close()
 
