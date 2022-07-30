@@ -167,7 +167,7 @@ class Events(commands.Cog):
                     }, upsert=True)
                 if len(before.roles) < len(after.roles):
                     await self.bot.patrons_channel.send(f"Welcome to the super secret cool kids club {after.mention}!"
-                                                        " You can find up to date PKSM builds in <#531117773754073128>, and all patron news will be role pinged in <#330065133978255360>.")
+                                                        " You can find up to date PKSM builds by using the `.genqr` command, and all patron news will be role pinged in <#330065133978255360>.")
                     message = ("Congrats on becoming a patron! You can add the token below to PKSM's config to access some special patron only stuff. It's only valid until your"
                                " patron status is cancelled, so keep up those payments!"
                                " To access the hidden Patron settings menu, press the four corners of the touch screen while on the configuration screen."
