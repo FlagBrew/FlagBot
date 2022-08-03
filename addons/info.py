@@ -216,9 +216,15 @@ class Info(commands.Cog):
     @spam_limiter
     async def question(self, ctx):
         """Reminder for those who won't just ask their question"""
-        await ctx.send("Reminder: if you would like someone to help you, please be as descriptive as possible, of your situation, things you have done, "
-                       "as little as they may seem, as well as assisting materials. Asking to ask wont expedite your process, and may delay assistance. "
-                       "***WE ARE NOT PSYCHIC.***")
+        embed = discord.Embed(title="Reminder about Asking Questions")
+        embed.description = "If you would like someone to help you, please be as descriptive as possible. Some (non-exhaustive) examples of info that you should provide:"
+        embed.add_field(name="Your Working Environment", value="\u2022 Console\n\u2022 System Software Version\n\u2022 Luma/Atmosphere Version\n\u2022 Application Version")
+        embed.add_field(name="Steps You've Taken", value="This should include __**ALL**__ steps you have taken to cause the issue, as well as any you have taken to resolve the issue.")
+        embed.add_field(name="Assisting Materials", value="Any and all assisting materials you have used to get to your current point, being **as specific** as possible.")
+        embed.add_field(name="Please keep in mind that doing things such as:", value="\u2022 Asking if you can ask a question while in the correct channel\n"
+                        "\u2022 Asking if anyone is available to help\n\u2022 Asking any other vague question that is not your actual question\n"
+                        "Will only delay your assistance. Please keep in mind that we are *all* volunteers. and that ***WE ARE NOT PSYCHIC.***", inline=False)
+        await ctx.send(embed=embed)
 
     @commands.command(aliases=['readthedocs', 'docs', '<:wikidiot:558815031836540940>'])
     async def wiki(self, ctx, option=""):
@@ -439,22 +445,22 @@ class Info(commands.Cog):
     async def banrisks(self, ctx):
         """Posts current known NS ban risks"""
         ban_info = {
-            "guaranteed": """• Piracy of any sort (**If you're wondering whether something counts, the answer is almost certainly yes.**)
-                • Homebrew NSPs: See above.
-                • Changing user icon through homebrew
-                • Sketchy eShop behavior""",
-            "semi": """• Modding online games, except in some niche circumstances
-                • Cheating in online games
-                • Clearing error logs after they've been uploaded to Nintendo (this extends to using both emummc and sysmmc online, due to mismatched logs)""",
-            "no": """• Atmosphere, online or offline
-                • Most homebrew, online or offline
-                • Custom themes
-                • Custom sysmodules (sys-ftpd-light, missioncontrol, fizeau, etc.)
-                • Mods/cheating in offline games
-                • Overclocking with sys-clk (just don't do it competitively, for all of our sakes)
-                • emummc""",
-            "unknown": """• Modifying PRODINFO, or using the experimental PRODINFO dummying included in Atmosphere 0.11.2 and later.
-                • Using sys-tweak to change game icons (which may be sent to Nintendo)"""
+            "guaranteed": """\u2022 Piracy of any sort (**If you're wondering whether something counts, the answer is almost certainly yes.**)
+                \u2022 Homebrew NSPs: See above.
+                \u2022 Changing user icon through homebrew
+                \u2022 Sketchy eShop behavior""",
+            "semi": """\u2022 Modding online games, except in some niche circumstances
+                \u2022 Cheating in online games
+                \u2022 Clearing error logs after they've been uploaded to Nintendo (this extends to using both emummc and sysmmc online, due to mismatched logs)""",
+            "no": """\u2022 Atmosphere, online or offline
+                \u2022 Most homebrew, online or offline
+                \u2022 Custom themes
+                \u2022 Custom sysmodules (sys-ftpd-light, missioncontrol, fizeau, etc.)
+                \u2022 Mods/cheating in offline games
+                \u2022 Overclocking with sys-clk (just don't do it competitively, for all of our sakes)
+                \u2022 emummc""",
+            "unknown": """\u2022 Modifying PRODINFO, or using the experimental PRODINFO dummying included in Atmosphere 0.11.2 and later.
+                \u2022 Using sys-tweak to change game icons (which may be sent to Nintendo)"""
         }
         last_updated = datetime.strptime("2021-12-02", "%Y-%m-%d")
         embed = discord.Embed(title="Current known Nintendo Switch ban risks", description=f"Last updated on: {discord.utils.format_dt(last_updated, style='D')}")
