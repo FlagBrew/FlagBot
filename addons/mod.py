@@ -112,6 +112,7 @@ class Moderation(commands.Cog):
     @commands.has_any_role("Discord Moderator")
     async def kick(self, ctx, member: discord.Member, *, reason="No reason was given."):
         """Kick a member."""
+        kick_message = f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/95U8FEKZFZ \n\nUpon rejoining, feel free to DM <@958140281633513563> any possible complaints. DMing Staff or Team members to complain will be met with further moderator action, as per rule 6."
         has_attch = bool(ctx.message.attachments)
         if member == ctx.message.author:
             return await ctx.send("You can't kick yourself, obviously")
@@ -125,9 +126,9 @@ class Moderation(commands.Cog):
                     img_bytes = await ctx.message.attachments[0].read()
                     kick_img = discord.File(io.BytesIO(img_bytes), 'image.png')
                     log_img = discord.File(io.BytesIO(img_bytes), 'kick_image.png')
-                    await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/95U8FEKZFZ", file=kick_img)
+                    await member.send(kick_message, file=kick_img)
                 else:
-                    await member.send(f"You were kicked from FlagBrew for:\n\n`{reason}`\n\nIf you believe this to be in error, you can rejoin here: https://discord.gg/95U8FEKZFZ")
+                    await member.send(kick_message)
             except discord.Forbidden:
                 pass  # bot blocked or not accepting DMs
             try:
@@ -205,6 +206,7 @@ class Moderation(commands.Cog):
     @commands.has_any_role("Discord Moderator")
     async def mute(self, ctx, member: discord.Member, *, reason="No reason was given."):
         """Mutes a user"""
+        mute_message = f"You were muted on FlagBrew for:\n\n`{reason}` \n\nPlease direct any possible complaints to <@958140281633513563>. DMing Staff or Team members to complain will be met with further moderator action, as per rule 6."
         has_attch = bool(ctx.message.attachments)
         if member == ctx.message.author:
             return await ctx.send("You can't mute yourself, obviously")
@@ -223,9 +225,9 @@ class Moderation(commands.Cog):
                 img_bytes = await ctx.message.attachments[0].read()
                 mute_img = discord.File(io.BytesIO(img_bytes), 'image.png')
                 log_img = discord.File(io.BytesIO(img_bytes), 'mute_image.png')
-                await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`", file=mute_img)
+                await member.send(mute_message, file=mute_img)
             else:
-                await member.send(f"You were muted on FlagBrew for:\n\n`{reason}`")
+                await member.send(mute_message)
         except discord.Forbidden:
             pass  # blocked DMs
         try:
@@ -296,14 +298,15 @@ class Moderation(commands.Cog):
         await member.add_roles(self.bot.mute_role)
         embed = discord.Embed(title=f"{member} ({member.id}) timemuted")
         embed.description = f"{member} timemuted by {ctx.message.author} until {end_str} UTC for:\n\n{reason}"
+        timemute_message = f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}. \n\nPlease direct any possible complaints to <@958140281633513563>. DMing Staff or Team members to complain will be met with further moderator action, as per rule 6."
         try:
             if has_attch:
                 img_bytes = await ctx.message.attachments[0].read()
                 mute_img = discord.File(io.BytesIO(img_bytes), 'image.png')
                 log_img = discord.File(io.BytesIO(img_bytes), 'mute_image.png')
-                await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.", file=mute_img)
+                await member.send(timemute_message, file=mute_img)
             else:
-                await member.send(f"You have been muted on {ctx.guild} for\n\n`{reason}`\n\nYou will be unmuted on {end_str}.")
+                await member.send(timemute_message)
         except discord.Forbidden:
             pass  # blocked DMs
         self.bot.mutes_dict[str(member.id)] = end.strftime("%Y-%m-%d %H:%M:%S")
@@ -352,13 +355,14 @@ class Moderation(commands.Cog):
             cap_msg = "\n\nTimeouts are limited to 28 days on Discord's side. The length of this timeout has been lowered to 28 days."
         end = curr_time + diff
         end_str = discord.utils.format_dt(end)
+        timeout_message = f"You have been timed out on {ctx.guild} for\n\n`{reason}`\n\nYour timeout will expire on {end_str}. \n\nPlease direct any possible complaints to <@958140281633513563>. DMing Staff or Team members to complain will be met with further moderator action, as per rule 6."
         try:
             if has_attch:
                 img_bytes = await ctx.message.attachments[0].read()
                 timeout_img = discord.File(io.BytesIO(img_bytes), 'image.png')
-                await member.send(f"You have been timed out on {ctx.guild} for\n\n`{reason}`\n\nYour timeout will expire on {end_str}.", file=timeout_img)
+                await member.send(timeout_message, file=timeout_img)
             else:
-                await member.send(f"You have been timed out on {ctx.guild} for\n\n`{reason}`\n\nYour timeout will expire on {end_str}.")
+                await member.send(timeout_message)
         except discord.Forbidden:
             pass  # blocked DMs
         reason += f"\n\nAction done by {ctx.author} (This is to deal with audit log scraping)"
@@ -369,6 +373,7 @@ class Moderation(commands.Cog):
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     async def gpssban(self, ctx, member: discord.Member, *, reason="No reason was given"):
         """Bans a user from using gpsspost"""
+        gpssban_message = f"You were banned from using the `gpsspost` command on FlagBrew for:\n\n`{reason}` \n\nPlease direct any possible complaints to <@958140281633513563>. DMing Staff or Team members to complain will be met with further moderator action, as per rule 6."
         has_attch = bool(ctx.message.attachments)
         if member == ctx.message.author:
             return await ctx.send("You can't ban yourself from using `gpsspost`.")
@@ -387,9 +392,9 @@ class Moderation(commands.Cog):
                 img_bytes = await ctx.message.attachments[0].read()
                 gpss_ban_img = discord.File(io.BytesIO(img_bytes), 'image.png')
                 log_img = discord.File(io.BytesIO(img_bytes), 'gpss_ban_image.png')
-                await member.send(f"You were banned from using the `gpsspost` command on FlagBrew for:\n\n`{reason}`", file=gpss_ban_img)
+                await member.send(gpssban_message, file=gpss_ban_img)
             else:
-                await member.send(f"You were banned from using the `gpsspost` command on FlagBrew for:\n\n`{reason}`")
+                await member.send(gpssban_message)
         except discord.Forbidden:
             pass  # blocked DMs
         try:

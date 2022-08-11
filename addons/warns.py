@@ -44,6 +44,7 @@ class Warning(commands.Cog):
             dm_msg += "You will be automatically kicked if you are warned again."
         embed = discord.Embed(title=f"{target} warned")
         embed.description = f"{target} | {target.id} was warned in {ctx.channel.mention} by {ctx.author} for `{reason}`. This is warn #{len(warns)}. {log_msg}"
+        dm_msg += "\n\nPlease direct any possible complaints to <@958140281633513563>. DMing Staff or Team members to complain will be met with further moderator action, as per rule 6."
         try:
             if has_attch:
                 img_bytes = await ctx.message.attachments[0].read()
