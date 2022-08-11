@@ -133,7 +133,7 @@ class Info(commands.Cog):
         'vc',  # general faq #1 - vc support
         'entitled',  # general faq #2 - new releases
         'rules',  # general faq #4 - toggling roles
-        "swsh",  # pksm faq #2 - switch support
+        "lgpe", "swsh", "bdsp", "pla", "scvi", "switchsupport"  # pksm faq #2 - switch support
         "emulator",  # pksm faq #3 - emulator cross-use
         "sendpkx",  # pksm faq #7 - sending pkx files
         "wc3", "gen3events",  # pksm faq #9 - gen 3 events
