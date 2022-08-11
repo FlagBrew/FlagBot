@@ -67,7 +67,7 @@ def faq_decorator(func):
         elif ctx.invoked_with == "rules":
             faq_doc = "general"
             faq_item = "4"
-        elif ctx.invoked_with == "swsh":
+        elif ctx.invoked_with in ("lgpe", "swsh", "bdsp", "pla", "scvi", "switchsupport"):
             faq_doc = "pksm"
             faq_item = "2"
         elif ctx.invoked_with == "emulator":
@@ -76,13 +76,13 @@ def faq_decorator(func):
         elif ctx.invoked_with == "sendpkx":
             faq_doc = "pksm"
             faq_item = "7"
-        elif ctx.invoked_with == "wc3" or ctx.invoked_with == "gen3events":
+        elif ctx.invoked_with in ("wc3", "gen3events"):
             faq_doc = "pksm"
             faq_item = "9"
         elif ctx.invoked_with == "romhacks":
             faq_doc = "pksm"
             faq_item = "10"
-        elif ctx.invoked_with == "addcode" or ctx.invoked_with == "fixcheat":
+        elif ctx.invoked_with in ("addcode", "fixcheat"):
             faq_doc = "checkpoint"
             faq_item = "1"
         elif ctx.invoked_with == "wheregame":
