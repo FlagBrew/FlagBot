@@ -21,6 +21,9 @@ class Utility(commands.Cog):
         if bot.is_mongodb:
             self.db = bot.db
         print(f'Addon "{self.__class__.__name__}" loaded')
+        if not os.path.exists('saves/role_mentions.json'):
+            with open('saves/role_mentions.json', 'w') as file:
+                json.dump({}, file, indent=4)
         with open("saves/role_mentions.json", "r") as file:
             self.role_mentions_dict = json.load(file)
         if not os.path.exists('saves/submitted_hashes.json'):
@@ -67,12 +70,17 @@ class Utility(commands.Cog):
             await self.toggleroles(ctx, role, user)
         await ctx.send(f"{user.mention} Successfully toggled all possible roles.")
 
-    @commands.command(aliases=['srm', 'mention'])
+    @commands.group(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    async def secure_role_mention(self, ctx, update_role: str, channel: discord.TextChannel = None):
-        """Securely mention a role. Can input a channel at the end for remote mentioning. More can be added with srm_add"""
-        if not channel:
-            channel = ctx.channel
+    async def secure_role_mention(self, ctx):
+        """Main handler for SRM commands"""
+        if ctx.invoked_subcommand is None:
+            return await ctx.send("Possible subcommands: `send`, `list`, `add`, `remove`")
+
+    @secure_role_mention.command(name="send")
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
+    async def secure_role_message_send(self, ctx, update_role: str, *, message: str):
+        """Securely mention a role with a message."""
         if update_role.lower() == "flagbrew":
             role = self.bot.flagbrew_team_role
         else:
@@ -81,61 +89,59 @@ class Utility(commands.Cog):
             except KeyError:
                 role = None
         if role is None:
-            return await ctx.send("You didn't give a valid role. Do `.srm_list` to see all available roles.")
+            return await ctx.send("You didn't provide a valid role name. Do `.srm list` to see all available roles.")
         try:
-            await role.edit(mentionable=True, reason=f"{ctx.author} wanted to mention users with this role.")  # Reason -> Helps pointing out folks that abuse this
+            await role.edit(mentionable=True, reason=f"{ctx.author} wanted to mention users with this role.")  # Reason -> Helps to point out folks that abuse this
         except Exception:
             await role.edit(mentionable=True, reason=f"A staff member wanted to mention users with this role, and I couldn't log properly. Check {self.bot.logs_channel.mention}.")  # Bypass the TypeError it kept throwing
-        await channel.send(f"{role.mention}")
+        embed = discord.Embed(description=message)
+        embed.set_footer(text=f"Sent by: {ctx.author}")
+        await ctx.message.delete()
+        await ctx.send(f"{role.mention}", embed=embed)
         await role.edit(mentionable=False, reason="Making role unmentionable again.")
         try:
-            await self.bot.logs_channel.send(f"{ctx.author} pinged {role.name} in {channel}")
+            await self.bot.logs_channel.send(f"{ctx.author} pinged {role.name} in {ctx.channel} with the following message: ", embed=embed)
         except discord.Forbidden:
             pass  # beta bot can't log
 
-    @commands.command(aliases=['srm_list'])
+    @secure_role_mention.command(name="list")
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     @restricted_to_bot
-    async def secure_role_mention_list(self, ctx):
-        """Lists all available roles for srm"""
+    async def secure_role_message_list(self, ctx):
+        """Lists all available roles for secure_role_mention"""
         embed = discord.Embed(title="Mentionable Roles")
-        embed.description = "\n".join(self.role_mentions_dict)
-        embed.description += "\nflagbrew"
+        combined_list = list(self.role_mentions_dict) + ["flagbrew"]
+        combined_list = sorted(combined_list)
+        embed.description = "\n".join(combined_list)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['srm_add'])
-    @commands.has_any_role("Discord Moderator")
+    @secure_role_mention.command(name="add")
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     @restricted_to_bot
-    async def secure_role_mention_add(self, ctx, role_name, role_id: int):
-        """Allows adding a role to the dict for secure_role_mention. Role_name should be the name that will be used when srm is called"""
-        role = discord.utils.get(ctx.guild.roles, id=role_id)
-        if role is None:
-            return await ctx.send("That's not a role on this guild.")
-        not_new = True
+    async def secure_role_message_add(self, ctx, role_name, role: discord.Role):
+        """Allows adding a role to the dict for secure_role_mention. 'role_name' should be the name that will be used for srm invoking, 'role' should be the ID or a mention of the pinged role"""
         try:
             self.role_mentions_dict[role_name.lower()]
+            return await ctx.send("That name is already set. Please use `.srm remove` to delete it first.")
         except KeyError:
-            not_new = False
-        if not_new:
-            return await ctx.send("There's already a key with that name.")
-        self.role_mentions_dict[role_name.lower()] = str(role_id)
+            self.role_mentions_dict[role_name.lower()] = role.id
         with open("saves/role_mentions.json", "w") as file:
             json.dump(self.role_mentions_dict, file, indent=4)
-        await ctx.send(f"`{role_name.lower()}` can now be mentioned via srm.")
+        await ctx.send(f"`{role.name}` can now be mentioned via srm under the name `{role_name.lower()}`.")
         try:
             await self.bot.logs_channel.send(f"{ctx.author} added {role_name.lower()} to the mentionable roles.")
         except discord.Forbidden:
             pass  # beta bot can't log
 
-    @commands.command(aliases=['srm_remove'])
-    @commands.has_any_role("Discord Moderator")
+    @secure_role_mention.command(name="remove")
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     @restricted_to_bot
     async def secure_role_mention_remove(self, ctx, role_name):
-        """Allows removing a role from the dict for secure_role_mention. Role_name should be the name that is used when srm is called"""
+        """Allows removing a role from the dict for secure_role_mention. 'role_name' should be the name that will be used for srm invoking"""
         try:
             self.role_mentions_dict[role_name.lower()]
         except KeyError:
-            return await ctx.send("That role isn't in the dict. Please use `.srm_list` to confirm.")
+            return await ctx.send("That role isn't in the dict. Please use `.srm list` to confirm.")
         del self.role_mentions_dict[role_name.lower()]
         with open("saves/role_mentions.json", "w") as file:
             json.dump(self.role_mentions_dict, file, indent=4)
