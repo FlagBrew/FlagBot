@@ -7,7 +7,7 @@ import qrcode
 import io
 import json
 import math
-from addons.helper import faq_decorator, restricted_to_bot, spam_limiter
+import addons.helper as helper
 from discord.ext import commands
 from datetime import datetime
 
@@ -30,8 +30,6 @@ class Info(commands.Cog):
             self.pksm_faq_dict = json.load(file)
         with open("saves/faqs/checkpoint.json", "r") as file:
             self.checkpoint_faq_dict = json.load(file)
-        with open("saves/key_inputs.json", "r") as file:
-            self.key_dict = json.load(file)
 
     async def gen_qr(self, ctx, app):
         releases = None
@@ -144,8 +142,8 @@ class Info(commands.Cog):
     ]
 
     @commands.command(aliases=faq_aliases)
-    @spam_limiter
-    @faq_decorator
+    @helper.spam_limiter
+    @helper.faq_decorator
     async def faq(self, ctx, faq_doc="", *, faq_item=""):
         """Frequently Asked Questions. Allows numeric input for specific faq, or multiple numbers in a row for multiple at a time.
         Requires general, pksm, or checkpoint to be given as faq_doc"""
@@ -213,7 +211,7 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    @spam_limiter
+    @helper.spam_limiter
     async def question(self, ctx):
         """Reminder for those who won't just ask their question"""
         embed = discord.Embed(title="Reminder about Asking Questions")
@@ -318,10 +316,10 @@ class Info(commands.Cog):
         while decval != 0:
             key_index = math.floor(math.log(decval, 2))
             try:
-                key_3ds = self.key_dict.get(hex(2**key_index))[0]
+                key_3ds = helper.key_inputs.get(hex(2**key_index))[0]
                 if key_3ds != "None":
                     final_indices['3ds'].append(key_3ds)
-                key_switch = self.key_dict.get(hex(2**key_index))[1]
+                key_switch = helper.key_inputs.get(hex(2**key_index))[1]
                 if key_switch != "None" and hexval.replace('0x', '')[0] == "8":
                     final_indices['switch'].append(key_switch)
             except IndexError:
@@ -330,7 +328,7 @@ class Info(commands.Cog):
         return final_indices
 
     @commands.command()
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def cheatkeys(self, ctx, key):
         """Byte decoder for sharkive codes. Input should be the second half of the line starting with DD000000"""
         if len(key) != 8:
@@ -346,7 +344,7 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['dg'])
-    @spam_limiter
+    @helper.spam_limiter
     async def downgrade(self, ctx):
         """Don't. Fucking. Downgrade."""
         embed = discord.Embed(title="Should you downgrade?")
@@ -355,7 +353,7 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['es'])
-    @spam_limiter
+    @helper.spam_limiter
     async def extrasaves(self, ctx):
         """Extrasaves info"""
         embed = discord.Embed(title="How do I access my external saves?")
@@ -365,7 +363,7 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["tid"])
-    @spam_limiter
+    @helper.spam_limiter
     async def titleid(self, ctx):
         """Title ID adding info"""
         embed = discord.Embed(title="How do I access my GBA games?")
@@ -441,7 +439,7 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    @spam_limiter
+    @helper.spam_limiter
     async def banrisks(self, ctx):
         """Posts current known NS ban risks"""
         ban_info = {
@@ -472,7 +470,7 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    @spam_limiter
+    @helper.spam_limiter
     async def legit(self, ctx):
         """Information about legality versus legitimacy"""
         embed = discord.Embed(title="Terms used by genners")

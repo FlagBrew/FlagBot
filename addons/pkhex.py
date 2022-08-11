@@ -266,8 +266,6 @@ class pkhex(commands.Cog):
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
 
         # Get info for inputted pokemon
-        with open("saves/defaultforms.json", "r", encoding="utf8") as file:
-            defaultforms = json.load(file)
         if shiny not in ("normal", "shiny"):
             shiny = "normal"
         if not validators.url(data) and not ctx.message.attachments:
@@ -289,8 +287,8 @@ class pkhex(commands.Cog):
             if species == "flabebe":
                 species = "flabébé"
             form = ""
-            if species in defaultforms.keys():
-                form = defaultforms[species]
+            if species in helper.default_forms.keys():
+                form = helper.default_forms[species]
             if len(data) > 1:
                 form = data[1].lower()
             elif form == "female":
