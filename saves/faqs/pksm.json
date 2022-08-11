@@ -16,8 +16,8 @@
         "fields": [
             {
                 "inline": false,
-                "name": "When are we getting PKSM on Switch? What about LGPE or Sword & Shield support?",
-                "value": "You can access LGPE saves by bridging PKSM on 3DS to Checkpoint on Switch. SwSh is provisionally supported, however the bridge is not currently fully functional due to variable save sizes. This will require a PKSM update to fully resolve. No, there is still no ETA. This is the best you'll get for now, possibly ever if you annoy ~~our lord and savior, Giratina~~ the FlagBrew team."
+                "name": "When are we getting PKSM on Switch?",
+                "value": "PKSM on Switch is currently blocked by the lack of a team UI/Asset Designer. Until someone is willing to make the assets and help design the UI needed for a Switch release of PKSM, PKSM will not be ported to Switch.\nKeep an eye on [this issue](https://github.com/FlagBrew/PKSM/issues/1175) if you would like to see any updates, and go to <#298009996338135041> if you would like to provide help.\n\nAlternatively, for LGPE and SWSH, you can [bridge their saves](https://github.com/FlagBrew/PKSM/wiki/Basics#loading-a-save-over-a-network) from Checkpoint on Switch. Please note that SWSH support is unstable. SWSH, BDSP, and PLA all have trouble due to variablity in the save sizes for these games. There are currently no plans for SCVI support.\n\n**Please note** that repeatedly bringing up this topic without attempting to provide help with UI/Asset design will be met with moderator action."
             }
         ],
         "type": "rich"
