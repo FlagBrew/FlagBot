@@ -67,23 +67,6 @@ class Utility(commands.Cog):
             await self.toggleroles(ctx, role, user)
         await ctx.send(f"{user.mention} Successfully toggled all possible roles.")
 
-    @commands.command(aliases=['brm'])
-    @commands.has_any_role("Discord Moderator", "FlagBrew Team", "Bot Dev")
-    @restricted_to_bot
-    async def role_mention_bot(self, ctx):
-        """Securely mention anyone with the bot updates role"""
-        role = discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict['bot']))
-        try:
-            await role.edit(mentionable=True, reason=f"{ctx.author} wanted to mention users with this role.")  # Reason -> Helps pointing out folks that abuse this
-        except Exception:
-            await role.edit(mentionable=True, reason=f"A staff member, or Griffin, wanted to mention users with this role, and I couldn't log properly. Check {self.bot.logs_channel.mention}.")  # Bypass the TypeError it kept throwing
-        await ctx.channel.send(f"{role.mention}")
-        await role.edit(mentionable=False, reason="Making role unmentionable again.")
-        try:
-            await self.bot.logs_channel.send(f"{ctx.author} pinged bot updates in {ctx.channel}")
-        except discord.Forbidden:
-            pass  # beta bot can't log
-
     @commands.command(aliases=['srm', 'mention'])
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
     async def secure_role_mention(self, ctx, update_role: str, channel: discord.TextChannel = None):
