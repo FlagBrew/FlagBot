@@ -490,8 +490,10 @@ class pkhex(commands.Cog):
             code = resp_json['code']
             uploaded = resp_json['uploaded']
             approved = resp_json['approved']
-        except KeyError:
-            return await ctx.send(f"JSON content was empty on the response.\nStatus: {resp[0]}\nContent: {resp[2]}")
+        except KeyError as e:
+            if not e.args[0] == "approved":
+                return await ctx.send(f"JSON content was empty on the response.\nStatus: {resp[0]}\nContent: {resp[2]}")
+            approved = True
         if resp[0] == 503:
             return await ctx.send("GPSS uploading is currently disabled. Please try again later.")
         elif not uploaded:
