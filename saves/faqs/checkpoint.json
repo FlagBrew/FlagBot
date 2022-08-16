@@ -51,5 +51,15 @@
             }
         ],
         "type": "rich"
+    },
+    {
+        "fields": [
+            {
+                "inline": false,
+                "name": "How do I update Checkpoint's cheat database?",
+                "value": "Follow [these steps](https://github.com/FlagBrew/Sharkive#how-do-i-update-checkpoints-cheat-database) from the Sharkive repository's README."
+            }
+        ],
+        "type": "rich"
     }
 ]

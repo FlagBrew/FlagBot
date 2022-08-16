@@ -91,6 +91,9 @@ def faq_decorator(func):
         elif ctx.invoked_with == "pkcrash":
             faq_doc = "checkpoint"
             faq_item = "4"
+        elif ctx.invoked_with == "updatedb":
+            faq_doc = "checkpoint"
+            faq_item = "6"
         await func(self=self, ctx=ctx, faq_doc=faq_doc, faq_item=faq_item)
     return wrapper
 

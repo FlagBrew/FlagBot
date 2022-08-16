@@ -139,6 +139,7 @@ class Info(commands.Cog):
         "addcode", "fixcheat",  # checkpoint faq #1 - pls add cheat
         "wheregame",  # checkpoint faq #2 - missing games
         "pkcrash",  # checkpoint faq #4 - cheat crash in pkmn games
+        "updatedb",  # checkpoint faq #6 - how to update the cheat db
     ]
 
     @commands.command(aliases=faq_aliases)
