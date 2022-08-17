@@ -330,8 +330,9 @@ class Info(commands.Cog):
 
     @commands.command()
     @helper.restricted_to_bot
-    async def cheatkeys(self, ctx, key):
+    async def cheatkeys(self, ctx, *, key):
         """Byte decoder for sharkive codes. Input should be the second half of the line starting with DD000000"""
+        key = key.replace(' ', '').replace('DD000000', '')
         if len(key) != 8:
             return await ctx.send("That isn't a valid key!")
         indexes = self.get_keys(key)
