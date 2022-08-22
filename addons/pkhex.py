@@ -83,7 +83,7 @@ class pkhex(commands.Cog):
             if not validators.url(data):
                 await ctx.send("That's not a real link!")
                 return 400
-            elif not data.strip("?raw=true")[-4:-1] not in (".pk", ".pb", ".pa"):
+            elif data.strip("?raw=true")[-4:-1] not in (".pk", ".pb", ".pa"):
                 await ctx.send("That isn't a valid pkx, pbx, or pa8 file!")
                 return 400
             try:
