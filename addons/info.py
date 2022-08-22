@@ -215,11 +215,11 @@ class Info(commands.Cog):
     @helper.spam_limiter
     async def question(self, ctx):
         """Reminder for those who won't just ask their question"""
-        embed = discord.Embed(title="Reminder about Asking Questions")
+        embed = discord.Embed(title="How to Ask a Proper Question")
         embed.description = "If you would like someone to help you, please be as descriptive as possible. Some (non-exhaustive) examples of info that you should provide:"
         embed.add_field(name="Your Working Environment", value="\u2022 Console\n\u2022 System Software Version\n\u2022 Luma/Atmosphere Version\n\u2022 Application Version")
         embed.add_field(name="Steps You've Taken", value="This should include __**ALL**__ steps you have taken to cause the issue, as well as any you have taken to resolve the issue.")
-        embed.add_field(name="Assisting Materials", value="Any and all assisting materials you have used to get to your current point, being **as specific** as possible.")
+        embed.add_field(name="Assisting Materials", value="Any and all assisting materials you have used to get to your current point, being **as specific** as possible. This includes __**any**__ crash dumps or error messages that you encounter.")
         embed.add_field(name="Please keep in mind that doing things such as:", value="\u2022 Asking if you can ask a question while in the correct channel\n"
                         "\u2022 Asking if anyone is available to help\n\u2022 Asking any other vague question that is not your actual question\n"
                         "Will only delay your assistance. Please keep in mind that we are *all* volunteers. and that ***WE ARE NOT PSYCHIC.***", inline=False)
