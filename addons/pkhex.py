@@ -371,11 +371,19 @@ class pkhex(commands.Cog):
         await ctx.send(f"QR containing a {resp['species']} for Generation {resp['generation']}", file=qr)
 
     @commands.command(name='learns', aliases=['learn'])
-    async def check_moves(self, ctx, generation: int, *, input_data):
+    async def check_moves(self, ctx, generation: str, *, input_data):
         """Checks if a given pokemon can learn moves. Separate moves using pipes. Example: .learns 8 pikachu | quick attack | hail"""
         ping = await self.ping_api_func()
         if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
+        try:
+            int(generation)
+        except ValueError:
+            if generation.lower() not in ("bdsp", "pla", "lgpe"):
+                return await ctx.send(f"There is no generation {generation}.")
+        else:
+            if int(generation) not in range(1, 9):
+                return await ctx.send(f"There is no generation {generation}.")
         input_data = input_data.replace("| ", "|").replace(" |", "|").replace(" | ", "|")
         input_data = input_data.split("|")
         pokemon = input_data[0]
@@ -384,38 +392,44 @@ class pkhex(commands.Cog):
             return await ctx.send("No moves provided, or the data provided was in an incorrect format.\n```Example: .learns pikachu | quick attack | hail```")
         data = {
             "query": pokemon + "|" + "|".join(moves),
-            "generation": str(generation)
+            "generation": generation.upper()
         }
         async with self.bot.session.post(self.bot.api_url + "api/bot/moves", data=data) as resp:
             if resp.status == 400:
                 return await ctx.send("Something you sent was invalid. Please double check your data and try again.")
             resp_json = await resp.json()
-            embed = discord.Embed(title=f"Move Lookup for {pokemon.title()} in Generation {str(generation)}", description="")
+            embed = discord.Embed(title=f"Move Lookup for {pokemon.title()} in Generation {generation.upper()}", description="")
             for move in resp_json:
                 embed.description += f"**{move['name'].title()}** is {'not ' if not move['learnable'] else ''}learnable.\n"
             await ctx.send(embed=embed)
 
     @commands.command(name='find')
-    async def check_encounters(self, ctx, generation: int, *, input_data):
+    async def check_encounters(self, ctx, generation: str, *, input_data):
         """Outputs the locations a given pokemon can be found. Separate data using pipes. Example: .find 6 pikachu | volt tackle"""
         ping = await self.ping_api_func()
         if not isinstance(ping, aiohttp.ClientResponse) or not ping.status == 200:
             return await ctx.send("The CoreAPI server is currently down, and as such no commands in the PKHeX module can be used.")
-        elif generation not in range(1, 9):
-            return await ctx.send(f"The inputted generation must be a valid integer between 1 and 8 inclusive. You entered: `{generation}`")
+        try:
+            int(generation)
+        except ValueError:
+            if generation.lower() not in ("bdsp", "pla", "lgpe"):
+                return await ctx.send(f"There is no generation {generation}.")
+        else:
+            if int(generation) not in range(1, 9):
+                return await ctx.send(f"There is no generation {generation}.")
         input_data = input_data.replace("| ", "|").replace(" |", "|").replace(" | ", "|")
         input_data = input_data.split("|")
         pokemon = input_data[0]
         moves = input_data[1:]
         data = {
             "query": pokemon + ("|" + "|".join(moves) if not len(moves) == 0 else ""),
-            "generation": generation
+            "generation": generation.upper()
         }
         async with self.bot.session.post(self.bot.api_url + "api/Encounter", data=data) as resp:
             if resp.status == 400:
                 return await ctx.send("Something you sent was invalid. Please double check your data and try again.")
             resp_json = await resp.json()
-            embed = discord.Embed(title=f"Encounter Data for {pokemon.title()} in Generation {generation}{' with move(s) ' if len(moves) > 0 else ''}{', '.join([move.title() for move in moves])}")
+            embed = discord.Embed(title=f"Encounter Data for {pokemon.title()} in Generation {generation.upper()}{' with move(s) ' if len(moves) > 0 else ''}{', '.join([move.title() for move in moves])}")
             for encs in resp_json['encounters']:
                 field_values = ""
                 for loc in encs["locations"]:
@@ -432,7 +446,7 @@ class pkhex(commands.Cog):
                 if field_values:
                     embed.add_field(name=f"As {encs['encounterType']}", value=field_values, inline=False)
             if len(embed.fields) == 0:
-                return await ctx.send(f"Could not find matching encounter data for {pokemon.title()} in Generation {generation}{' with move(s) ' if len(moves) > 0 else ''}{', '.join([move.title() for move in moves])}.")
+                return await ctx.send(f"Could not find matching encounter data for {pokemon.title()} in Generation {generation.upper()}{' with move(s) ' if len(moves) > 0 else ''}{', '.join([move.title() for move in moves])}.")
             await ctx.send(embed=embed)
 
     @commands.command(name="gpssfetch")
@@ -554,16 +568,22 @@ class pkhex(commands.Cog):
     @commands.command(enabled=True)
     @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     @restricted_to_bot
-    async def convert(self, ctx, gen: int, *, showdown_set):
+    async def convert(self, ctx, generation: str, *, showdown_set):
         """Converts a given showdown set into a pkx from a given generation. WIP."""
-        if gen not in range(1, 9):
-            return await ctx.send(f"There is no generation {gen}.")
+        try:
+            int(generation)
+        except ValueError:
+            if generation.lower() not in ("bdsp", "pla", "lgpe"):
+                return await ctx.send(f"There is no generation {generation}.")
+        else:
+            if int(generation) not in range(1, 9):
+                return await ctx.send(f"There is no generation {generation}.")
         showdown_set = showdown_set.replace('`', '')
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         url = self.bot.api_url + "api/showdown"
         data = {
             "set": showdown_set,
-            "generation": str(gen)
+            "generation": generation.upper()
         }
         async with self.bot.session.post(url=url, data=data) as resp:
             if resp.status == 400:
@@ -583,10 +603,11 @@ class pkhex(commands.Cog):
         embed = discord.Embed(title=f"Data for {resp_json['nickname']} ({resp_json['gender']})")
         embed.set_thumbnail(url=resp_json["species_sprite_url"])
         embed = self.embed_fields(ctx, embed, resp_json, is_set=True)
-        pokemon_file = discord.File(io.BytesIO(pkx), "showdownset.pk" + str(gen))
+        file_extension = (".pb7" if generation.lower() == "lgpe" else ".pb8" if generation.lower() == "bdsp" else ".pa8" if generation.lower() == "pla" else ".pk" + generation)
+        pokemon_file = discord.File(io.BytesIO(pkx), "showdownset" + file_extension)
         qr_file = discord.File(io.BytesIO(qr), "qrcode.png")
         log_msg = await upload_channel.send(f"Showdown set converted by {ctx.author}", files=[pokemon_file, qr_file])
-        embed.description = f"[PKX Download Link]({log_msg.attachments[0].url})\n[QR Code]({log_msg.attachments[1].url})"
+        embed.description = f"[{'PB7' if generation.lower() == 'lgpe' else 'PB8' if generation.lower() == 'bdsp' else 'PA8' if generation.lower() == 'pla' else 'PX' + generation} Download Link]({log_msg.attachments[0].url})\n[QR Code]({log_msg.attachments[1].url})"
         embed.colour = discord.Colour.green() if resp_json["illegal_reasons"] == "Legal!" else discord.Colour.red()
         await ctx.send(embed=embed)
 
