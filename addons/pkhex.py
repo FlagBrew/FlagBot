@@ -83,8 +83,8 @@ class pkhex(commands.Cog):
             if not validators.url(data):
                 await ctx.send("That's not a real link!")
                 return 400
-            elif not data.strip("?raw=true")[-4:-1] == ".pk":
-                await ctx.send("That isn't a pkx file!")
+            elif not data.strip("?raw=true")[-4:-1] not in (".pk", ".pb", ".pa"):
+                await ctx.send("That isn't a valid pkx, pbx, or pa8 file!")
                 return 400
             try:
                 async with self.bot.session.get(data) as resp:
@@ -453,6 +453,10 @@ class pkhex(commands.Cog):
                 filename = pkmn_data["species"] + f" Code_{code}"
                 if pkmn_data["generation"] == "LGPE":
                     filename += ".pb7"
+                elif pkmn_data["generation"] == "BDSP":
+                    filename += ".pb8"
+                elif pkmn_data["generation"] == "PLA":
+                    filename += ".pa8"
                 else:
                     filename += ".pk" + pkmn_data["generation"]
                 pk64 = code_data["base_64"].encode("ascii")
