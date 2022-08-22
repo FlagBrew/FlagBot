@@ -121,7 +121,7 @@ class pkhex(commands.Cog):
         embed.add_field(name="Species", value=data["species"])
         embed.add_field(name="Level", value=data["level"])
         embed.add_field(name="Nature", value=data["nature"])
-        if int(data["generation"]) > 2:
+        if (data["generation"].lower() not in ('bdsp', 'pla', 'lgpe')) and int(data["generation"]) > 2:
             embed.add_field(name="Ability", value=data["ability"])
         else:
             embed.add_field(name="Ability", value="N/A")
@@ -129,7 +129,7 @@ class pkhex(commands.Cog):
             ot = data["ot"]
             sid = data["sid"]
             tid = data["tid"]
-            if int(data["generation"]) > 2:
+            if (data["generation"].lower() not in ('bdsp', 'pla', 'lgpe')) and int(data["generation"]) > 2:
                 embed.add_field(name="Original Trainer", value=f"{ot}\n({tid}/{sid})")
             else:
                 embed.add_field(name="Original Trainer", value=f"{ot}\n({tid})")
@@ -137,11 +137,11 @@ class pkhex(commands.Cog):
             embed.add_field(name="Handling Trainer", value=data["ht"])
         elif not is_set:
             embed.add_field(name="Handling Trainer", value="N/A")
-        if int(data["generation"]) > 2 and not data["met_loc"] == "" and not is_set:
+        if (data["generation"].lower() not in ('bdsp', 'pla', 'lgpe')) and int(data["generation"]) > 2 and not data["met_loc"] == "" and not is_set:
             embed.add_field(name="Met Location", value=data["met_loc"])
         elif not is_set:
             embed.add_field(name="Met Location", value="N/A")
-        if int(data["generation"]) > 2:
+        if (data["generation"].lower() not in ('bdsp', 'pla', 'lgpe')) and int(data["generation"]) > 2:
             if data["version"] == "":
                 return 400
             embed.add_field(name="Origin Game", value=data["version"])
