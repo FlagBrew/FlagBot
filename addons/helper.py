@@ -129,7 +129,11 @@ game_dict = {
     "GP": "Let's Go Pikachu",
     "GE": "Let's Go Eevee",
     "SW": "Sword",
-    "SH": "Shield"
+    "SH": "Shield",
+    "BD": "Brilliant Diamond",
+    "SP": "Shining Pearl",
+    "PLA": "Legends Arceus",
+    "LA": "Legends Arceus"  # Not sure if this is used anywhere, adding for safety.
 }
 
 default_forms = {
