@@ -256,7 +256,8 @@ class Utility(commands.Cog):
         issue_body = f"Game ID: {game_id}\nConsole: {console}\nCode name: {code_name}\n\n Issue: {issue}\n\n Submitted by: {ctx.author} | User id: {ctx.author.id}"
         issue = {
             "title": "Broken code submitted through bot",
-            "body": issue_body
+            "body": issue_body,
+            "labels": ['bot submission']
         }
         async with self.bot.session.post(url=url, auth=session_auth, data=json.dumps(issue)) as resp:
             json_content = await resp.json()
