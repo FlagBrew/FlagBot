@@ -6,7 +6,6 @@ import discord
 import qrcode
 import io
 import json
-import math
 import addons.helper as helper
 from discord.ext import commands
 from datetime import datetime

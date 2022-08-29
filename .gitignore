@@ -15,3 +15,4 @@ saves/new_layout.json
 saves/banned_phrases.json
 saves/persistent_vars.json
 saves/role_mentions.json
+saves/xmls/*
