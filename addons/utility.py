@@ -703,6 +703,26 @@ class Utility(commands.Cog):
             embed.set_thumbnail(url=str(invite.guild.icon))
         await ctx.send(embed=embed)
 
+    def get_keys(self, hexval):  # thanks to architdate for the code
+        final_indices = {'3ds': [], 'switch': []}
+        try:
+            decval = int(hexval, 16)
+        except ValueError:
+            return 400
+        while decval != 0:
+            key_index = math.floor(math.log(decval, 2))
+            try:
+                key_3ds = helper.key_inputs.get(hex(2**key_index))[0]
+                if key_3ds != "None":
+                    final_indices['3ds'].append(key_3ds)
+                key_switch = helper.key_inputs.get(hex(2**key_index))[1]
+                if key_switch != "None" and hexval.replace('0x', '')[0] == "8":
+                    final_indices['switch'].append(key_switch)
+            except IndexError:
+                return 400
+            decval -= 2**key_index
+        return final_indices
+
     @commands.command()
     @restricted_to_bot
     async def cheatkeys(self, ctx, *, key):
