@@ -729,6 +729,8 @@ class Utility(commands.Cog):
     async def cheatkeys(self, ctx, *, key):
         """Byte decoder for sharkive codes. Input should be the second half of the line starting with DD000000"""
         key = key.replace(' ', '').replace('DD000000', '')
+        if key == "00000000":
+            return await ctx.send("All 0s is a null input combo.")
         if len(key) != 8:
             return await ctx.send("That isn't a valid key!")
         indexes = self.get_keys(key)
@@ -739,6 +741,9 @@ class Utility(commands.Cog):
             embed.add_field(name="3DS inputs", value='`' + '` + `'.join(indexes["3ds"]) + '`')
         if len(indexes["switch"]) > 0:
             embed.add_field(name="Switch inputs", value='`' + '` + `'.join(indexes["switch"]) + '`', inline=False)
+        if len(indexes["3ds"]) == 0 and len(indexes["switch"]) == 0:
+            embed.description = "No inputs could be found for the provided key."
+        await ctx.send(embed=embed)
         await ctx.send(embed=embed)
 
 
