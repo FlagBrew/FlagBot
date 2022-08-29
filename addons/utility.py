@@ -11,7 +11,8 @@ import qrcode
 import io
 import hashlib
 import validators
-from addons.helper import restricted_to_bot
+import math
+import addons.helper as helper
 
 
 class Utility(commands.Cog):
@@ -43,7 +44,7 @@ class Utility(commands.Cog):
             return True
 
     @commands.command()
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def togglerole(self, ctx, role):
         """Allows user to toggle update roles. Available roles: see #welcome-and-rules, as well as 'bot'"""
         user = ctx.message.author
@@ -58,7 +59,7 @@ class Utility(commands.Cog):
         await ctx.send(user.mention + ' ' + info_string)
 
     @commands.command(hidden=True)
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def masstoggle(self, ctx):
         """Allows a user to toggle both console update roles"""
         toggle_roles = [
@@ -106,7 +107,7 @@ class Utility(commands.Cog):
 
     @secure_role_mention.command(name="list")
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def secure_role_message_list(self, ctx):
         """Lists all available roles for secure_role_mention"""
         embed = discord.Embed(title="Mentionable Roles")
@@ -117,7 +118,7 @@ class Utility(commands.Cog):
 
     @secure_role_mention.command(name="add")
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def secure_role_message_add(self, ctx, role_name, role: discord.Role):
         """Allows adding a role to the dict for secure_role_mention. 'role_name' should be the name that will be used for srm invoking, 'role' should be the ID or a mention of the pinged role"""
         try:
@@ -135,7 +136,7 @@ class Utility(commands.Cog):
 
     @secure_role_mention.command(name="remove")
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def secure_role_mention_remove(self, ctx, role_name):
         """Allows removing a role from the dict for secure_role_mention. 'role_name' should be the name that will be used for srm invoking"""
         try:
@@ -164,7 +165,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def regen_token(self, ctx, user: discord.Member):
         """Regenerates a patron's token"""
         if not self.bot.is_mongodb:
@@ -192,7 +193,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def delete_token(self, ctx, user: discord.Member, *, reason="No reason provided"):
         """Deletes a patron's token"""
         if not self.bot.is_mongodb:
@@ -207,7 +208,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def generate_token(self, ctx, user: discord.Member):
         """Generates a patron token. If user already in system, use regen_token"""
         if not self.bot.is_mongodb:
@@ -234,7 +235,7 @@ class Utility(commands.Cog):
         await ctx.send(f"Token for user {user} successfully generated.")
 
     @commands.command(aliases=['report', 'rc'])  # Modified from https://gist.github.com/JeffPaine/3145490
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def report_code(self, ctx, game_id: str, code_name: str, issue):
         """Allow reporting a broken code through the bot. Example: .report_code 00040000001B5000, 'PP Not Decrease v1.0', 'PP still decreases with code enabled'"""
         async with self.bot.session.get("https://api.github.com/repos/FlagBrew/Sharkive/contents/3ds") as resp:
@@ -280,7 +281,7 @@ class Utility(commands.Cog):
         await msg.edit(content=f"{prune_amount} users would be kicked as a result of a prune.")
 
     @commands.command()
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def toggledmfaq(self, ctx):
         """Allows a user to toggle getting the faq dm'd to them instead of it posting in channel"""
         if ctx.author.id in self.bot.dm_list:
@@ -381,7 +382,7 @@ class Utility(commands.Cog):
         return hash.hexdigest()
 
     @commands.command(aliases=['scd'])
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def submit_crash_dump(self, ctx, *, description):
         """Allows submitting a PKSM crash dump. Must provide a dump file, and a description. Abusers will be warned."""
         if not ctx.message.attachments or not ctx.message.attachments[0].filename.endswith(".dmp"):
@@ -448,7 +449,7 @@ class Utility(commands.Cog):
         await ctx.send(f"Successfully changed the crash report's status from `{old_embed.fields[4].value}` to `{new_value.title()}`!\nJump link to the edited crash: {message.jump_url}")
 
     @commands.command()
-    @restricted_to_bot
+    @helper.restricted_to_bot
     @commands.has_any_role("FlagBrew Team", "Bot Dev")
     async def clear_hash(self, ctx):
         """Clears the submitted_hashes file"""
@@ -488,7 +489,7 @@ class Utility(commands.Cog):
             await ctx.send(f"{ctx.author.mention} Here's the {lang.lower()} language file:", file=gui_file)
 
     @commands.command(aliases=['ui', 'user'])  # Smth smth stolen from GriffinG1/Midnight but it's *my* license and I do what I want
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def userinfo(self, ctx, user: discord.Member = None, depth=False):
         """Pulls a user's info. Passing no member returns your own. depth is a bool that will specify account creation and join date, and account age"""
         if not user:
@@ -521,7 +522,7 @@ class Utility(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['fui'])  # Fetches discord.User instead of discord.Member
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def fetch_user_info(self, ctx, user: discord.User):
         """Pulls a discord.User instead of discord.Member. More limited than userinfo"""
         embed = discord.Embed(colour=user.colour)
@@ -532,7 +533,7 @@ class Utility(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['si', 'guild', 'gi', 'server', 'serverinfo'])
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def guildinfo(self, ctx, depth=False):
         embed = discord.Embed()
         embed.set_author(name=f"Guild info for {ctx.guild.name} ({ctx.guild.id})", icon_url=str(ctx.guild.icon))
@@ -724,7 +725,7 @@ class Utility(commands.Cog):
         return final_indices
 
     @commands.command()
-    @restricted_to_bot
+    @helper.restricted_to_bot
     async def cheatkeys(self, ctx, *, key):
         """Byte decoder for sharkive codes. Input should be the second half of the line starting with DD000000"""
         key = key.replace(' ', '').replace('DD000000', '')
