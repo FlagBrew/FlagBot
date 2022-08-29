@@ -703,6 +703,23 @@ class Utility(commands.Cog):
             embed.set_thumbnail(url=str(invite.guild.icon))
         await ctx.send(embed=embed)
 
+    @commands.command()
+    @restricted_to_bot
+    async def cheatkeys(self, ctx, *, key):
+        """Byte decoder for sharkive codes. Input should be the second half of the line starting with DD000000"""
+        key = key.replace(' ', '').replace('DD000000', '')
+        if len(key) != 8:
+            return await ctx.send("That isn't a valid key!")
+        indexes = self.get_keys(key)
+        if indexes == 400:
+            return await ctx.send("That isn't a valid key!")
+        embed = discord.Embed(title=f"Matching inputs for `{key}`")
+        if len(indexes["3ds"]) > 0:
+            embed.add_field(name="3DS inputs", value='`' + '` + `'.join(indexes["3ds"]) + '`')
+        if len(indexes["switch"]) > 0:
+            embed.add_field(name="Switch inputs", value='`' + '` + `'.join(indexes["switch"]) + '`', inline=False)
+        await ctx.send(embed=embed)
+
 
 async def setup(bot):
     await bot.add_cog(Utility(bot))
