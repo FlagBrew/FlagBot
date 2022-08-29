@@ -754,23 +754,23 @@ class Utility(commands.Cog):
         games_info = {}
         save_path = "~/{}/Checkpoint/saves/{} <game_name_here>/<save_folder_here>/<save_content_here>"
         failed_games = []
-        if console == "3ds":
-            url = "http://3dsdb.com/xml.php"
-        elif console == "switch":
-            url = "http://nswdb.com/xml.php"
-        else:
+        if console == "switch":
+            for game in games_list:
+                if "Pokemon" in game and "Arceus" not in game:
+                    games_list.append(games_list.pop(games_list.index(game)).replace('Pokemon', 'Pokémon'))
+        elif console != "3ds":
             return await ctx.send(f"This command only supports `3ds` and `switch` consoles. `{console}` is not a supported console.")
-        async with self.bot.session.get(url) as resp:
-            xmlroot = lxml.etree.fromstring(await resp.read())  # Code taken and modified from the docs.py script in FlagBrew/Sharkive
-            for elem in xmlroot.findall("release"):
-                game_name = elem.find("name").text
-                if game_name in games_list:
-                    titleid = elem.find("titleid").text.split(' ')[0]
-                    region = elem.find("region").text
-                    if titleid in games_info.keys():
-                        games_info[titleid]['region'] = "UNV"
-                        continue
-                    games_info[titleid] = {'name': game_name, 'region': region}
+        xmltree = lxml.etree.parse(f'saves/xmls/{console}.xml')
+        xmlroot = xmltree.getroot()
+        for elem in xmlroot.findall("release"):  # Code taken and modified from the docs.py script in FlagBrew/Sharkive
+            game_name = elem.find("name").text
+            if game_name in games_list:
+                titleid = elem.find("titleid").text.split(' ')[0]
+                region = elem.find("region").text
+                if titleid in games_info.keys():
+                    games_info[titleid]['region'] = "UNV"
+                    continue
+                games_info[titleid] = {'name': game_name, 'region': region}
         embed = discord.Embed(title="Save Paths")
         failed_games = [game for game in games_list if game not in [games_info[titleid]['name'] for titleid in games_info]]
         if len(failed_games) > 0:
@@ -778,11 +778,26 @@ class Utility(commands.Cog):
         for game_id in games_info.keys():
             if console == "3ds":
                 hex_id = int(game_id, 16)  # Converts titleID to hex, then:
-                game_path = f"0x{((hex_id & 0xFFFFFFFF) >> 8):0{5}X}".replace('X', 'x')  # Takes lower 32 bits of TID, shifts by 8, then pads with leading zeros to 5 characters
+                game_path = f"0x{((hex_id & 0xFFFFFFFF) >> 8):0{5}X}"  # Takes lower 32 bits of TID, shifts by 8, then pads with leading zeros to 5 characters
             else:
                 game_path = f"0x{game_id}"
             embed.add_field(name=f"{games_info[game_id]['name']} ({games_info[game_id]['region']})", value=f"`{save_path.format(console, game_path)}`", inline=False)
         await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
+    async def update_tid_xml(self, ctx, console):
+        """Updates the XML files used for create_save_path. Pass in 3ds or switch"""
+        if console == "3ds":
+            url = "http://3dsdb.com/xml.php"
+        elif console == "switch":
+            url = "http://nswdb.com/xml.php"
+        async with self.bot.session.get(url) as resp:
+            if resp.status == 200:
+                content = await resp.read()
+                with open(f'saves/xmls/{console}.xml', 'wb') as file:
+                    file.write(content)
+        await ctx.send(f"Downloaded an updated xml for {console}.")
 
 
 async def setup(bot):
