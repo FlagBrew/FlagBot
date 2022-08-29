@@ -35,8 +35,8 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        # if self.bot.is_beta:
-        #     return
+        if self.bot.is_beta:
+            return
         try:
             mute_exp = self.bot.mutes_dict[str(member.id)]
         except KeyError:
