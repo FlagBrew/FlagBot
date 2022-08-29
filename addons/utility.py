@@ -11,6 +11,7 @@ import qrcode
 import io
 import hashlib
 import validators
+import lxml.etree
 import math
 import addons.helper as helper
 
@@ -744,6 +745,43 @@ class Utility(commands.Cog):
         if len(indexes["3ds"]) == 0 and len(indexes["switch"]) == 0:
             embed.description = "No inputs could be found for the provided key."
         await ctx.send(embed=embed)
+
+    @commands.command(aliases=['csp'])
+    async def create_save_path(self, ctx, console: str, *, games):
+        """Returns a formed save path for the provided console and game(s). Separate inputted games with '|'. Game names must be complete"""
+        games = games.replace(' | ', '|').replace(' |', '|').replace('| ', '|')  # Cleanup string for uniformity
+        games_list = games.split('|')
+        games_info = {}
+        save_path = "~/{}/Checkpoint/saves/{} <game_name_here>/<save_folder_here>/<save_content_here>"
+        failed_games = []
+        if console == "3ds":
+            url = "http://3dsdb.com/xml.php"
+        elif console == "switch":
+            url = "http://nswdb.com/xml.php"
+        else:
+            return await ctx.send(f"This command only supports `3ds` and `switch` consoles. `{console}` is not a supported console.")
+        async with self.bot.session.get(url) as resp:
+            xmlroot = lxml.etree.fromstring(await resp.read())  # Code taken and modified from the docs.py script in FlagBrew/Sharkive
+            for elem in xmlroot.findall("release"):
+                game_name = elem.find("name").text
+                if game_name in games_list:
+                    titleid = elem.find("titleid").text.split(' ')[0]
+                    region = elem.find("region").text
+                    if titleid in games_info.keys():
+                        games_info[titleid]['region'] = "UNV"
+                        continue
+                    games_info[titleid] = {'name': game_name, 'region': region}
+        embed = discord.Embed(title="Save Paths")
+        failed_games = [game for game in games_list if game not in [games_info[titleid]['name'] for titleid in games_info]]
+        if len(failed_games) > 0:
+            embed.description = f"Could not find any games matching any of these games:\n`{'`, `'.join(failed_games)}`\nPlease double check [here]({'http://www.3dsdb.com/' if console == '3ds' else 'http://nswdb.com/'}) for your game's DB name."
+        for game_id in games_info.keys():
+            if console == "3ds":
+                hex_id = int(game_id, 16)  # Converts titleID to hex, then:
+                game_path = f"0x{((hex_id & 0xFFFFFFFF) >> 8):0{5}X}".replace('X', 'x')  # Takes lower 32 bits of TID, shifts by 8, then pads with leading zeros to 5 characters
+            else:
+                game_path = f"0x{game_id}"
+            embed.add_field(name=f"{games_info[game_id]['name']} ({games_info[game_id]['region']})", value=f"`{save_path.format(console, game_path)}`", inline=False)
         await ctx.send(embed=embed)
 
 
