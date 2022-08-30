@@ -34,6 +34,8 @@ class Utility(commands.Cog):
                 json.dump(data, file, indent=4)
         with open("saves/submitted_hashes.json", "r") as file:
             self.submitted_hashes = json.load(file)
+        if not os.path.isdir('saves/xmls'):
+            os.mkdir('saves/mkdir')
 
     async def toggleroles(self, ctx, role, user):
         author_roles = user.roles[1:]
