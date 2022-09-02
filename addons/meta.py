@@ -4,8 +4,6 @@ import io
 import json
 import asyncio
 import os
-import sys
-import inspect
 from discord.ext import commands
 
 #  Revised addon loading for Meta taken from https://stackoverflow.com/a/24940613

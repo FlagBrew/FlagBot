@@ -2,11 +2,11 @@ import discord
 import asyncio
 import aiohttp
 import io
-import json
 import base64
 import validators
 import os
 import urllib
+import inspect
 from exceptions import PKHeXMissingArgs
 import addons.helper as helper
 from addons.helper import restricted_to_bot
@@ -273,6 +273,8 @@ class pkhex(commands.Cog):
         except ValueError:
             if generation.lower() not in ("bdsp", "pla", "lgpe"):
                 return await ctx.send(f"There is no generation {generation}.")
+        except TypeError:
+            raise commands.MissingRequiredArgument((inspect.Parameter(name='generation', kind=inspect.Parameter.POSITIONAL_ONLY)))
         else:
             if int(generation) not in range(1, 9):
                 return await ctx.send(f"There is no generation {generation}.")
