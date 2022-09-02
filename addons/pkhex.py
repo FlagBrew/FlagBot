@@ -296,6 +296,10 @@ class pkhex(commands.Cog):
             species = data[0].lower()
             if species == "flabebe":
                 species = "flabébé"
+            elif species in ('jangmo', 'hakamo', 'kommo'):
+                species += '-o'
+                if data[1] == 'o':
+                    data.pop(1)
             form = ""
             if species in helper.default_forms.keys():
                 form = helper.default_forms[species]
