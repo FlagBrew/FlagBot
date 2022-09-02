@@ -256,9 +256,9 @@ class pkhex(commands.Cog):
 
     @commands.command(name='pokeinfo', aliases=['pi'])
     @restricted_to_bot
-    async def poke_info(self, ctx, data="", shiny="normal"):
+    async def poke_info(self, ctx, data="", generation: int = None, shiny="normal"):
         ("""Returns an embed with a Pokemon's nickname, species, and a few others. Takes a provided URL or attached pkx file. URL *must* be a direct download link.\n"""
-         """Alternatively can take a single Pokemon as an entry, and will return basic information on the species.""")
+         """Alternatively can take a single Pokemon as an entry, and will return basic information on the species. 'generation' must be passed for this.""")
         if not data and not ctx.message.attachments:
             raise PKHeXMissingArgs()
         ping = await self.ping_api_func()
@@ -268,6 +268,14 @@ class pkhex(commands.Cog):
         # Get info for inputted pokemon
         if shiny not in ("normal", "shiny"):
             shiny = "normal"
+        try:
+            int(generation)
+        except ValueError:
+            if generation.lower() not in ("bdsp", "pla", "lgpe"):
+                return await ctx.send(f"There is no generation {generation}.")
+        else:
+            if int(generation) not in range(1, 9):
+                return await ctx.send(f"There is no generation {generation}.")
         if not validators.url(data) and not ctx.message.attachments:
             colours = {
                 "Red": discord.Colour.red(),
@@ -296,7 +304,8 @@ class pkhex(commands.Cog):
             data = {
                 "pkmn": species,
                 "form": form,
-                "shiny": shiny
+                "shiny": shiny,
+                "generation": generation.upper()
             }
             async with self.bot.session.post(url=url, data=data) as resp:
                 if not resp.status == 200:
@@ -330,7 +339,7 @@ class pkhex(commands.Cog):
                     egg_str += f"\nEgg Group 2: {resp_json['egg_groups'][1]}"
                 embed.add_field(name="Egg Groups", value=egg_str)
                 embed.add_field(name=f"Base stats ({resp_json['bst']})", value=f"```HP:    {resp_json['hp']} Atk:   {resp_json['atk']}\nDef:   {resp_json['def']} SpAtk: {resp_json['spa']} \nSpDef: {resp_json['spd']} Spd:   {resp_json['spe']}```")
-                embed.set_author(name=f"Basic info for {species.title()}{'-' + form.title() if form else ''}", icon_url=resp_json['species_sprite_url'])
+                embed.set_author(name=f"Basic info for {species.title()}{'-' + form.title() if form else ''} in Generation {generation.upper()}", icon_url=resp_json['species_sprite_url'])
                 try:
                     return await ctx.send(embed=embed)
                 except discord.HTTPException:
