@@ -296,10 +296,15 @@ class pkhex(commands.Cog):
             species = data[0].lower()
             if species == "flabebe":
                 species = "flabébé"
-            elif species in ('jangmo', 'hakamo', 'kommo'):
+            elif species in ('jangmo', 'hakamo', 'kommo') and data[1] == "o":
                 species += '-o'
-                if data[1] == 'o':
-                    data.pop(1)
+                data.pop(1)
+            elif species == "ho" and data[1] == "oh":
+                species = "ho-oh"
+                data.pop(1)
+            elif species == "porygon" and data[1].lower() == "z":
+                species = "porygon-z"
+                data.pop(1)
             form = ""
             if species in helper.default_forms.keys():
                 form = helper.default_forms[species]
