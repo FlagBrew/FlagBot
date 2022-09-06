@@ -256,7 +256,7 @@ class Events(commands.Cog):
 
             # Handle generic activities
             if len(aft_acts) + len(bef_acts) > 0 and not bef_acts == aft_acts:
-                if bef_acts[0] == bef_acts[1] or aft_acts[0] == aft_acts[1]:
+                if (len(bef_acts) > 1 and bef_acts[0] == bef_acts[1]) or (len(aft_acts) > 1 and aft_acts[0] == aft_acts[1]):
                     return
                 embed = discord.Embed(title="Activity Change!", colour=discord.Colour.blue())
                 embed.description = f"{before} | {before.id} changed their activity."
@@ -274,12 +274,12 @@ class Events(commands.Cog):
 
             # Handle custom activities
             if len(aft_custom) + len(bef_custom) > 0 and not bef_custom == aft_custom:
-                if bef_custom[0] == aft_custom[0] and bef_custom[1] == aft_custom[1]:
-                    return
                 if len(bef_custom) == 0:
                     bef_custom = ("None", "None")
                 if len(aft_custom) == 0:
                     aft_custom = ("None", "None")
+                if bef_custom[0] == aft_custom[0] and bef_custom[1] == aft_custom[1]:
+                    return
                 embed = discord.Embed(title="Custom Activity Change!", colour=discord.Colour.red())
                 embed.description = f"{before} | {before.id} changed their custom activity."
                 embed.add_field(name="Old Custom Activity", value=f"Name: `{bef_custom[0]}`\nEmoji: `{bef_custom[1]}`")
