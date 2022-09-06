@@ -224,77 +224,73 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_presence_update(self, before, after):
-        if not self.bot.ready:
+        if not self.bot.ready or self.bot.is_beta:
             return
-        elif self.bot.is_beta:
-            return
-        elif before.activities != after.activities:
-            has_activity = True
-            blacklist = [
-                "Spotify",
-                "Google Chrome",
-                "Twitter",
-                "Minecraft",
-                "YouTube",
-                "Netflix",
-                "Firefox",
-                " "
-            ]
-            embed = discord.Embed(title="Activity Change!", colour=discord.Colour.blue())
+        blacklist = [
+            "Spotify",
+            "Google Chrome",
+            "Twitter",
+            "Minecraft",
+            "YouTube",
+            "Netflix",
+            "Firefox",
+            " "
+        ]
+        if before.activities != after.activities:
             bef_custom = ()
             aft_custom = ()
-            for activity in before.activities:
-                if isinstance(activity, discord.CustomActivity):
-                    if not activity.emoji:
-                        bef_custom = (activity.name, "No Emoji")
-                    else:
-                        bef_custom = (activity.name, activity.emoji.name)
-            for activity in after.activities:
-                if isinstance(activity, discord.CustomActivity):
-                    if activity.name == " ":
-                        continue
-                    if not activity.emoji:
-                        aft_custom = (activity.name, "No Emoji")
-                    else:
-                        aft_custom = (activity.name, activity.emoji.name)
             bef_acts = [activity.name for activity in before.activities if not isinstance(activity, discord.CustomActivity) and activity.name not in blacklist]
             aft_acts = [activity.name for activity in after.activities if not isinstance(activity, discord.CustomActivity) and activity.name not in blacklist]
-            if len(aft_acts) == 0:
-                has_activity = False
-            elif bef_acts == aft_acts and bef_custom == aft_custom:
-                return
-            embed.description = f"{before} | {before.id} changed their activity."
-            embed.add_field(name="Old Activities", value=(", ".join(bef_acts) if len(bef_acts) > 0 else "None"))
-            embed.add_field(name="New Activities", value=(", ".join(aft_acts)))
-            if has_activity:
+            for activity in before.activities:
+                if isinstance(activity, discord.CustomActivity):
+                    if activity.emoji:
+                        bef_custom = (activity.name, activity.emoji.name)
+                    else:
+                        bef_custom = (activity.name, "No Emoji")
+            for activity in after.activities:
+                if isinstance(activity, discord.CustomActivity) and not activity.name == " ":
+                    if activity.emoji:
+                        aft_custom = (activity.name, activity.emoji.name)
+                    else:
+                        aft_custom = (activity.name, "No Emoji")
+
+            # Handle generic activities
+            if len(aft_acts) + len(bef_acts) > 0 and not bef_acts == aft_acts:
+                if bef_acts[0] == bef_acts[1] or aft_acts[0] == aft_acts[1]:
+                    return
+                embed = discord.Embed(title="Activity Change!", colour=discord.Colour.blue())
+                embed.description = f"{before} | {before.id} changed their activity."
+                embed.add_field(name="Old Activities", value=(", ".join(bef_acts) if len(bef_acts) > 0 else "None"))
+                embed.add_field(name="New Activities", value=(", ".join(aft_acts) if len(aft_acts) > 0 else "None"))
                 try:
                     await self.bot.activity_logs_channel.send(embed=embed)
-                except discord.Forbidden:
+                except (discord.Forbidden, discord.DiscordServerError):
                     pass
-                except Exception:
+                except Exception as e:
                     if len(before.activities) == 0 or len(after.activities) == 0:
                         return
-                    else:
-                        if (len(bef_acts) > 1 and bef_acts[0] == bef_acts[1]) or (len(aft_acts) > 1 and aft_acts[0] == aft_acts[1]):
-                            return
                     await self.bot.err_logs_channel.send(f"Failed to log activity for user `{before}` (`{before.id}`) with before activity list of `{before.activities}` and after activity list of `{after.activities}`. Cause?")
-            if len(aft_custom) == 0 and len(bef_custom) == 0:
-                return
+                    await self.bot.err_logs_channel.send(discord.Embed(description=e))
 
-            if len(aft_custom) == 0:
-                return
-            elif len(bef_custom) == 0:
-                bef_custom = ("None", "None")
-            elif bef_custom[0] == aft_custom[0] and bef_custom[1] == aft_custom[1]:
-                return
-            embed_custom = discord.Embed(title="Custom Activity Change!", colour=discord.Colour.red())
-            embed_custom.description = f"{before} | {before.id} changed their custom activity."
-            embed_custom.add_field(name="Old Custom Activity", value=f"Name: `{bef_custom[0]}`\nEmoji: `{bef_custom[1]}`")
-            embed_custom.add_field(name="New Custom Activity", value=f"Name: `{aft_custom[0]}`\nEmoji: `{aft_custom[1]}`")
-            try:
-                await self.bot.activity_logs_channel.send(embed=embed_custom)
-            except Exception:
-                await self.bot.err_logs_channel.send(f"Failed to log activity for user `{before}` (`{before.id}`) with before activity list of `{before.activities}` and after activity list of `{after.activities}`. Cause?")
+            # Handle custom activities
+            if len(aft_custom) + len(bef_custom) > 0 and not bef_custom == aft_custom:
+                if bef_custom[0] == aft_custom[0] and bef_custom[1] == aft_custom[1]:
+                    return
+                if len(bef_custom) == 0:
+                    bef_custom = ("None", "None")
+                if len(aft_custom) == 0:
+                    aft_custom = ("None", "None")
+                embed = discord.Embed(title="Custom Activity Change!", colour=discord.Colour.red())
+                embed.description = f"{before} | {before.id} changed their custom activity."
+                embed.add_field(name="Old Custom Activity", value=f"Name: `{bef_custom[0]}`\nEmoji: `{bef_custom[1]}`")
+                embed.add_field(name="New Custom Activity", value=f"Name: `{aft_custom[0]}`\nEmoji: `{aft_custom[1]}`")
+                try:
+                    await self.bot.activity_logs_channel.send(embed=embed)
+                except (discord.Forbidden, discord.DiscordServerError):
+                    pass
+                except Exception as e:
+                    await self.bot.err_logs_channel.send(f"Failed to log activity for user `{before}` (`{before.id}`) with before activity list of `{before.activities}` and after activity list of `{after.activities}`. Cause?")
+                    await self.bot.err_logs_channel.send(discord.Embed(description=e))
 
     async def process_reactions(self, reaction):
         positive_votes = 0
