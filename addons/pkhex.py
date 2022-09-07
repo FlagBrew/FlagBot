@@ -632,7 +632,7 @@ class pkhex(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name='genqr')
-    @commands.has_any_role("Patron", "FlagBrew Team")
+    @commands.has_any_role("Patrons", "FlagBrew Team")
     async def generate_qr(self, ctx, app, ext):
         """Generates a Patron QR code for installing via FBI"""
         if not self.bot.is_mongodb:
