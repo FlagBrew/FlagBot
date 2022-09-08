@@ -407,16 +407,13 @@ async def reload(ctx):
         await ctx.send("This is the first reload after I restarted!")
 
 
-@bot.command(aliases=['drid'], hidden=True)
+@bot.command(name='drid', hidden=True)
 async def dump_role_id(ctx):
     """Dumps role ids for guild. Creator restricted."""
     if ctx.author != bot.creator:
         raise commands.CheckFailure()
-    roles = {}
-    for role in ctx.guild.roles[1:]:
-        roles[role.name] = role.id
-    formatted_roles = str(roles).replace('{', '').replace(', ', ',\n').replace('}', '').replace("'", "**")
-    await bot.creator.send(formatted_roles)
+    role_str = "\n".join((f"**{ctx.guild.roles.index(role)+1}**: **{role.name}**: {role.id}") for role in ctx.guild.roles[:0:-1])
+    await bot.creator.send(role_str)
     await ctx.send("Roles dumped. Cleaning messages in 5 seconds.", delete_after=5)
     await asyncio.sleep(5.1)
     await ctx.message.delete()
