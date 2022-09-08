@@ -127,26 +127,24 @@ class Events(commands.Cog):
         if isinstance(before.channel, discord.abc.GuildChannel) and before.author.id != self.bot.user.id and before.guild.id == self.bot.flagbrew_id:
             if before.channel != self.bot.logs_channel and not before.author.bot:
                 embed = discord.Embed()
-                embed.add_field(name="Original Message", value=before.content, inline=False)
-                embed.add_field(name="Edited Message", value=after.content, inline=False)
+                if len(before.content) < 1024 and len(after.content) < 1024:
+                    embed.add_field(name="Original Message", value=before.content, inline=False)
+                    embed.add_field(name="Edited Message", value=after.content, inline=False)
+                else:
+                    content = before.content + "\n\n>>>>>>>>>>>>>>>>>>>>\n\n" + after.content
+                    bytes_content = bytes(content, 'utf-8')
+                    file = discord.File(io.BytesIO(bytes_content), filename="edited_message_content.txt")
                 embed.add_field(name="Jump URL", value=f"[Here]({before.jump_url})", inline=False)
                 if before.reference is not None:
                     ref = before.reference.resolved
                     embed.add_field(name="Replied To:", value=f"[{ref.author}]({ref.jump_url}) ({ref.author.id})")
-                try:
-                    await self.bot.logs_channel.send(f"Message by {before.author} ({before.author.id}) edited in channel {before.channel.mention}:", embed=embed)
-                except discord.HTTPException:  # spooky missing message content?
-                    try:
-                        await self.bot.err_logs_channel.send(f"Failed to log a message edit... Spooky.\nBefore: `{before}`\nAfter: `{after}`")
-                    except Exception as exception:
-                        await self.bot.err_logs_channel.send("Failed to log a message edit... and the error. Weird. Exception below.")
-                        await self.bot.err_logs_channel.send(exception)
+                if "file" in locals():
+                    return await self.bot.logs_channel.send(f"Message by {before.author} ({before.author.id}) edited in channel {before.channel.mention}:", embed=embed, file=file)
+                await self.bot.logs_channel.send(f"Message by {before.author} ({before.author.id}) edited in channel {before.channel.mention}:", embed=embed)
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        if not self.bot.ready:
-            return
-        elif self.bot.is_beta:
+        if not self.bot.ready or self.bot.is_beta:
             return
 
         # Handle token stuff
