@@ -346,78 +346,72 @@ async def setup_cogs(bot):
 @bot.command(hidden=True)
 async def load(ctx, *, module):
     """Loads an addon"""
-    if ctx.author == ctx.guild.owner or ctx.author == bot.creator or ctx.author == bot.allen:
-        try:
-            await bot.load_extension(f"addons.{module}")
-        except Exception as exception:
-            await ctx.send(f':anger: Failed!\n```\n{type(exception).__name__}: {exception}\n```')
-        else:
-            await ctx.send(':white_check_mark: Extension loaded.')
+    if ctx.author not in (ctx.guild.owner, bot.creator, bot.allen):
+        raise commands.CheckFailure()
+    try:
+        await bot.load_extension(f"addons.{module}")
+    except Exception as exception:
+        await ctx.send(f':anger: Failed!\n```\n{type(exception).__name__}: {exception}\n```')
     else:
-        await ctx.send("You don't have permission to do that!")
+        await ctx.send(':white_check_mark: Extension loaded.')
 
 
 @bot.command(hidden=True)
 async def unload(ctx, *, module):
     """Unloads an addon"""
-    if ctx.author == ctx.guild.owner or ctx.author == bot.creator or ctx.author == bot.allen:
-        try:
-            await bot.unload_extension(f"addons.{module}")
-        except Exception as exception:
-            await ctx.send(f':anger: Failed!\n```\n{type(exception).__name__}: {exception}\n```')
-        else:
-            await ctx.send(':white_check_mark: Extension unloaded.')
+    if ctx.author not in (ctx.guild.owner, bot.creator, bot.allen):
+        raise commands.CheckFailure()
+    try:
+        await bot.unload_extension(f"addons.{module}")
+    except Exception as exception:
+        await ctx.send(f':anger: Failed!\n```\n{type(exception).__name__}: {exception}\n```')
     else:
-        await ctx.send("You don't have permission to do that!")
+        await ctx.send(':white_check_mark: Extension unloaded.')
 
 
 @bot.command(hidden=True)
 async def reload(ctx):
     """Reloads an addon."""
+    if ctx.author not in (ctx.guild.owner, bot.creator, bot.allen):
+        raise commands.CheckFailure()
     bot.reload_counter += 1
-    if ctx.author == ctx.guild.owner or ctx.author == bot.creator:
-        errors = ""
-        addon_dict = {
-            "DevTools": "devtools",  # not loaded by default...
-            "Events": "events",
-            "Info": "info",
-            "Meta": "meta",
-            "Moderation": "mod",
-            "pkhex": "pkhex",
-            "PythonInterpreter": "pyint",
-            "Starboard": "starboard",
-            "Utility": "utility",
-            "Warning": "warns"
-        }
-        loaded_cogs = bot.cogs.copy()
-        for addon in loaded_cogs:
-            try:
-                await bot.reload_extension(f"addons.{addon_dict[addon]}")
-            except Exception as exception:
-                if addon not in addon_dict.keys():
-                    pass
-                errors += f'Failed to load addon: `{addon}.py` due to `{type(exception).__name__}: {exception}`\n'
-            if len(bot.disabled_commands) > 0:
-                for c in bot.disabled_commands:
-                    bot.get_command(c).enabled = False
-        if not errors:
-            await ctx.send(':white_check_mark: Extensions reloaded.')
-        else:
-            await ctx.send(errors)
-        if bot.reload_counter == 1:
-            await ctx.send("This is the first reload after I restarted!")
+    errors = ""
+    addon_dict = {
+        "DevTools": "devtools",  # not loaded by default...
+        "Events": "events",
+        "Info": "info",
+        "Meta": "meta",
+        "Moderation": "mod",
+        "pkhex": "pkhex",
+        "PythonInterpreter": "pyint",
+        "Starboard": "starboard",
+        "Utility": "utility",
+        "Warning": "warns"
+    }
+    loaded_cogs = bot.cogs.copy()
+    for addon in loaded_cogs:
+        try:
+            await bot.reload_extension(f"addons.{addon_dict[addon]}")
+        except Exception as exception:
+            if addon not in addon_dict.keys():
+                pass
+            errors += f'Failed to load addon: `{addon}.py` due to `{type(exception).__name__}: {exception}`\n'
+        if len(bot.disabled_commands) > 0:
+            for c in bot.disabled_commands:
+                bot.get_command(c).enabled = False
+    if not errors:
+        await ctx.send(':white_check_mark: Extensions reloaded.')
     else:
-        await ctx.send("You don't have permission to do that!")
-
-
-def check_is_author(ctx):
-    return ctx.message.author.id == bot.creator.id
+        await ctx.send(errors)
+    if bot.reload_counter == 1:
+        await ctx.send("This is the first reload after I restarted!")
 
 
 @bot.command(aliases=['drid'], hidden=True)
-@commands.check(check_is_author)
 async def dump_role_id(ctx):
     """Dumps role ids for guild. Creator restricted."""
+    if ctx.author != bot.creator:
+        raise commands.CheckFailure()
     roles = {}
     for role in ctx.guild.roles[1:]:
         roles[role.name] = role.id
@@ -439,8 +433,8 @@ async def ping(ctx):
 @bot.command(hidden=True)
 async def restart(ctx):
     """Restarts the bot."""
-    if not ctx.author == ctx.guild.owner and not ctx.author == bot.creator and not ctx.author == bot.allen:
-        return await ctx.send("You don't have permission to do that!")
+    if ctx.author not in (ctx.guild.owner, bot.creator, bot.allen):
+        raise commands.CheckFailure()
     if not bot.is_beta:
         await ctx.send("Restarting...")
         bot.persistent_vars_dict['restart_channel'] = str(ctx.channel.id)
