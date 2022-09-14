@@ -364,7 +364,10 @@ class Info(commands.Cog):
             "Ball\n"
             "PP Ups\n"
             "Reset Moves (Move 1 is set to Pound, and moves 2 through 4 are cleared)\n"
-            "Randomize PIDs"
+            "Randomize PIDs\n"
+            "Set Met Date\n"
+            "Set Egg Date\n"
+            "Remove All Ribbons (Untested)"
         )
         embed = discord.Embed(title="Batch Editor Information")
         embed.description = "Please keep in mind that the script will affect *everything* in the boxes of the loaded save, or of the selected bank."
