@@ -58,6 +58,8 @@ def faq_decorator(func):
     async def wrapper(self, ctx, faq_doc, faq_item):
         if ctx.invoked_with in ("faq", "rtfm"):
             pass
+
+        # General FAQ items
         elif ctx.invoked_with == "vc":
             faq_doc = "general"
             faq_item = "1"
@@ -67,21 +69,34 @@ def faq_decorator(func):
         elif ctx.invoked_with == "rules":
             faq_doc = "general"
             faq_item = "4"
+
+        # PKSM FAQ items
         elif ctx.invoked_with in ("lgpe", "swsh", "bdsp", "pla", "scvi", "switchsupport"):
             faq_doc = "pksm"
             faq_item = "2"
         elif ctx.invoked_with == "emulator":
             faq_doc = "pksm"
             faq_item = "3"
+        elif ctx.invoked_with in ("scripts", "universal"):
+            faq_doc = "pksm"
+            faq_item = "4"
+        elif ctx.invoked_with == "badqr":
+            faq_doc = "pksm"
+            faq_item = "6"
         elif ctx.invoked_with == "sendpkx":
             faq_doc = "pksm"
             faq_item = "7"
-        elif ctx.invoked_with in ("wc3", "gen3events"):
+        elif ctx.invoked_with == "wc3":
             faq_doc = "pksm"
             faq_item = "9"
         elif ctx.invoked_with == "romhacks":
             faq_doc = "pksm"
             faq_item = "10"
+        elif ctx.invoked_with == "azure":
+            faq_doc = "pksm"
+            faq_item = "11"
+
+        # Checkpoint FAQ items
         elif ctx.invoked_with in ("addcode", "fixcheat"):
             faq_doc = "checkpoint"
             faq_item = "1"

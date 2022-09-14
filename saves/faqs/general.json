@@ -2,9 +2,9 @@
     {
         "fields": [
             {
-                "inline": false,
+                "inline": true,
                 "name": "When will Virtual Console games be supported?",
-                "value": "**For PKSM**: Nobody on the FlagBrew team is interested in working on gen 1/2 support. However, if you would like to work on it yourself, and the code is up to our standards, we will merge a PR. Please see [this issue](https://github.com/FlagBrew/PKSM/issues/1181) for more info.\n**For Checkpoint**: NES, SNES, GB, and GBC are supported. However, GBA is not currently supported. You can back up your GBA saves using [GodMode9](https://3ds.hacks.guide/dumping-titles-and-game-cartridges#backup-gba-vc-saves)."
+                "value": "**For PKSM**: PKSM v10 now supports generation 1 and 2 editing! Please make sure you are using [the latest release](https://github.com/FlagBrew/PKSM/releases/latest).\n**For Checkpoint**: NES, SNES, GB, and GBC are supported. However, GBA is not currently supported. You can back up your GBA saves using [GodMode9](https://3ds.hacks.guide/dumping-titles-and-game-cartridges#backup-gba-vc-saves)."
             }
         ],
         "type": "rich"
@@ -22,9 +22,9 @@
     {
         "fields": [
             {
-                "inline": false,
+                "inline": true,
                 "name": "I have Homebrew/*hax. Why can't I launch any Flagbrew apps?",
-                "value": "All FlagBrew apps *require* CFW to function. **There is no viable reason to not install CFW nowadays, as there is a free method.** You can follow [this guide](https://3ds.hacks.guide) to install CFW on your 3ds. ***Versions under PKSM 10.0 are not supported and no assistance will be given with them!!!***"
+                "value": "All FlagBrew apps *require* CFW to function. **There is no viable reason to not install CFW nowadays, as there is a free method.** You can follow [this guide](https://3ds.hacks.guide) to install CFW on your 3ds."
             }
         ],
         "type": "rich"

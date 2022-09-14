@@ -127,16 +127,26 @@ class Info(commands.Cog):
 
     faq_aliases = [  # putting this here to make keeping track ez, as well as updates
         'rtfm',  # general usage
+
+        # General FAQ items
         'vc',  # general faq #1 - vc support
         'entitled',  # general faq #2 - new releases
         'rules',  # general faq #4 - toggling roles
+
+        # PKSM FAQ items
         "lgpe", "swsh", "bdsp", "pla", "scvi", "switchsupport",  # pksm faq #2 - switch support
         "emulator",  # pksm faq #3 - emulator cross-use
+        "scripts", "universal",  # pksm faq #4 - how do universal scripts work
+        "badqr",  # pksm faq #6 - why QR no worky
         "sendpkx",  # pksm faq #7 - sending pkx files
-        "wc3", "gen3events",  # pksm faq #9 - gen 3 events
+        "wc3",  # pksm faq #9 - gen 3 events
         "romhacks",  # pksm faq #10 - rom hack support
+        "azure",  # pksm faq #11
+
+        # Checkpoint FAQ items
         "addcode", "fixcheat",  # checkpoint faq #1 - pls add cheat
         "wheregame",  # checkpoint faq #2 - missing games
+        "applet",  # checkpoint faq #3 - applet mode issues
         "pkcrash",  # checkpoint faq #4 - cheat crash in pkmn games
         "updatedb",  # checkpoint faq #6 - how to update the cheat db
     ]
@@ -356,17 +366,10 @@ class Info(commands.Cog):
             "Reset Moves (Move 1 is set to Pound, and moves 2 through 4 are cleared)\n"
             "Randomize PIDs"
         )
-        beta_types = (
-            "Set Met Date\n"
-            "Set Egg Date\n"
-            "Remove All Ribbons (Untested)"
-        )
         embed = discord.Embed(title="Batch Editor Information")
         embed.description = "Please keep in mind that the script will affect *everything* in the boxes of the loaded save, or of the selected bank."
         embed.add_field(name="Editing Types", value=edit_types)
-        if len(beta_types) > 0:
-            embed.add_field(name="Beta Types", value=f"**These batch edit options are not included in the latest release. You can get the beta version of the script from the pins in <#389780983869603852>**.\n\n{beta_types}", inline=False)
-        embed.set_footer(text="Please note that LGPE and SWSH have not yet been tested.")
+        embed.set_footer(text="Please note that LGPE and SWSH have not yet been tested. Generation 1 and 2 games are not supported.")
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["shinylocked"])

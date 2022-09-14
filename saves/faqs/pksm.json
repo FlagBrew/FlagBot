@@ -35,9 +35,9 @@
     {
         "fields": [
             {
-                "inline": false,
-                "name": "How can I edit my trainer data?",
-                "value": "There's a script you can use: `Scripts` > press `Y` > `Edit Trainer Info.c`. Just follow the on-screen prompts from there."
+                "inline": true,
+                "name": "What are Universal scripts? What's available?",
+                "value": "There are multiple scripts available in PKSM that can be used on most supported games (Generation 1 and 2 currently do not have scripts). You can access these scripts by pressing `Y` on the scripts menu. Below are some notable universal scripts\n`batch-edit.c` - Allows mass edits. Use `.batchedit` to see more info.\n`Edit Trainer Info.c` - Allows editing your trainer info.\n`injector.c` - Injects a single pkx file in `~/3ds/PKSM/inject/`\n`legal-living-dex.c` - Generates a legal living dex for the loaded save. Requires an internet connection\n`save-language.c` - Changes the language of the selected save. Useful for when you accidentally change your save language with event injection."
             }
         ],
         "type": "rich"
@@ -65,9 +65,9 @@
     {
         "fields": [
             {
-                "inline": false,
-                "name": "Why doesn't ServePKX work? How can I send pokemon to PKSM from my PC now?",
-                "value": "ServePKX has been deprecated as of PKSM v6. There are three ways you can send pokemon to PKSM from PC now.\n**1**: (*Recommended*) Upload the pokemon to the GPSS using either the `.gpsspost` command in <#379201279479513100>, or through architdate's [Auto Legality Plugin](https://github.com/architdate/PKHeX-Plugins) for PKHeX.\n**2**: Create a QR code from the pkx file using PKHeX. Then, scan the QR code by opening `Editor` and pressing `L + R`.\n**3**: Place the pkx files you want to add at `/3ds/PKSM/inject/` and run the universal `injector.c` script."
+                "inline": true,
+                "name": "How can I send Pokemon to PKSM from my PC?",
+                "value": "**1**: (*Recommended*) Upload the pokemon to the GPSS using either the `.gpsspost` command in <#379201279479513100>, or through architdate's [Auto Legality Plugin](https://github.com/architdate/PKHeX-Plugins) for PKHeX.\n**2**: Create a QR code from the pkx file using PKHeX by right clicking on the sprite while viewing a Pokemon, and selecting `QR!`. Then, scan the QR code by opening `Editor` and pressing `L + R`.\n**3**: Place the pkx files you want to add at `/3ds/PKSM/inject/` and run the universal `injector.c` script."
             }
         ],
         "type": "rich"
@@ -85,9 +85,9 @@
     {
         "fields": [
             {
-                "inline": false,
+                "inline": true,
                 "name": "How do I use Generation 3 wondercards?",
-                "value": "Gen 3 events do not exist as wondercards, outside of the unsupported (fake) wc3 format. There are two different methods for accessing gen 3 events, depending on what they require.\n**1**: For any events that directly give you a pokemon, you will want to use the universal `injector.c` script by putting the pk3 file, found from [EventsGallery](https://github.com/ProjectPokemon/EventsGallery), at `/3ds/PKSM/inject/` and then running the script.\n**2**: For events that give you an item so you can get a pokemon (ex the Old Sea Map), you'll want to use the beta scripts pinned in <#389780983869603852>. This can be done by putting the script at `/3ds/PKSM/scripts/universal/`, then running it in PKSM."
+                "value": "Gen 3 events do not exist as wondercards, outside of the unsupported (fake) wc3 format. There are two different methods for accessing gen 3 events, depending on what they require.\n**1**: For any events that directly give you a pokemon, you will want to use the universal `injector.c` script by putting the pk3 file, found from [EventsGallery](https://github.com/ProjectPokemon/EventsGallery), at `/3ds/PKSM/inject/` and then running the script.\n**2**: For events that give you an item so you can get a pokemon (ex the Old Sea Map), you'll want to use the dedicated scripts available."
             }
         ],
         "type": "rich"
