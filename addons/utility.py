@@ -801,6 +801,50 @@ class Utility(commands.Cog):
                     file.write(content)
         await ctx.send(f"Downloaded an updated xml for {console}.")
 
+    @commands.command(name='genqr')  # Todo: move to utility.py
+    @commands.has_any_role("Patrons", "FlagBrew Team")
+    async def generate_qr(self, ctx, app, ext):
+        """Generates a Patron QR code for installing via FBI"""
+        if not self.bot.is_mongodb:
+            return await ctx.send("No DB available, cancelling...")
+        async with self.bot.session.get(self.bot.flagbrew_url) as resp:
+            if not resp.status == 200:
+                return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
+        accepted_apps = {
+            "pksm": "PKSM",
+            "checkpoint": "Checkpoint"
+        }
+        if not app.lower() in accepted_apps.keys():
+            return await ctx.send(f"The application `{app}` is not currently supported. Sorry.")
+        elif not ext.lower() in ("cia", "3dsx"):
+            return await ctx.send("The only supported file types are `CIA` and `3dsx`.")
+        patron_code = self.db['patrons'].find_one({"discord_id": str(ctx.author.id)})
+        if patron_code is None:
+            return await ctx.send("Sorry, you don't have a patron code!")
+        patron_code = patron_code['code']
+        headers = {
+            "patreon": patron_code
+        }
+        async with self.bot.session.get(f"{self.bot.flagbrew_url}api/v2/patreon/update-check/{accepted_apps[app.lower()]}", headers=headers) as commit_resp:
+            commit = await commit_resp.json()
+        commit_sha = commit['hash']
+        url = f"{self.bot.flagbrew_url}api/v2/patreon/update-qr/{accepted_apps[app.lower()]}/{commit_sha}/{ext.lower()}"
+        async with self.bot.session.get(url=url, headers=headers) as resp:
+            if not resp.status == 200:
+                return await ctx.send("Failed to get the QR.")
+            qr_bytes = await resp.read()
+            qr = discord.File(io.BytesIO(qr_bytes), 'patron_qr.png')
+            embed = discord.Embed(title=f"Patron Build for {accepted_apps[app.lower()]}")
+            embed.add_field(name="Direct Download", value=f"[Here]({self.bot.flagbrew_url}api/v2/patreon/update/{patron_code}/{accepted_apps[app.lower()]}/{commit_sha}/{ext})")
+            embed.add_field(name="File Type", value=ext.upper())
+            embed.set_footer(text=f"Commit Hash: {commit_sha}")
+            embed.set_image(url="attachment://patron_qr.png")
+            try:
+                await ctx.author.send(embed=embed, file=qr)
+            except discord.Forbidden:
+                return await ctx.send(f"Failed to DM you {ctx.author.mention}. Are your DMs closed?")
+            await ctx.send(f"{ctx.author.mention} I have DM'd you the QR code.")
+
 
 async def setup(bot):
     await bot.add_cog(Utility(bot))

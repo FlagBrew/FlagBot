@@ -88,14 +88,13 @@ bot = commands.Bot(command_prefix=prefix, description=description, activity=defa
 
 if not is_using_cmd_args:  # handles setting up the bot vars
     bot.is_mongodb = config.is_mongodb
-    bot.api_url = config.api_url
     bot.flagbrew_url = config.flagbrew_url
     bot.star_count = config.star_count
 elif not is_using_env_args:
-    bot.is_mongodb, bot.api_url, bot.flagbrew_url = cmd_args[3:6]
+    bot.is_mongodb = cmd_args[7]
+    bot.flagbrew_url = cmd_args[11]
 else:
     bot.is_mongodb = os.getenv("IS_MONGODB")
-    bot.api_url = os.getenv("API_URL")
     bot.flagbrew_url = os.getenv("FLAGBREW_URL")
     bot.star_count = os.getenv("STAR_COUNT")
 bot.gpss_url = bot.flagbrew_url
@@ -136,7 +135,9 @@ if bot.is_mongodb:
         db_username = config.db_username
         db_password = config.db_password
     elif not is_using_env_args:
-        db_address = cmd_args[6]
+        db_address = cmd_args[8]
+        db_username = cmd_args[9]
+        db_password = cmd_args[10]
     else:
         db_address = os.getenv("DB_ADDRESS")
         db_username = os.getenv("DB_USERNAME")
@@ -170,8 +171,10 @@ if not is_using_cmd_args:
     bot.ready = False
     bot.is_beta = config.is_beta
 elif not is_using_env_args:
-    bot.site_secret, bot.github_user, bot.github_pass, bot.is_beta = cmd_args[7:11]
-    bot.star_count = cmd_args[11]
+    bot.site_secret = cmd_args[3]
+    bot.github_user, bot.github_pass = cmd_args[5:7]
+    bot.is_beta = cmd_args[4]
+    bot.star_count = cmd_args[12]
     bot.ready = False
 else:
     bot.site_secret = os.getenv("SECRET")
@@ -318,6 +321,7 @@ async def on_ready():
 # loads extensions
 cogs = [
     'addons.events',
+    'addons.gpss',
     'addons.info',
     'addons.meta',
     'addons.mod',
@@ -379,6 +383,7 @@ async def reload(ctx):
     addon_dict = {
         "DevTools": "devtools",  # not loaded by default...
         "Events": "events",
+        "gpss": "gpss",
         "Info": "info",
         "Meta": "meta",
         "Moderation": "mod",
@@ -450,11 +455,29 @@ async def about(ctx):
     embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in the FlagBrew server.\n"
                          "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
                          f"Written by {bot.creator.mention}.")
+    embed.add_field(name="PKHeX.Core Commit", value=f"`{bot.persistent_vars_dict['pkhex_core_commit']}`")
+    embed.add_field(name="AutoMod.Core Commit", value=f"`{bot.persistent_vars_dict['alm_core_commit']}`")
     embed.set_author(name="GriffinG1", url='https://github.com/GriffinG1', icon_url='https://avatars0.githubusercontent.com/u/28538707')
     total_mem = psutil.virtual_memory().total / float(1 << 30)
     used_mem = psutil.Process().memory_info().rss / float(1 << 20)
     embed.set_footer(text=f"{round(used_mem, 2)} MB used out of {round(total_mem, 2)} GB")
     await ctx.send(embed=embed)
+
+
+@bot.command(name='uccv', hidden=True)
+async def update_core_commit_vars(ctx, pkhex_core_commit: str, alm_core_commit: str = ""):
+    """Changes PKHeX and ALM core commit values in persistent_vars to provided"""
+    if ctx.author not in (bot.creator, bot.allen):
+        raise commands.CheckFailure()
+    if pkhex_core_commit == bot.persistent_vars_dict["pkhex_core_commit"] and alm_core_commit == bot.persistent_vars_dict["alm_core_commit"]:
+        return await ctx.send("No change in commits.")
+    elif alm_core_commit == "":
+        alm_core_commit = bot.persistent_vars_dict["alm_core_commit"]  # pkhex updates more often than alm, allow alm to not need to be updated
+    bot.persistent_vars_dict["pkhex_core_commit"] = pkhex_core_commit
+    bot.persistent_vars_dict["alm_core_commit"] = alm_core_commit
+    with open('saves/persistent_vars.json', 'w') as file:
+        json.dump(bot.persistent_vars_dict, file, indent=4)
+    await ctx.send(f"Updated saved commit values to `{pkhex_core_commit}` and `{alm_core_commit}`!")
 
 
 # Execute

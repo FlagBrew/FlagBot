@@ -9,6 +9,5 @@ is_mongodb = False  # Bool for if MongoDB database is in use
 db_address = ""  # MongoDB database address as string
 db_username = "" # MongoDB database username as string
 db_password = "" # MongoDB database password as string
-api_url = ""  # API URL as string
 flagbrew_url = ""  # FlagBrew URL as string
 star_count = 0  # starboard count as int

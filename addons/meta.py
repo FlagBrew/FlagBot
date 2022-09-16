@@ -9,6 +9,7 @@ from discord.ext import commands
 #  Revised addon loading for Meta taken from https://stackoverflow.com/a/24940613
 addons = {
     "addons.events": "Events",
+    "addons.gpss": "gpss",
     "addons.info": "Info",
     "addons.mod": "Moderation",
     "addons.pkhex": "pkhex",
