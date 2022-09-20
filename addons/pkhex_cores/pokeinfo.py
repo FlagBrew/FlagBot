@@ -174,7 +174,7 @@ def get_pokemon_file_info(file):
         "stats": stats,
         "moves": moves,
         "species_sprite_url": sprite_url,
-        "is_legal": entity_summary.Legal
+        "is_legal": True if entity_summary.Legal == "True" else False
     }
     return pokemon_info
 
