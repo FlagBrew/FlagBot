@@ -1,8 +1,10 @@
 # type: ignore ReportMissingImport
-
-from utils.helpers import LanguageStrings
-from PKHeX.Core import FormConverter, GameInfo, EntityContext
 import json
+
+# Import PKHeX stuff
+sys.path.append(os.getcwd() + r"/addons/pkhex_cores/deps")
+clr.AddReference("PKHeX.Core")
+from PKHeX.Core import FormConverter, GameInfo, EntityContext, GameStrings
 
 
 class Sprites:
