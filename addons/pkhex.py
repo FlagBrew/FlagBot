@@ -374,7 +374,7 @@ class pkhex(commands.Cog):
         file_extension = (".pb7" if generation.lower() == "lgpe" else ".pb8" if generation.lower() == "bdsp" else ".pa8" if generation.lower() == "pla" else ".pk" + generation)
         pokemon_file = discord.File(io.BytesIO(pokemon_decoded), "showdownset" + file_extension)
         qr = discord.File(io.BytesIO(converted["qr"]), 'pokemon_qr.png')
-        embed = discord.Embed(title=f"Data for {converted['nickname']}{('-' + converted['form']) if converted['form'] else ''}  ({converted['gender']})")
+        embed = discord.Embed(title=f"Data for {converted['nickname']}{('-' + converted['form']) if converted['form'] else ''} ({converted['gender']})")
         embed.set_thumbnail(url=converted["species_sprite_url"])
         embed = self.embed_fields(embed, converted)
         log_msg = await upload_channel.send(f"Showdown set converted by {ctx.author}", files=[pokemon_file, qr])
