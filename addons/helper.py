@@ -106,42 +106,6 @@ def get_string_from_regex(regex_pattern, data):
     return ""  # Handle failed matches by returning an empty string
 
 
-def get_sprite_url(pokemon, generation, form, shiny, gender, species_name):
-    with open('saves/sprite_forms.json', 'r', encoding='utf-8') as file:
-        sprite_json = json.load(file)
-    pokemon_num = pokemon if len(pokemon) == 3 else "0" + pokemon if len(pokemon) == 2 else "00" + pokemon
-    sprite_url = "https://cdn.sigkill.tech/sprites/pokemon-gen" + ("7x/" if generation not in ("8", "BDSP", "PLA") else "8/")
-    sprite_url += "shiny/" if shiny else "regular/"
-    if form is not None:
-        forms = sprite_json[pokemon_num]["gen-8"] if generation == "8" else sprite_json[pokemon_num]["gen-7"]
-        form_name = re.sub("[^a-zA-Z0-9 -]", "", form).replace(" ", "")
-        for formlist_name in forms["forms"]:
-            if form_name in formlist_name:
-                try:
-                    if forms["forms"][formlist_name]["is_alias_of"] is not None:
-                        form_json_name = str(forms["forms"][formlist_name]["is_alias_of"])
-                except KeyError:
-                    form_json_name = formlist_name
-                break
-        else:
-            form_json_name = "$"
-    else:
-        form_json_name = "$"
-    try:
-        has_female = sprite_json[pokemon_num]["gen-8" if generation == 8 else ["gen-7"]]["forms"][form_json_name]["has_female"]
-    except (TypeError, KeyError):
-        has_female = False
-    if has_female and gender == "F":
-        sprite_url += "female/"
-    if species_name == "flabébé":
-        species_name = "flabebe"
-    sprite_url += species_name
-    sprite_url += ("-" + form_json_name) if form_json_name != "$" else ""
-    sprite_url += ".png"
-    sprite_url = sprite_url.replace(" ", "-")
-    return sprite_url
-
-
 game_dict = {
     "RD": "Red (VC)",
     "BU": "Blue (VC)",

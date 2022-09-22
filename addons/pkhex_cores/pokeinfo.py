@@ -5,7 +5,7 @@ import sys
 import os
 import io
 import clr
-from addons.helper import get_sprite_url
+from addons.pkhex_cores.sprites import Sprites
 import addons.pkhex_cores.pkhex_helper as pkhex_helper
 
 # Import PKHeX stuff
@@ -94,7 +94,8 @@ def get_base_info(pokemon, form, generation: str, shiny: bool = False):
     groups = []
     groups.append(pkhex_helper.pokemon_egg_groups[pokemon_info.EggGroup1 - 1]) if pokemon_info.EggGroup1 != -1 else types.append(None)
     groups.append(pkhex_helper.pokemon_egg_groups[pokemon_info.EggGroup2 - 1]) if pokemon_info.EggGroup2 != -1 and pokemon_info.EggGroup2 != pokemon_info.EggGroup1 else types.append(None)
-    sprite_url = get_sprite_url(str(pokemon_id[0]), generation, form.lower() if form else form, shiny, "F" if pokemon_info.Gender == 1 else "M" if pokemon_info.Gender == 0 else "-", pokemon.lower())
+    sprites_obj = Sprites()
+    sprite_url = sprites_obj.get_pokemon_sprite(pokemon.lower(), "female" if pokemon_info.OnlyFemale else "", shiny, form.lower() if form else "", (False if generation not in ("BDSP, LGPE, PLA") and int(generation) < 8 else True))
     base_pokemon = {
         "hp": pokemon_info.HP,
         "atk": pokemon_info.ATK,
@@ -159,9 +160,11 @@ def get_pokemon_file_info(file):
         form_value = forms[form_value]
     else:
         form_value = str(form_value)
-    sprite_url = get_sprite_url(str(pokemon.Species), generation, form_value.lower(), entity_summary.IsShiny, entity_summary.Gender, entity_summary.Species.lower())
+    sprites_obj = Sprites()
+    sprite_url = sprites_obj.get_pokemon_sprite(entity_summary.Species.lower(), "female" if entity_summary.Gender == "F" else "", entity_summary.IsShiny, form_value.lower() if form_value else "", (False if generation not in ("BDSP, LGPE, PLA") and int(generation) < 8 else True), str(pokemon.FormArgument) if hasattr(pokemon, "FormArgument") else None)
     pokemon_info = {
         "species": entity_summary.Species,
+        "form": form_value + f' ({sprites_obj.ALCREMIE_DECORATIONS[str(pokemon.FormArgument)].title()})' if hasattr(pokemon, "FormArgument") and pokemon.FormArgument != 0 else form_value if form_value != "0" else None,
         "nickname": entity_summary.Nickname,
         "gender": entity_summary.Gender,
         "level": entity_summary.Level,
