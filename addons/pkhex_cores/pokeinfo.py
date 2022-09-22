@@ -128,6 +128,8 @@ def get_base_info(pokemon, form, generation: str, shiny: bool = False):
 
 def get_pokemon_file_info(file):
     pokemon = EntityFormat.GetFromBytes(file)
+    if pokemon is None:  # Invalid file
+        return 400
     for key, value in pkhex_helper.generation_version_dict.items():
         if pokemon.Version in value:
             generation = key

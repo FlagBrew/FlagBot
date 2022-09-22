@@ -22,6 +22,8 @@ from System import Enum, UInt16, Convert
 
 def get_legality_report(file):
     pokemon = EntityFormat.GetFromBytes(file)
+    if pokemon is None:  # Invalid file
+        return 400
     for key, value in pkhex_helper.generation_version_dict.items():
         if pokemon.Version in value:
             generation = key
@@ -43,6 +45,8 @@ def get_legality_report(file):
 
 def legalize_pokemon(file):
     pokemon = EntityFormat.GetFromBytes(file)
+    if pokemon is None:  # Invalid file
+        return 400
     for key, value in pkhex_helper.generation_version_dict.items():
         if pokemon.Version in value:
             generation = key
@@ -65,7 +69,7 @@ def legalize_pokemon(file):
     trainer_data.Language = pokemon.Language
     trainer_data.Gender = pokemon.OT_Gender
     new_pokemon = Legalizer.Legalize(trainer_data, pokemon)
-    analysis = LegalityAnalysis(pokemon)
+    analysis = LegalityAnalysis(new_pokemon)
     if not analysis.Valid and not analysis.Parsed:
         return 201
     elif not analysis.Valid:
