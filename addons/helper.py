@@ -133,6 +133,8 @@ def get_sprite_url(pokemon, generation, form, shiny, gender, species_name):
         has_female = False
     if has_female and gender == "F":
         sprite_url += "female/"
+    if species_name == "flabébé":
+        species_name = "flabebe"
     sprite_url += species_name
     sprite_url += ("-" + form_json_name) if form_json_name != "$" else ""
     sprite_url += ".png"
@@ -199,7 +201,7 @@ default_forms = {
     "kyurem": "normal",
     "keldeo": "ordinary",
     "meloetta": "aria",
-    "vivillon": "poke ball",
+    "vivillon": "poké ball",
     "flabébé": "red",
     "floette": "eternal",
     "florges": "red",
@@ -211,19 +213,19 @@ default_forms = {
     "oricorio": "baile",
     "lycanroc": "dusk",
     "wishiwashi": "school",
-    "minior": "red",
+    "minior": "c-red",
 
     "cramorant": "normal",
-    "toxtricity": "amped",
+    "toxtricity": "amped form",
     "indeedee": "f",
     "sinistea": "antique",
     "polteageist": "antique",
-    "alcremie": "rainbow-swirl-plain",
-    "morpeko": "default",
-    "eiscue": "ice",
-    "zacian": "crownedsword",
-    "zamazenta": "crownedshield",
-    "urshifu": "singlestrike"
+    "alcremie": "rainbow swirl (ribbon)",
+    "morpeko": "full belly",
+    "eiscue": "ice face",
+    "zacian": "crowned",
+    "zamazenta": "crowned",
+    "urshifu": "single strike"
 }
 
 key_inputs = {

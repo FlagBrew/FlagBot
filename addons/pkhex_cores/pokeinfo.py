@@ -70,11 +70,16 @@ def get_base_info(pokemon, form, generation: str, shiny: bool = False):
     pokemon_id = [int(item) for item in Enum.GetValues(Species) if Enum.GetName(Species, item) == pokemon]
     if len(pokemon_id) == 0:
         return 400
+    elif (generation == "1" and pokemon_id[0] > 151) or (generation == "2" and pokemon_id[0] > 251) or (generation == "3" and pokemon_id[0] > 386) or (generation in ("4", "BDSP") and pokemon_id[0] > 493) or (generation == "5" and pokemon_id[0] > 649) or (generation == "6" and pokemon_id[0] > 721) or (generation == "7" and pokemon_id[0] > 809) or (generation == "LGPE" and pokemon_id[0] > 251 and pokemon_id[0] not in (808, 809)) or (generation == "8" and pokemon_id[0] > 896) or (generation == "PLA" and pokemon_id[0] not in pkhex_helper.pla_species):
+        return 500
     csharp_pokemon = UInt16(pokemon_id[0])
     csharp_form_num = Byte(0)
     game_info_strings = GameInfo.Strings
     if form is not None:
-        forms = FormConverter.GetFormList(csharp_pokemon, game_info_strings.Types, game_info_strings.forms, GameInfo.GenderSymbolASCII, pkhex_helper.entity_context_dict[generation])
+        if pokemon == "Alcremie":
+            forms = FormConverter.GetAlcremieFormList(game_info_strings.forms)
+        else:
+            forms = FormConverter.GetFormList(csharp_pokemon, game_info_strings.Types, game_info_strings.forms, GameInfo.GenderSymbolASCII, pkhex_helper.entity_context_dict[generation])
         try:
             form_num = forms.index(form)
         except ValueError:
@@ -103,15 +108,15 @@ def get_base_info(pokemon, form, generation: str, shiny: bool = False):
         "hatch_cycles": pokemon_info.HatchCycles,
         "base_friendship": pokemon_info.BaseFriendship,
         "exp_growth": pokemon_info.EXPGrowth,
-        "ability1": Enum.GetName(Ability, UInt16(pokemon_info.Ability1)),
-        "ability2": Enum.GetName(Ability, UInt16(pokemon_info.Ability2)),
+        "ability1": Enum.GetName(Ability, UInt16(pokemon_info.Ability1)) if hasattr(pokemon_info, "Ability1") else None,
+        "ability2": Enum.GetName(Ability, UInt16(pokemon_info.Ability2)) if hasattr(pokemon_info, "Ability2") else None,
         "ability_h": Enum.GetName(Ability, UInt16(pokemon_info.AbilityH)) if hasattr(pokemon_info, "AbilityH") else None,
         "colour": pkhex_helper.pokemon_colour_index[pokemon_info.Color],
         "height": pokemon_info.Height,
         "weight": pokemon_info.Weight,
         "types": types,
         "egg_groups": groups,
-        "is_dual_gender": True if pokemon_info.OnlyMale == pokemon_info.OnlyFemale else False,
+        "is_dual_gender": True if pokemon_info.OnlyMale == pokemon_info.OnlyFemale and not pokemon_info.Genderless else False,
         "is_genderless": pokemon_info.Genderless,
         "only_female": pokemon_info.OnlyFemale,
         "bst": (pokemon_info.ATK + pokemon_info.DEF + pokemon_info.SPE + pokemon_info.SPA + pokemon_info.SPD + pokemon_info.HP),

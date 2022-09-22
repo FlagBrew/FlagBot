@@ -7,7 +7,7 @@ import os
 import urllib
 import inspect
 import segno
-from exceptions import PKHeXMissingArgs
+import importlib
 import addons.helper as helper
 import addons.pkhex_cores.encounters as encounters_module
 import addons.pkhex_cores.pokeinfo as pokeinfo_module
@@ -22,6 +22,10 @@ class pkhex(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        importlib.reload(encounters_module)
+        importlib.reload(pokeinfo_module)
+        importlib.reload(legality_module)
+        importlib.reload(helper)
         print(f'Addon "{self.__class__.__name__}" loaded')
 
     async def process_file(self, ctx, data, attachments, func):
@@ -181,15 +185,22 @@ class pkhex(commands.Cog):
             species_form_pair_or_url = species_form_pair_or_url.split('-')
             pokemon = "flabébé" if species_form_pair_or_url[0].lower() == "flabebe" else species_form_pair_or_url[0].lower()
             form = None
-            if pokemon in helper.default_forms.keys():
+            if pokemon in helper.default_forms.keys() and len(species_form_pair_or_url) == 1:
                 form = helper.default_forms[pokemon]
-            if len(species_form_pair_or_url) > 1:
-                form = species_form_pair_or_url[1].lower()
-            elif form == "female":
-                form = "f"
-            pokeinfo = pokeinfo_module.get_base_info(pokemon.capitalize(), form.capitalize() if form else form, generation.upper(), shiny)
+            elif len(species_form_pair_or_url) > 1:
+                form = species_form_pair_or_url.pop(1).lower()
+                if form == "female":
+                    form = "f"
+                elif pokemon == "minior":
+                    if form in ("m", "c"):
+                        form += "-" + species_form_pair_or_url.pop(1)
+                    else:
+                        form = "c-" + form
+            pokeinfo = pokeinfo_module.get_base_info(pokemon.capitalize(), form.title() if form else form, generation.upper(), shiny)
             if pokeinfo == 400:
                 return await ctx.send("Are you sure that's a real pokemon (or proper form)?")
+            elif pokeinfo == 500:
+                return await ctx.send(f"That pokemon doesn't exist in generation {generation.upper()}.")
             embed = discord.Embed(colour=colours[pokeinfo["colour"]])
             type_str = f"Type 1: {pokeinfo['types'][0]}"
             if pokeinfo["types"][1] is not None:
@@ -201,7 +212,10 @@ class pkhex(commands.Cog):
             if pokeinfo["ability_h"] is not None:
                 ability_str += f"\nAbility (H): {pokeinfo['ability_h']}"
             embed.add_field(name="Abilities", value=ability_str)
-            embed.add_field(name="Height & Weight", value=f"{pokeinfo['height'] / 100} meters\n{pokeinfo['weight'] / 10} kilograms")
+            if generation not in ("pla", "lgpe", "bdsp") and int(generation) > 4:
+                embed.add_field(name="Height & Weight", value=f"{pokeinfo['height'] / 100} meters\n{pokeinfo['weight'] / 10} kilograms")
+            else:
+                embed.add_field(name="Height & Weight", value="Unknown meters\nUnknown kilograms")
             if pokeinfo["is_dual_gender"]:
                 ratio = (pokeinfo["gender"] / 254) * 100
                 ratio = round(ratio, 2)
