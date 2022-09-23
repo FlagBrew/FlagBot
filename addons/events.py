@@ -268,7 +268,7 @@ class Events(commands.Cog):
                     if len(before.activities) == 0 or len(after.activities) == 0:
                         return
                     await self.bot.err_logs_channel.send(f"Failed to log activity for user `{before}` (`{before.id}`) with before activity list of `{before.activities}` and after activity list of `{after.activities}`. Cause?")
-                    await self.bot.err_logs_channel.send(discord.Embed(description=e))
+                    await self.bot.err_logs_channel.send(embed=discord.Embed(description=e))
 
             # Handle custom activities
             if len(aft_custom) + len(bef_custom) > 0 and not bef_custom == aft_custom:
@@ -288,7 +288,7 @@ class Events(commands.Cog):
                     pass
                 except Exception as e:
                     await self.bot.err_logs_channel.send(f"Failed to log activity for user `{before}` (`{before.id}`) with before activity list of `{before.activities}` and after activity list of `{after.activities}`. Cause?")
-                    await self.bot.err_logs_channel.send(discord.Embed(description=e))
+                    await self.bot.err_logs_channel.send(embed=discord.Embed(description=e))
 
     async def process_reactions(self, reaction):
         positive_votes = 0
