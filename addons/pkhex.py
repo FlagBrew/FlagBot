@@ -141,9 +141,21 @@ class pkhex(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name='forms')
-    async def check_forms(self, ctx, pokemon):
-        """Returns a list of a given Pokemon's forms."""
-        forms = pokeinfo_module.get_pokemon_forms(pokemon.capitalize())
+    async def check_forms(self, ctx, pokemon, generation: str = None):
+        """Returns a list of a given Pokemon's forms. Defaults to the current generation"""
+        if generation is None:
+            generation = "8"
+        try:
+            int(generation)
+        except ValueError:
+            if generation.lower() not in ('bdsp', 'pla', 'lgpe'):
+                return await ctx.send(f"There is no generation {generation}.")
+        except TypeError:
+            raise commands.MissingRequiredArgument((inspect.Parameter(name='generation', kind=inspect.Parameter.POSITIONAL_OR_KEYWORD)))
+        else:
+            if int(generation) not in range(1, 9):
+                return await ctx.send(f"There is no generation {generation}.")
+        forms = pokeinfo_module.get_pokemon_forms(pokemon.capitalize(), generation.lower())
         if forms == 400:
             return await ctx.send("Are you sure that's a real pokemon?")
         elif len(forms) == 0:
