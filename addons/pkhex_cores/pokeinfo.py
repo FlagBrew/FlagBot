@@ -44,7 +44,7 @@ def form_entry_switcher(csharp_pokemon, csharp_form, generation):
         return 400
 
 
-def get_pokemon_forms(pokemon, generation: str = "8"):
+def get_pokemon_forms(pokemon, generation):
     pokemon_id = [int(item) for item in Enum.GetValues(Species) if Enum.GetName(Species, item) == pokemon]
     if len(pokemon_id) == 0:
         return 400
