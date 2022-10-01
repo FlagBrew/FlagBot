@@ -165,8 +165,10 @@ class pkhex(commands.Cog):
     @commands.command(name='pokeinfo', aliases=['pi'])
     @restricted_to_bot
     async def poke_info(self, ctx, species_form_pair_or_url: str = "", generation: str = None, shiny: bool = False):
-        ("""Returns an embed with a Pokemon's nickname, species, and a few others. Takes a provided URL or attached pkx file. URL *must* be a direct download link.
-         Alternatively can take a single Pokemon as an entry, and will return basic information on the species. 'generation' must be passed for this, shiny is bool.""")
+        """
+        Returns an embed with a Pokemon's nickname, species, and a few others. Takes a provided URL or attached pkx file. URL *must* be a direct download link.
+        Alternatively can take a single Pokemon as an entry, and will return basic information on the species. 'generation' must be passed for this, shiny is bool.
+        """
 
         # Get info for inputted pokemon
         if not validators.url(species_form_pair_or_url) and not ctx.message.attachments:

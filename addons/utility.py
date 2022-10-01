@@ -669,13 +669,13 @@ class Utility(commands.Cog):
         }
         if ctx.invoked_with == "invites":
             embed = discord.Embed(title="Guild invites available via this command")
-            embed.description = """FlagBrew: `.flagbrew`
-            Nintendo Homebrew: `.nintendohomebrew`/`.nh`
-            DS(i)Mode Hacking: `.dsimode`/`.twlmenu`
-            Reswitched: `.reswitched`/`.rs`
-            Project Pokemon: `.projectpokemon`/`.pporg`
-            PKHeX Development Projects: `.pkhexdev`, `.pdp`
-            Nanquitas's Playground: `.nanquitas`/`.cheathelp`"""
+            embed.description = ("FlagBrew: `.flagbrew`\n"
+                                 "Nintendo Homebrew: `.nintendohomebrew`, `.nh`\n"
+                                 "DS(i)Mode Hacking: `.dsimode`, `.twlmenu`\n"
+                                 "Reswitched: `.reswitched`, `.rs`\n"
+                                 "Project Pokemon: `.projectpokemon`, `.pporg`\n"
+                                 "PKHeX Development Projects: `.pkhexdev`, `.pdp`\n"
+                                 "Nanquitas's Playground: `.nanquitas`, `.cheathelp`")
             ctx.command.reset_cooldown(ctx)
         else:
             embed = discord.Embed()
