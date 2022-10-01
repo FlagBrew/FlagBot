@@ -288,21 +288,25 @@ class pkhex(commands.Cog):
         await ctx.send(send_message, file=qr)
 
     @commands.command(name='learns', aliases=['learn'])
-    async def check_moves(self, ctx, pokemon, *, moves):
-        """Checks if a given pokemon can learn provided moves. Separate move data using pipes.
-        Example: .learns pikachu | quick attack | hail"""
+    async def check_moves(self, ctx, generation, pokemon, *, moves):
+        """Checks if a given pokemon can learn provided moves in provided generation. Separate move data using pipes.
+        Example: .learns 6 pikachu | quick attack | hail"""
         moves = moves.replace("| ", "|").replace(" |", "|").replace(" | ", "|")
         moves = moves.split("|")
         if not moves:
             return await ctx.send("No moves provided, or the data provided was in an incorrect format.\n```Example: .learns pikachu | quick attack | hail```")
-        learnables = encounters_module.get_moves(pokemon.capitalize(), moves)
-        if learnables == 400:
+        encounters = encounters_module.get_moves(pokemon.capitalize(), generation, moves)
+        if encounters == 400:
             return await ctx.send("Something you sent was invalid. Please double check your data and try again.")
-        elif learnables == 500:
+        elif encounters == 500:
             return await ctx.send("No moves included could be resolved.")
-        embed = discord.Embed(title=f"Move Lookup for {pokemon.title()}", description="")
-        for move in learnables:
-            embed.description += f"**{move['name']}** is {'not ' if not move['learnable'] else ''}learnable.\n"
+        embed = discord.Embed(title=f"Move Lookup for {pokemon.title()} in Generation {generation.upper()}", description="")
+        for encounter in encounters:
+            for learnable in encounter:
+                if len(learnable["moves"]) == 0:
+                    continue
+                learnable = learnable['moves'][0]
+                embed.description += f"**{learnable['name']}** is {'not ' if not learnable['learnable'] else ''}learnable.\n"
         await ctx.send(embed=embed)
 
     @commands.command(name='find')
