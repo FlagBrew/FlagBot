@@ -166,7 +166,7 @@ def get_pokemon_file_info(file):
     sprite_url = sprites_obj.get_pokemon_sprite(entity_summary.Species.lower(), "female" if entity_summary.Gender == "F" else "", entity_summary.IsShiny, form_value.lower() if form_value else "", (False if generation not in ("BDSP, LGPE, PLA") and int(generation) < 8 else True), str(pokemon.FormArgument) if hasattr(pokemon, "FormArgument") else None)
     pokemon_info = {
         "species": entity_summary.Species,
-        "form": form_value + f' ({sprites_obj.ALCREMIE_DECORATIONS[str(pokemon.FormArgument)].title()})' if hasattr(pokemon, "FormArgument") and pokemon.FormArgument != 0 else form_value if form_value != "0" else None,
+        "form": form_value + f' ({sprites_obj.ALCREMIE_DECORATIONS[str(pokemon.FormArgument)].title()})' if pokemon.Species == 869 and hasattr(pokemon, "FormArgument") and pokemon.FormArgument != 0 else form_value if form_value != "0" else None,
         "nickname": entity_summary.Nickname,
         "gender": entity_summary.Gender,
         "level": entity_summary.Level,
