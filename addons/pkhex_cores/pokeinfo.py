@@ -11,37 +11,10 @@ import addons.pkhex_cores.pkhex_helper as pkhex_helper
 # Import PKHeX stuff
 sys.path.append(os.getcwd() + r"/addons/pkhex_cores/deps")
 clr.AddReference("PKHeX.Core")
-from PKHeX.Core import FormConverter, GameInfo, EntityFormat, EntitySummary, PersonalTable  # Import classes
+from PKHeX.Core import FormConverter, GameInfo, EntityFormat, EntitySummary  # Import classes
 from PKHeX.Core import Species, Ability  # Import Enums
 # Import base C# Objects
-from System import Enum, UInt16, Byte, ReadOnlySpan
-
-
-def form_entry_switcher(csharp_pokemon, csharp_form, generation):
-    if generation == "1":
-        return PersonalTable.Y.GetFormEntry(csharp_pokemon, csharp_form)
-    elif generation == "2":
-        return PersonalTable.C.GetFormEntry(csharp_pokemon, csharp_form)
-    elif generation == "3":
-        return PersonalTable.E.GetFormEntry(csharp_pokemon, csharp_form)
-    elif generation == "4":
-        return PersonalTable.HGSS.GetFormEntry(csharp_pokemon, csharp_form)
-    elif generation == "5":
-        return PersonalTable.B2W2.GetFormEntry(csharp_pokemon, csharp_form)
-    elif generation == "6":
-        return PersonalTable.AO.GetFormEntry(csharp_pokemon, csharp_form)
-    elif generation == "7":
-        return PersonalTable.USUM.GetFormEntry(csharp_pokemon, csharp_form)
-    elif generation == "LGPE":
-        return PersonalTable.GG.GetFormEntry(csharp_pokemon, csharp_form)
-    elif generation == "8":
-        return PersonalTable.SWSH.GetFormEntry(csharp_pokemon, csharp_form)
-    elif generation == "BDSP":
-        return PersonalTable.BDSP.GetFormEntry(csharp_pokemon, csharp_form)
-    elif generation == "PLA":
-        return PersonalTable.LA.GetFormEntry(csharp_pokemon, csharp_form)
-    else:
-        return 400
+from System import Enum, UInt16, Byte
 
 
 def get_pokemon_forms(pokemon, generation):
@@ -86,7 +59,7 @@ def get_base_info(pokemon, form, generation: str, shiny: bool = False):
             return 400
         if form_num >= 0 or form_num < len([csharp_form for csharp_form in forms]):
             csharp_form_num = Byte(form_num)
-    pokemon_info = form_entry_switcher(csharp_pokemon, csharp_form_num, generation)
+    pokemon_info = pkhex_helper.personal_table_switcher(generation).GetFormEntry(csharp_pokemon, csharp_form_num)
     if pokemon_info == 400:
         return 400
     types = [game_info_strings.types[pokemon_info.Type1]]
@@ -131,7 +104,7 @@ def get_pokemon_file_info(file):
     if pokemon is None:  # Invalid file
         return 400
     generation = pkhex_helper.extension_version_dict[pokemon.Extension.upper()]
-    if pokemon.Species <= 0 or ((generation == "1" and pokemon.Species > 151) or (generation == "2" and pokemon.Species > 251) or (generation == "3" and pokemon.Species > 386) or (generation in ("4", "BDSP") and pokemon.Species > 493) or (generation == "5" and pokemon.Species > 649) or (generation == "6" and pokemon.Species > 721) or (generation == "7" and pokemon.Species > 809) or (generation == "LGPE" and pokemon.Species > 251 and pokemon.Species not in (808, 809)) or (generation == "8" and pokemon.Species > 896) or (generation == "PLA" and pokemon.Species not in pkhex_helper.pla_species)):
+    if not personal_table_switcher(generation).IsPresentInGame(pokemon.Species, pokemon.Form):
         return 500
     game_info_strings = GameInfo.Strings
     entity_summary = EntitySummary(pokemon, game_info_strings)
