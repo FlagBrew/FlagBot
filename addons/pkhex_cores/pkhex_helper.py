@@ -27,20 +27,6 @@ game_version_dict = {
     "PLA": GameVersion.PLA,
 }
 
-pkx_version_dict = {
-    "1": PokeList1,
-    "2": PokeList2,
-    "3": PK3,
-    "4": PK4,
-    "5": PK5,
-    "6": PK6,
-    "7": PK7,
-    "LGPE": PB7,
-    "8": PK8,
-    "BDSP": PB8,
-    "PLA": PA8,
-}
-
 entity_context_dict = {
     "1": EntityContext.Gen1,
     "2": EntityContext.Gen2,
@@ -55,18 +41,18 @@ entity_context_dict = {
     "PLA": EntityContext.Gen8b
 }
 
-generation_version_dict = {
-    "1": [35, 36, 37, 38, 50, 51, 84, 83],
-    "2": [39, 40, 41, 52, 53, 85],
-    "3": [1, 2, 3, 4, 5, 54, 55, 56, 57, 58, 59],
-    "4": [10, 11, 12, 7, 8, 60, 61, 62, 0x3F],
-    "5": [20, 21, 22, 23, 0x40, 65],
-    "6": [24, 25, 26, 27, 66, 67, 68],
-    "7": [30, 0x1F, 0x20, 33, 69, 70],
-    "LGPE": [71, 34, 42, 43],
-    "8": [44, 45, 47, 72],
-    "BDSP": [73, 48, 49],
-    "PLA": [471]
+extension_version_dict = {
+    "PK1": "1",
+    "PK2": "2",
+    "PK3": "3",
+    "PK4": "4",
+    "PK5": "5",
+    "PK6": "6",
+    "PK7": "7",
+    "PB7": "LGPE",
+    "PK8": "8",
+    "PB8": "BDSP",
+    "PA8": "PLA"
 }
 
 pokemon_egg_groups = [
