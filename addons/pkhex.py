@@ -48,8 +48,11 @@ class pkhex(commands.Cog):
             if not validators.url(data):
                 await ctx.send("That's not a real link!")
                 return 400
-            elif data.strip("?raw=true")[-4:-1] not in (".pk", ".pb", ".pa"):
-                await ctx.send("That isn't a valid pkx, pbx, or pa8 file!")
+            elif func not in ("pokemon_info", "legality_check") and data.strip("?raw=true")[-4:-1] not in (".pk", ".pb", ".pa"):
+                await ctx.send("That isn't a valid `pkx`, `pbx`, or `pa8` file!")
+                return 400
+            elif data.strip("raw=true")[-4:-1] not in (".pk", ".xk", ".ck", ".pb", ".pa"):
+                await ctx.send("That isn't a valid `pkx`, `xk3`, `ck3`, `pbx`, or `pa8` file!")
                 return 400
             try:
                 async with self.bot.session.get(data) as resp:
