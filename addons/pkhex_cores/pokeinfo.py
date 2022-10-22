@@ -104,7 +104,7 @@ def get_pokemon_file_info(file):
     if pokemon is None:  # Invalid file
         return 400
     generation = pkhex_helper.extension_version_dict[pokemon.Extension.upper()]
-    if not personal_table_switcher(generation).IsPresentInGame(pokemon.Species, pokemon.Form):
+    if not pkhex_helper.personal_table_switcher(generation).IsPresentInGame(pokemon.Species, pokemon.Form):
         return 500
     game_info_strings = GameInfo.Strings
     entity_summary = EntitySummary(pokemon, game_info_strings)

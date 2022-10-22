@@ -149,7 +149,7 @@ class gpss(commands.Cog):
                 approved = resp_json['approved']
             except KeyError as e:
                 if not e.args[0] == "approved":
-                    return await ctx.send(f"JSON content was empty on the response.\nStatus: {resp[0]}\nContent: {resp.status}")
+                    return await ctx.send(f"JSON content was empty on the response.\nStatus: {resp.status}\nContent: `{await resp.read()}`")
                 approved = True
         if not uploaded:
             error = resp_json['error']

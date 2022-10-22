@@ -25,7 +25,7 @@ def get_legality_report(file):
     if pokemon is None:  # Invalid file
         return 400
     generation = pkhex_helper.extension_version_dict[pokemon.Extension.upper()]
-    if not personal_table_switcher(generation).IsPresentInGame(pokemon.Species, pokemon.Form):
+    if not pkhex_helper.personal_table_switcher(generation).IsPresentInGame(pokemon.Species, pokemon.Form):
         return 500
     analysis = LegalityAnalysis(pokemon)
     report = LegalityFormatting.Report(analysis)
@@ -41,7 +41,7 @@ def legalize_pokemon(file):
     if pokemon is None:  # Invalid file
         return 400
     generation = pkhex_helper.extension_version_dict[pokemon.Extension.upper()]
-    if not personal_table_switcher(generation).IsPresentInGame(pokemon.Species, pokemon.Form):
+    if not pkhex_helper.personal_table_switcher(generation).IsPresentInGame(pokemon.Species, pokemon.Form):
         return 500
     legality_report = LegalityFormatting.Report(LegalityAnalysis(pokemon)).replace('\r', '').split('\n')
     if legality_report[0] == "Legal!":
