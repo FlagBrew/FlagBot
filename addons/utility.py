@@ -331,22 +331,23 @@ class Utility(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    async def dm(self, ctx, user: discord.User, *, message):
+    async def dm(self, ctx, user: discord.User, *, message: str = ""):
         """DMs a user"""
         if user == ctx.me:
             return await ctx.send(f"{ctx.author.mention} I can't DM myself, you snarky little shit.")
-        has_attch = bool(ctx.message.attachments)
+        elif message is None or len(ctx.message.attachments) == 0:
+            return await ctx.send("You must provide a message or attachment.")
         embed = discord.Embed(description=message)
-        if has_attch:
-            img_bytes = await ctx.message.attachments[0].read()
-            client_img = discord.File(io.BytesIO(img_bytes), 'image.png')
-            log_img = discord.File(io.BytesIO(img_bytes), 'dm_image.png')
-            embed.set_thumbnail(url="attachment://dm_image.png")
+        if len(ctx.message.attachments) > 0:
+            attachments = []
+            for attachment in ctx.message.attachments:
+                attch = await attachment.to_file()
+                attachments.append(attch)
             try:
-                await user.send(message, file=client_img)
+                await user.send(message, files=attachments[:10])  # Discord only allows 10 attachments per message
             except discord.Forbidden:
                 return await ctx.send("Failed to DM the user. Do they have me blocked? 😢")
-            await self.bot.logs_channel.send(f"Message sent to {user} by {ctx.author}.", embed=embed, file=log_img)
+            await self.bot.logs_channel.send(f"Message sent to {user} by {ctx.author}.", embed=embed, files=attachments[:10])
         else:
             try:
                 await user.send(message)
@@ -357,20 +358,21 @@ class Utility(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    async def say(self, ctx, channel: discord.TextChannel, *, message):
+    async def say(self, ctx, channel: discord.TextChannel, *, message: str = ""):
         """Sends a message to the specified TextChannel"""
         if channel == ctx.channel or ctx.channel.name == "logs":
             return await ctx.send("Sending messages to the current channel or a logs channel is prohibited.")
+        elif message is None and len(ctx.message.attachments) == 0:
+            return await ctx.send("You need to provide a message or attachment to send.")
         message = message.replace("@everyone", "`everyone`").replace("@here", "`here`")
-        has_attch = bool(ctx.message.attachments)
         embed = discord.Embed(description=message)
-        if has_attch:
-            img_bytes = await ctx.message.attachments[0].read()
-            channel_img = discord.File(io.BytesIO(img_bytes), 'image.png')
-            log_img = discord.File(io.BytesIO(img_bytes), 'channel_send_image.png')
-            embed.set_thumbnail(url="attachment://channel_send_image.png")
-            await channel.send(message, file=channel_img)
-            await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=embed, file=log_img)
+        if len(ctx.message.attachments) > 0:
+            attachments = []
+            for attachment in ctx.message.attachments:
+                attch = await attachment.to_file()
+                attachments.append(attch)
+            await channel.send(message, files=attachments[:10])  # Discord only allows 10 attachments per message
+            await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=embed, files=attachments[:10])
         else:
             await channel.send(message)
             await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=embed)

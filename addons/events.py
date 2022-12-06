@@ -95,14 +95,19 @@ class Events(commands.Cog):
 
         # log dm messages
         if not isinstance(message.channel, discord.threads.Thread) and isinstance(message.channel, discord.abc.PrivateChannel) and not message.author == self.bot.guild.me:
-            if not message.content:
+            if message.content == "" and len(message.attachments) == 0:
                 return
             guild = self.bot.get_guild(self.bot.flagbrew_id)
             member = guild.get_member(message.author.id)
             if 885261003544223744 in (role.id for role in member.roles):
                 return
-            embed = discord.Embed(description=message.content)
-            await self.bot.dm_logs_channel.send(f"New DM received from {message.author} | {message.author.id}.", embed=embed)
+            attachments = []
+            if len(message.attachments) > 0:
+                for attachment in message.attachments:
+                    attch = await attachment.to_file()
+                    attachments.append(attch)
+            embed = discord.Embed(description=message.content) if message.content != "" else None
+            await self.bot.dm_logs_channel.send(f"New DM received from {message.author} | {message.author.id}.", embed=embed, files=attachments)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
