@@ -8,6 +8,7 @@ import io
 import base64
 import addons.pkhex_cores.pkhex_helper as pkhex_helper
 import addons.pkhex_cores.pokeinfo as pokeinfo
+import multiprocessing
 
 # Import PKHeX stuff
 sys.path.append(os.getcwd() + r"/addons/pkhex_cores/deps")
@@ -35,6 +36,16 @@ def get_legality_report(file):
         return 201
     return report.replace('\r', '').split('\n')
 
+thread = None
+
+def autolegalityThead(info, pkmn, set, legalization_res, out):
+    pkmn, _ = APILegality.GetLegalFromTemplate(info, pkmn, set, legalization_res)
+    out.put(base64.b64encode(bytearray(byte for byte in pkmn.DecryptedBoxData)).decode('UTF-8'))
+
+def cancelThread():
+    if thread is not None:
+        thread.kill()
+
 
 def legalize_pokemon(file):
     pokemon = EntityFormat.GetFromBytes(file)
@@ -54,7 +65,31 @@ def legalize_pokemon(file):
     trainer_data.SID = pokemon.SID
     trainer_data.Language = pokemon.Language
     trainer_data.Gender = pokemon.OT_Gender
-    new_pokemon = Legalizer.Legalize(trainer_data, pokemon)
+
+    set = RegenTemplate(pokemon, trainer_data.Generation)
+    legalization_res = LegalizationResult(0)
+    out = multiprocessing.Queue()
+    thread = multiprocessing.Process(target=autolegalityThead, args=(trainer_data, pokemon, set, legalization_res, out))
+    thread.daemon = True
+    thread.start()
+
+    i = 0
+    killed = False
+    while thread.is_alive():
+        if i > 15:
+            thread.kill()
+            killed = True
+            break
+        i += 1
+        time.sleep(1)
+    
+    if killed:
+        return 202
+    
+    # Since we're getting base64 back, we'll need to decode it and then convert it to an actual Pokemon object
+    result = out.get()
+    new_pokemon = EntityFormat.GetFromBytes(base64.b64decode(result))
+
     analysis = LegalityAnalysis(new_pokemon)
     if not analysis.Valid and not analysis.Parsed:
         return 201
