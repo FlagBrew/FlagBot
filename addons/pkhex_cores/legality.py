@@ -6,8 +6,10 @@ import os
 import clr
 import io
 import base64
+import time
 import addons.pkhex_cores.pkhex_helper as pkhex_helper
 import addons.pkhex_cores.pokeinfo as pokeinfo
+import multiprocessing
 
 # Import PKHeX stuff
 sys.path.append(os.getcwd() + r"/addons/pkhex_cores/deps")
@@ -18,6 +20,8 @@ from PKHeX.Core import Species  # Import Enums
 from PKHeX.Core.AutoMod import Legalizer, APILegality, BattleTemplateLegality, RegenTemplate, LegalizationResult
 # Import base C# Objects
 from System import Enum, UInt16, Convert
+
+thread = None
 
 
 def get_legality_report(file):
@@ -34,6 +38,20 @@ def get_legality_report(file):
     elif report == "Analysis not available for this Pokémon.":
         return 201
     return report.replace('\r', '').split('\n')
+
+
+def autolegalityThead(inp, out):
+    trainer_data = inp.get()  # type: SimpleTrainerInfo, cannot pickle
+    pkmn = inp.get()  # type: PKM, cannot pickle
+    set = inp.get()  # type: RegenTemplate, cannot pickle
+    legalization_res = inp.get()  # type: LegalizationResult, cannot pickle
+    pkmn, _ = APILegality.GetLegalFromTemplate(trainer_data, pkmn, set, legalization_res)
+    out.put(base64.b64encode(bytearray(byte for byte in pkmn.DecryptedBoxData)).decode('UTF-8'))
+
+
+def cancelThread():
+    if thread is not None:
+        thread.kill()
 
 
 def legalize_pokemon(file):
@@ -54,7 +72,35 @@ def legalize_pokemon(file):
     trainer_data.SID = pokemon.SID
     trainer_data.Language = pokemon.Language
     trainer_data.Gender = pokemon.OT_Gender
-    new_pokemon = Legalizer.Legalize(trainer_data, pokemon)
+
+    set = RegenTemplate(pokemon, trainer_data.Generation)
+    legalization_res = LegalizationResult(0)
+    # Can't directly pass these objects to the thread, so we'll need to use a queue
+    inp = multiprocessing.Queue()
+    inp.put(trainer_data)
+    inp.put(pokemon)
+    inp.put(set)
+    inp.put(legalization_res)
+    out = multiprocessing.Queue()
+    thread = multiprocessing.Process(target=autolegalityThead, args=(inp, out))
+    thread.daemon = True
+    thread.start()
+
+    i = 0
+    killed = False
+    while thread.is_alive():
+        if i > 15:
+            thread.kill()
+            killed = True
+            break
+        i += 1
+        time.sleep(1)
+    if killed:
+        return 202
+    # Since we're getting base64 back, we'll need to decode it and then convert it to an actual Pokemon object
+    result = out.get()
+    new_pokemon = EntityFormat.GetFromBytes(base64.b64decode(result))
+
     analysis = LegalityAnalysis(new_pokemon)
     if not analysis.Valid and not analysis.Parsed:
         return 201
