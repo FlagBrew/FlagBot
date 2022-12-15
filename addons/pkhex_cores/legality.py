@@ -21,7 +21,7 @@ from PKHeX.Core.AutoMod import Legalizer, APILegality, BattleTemplateLegality, R
 # Import base C# Objects
 from System import Enum, UInt16, Convert
 
-thread = None
+alm_process = None
 
 
 def get_legality_report(file):
@@ -40,21 +40,26 @@ def get_legality_report(file):
     return report.replace('\r', '').split('\n')
 
 
-def autolegalityThead(inp, out):
-    trainer_data = inp.get()  # type: SimpleTrainerInfo, cannot pickle
-    pkmn = inp.get()  # type: PKM, cannot pickle
-    set = inp.get()  # type: RegenTemplate, cannot pickle
-    legalization_res = inp.get()  # type: LegalizationResult, cannot pickle
+def autolegalityProcess(ot, tid, sid, lang, gender, generation, pkmn_bytes, out):
+    trainer_data = SimpleTrainerInfo(pkhex_helper.game_version_dict[generation])
+    trainer_data.OT = ot
+    trainer_data.TID = tid
+    trainer_data.SID = sid
+    trainer_data.Language = lang
+    trainer_data.Gender = gender
+    pkmn = EntityFormat.GetFromBytes(base64.b64decode(pkmn_bytes))
+    set = RegenTemplate(pkmn, trainer_data.Generation)
+    legalization_res = LegalizationResult(0)
     pkmn, _ = APILegality.GetLegalFromTemplate(trainer_data, pkmn, set, legalization_res)
     out.put(base64.b64encode(bytearray(byte for byte in pkmn.DecryptedBoxData)).decode('UTF-8'))
 
 
 def cancelThread():
-    if thread is not None:
-        thread.kill()
+    if alm_process is not None:
+        alm_process.kill()
 
 
-def legalize_pokemon(file):
+def legalize_pokemon(file, manager):
     pokemon = EntityFormat.GetFromBytes(file)
     if pokemon is None:  # Invalid file
         return 400
@@ -66,37 +71,25 @@ def legalize_pokemon(file):
         return 200
     elif legality_report[0] == "Analysis not available for this Pokémon.":
         return 201
-    trainer_data = SimpleTrainerInfo(pkhex_helper.game_version_dict[generation])
-    trainer_data.OT = pokemon.OT_Name
-    trainer_data.TID = pokemon.TID
-    trainer_data.SID = pokemon.SID
-    trainer_data.Language = pokemon.Language
-    trainer_data.Gender = pokemon.OT_Gender
 
-    set = RegenTemplate(pokemon, trainer_data.Generation)
-    legalization_res = LegalizationResult(0)
-    # Can't directly pass these objects to the thread, so we'll need to use a queue
-    inp = multiprocessing.Queue()
-    inp.put(trainer_data)
-    inp.put(pokemon)
-    inp.put(set)
-    inp.put(legalization_res)
-    out = multiprocessing.Queue()
-    thread = multiprocessing.Process(target=autolegalityThead, args=(inp, out))
-    thread.daemon = True
-    thread.start()
+    out = manager.Queue()
+    alm_process = multiprocessing.Process(target=autolegalityProcess, args=(pokemon.OT_Name, pokemon.TID, pokemon.SID,
+                                                                            pokemon.Language, pokemon.Gender, generation,
+                                                                            base64.b64encode(bytearray(byte for byte in pokemon.DecryptedBoxData)).decode('UTF-8'), out))
+    alm_process.daemon = True
+    alm_process.start()
 
     i = 0
-    killed = False
-    while thread.is_alive():
-        if i > 15:
-            thread.kill()
-            killed = True
+    while alm_process.is_alive():
+        if i > 30:
+            print("Legalization attempt taking too long, killing process...")
+            alm_process.kill()
             break
         i += 1
         time.sleep(1)
-    if killed:
-        return 202
+    if out.empty():
+        return 202  # Timeout and no result
+
     # Since we're getting base64 back, we'll need to decode it and then convert it to an actual Pokemon object
     result = out.get()
     new_pokemon = EntityFormat.GetFromBytes(base64.b64decode(result))

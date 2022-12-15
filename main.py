@@ -14,6 +14,7 @@ import pymongo
 import aiohttp
 import concurrent
 import psutil
+import multiprocessing
 from exceptions import PKHeXMissingArgs
 from discord.ext import commands
 
@@ -481,11 +482,15 @@ async def update_core_commit_vars(ctx, pkhex_core_commit: str, alm_core_commit: 
 
 
 # Execute
-async def main():
+async def main(manager):
     print('Bot directory: ', dir_path)
     async with bot:
         await setup_cogs(bot)
+        bot.manager = manager
         await bot.start(token)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(main())
+if __name__ == '__main__':
+    manager = multiprocessing.Manager()
+
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(main(manager))

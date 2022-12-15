@@ -67,7 +67,7 @@ class pkhex(commands.Cog):
         elif func == "legality_check":
             return_data = legality_module.get_legality_report(file)
         elif func == "legalize":
-            return_data = legality_module.legalize_pokemon(file)
+            return_data = legality_module.legalize_pokemon(file, self.bot.manager)
         if return_data == 200:
             await ctx.send("That Pokemon is legal!")
             return 400
