@@ -88,10 +88,10 @@ class Events(commands.Cog):
             await message.author.ban()
             await message.channel.send(f"{message.author} was banned for attempting to spam user mentions.")
 
-        # auto restart on update
-        if message.channel.id == 672536257934655529:
-            if message.webhook_id == 482998461646766080 and "new commits" in message.embeds[0].title:
-                sys.exit(0)
+        # auto restart on update Disabled now because of using github actions
+        # if message.channel.id == 672536257934655529:
+        #     if message.webhook_id == 482998461646766080 and "new commits" in message.embeds[0].title:
+        #         sys.exit(0)
 
         # log dm messages
         if not isinstance(message.channel, discord.threads.Thread) and isinstance(message.channel, discord.abc.PrivateChannel) and not message.author == self.bot.guild.me:
