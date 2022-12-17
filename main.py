@@ -462,7 +462,7 @@ async def about(ctx):
     """Information about the bot"""
     embed = discord.Embed()
     embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in the FlagBrew server.\n"
-                         "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
+                         "You can view the source code [here](https://github.com/FlagBrew/FlagBot).\n"
                          f"Written by {bot.creator.mention}.")
     embed.add_field(name="PKHeX.Core Commit", value=f"`{bot.persistent_vars_dict['pkhex_core_commit']}`")
     embed.add_field(name="AutoMod.Core Commit", value=f"`{bot.persistent_vars_dict['alm_core_commit']}`")

@@ -139,7 +139,7 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
                              "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
                              "See the GNU Affero General Public License for more details.\n"
                              "A copy of the GNU Affero General Public License is available "
-                             "[in the program's repository](https://github.com/GriffinG1/FlagBot/blob/master/LICENSE)."
+                             "[in the program's repository](https://github.com/FlagBrew/FlagBot/blob/master/LICENSE)."
                              )
         await ctx.send(embed=embed)
 
