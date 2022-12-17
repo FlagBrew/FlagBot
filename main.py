@@ -90,14 +90,12 @@ bot = commands.Bot(command_prefix=prefix, description=description, activity=defa
 if not is_using_cmd_args:  # handles setting up the bot vars
     bot.is_mongodb = config.is_mongodb
     bot.flagbrew_url = config.flagbrew_url
-    bot.star_count = config.star_count
 elif not is_using_env_args:
     bot.is_mongodb = cmd_args[7]
     bot.flagbrew_url = cmd_args[11]
 else:
     bot.is_mongodb = os.getenv("IS_MONGODB")
     bot.flagbrew_url = os.getenv("FLAGBREW_URL")
-    bot.star_count = os.getenv("STAR_COUNT")
 bot.gpss_url = bot.flagbrew_url
 
 if not os.path.exists('saves/warns.json'):
@@ -175,7 +173,6 @@ elif not is_using_env_args:
     bot.site_secret = cmd_args[3]
     bot.github_user, bot.github_pass = cmd_args[5:7]
     bot.is_beta = cmd_args[4]
-    bot.star_count = cmd_args[12]
     bot.ready = False
 else:
     bot.site_secret = os.getenv("SECRET")

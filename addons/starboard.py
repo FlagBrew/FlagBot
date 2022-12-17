@@ -83,18 +83,18 @@ class Starboard(commands.Cog):
         existing = starboard_db.find_one({'$or': [{'message_id': message.id}, {'starboard_id': message.id}]})
         if existing:
             starboard_message = await self.get_message(self.bot.starboard_channel, existing['starboard_id'])
-            if existing['star_count'] + add_value >= self.bot.star_count:
+            if existing['star_count'] + add_value >= self.bot.persistent_vars_dict["star_count"]:
                 if existing['starboard_id'] == message.id:
                     message = await self.get_message(self.bot.get_guild(self.bot.flagbrew_id).get_channel(existing['channel_id']), existing['message_id'])
                 content, embed = self.get_emoji_message(message, add_value + existing['star_count'])
                 await starboard_message.edit(content=content, embed=embed)
                 starboard_db.update_one({'message_id': message.id}, {'$inc': {'star_count': add_value}})
-            elif existing['star_count'] + add_value < self.bot.star_count:
+            elif existing['star_count'] + add_value < self.bot.persistent_vars_dict["star_count"]:
                 starboard_db.delete_one({'message_id': message.id})
                 await starboard_message.delete()
         else:
             star_reactions = self.get_star_reaction_count(message)
-            if star_reactions >= self.bot.star_count:
+            if star_reactions >= self.bot.persistent_vars_dict["star_count"]:
                 content, embed = self.get_emoji_message(message, star_reactions)
                 sent_message = await self.bot.starboard_channel.send(content=content, embed=embed)
                 entry = {
@@ -158,6 +158,20 @@ class Starboard(commands.Cog):
             return await ctx.send("✅ Message `{}` removed from starboard.".format(existing['message_id']))
         else:
             return await ctx.send("❌ Message not found in starboard.")
+
+    @commands.command()
+    @commands.has_any_role("Discord Moderator", "Bot Dev")
+    async def starcount(self, ctx, count: int):
+        if count <= 0:
+            return await ctx.send("Count must be a positive number!")
+        elif count == self.bot.persistent_vars_dict["star_count"]:
+            return await ctx.send("No change, that's the current star count.")
+        elif count > 8:
+            return await ctx.send("Cap on the count is locked to 8.")
+        self.bot.persistent_vars_dict["star_count"] = count
+        with open("saves/persistent_vars.json", "w") as file:
+            json.dump(self.bot.persistent_vars_dict, file, indent=4)
+        await ctx.send(f"Successfully changed minimum required star count to {count}!")
 
 
 async def setup(bot):
