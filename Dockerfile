@@ -1,6 +1,10 @@
-FROM python:3.8-alpine
-WORKDIR /bot
-COPY start.sh /bot/
-RUN apk add --no-cache git zlib-dev python3-dev gcc musl-dev freetype-dev fribidi-dev harfbuzz-dev jpeg-dev lcms2-dev openjpeg-dev tcl-dev tiff-dev tk-dev
+FROM python:3
+RUN apt update && \
+    apt install mono-complete zlib1g-dev gcc musl-dev gcc libfreetype-dev libfribidi-dev libharfbuzz-dev libjpeg-dev liblcms2-2 libopenjp2-7-dev libtiff-dev -y
 
-CMD ["/bin/sh", "start.sh"]
+WORKDIR /bot
+COPY . /bot/
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
+
+CMD ["python", "main.py"]
+
