@@ -180,6 +180,7 @@ class Moderation(commands.Cog):
             return await ctx.send(f"Purged {len(purged)} messages by {user} ({user.id}).")
         await self.bot.logs_channel.send(f"{ctx.author} ({ctx.author.id}) cleared {amount} messages in {ctx.channel.mention}.")
         await ctx.channel.purge(limit=amount, before=ctx.message)
+        await ctx.send(f"Purged {len(purged)} messages.")
 
     @commands.command(aliases=['psince', 'clearsince', 'cleansince'])
     @commands.has_any_role("Discord Moderator", "Bot Dev")
