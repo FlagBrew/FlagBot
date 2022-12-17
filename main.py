@@ -70,29 +70,40 @@ os.chdir(dir_path)
 if not is_using_cmd_args:  # handles pulling the config/args needed for creating the bot object
     prefix = config.prefix
     token = config.token
-    default_activity = discord.Activity(name=config.default_activity, type=discord.ActivityType.watching)
 elif not is_using_env_args:
     token, prefix = cmd_args[0:2]
     prefix = prefix.replace(" ", "").split(",")
-    default_activity = discord.Activity(name=cmd_args[2], type=discord.ActivityType.watching)
 else:
     token = os.getenv("TOKEN")
     prefix = os.getenv("PREFIX")
-    default_activity = discord.Activity(name=os.getenv("DEF_ACT"), type=discord.ActivityType.watching)
+
+activity_types = {
+    "watching": discord.ActivityType.watching,
+    "listening": discord.ActivityType.listening,
+    "playing": discord.ActivityType.playing
+}
+
+activity = None
+
+if os.path.exists('saves/persistent_vars.json'):
+    with open('saves/persistent_vars.json', 'r') as file:
+        persistent_vars = json.load(file)
+        if persistent_vars["activity"]["name"] is not None:
+            activity = discord.Activity(name=persistent_vars["activity"]["name"], type=activity_types[persistent_vars["activity"]["type"]])
 
 intents = discord.Intents().all()
 intents.members = True
 intents.presences = True
 intents.message_content = True
 help_cmd = commands.DefaultHelpCommand(show_parameter_descriptions=False)
-bot = commands.Bot(command_prefix=prefix, description=description, activity=default_activity, intents=intents, help_command=help_cmd)
+bot = commands.Bot(command_prefix=prefix, description=description, activity=activity, intents=intents, help_command=help_cmd)
 
 if not is_using_cmd_args:  # handles setting up the bot vars
     bot.is_mongodb = config.is_mongodb
     bot.flagbrew_url = config.flagbrew_url
 elif not is_using_env_args:
-    bot.is_mongodb = cmd_args[7]
-    bot.flagbrew_url = cmd_args[11]
+    bot.is_mongodb = cmd_args[6]
+    bot.flagbrew_url = cmd_args[10]
 else:
     bot.is_mongodb = os.getenv("IS_MONGODB")
     bot.flagbrew_url = os.getenv("FLAGBREW_URL")
@@ -134,9 +145,9 @@ if bot.is_mongodb:
         db_username = config.db_username
         db_password = config.db_password
     elif not is_using_env_args:
-        db_address = cmd_args[8]
-        db_username = cmd_args[9]
-        db_password = cmd_args[10]
+        db_address = cmd_args[7]
+        db_username = cmd_args[8]
+        db_password = cmd_args[9]
     else:
         db_address = os.getenv("DB_ADDRESS")
         db_username = os.getenv("DB_USERNAME")
@@ -170,9 +181,9 @@ if not is_using_cmd_args:
     bot.ready = False
     bot.is_beta = config.is_beta
 elif not is_using_env_args:
-    bot.site_secret = cmd_args[3]
-    bot.github_user, bot.github_pass = cmd_args[5:7]
-    bot.is_beta = cmd_args[4]
+    bot.site_secret = cmd_args[2]
+    bot.github_user, bot.github_pass = cmd_args[4:6]
+    bot.is_beta = cmd_args[3]
     bot.ready = False
 else:
     bot.site_secret = os.getenv("SECRET")
