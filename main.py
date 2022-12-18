@@ -324,6 +324,17 @@ async def on_ready():
     bot.pie = await bot.fetch_user(307233052650635265)
     bot.allen = await bot.fetch_user(211923158423306243)
     bot.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
+
+    async with bot.session.get("https://api.github.com/repos/FlagBrew/FlagBot/commits/master") as resp:
+        commit = await resp.json()
+        commit_url = commit['html_url']
+        commit_message = commit['commit']['message']
+    if bot.persistent_vars_dict['last_commit'] != commit["sha"]:
+        await bot.bot_channel.send(f"New commit merged: `{commit_message}`\n<{commit_url}>")
+        bot.persistent_vars_dict['last_commit'] = commit["sha"]
+        with open('saves/persistent_vars.json', 'w') as file:
+            json.dump(bot.persistent_vars_dict, file, indent=4)
+
     bot.ready = True
 
 
