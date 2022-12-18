@@ -179,7 +179,7 @@ class Moderation(commands.Cog):
                 return await ctx.send(f"Could not find any messages by {user} ({user.id}) to purge.")
             return await ctx.send(f"Purged {len(purged)} messages by {user} ({user.id}).")
         await self.bot.logs_channel.send(f"{ctx.author} ({ctx.author.id}) cleared {amount} messages in {ctx.channel.mention}.")
-        await ctx.channel.purge(limit=amount, before=ctx.message)
+        purged = await ctx.channel.purge(limit=amount, before=ctx.message)
         await ctx.send(f"Purged {len(purged)} messages.")
 
     @commands.command(aliases=['psince', 'clearsince', 'cleansince'])
