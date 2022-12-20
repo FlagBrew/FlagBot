@@ -326,20 +326,21 @@ async def on_ready():
     bot.allen = await bot.fetch_user(211923158423306243)
     bot.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
 
-    async with bot.session.get("https://api.github.com/repos/FlagBrew/FlagBot/commits/master") as resp:
-        commit = await resp.json()
-        commit_url = commit['html_url']
-        commit_message = commit['commit']['message']
-        commit_date = commit['commit']['author']['date']
-        commit_date = datetime.strptime(commit_date, "%Y-%m-%dT%H:%M:%SZ")
-    if bot.persistent_vars_dict['last_commit'] != commit["sha"]:
-        embed = discord.Embed(title="New commit merged!")
-        embed.add_field(name="Commit message", value=commit_message)
-        embed.add_field(name="Commit URL", value=f"[Click here]({commit_url})")
-        embed.set_footer(text=f"Committed at {datetime.strftime(commit_date, '%H:%M:%S')} on {datetime.strftime(commit_date, '%d/%m/%Y')} UTC")
-        bot.persistent_vars_dict['last_commit'] = commit["sha"]
-        with open('saves/persistent_vars.json', 'w') as file:
-            json.dump(bot.persistent_vars_dict, file, indent=4)
+    if not bot.is_beta:
+        async with bot.session.get("https://api.github.com/repos/FlagBrew/FlagBot/commits/master") as resp:
+            commit = await resp.json()
+            commit_url = commit['html_url']
+            commit_message = commit['commit']['message']
+            commit_date = commit['commit']['author']['date']
+            commit_date = datetime.strptime(commit_date, "%Y-%m-%dT%H:%M:%SZ")
+        if bot.persistent_vars_dict['last_commit'] != commit["sha"]:
+            embed = discord.Embed(title="New commit merged!")
+            embed.add_field(name="Commit message", value=commit_message)
+            embed.add_field(name="Commit URL", value=f"[Click here]({commit_url})")
+            embed.set_footer(text=f"Committed at {datetime.strftime(commit_date, '%H:%M:%S')} on {datetime.strftime(commit_date, '%d/%m/%Y')} UTC")
+            bot.persistent_vars_dict['last_commit'] = commit["sha"]
+            with open('saves/persistent_vars.json', 'w') as file:
+                json.dump(bot.persistent_vars_dict, file, indent=4)
 
     bot.ready = True
 
