@@ -336,11 +336,12 @@ async def on_ready():
         if bot.persistent_vars_dict['last_commit'] != commit["sha"]:
             embed = discord.Embed(title="New commit merged!")
             embed.add_field(name="Commit message", value=commit_message)
-            embed.add_field(name="Commit URL", value=f"[Click here]({commit_url})")
+            embed.add_field(name="Commit URL", value=f"[Click here]({commit_url})", inline=False)
             embed.set_footer(text=f"Committed at {datetime.strftime(commit_date, '%H:%M:%S')} on {datetime.strftime(commit_date, '%d/%m/%Y')} UTC")
             bot.persistent_vars_dict['last_commit'] = commit["sha"]
             with open('saves/persistent_vars.json', 'w') as file:
                 json.dump(bot.persistent_vars_dict, file, indent=4)
+            await bot.bot_channel.send(embed=embed)
 
     bot.ready = True
 
