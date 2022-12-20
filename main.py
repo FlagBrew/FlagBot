@@ -15,7 +15,7 @@ import aiohttp
 import concurrent
 import psutil
 import multiprocessing
-import datetime
+from datetime import datetime
 from exceptions import PKHeXMissingArgs
 from discord.ext import commands
 
