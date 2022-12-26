@@ -383,13 +383,48 @@ class Info(commands.Cog):
             "Sun and Moon": "Cosmog, Lunala, Necrozma, Solgaleo, all 4 Tapus, and all 7 Ultra Beasts",
             "Ultra Sun and Ultra Moon": "Cosmog, Lunala, Necrozma, Solgaleo, all 4 Tapus, and Zygarde",
             "Let's Go Eevee and Pikachu": "Partner Eevee and Partner Pikachu",
-            "Sword and Shield (Base Game)": "The gift Charmander, Eternatus, All 3 starters, the gift Toxel, the battle tower Type: Null, the Wedgehurst Slowpoke, Zacian, and Zamazenta",
+            "Sword and Shield (Base Game)": "The gift Charmander, Eternatus, all 3 starters, the gift Toxel, the battle tower Type: Null, the Wedgehurst Slowpoke, Zacian, and Zamazenta",
             "Sword and Shield (Isle of Armour)": "Every gift Pokemon",
-            "Sword and Shield (The Crown Tundra)": "Galarian Articuno, Calyrex, the gift Cosmog, Glastrier, Keldeo, Galarian Moltres, the gift Poipole, Spectrier, and Galarian Zapdos"
+            "Sword and Shield (The Crown Tundra)": "Galarian Articuno, Calyrex, the gift Cosmog, Glastrier, Keldeo, Galarian Moltres, the gift Poipole, Spectrier, and Galarian Zapdos",
+            "Brilliant Diamond and Shining Pearl": "The gift Jirachi and the gift Mew",
+            "Legends Arceus": "All 3 starters, Arceus, Azelf, Cresselia, Darkrai, Dialga, Enamorus, Giratina, Heatran, Landorus, Manaphy, Mesprit, Palkia, Phione, Regigigas, Shaymin, Thundurus, Tornadus, Uxie, all forced encounters in requests and missions, and the gift Alolan Vulpix",
+            "Scarlet and Violet": 'All 3 starters, all Gimmighoul, both Koraidon, both Miraidon, the 4 Sub-Legends, the 6 former Titans, and the Artazon Sunflora\n*There are also a handful of fixed symbol encounters, such as the Squawkabilly on top of your house, that are shiny locked. These are not listed here for brevity.*'
         }
+        permanently_unavailable = [
+            "All Gen 4 and 5 non-shiny event Pokemon (with very few exceptions)",
+            "All Hat Pikachu (except Partner Cap)",
+            "Ash-Greninja",
+            "Calyrex",
+            "Chi-Yu",
+            "Chien-Pao",
+            "Cosmoem",
+            "Cosmog",
+            "Enamorus",
+            "Gholdengo",
+            "Gigantamax Melmetal",
+            "Gimmighoul",
+            "Glastrier",
+            "Hoopa",
+            "Keldeo",
+            "Koraidon",
+            "Kubfu",
+            "Magearna (Standard and Original Color)",
+            "Marshadow",
+            "Meloetta",
+            "Miraidon",
+            "Spectrier",
+            "Ting-Lu",
+            "Urshifu (Both Forms)",
+            "Victini",
+            "Vivillon (Poké Ball Pattern)",
+            "Volcanion",
+            "Wo-Chien",
+            "Zarude (Both Forms)"
+        ]
         embed = discord.Embed(title="Shiny Locked Encounters", description="[Source](https://www.serebii.net/games/shiny.shtml)")
         for key, val in encs.items():
             embed.add_field(name=key, value=val, inline=False)
+        embed.add_field(name="Never Been Available Shiny", value=", ".join(permanently_unavailable))
         await ctx.send(embed=embed)
 
     @commands.command()
