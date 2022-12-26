@@ -65,8 +65,8 @@ class gpss(commands.Cog):
                     embed.add_field(name="Handling Trainer", value=pkmn_data["ht"])
                 else:
                     embed.add_field(name="Handling Trainer", value="N/A")
-                if ((pkmn_data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(pkmn_data["generation"]) > 2) and not pkmn_data["met_loc"] == "":
-                    embed.add_field(name="Met Location", value=pkmn_data["met_loc"])
+                if ((pkmn_data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(pkmn_data["generation"]) > 2) and not pkmn_data["met_data"]["location"] == "":
+                    embed.add_field(name="Met Location", value=pkmn_data["met_data"]["location"])
                 else:
                     embed.add_field(name="Met Location", value="N/A")
                 if (pkmn_data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(pkmn_data["generation"]) > 2:
@@ -82,9 +82,9 @@ class gpss(commands.Cog):
                 embed.add_field(name="EVs", value=f"**HP**: {stats[0]['stat_ev']}\n**Atk**: {stats[1]['stat_ev']}\n**Def**: {stats[2]['stat_ev']}\n**SpAtk**: {stats[3]['stat_ev']}\n**SpDef**: {stats[4]['stat_ev']}\n**Spd**: {stats[5]['stat_ev']}")
                 embed.add_field(name="IVs", value=f"**HP**: {stats[0]['stat_iv']}\n**Atk**: {stats[1]['stat_iv']}\n**Def**: {stats[2]['stat_iv']}\n**SpAtk**: {stats[3]['stat_iv']}\n**SpDef**: {stats[4]['stat_iv']}\n**Spd**: {stats[5]['stat_iv']}")
                 moves = pkmn_data["moves"]
-                embed.add_field(name="Moves", value=f"**1**: {moves[0]['move_name']}\n**2**: {moves[1]['move_name']}\n**3**: {moves[2]['move_name']}\n**4**: {moves[3]['move_name']}")
+                embed.add_field(name="Moves", value=f"**1**: {moves[0]['name']}\n**2**: {moves[1]['name']}\n**3**: {moves[2]['name']}\n**4**: {moves[3]['name']}")
                 embed.title = f"Data for {pkmn_data['nickname']} ({pkmn_data['gender']})"
-                embed.set_thumbnail(url=pkmn_data["species_sprite_url"])
+                embed.set_thumbnail(url=pkmn_data["sprites"]["species"])
                 return await msg.edit(embed=embed, content=None)
         except aiohttp.ContentTypeError:
             await msg.edit(content=f"There was no pokemon on the GPSS with the code `{code}`.")
