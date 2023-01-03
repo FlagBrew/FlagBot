@@ -3,7 +3,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "When will Virtual Console games be supported?",
+                "name": "1. When will Virtual Console games be supported?",
                 "value": "**For PKSM**: Nobody on the FlagBrew team is interested in working on gen 1/2 support. However, if you would like to work on it yourself, and the code is up to our standards, we will merge a PR. Please see [this issue](https://github.com/FlagBrew/PKSM/issues/1181) for more info.\n**For Checkpoint**: NES, SNES, GB, and GBC are supported. However, GBA is not currently supported. You can back up your GBA saves using [GodMode9](https://3ds.hacks.guide/dumping-titles-and-game-cartridges#backup-gba-vc-saves)."
             }
         ],
@@ -13,7 +13,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "Why do I have to wait so long for new releases?",
+                "name": "2. Why do I have to wait so long for new releases?",
                 "value": "Because you think you're entitled to everything."
             }
         ],
@@ -23,7 +23,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "I have Homebrew/*hax. Why can't I launch any Flagbrew apps?",
+                "name": "3. I have Homebrew/*hax. Why can't I launch any Flagbrew apps?",
                 "value": "All FlagBrew apps *require* CFW to function. **There is no viable reason to not install CFW nowadays, as there is a free method.** You can follow [this guide](https://3ds.hacks.guide) to install CFW on your 3ds. ***Versions under PKSM 10.0 are not supported and no assistance will be given with them!!!***"
             }
         ],
@@ -36,7 +36,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "I can't access any of the channels in the Community, Checkpoint, or PKSM groups!",
+                "name": "4. I can't access any of the channels in the Community, Checkpoint, or PKSM groups!",
                 "value": "You need to toggle either the `3ds Updates` or `Switch Updates` roles to access these channels. Information on how to toggle these can be found in <#278223623175798794>."
             }
         ],
