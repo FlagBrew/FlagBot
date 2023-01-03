@@ -54,7 +54,6 @@ class Info(commands.Cog):
         embed = discord.Embed.from_dict(current_faq)
         embed.title = "Frequently Asked Questions"
         embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()}"
-        embed.title += f" #{faq_num}"
         await channel.send(embed=embed)
 
     @commands.command(aliases=["releases", "latest"])
