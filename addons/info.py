@@ -128,26 +128,26 @@ class Info(commands.Cog):
         'rtfm',  # general usage
 
         # General FAQ items
-        'vc',  # general faq #1 - vc support
-        'entitled',  # general faq #2 - new releases
-        'rules',  # general faq #4 - toggling roles
+        'vc',  # 1 - vc support
+        'entitled',  # 2 - new releases
+        'rules',  # 4 - toggling roles
 
         # PKSM FAQ items
-        "lgpe", "swsh", "bdsp", "pla", "scvi", "switchsupport",  # pksm faq #2 - switch support
-        "emulator",  # pksm faq #3 - emulator cross-use
-        "scripts", "universal",  # pksm faq #4 - how do universal scripts work
-        "badqr",  # pksm faq #6 - why QR no worky
-        "sendpkx",  # pksm faq #7 - sending pkx files
-        "wc3",  # pksm faq #9 - gen 3 events
-        "romhacks",  # pksm faq #10 - rom hack support
-        "azure",  # pksm faq #11
+        "lgpe", "swsh", "bdsp", "pla", "scvi", "switchsupport",  # 2 - switch support
+        "emulator",  # 3 - emulator cross-use
+        "scripts", "universal",  # 4 - how do universal scripts work
+        "badqr",  # 6 - why QR no worky
+        "sendpkx",  # 7 - sending pkx files
+        "wc3",  # 9 - gen 3 events
+        "romhacks",  # 10 - rom hack support
+        "azure",  # 11
 
         # Checkpoint FAQ items
-        "addcode", "fixcheat",  # checkpoint faq #1 - pls add cheat
-        "wheregame",  # checkpoint faq #2 - missing games
-        "applet",  # checkpoint faq #3 - applet mode issues
-        "pkcrash",  # checkpoint faq #4 - cheat crash in pkmn games
-        "updatedb",  # checkpoint faq #6 - how to update the cheat db
+        "addcode", "fixcheat",  # 1 - pls add cheat
+        "wheregame",  # 2 - missing games
+        "applet",  # 3 - applet mode issues
+        "pkcrash",  # 4 - cheat crash in pkmn games
+        "updatedb",  # 6 - how to update the cheat db
     ]
 
     @commands.command(aliases=['faqaliases', 'faqalias', 'lfaq'])
