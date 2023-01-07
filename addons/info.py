@@ -150,6 +150,13 @@ class Info(commands.Cog):
         "updatedb",  # checkpoint faq #6 - how to update the cheat db
     ]
 
+    @commands.command(aliases=['faqaliases', 'faqalias', 'lfaq'])
+    async def list_faq_aliases(self, ctx):
+        """Lists all available aliases for the faq command."""
+        embed = discord.Embed(title="FAQ Aliases")
+        embed.description = f"`{'`, `'.join(self.faq_aliases)}`"
+        await ctx.send(embed=embed)
+
     @commands.command(aliases=faq_aliases)
     @helper.spam_limiter
     @helper.faq_decorator
