@@ -1,6 +1,7 @@
 import discord
 import json
 import functools
+import re
 from datetime import datetime
 from discord.ext import commands
 
@@ -113,6 +114,13 @@ def faq_decorator(func):
     return wrapper
 
 
+def get_string_from_regex(regex_pattern, data):
+    match = re.search(regex_pattern, data)
+    if match:
+        return match.group(0)  # Return entire match
+    return ""  # Handle failed matches by returning an empty string
+
+
 game_dict = {
     "RD": "Red (VC)",
     "BU": "Blue (VC)",
@@ -172,7 +180,7 @@ default_forms = {
     "kyurem": "normal",
     "keldeo": "ordinary",
     "meloetta": "aria",
-    "vivillon": "poke ball",
+    "vivillon": "poké ball",
     "flabébé": "red",
     "floette": "eternal",
     "florges": "red",
@@ -184,19 +192,19 @@ default_forms = {
     "oricorio": "baile",
     "lycanroc": "dusk",
     "wishiwashi": "school",
-    "minior": "red",
+    "minior": "c-red",
 
     "cramorant": "normal",
-    "toxtricity": "amped",
+    "toxtricity": "amped form",
     "indeedee": "f",
     "sinistea": "antique",
     "polteageist": "antique",
-    "alcremie": "rainbow-swirl-plain",
-    "morpeko": "default",
-    "eiscue": "ice",
-    "zacian": "crownedsword",
-    "zamazenta": "crownedshield",
-    "urshifu": "singlestrike"
+    "alcremie": "rainbow swirl (ribbon)",
+    "morpeko": "full belly",
+    "eiscue": "ice face",
+    "zacian": "crowned",
+    "zamazenta": "crowned",
+    "urshifu": "single strike"
 }
 
 key_inputs = {

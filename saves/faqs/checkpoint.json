@@ -3,7 +3,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "Can you please add a code for `x` game?",
+                "name": "1. Can you please add a code for `x` game?",
                 "value": "Nobody on the FlagBrew team knows how to make gameshark codes, or wants to learn. All of the codes were either taken from a fort42 dump, or submitted to the repo. If you want more codes, learn how to make them yourself, or find a working one and open a pull request on the [repository](https://github.com/Flagbrew/Sharkive/pulls) to get the code added."
             }
         ],
@@ -13,7 +13,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "Why isn't my game showing up in Checkpoint?",
+                "name": "2. Why isn't my game showing up in Checkpoint?",
                 "value": "There could be a few reasons.\n1. Make sure you have save data in the game. Checkpoint requires a save archive to locate a game.\n2. The game might save solely in ExtData. Press `X` and make sure it's not showing up there.\n3. Reload your titles by holding `B`. If you loaded Checkpoint before saving in game, you'll need to do this as Checkpoint doesn't check titles at each launch."
             }
         ],
@@ -23,7 +23,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "Why am I having issues using Checkpoint under applet mode?",
+                "name": "3. Why am I having issues using Checkpoint under applet mode?",
                 "value": "Applet mode isn't supported, as it doesn't give enough memory. Use Atmosphere's title takeover feature (launch game holding R) instead."
             }
         ],
@@ -33,7 +33,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "I'm crashing when using cheats with a Pokemon game. What should I do?",
+                "name": "4. I'm crashing when using cheats with a Pokemon game. What should I do?",
                 "value": "This is due to a kernel bug. Luma's cheat engine would need to be redesigned to fix this, which would cause another bug elsewhere. As such, there is no solution to this problem at this time besides using another console."
             }
         ],
@@ -46,7 +46,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "I'm crashing using Checkpoint 3.8.0 on 3DS, what's going on?",
+                "name": "5. I'm crashing using Checkpoint 3.8.0 on 3DS, what's going on?",
                 "value": "For an unknown reason, Checkpoint is bugged on some consoles and will not launch. The only current solution is to use [3.7.4](https://github.com/FlagBrew/Checkpoint/releases/tag/v3.7.4) until it's figured out.\n\nIf you'd like to help troubleshoot this, please save the crash dump it throws and upload it to the corresponding issue for your console's region:\n[North America](https://github.com/FlagBrew/Checkpoint/issues/433)\n[Europe](https://github.com/FlagBrew/Checkpoint/issues/436)\n[Japan](https://github.com/FlagBrew/Checkpoint/issues/432)"
             }
         ],
@@ -56,7 +56,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "How do I update Checkpoint's cheat database?",
+                "name": "6. How do I update Checkpoint's cheat database?",
                 "value": "Follow [these steps](https://github.com/FlagBrew/Sharkive#how-do-i-update-checkpoints-cheat-database) from the Sharkive repository's README."
             }
         ],

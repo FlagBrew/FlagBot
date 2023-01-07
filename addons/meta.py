@@ -9,6 +9,7 @@ from discord.ext import commands
 #  Revised addon loading for Meta taken from https://stackoverflow.com/a/24940613
 addons = {
     "addons.events": "Events",
+    "addons.gpss": "gpss",
     "addons.info": "Info",
     "addons.mod": "Moderation",
     "addons.pkhex": "pkhex",
@@ -96,6 +97,10 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         real_type = activity_types[activity_type.lower()]
         activity = discord.Activity(name=new_activity, type=real_type)
         await self.bot.change_presence(activity=activity)
+        self.bot.persistent_vars_dict["activity"]["name"] = new_activity
+        self.bot.persistent_vars_dict["activity"]["type"] = activity_type.lower()
+        with open("saves/persistent_vars.json", "w") as file:
+            json.dump(self.bot.persistent_vars_dict, file, indent=4)
         await ctx.send(f"Successfully changed my activity to: `{activity_type.title()} {new_activity}`.")
 
     @botedit.command()
@@ -134,7 +139,7 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
                              "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
                              "See the GNU Affero General Public License for more details.\n"
                              "A copy of the GNU Affero General Public License is available "
-                             "[in the program's repository](https://github.com/GriffinG1/FlagBot/blob/master/LICENSE)."
+                             "[in the program's repository](https://github.com/FlagBrew/FlagBot/blob/master/LICENSE)."
                              )
         await ctx.send(embed=embed)
 

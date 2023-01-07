@@ -77,11 +77,11 @@ class Moderation(commands.Cog):
         embed = discord.Embed()
         img_choice = random.randint(1, 26)
         if img_choice in range(1, 13):  # ampharos
-            embed.set_image(url="https://fm1337.com/static/img/ampharos-banned.jpg")
+            embed.set_image(url="https://cdn.sigkill.tech/misc/ampharos-banned.jpg")
         if img_choice in range(13, 25):  # eevee
-            embed.set_image(url="https://fm1337.com/static/img/eevee-banned.png")
+            embed.set_image(url="https://cdn.sigkill.tech/misc/eevee-banned.png")
         if img_choice in range(25, 27):  # giratina
-            embed.set_image(url="https://fm1337.com/static/img/giratina-banned.png")
+            embed.set_image(url="https://cdn.sigkill.tech/misc/giratina-banned.png")
         await ctx.send(f"Successfully banned user {member}!", embed=embed)
 
     @commands.Cog.listener()
@@ -179,7 +179,8 @@ class Moderation(commands.Cog):
                 return await ctx.send(f"Could not find any messages by {user} ({user.id}) to purge.")
             return await ctx.send(f"Purged {len(purged)} messages by {user} ({user.id}).")
         await self.bot.logs_channel.send(f"{ctx.author} ({ctx.author.id}) cleared {amount} messages in {ctx.channel.mention}.")
-        await ctx.channel.purge(limit=amount, before=ctx.message)
+        purged = await ctx.channel.purge(limit=amount, before=ctx.message)
+        await ctx.send(f"Purged {len(purged)} messages.")
 
     @commands.command(aliases=['psince', 'clearsince', 'cleansince'])
     @commands.has_any_role("Discord Moderator", "Bot Dev")

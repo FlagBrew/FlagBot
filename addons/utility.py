@@ -331,22 +331,23 @@ class Utility(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    async def dm(self, ctx, user: discord.User, *, message):
+    async def dm(self, ctx, user: discord.User, *, message: str = ""):
         """DMs a user"""
         if user == ctx.me:
             return await ctx.send(f"{ctx.author.mention} I can't DM myself, you snarky little shit.")
-        has_attch = bool(ctx.message.attachments)
+        elif message is None and len(ctx.message.attachments) == 0:
+            return await ctx.send("You must provide a message or attachment.")
         embed = discord.Embed(description=message)
-        if has_attch:
-            img_bytes = await ctx.message.attachments[0].read()
-            client_img = discord.File(io.BytesIO(img_bytes), 'image.png')
-            log_img = discord.File(io.BytesIO(img_bytes), 'dm_image.png')
-            embed.set_thumbnail(url="attachment://dm_image.png")
+        if len(ctx.message.attachments) > 0:
+            attachments = []
+            for attachment in ctx.message.attachments:
+                attch = await attachment.to_file()
+                attachments.append(attch)
             try:
-                await user.send(message, file=client_img)
+                await user.send(message, files=attachments[:10])  # Discord only allows 10 attachments per message
             except discord.Forbidden:
                 return await ctx.send("Failed to DM the user. Do they have me blocked? 😢")
-            await self.bot.logs_channel.send(f"Message sent to {user} by {ctx.author}.", embed=embed, file=log_img)
+            await self.bot.logs_channel.send(f"Message sent to {user} by {ctx.author}.", embed=embed, files=attachments[:10])
         else:
             try:
                 await user.send(message)
@@ -357,20 +358,21 @@ class Utility(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Discord Moderator", "FlagBrew Team")
-    async def say(self, ctx, channel: discord.TextChannel, *, message):
+    async def say(self, ctx, channel: discord.TextChannel, *, message: str = ""):
         """Sends a message to the specified TextChannel"""
         if channel == ctx.channel or ctx.channel.name == "logs":
             return await ctx.send("Sending messages to the current channel or a logs channel is prohibited.")
+        elif message is None and len(ctx.message.attachments) == 0:
+            return await ctx.send("You need to provide a message or attachment to send.")
         message = message.replace("@everyone", "`everyone`").replace("@here", "`here`")
-        has_attch = bool(ctx.message.attachments)
         embed = discord.Embed(description=message)
-        if has_attch:
-            img_bytes = await ctx.message.attachments[0].read()
-            channel_img = discord.File(io.BytesIO(img_bytes), 'image.png')
-            log_img = discord.File(io.BytesIO(img_bytes), 'channel_send_image.png')
-            embed.set_thumbnail(url="attachment://channel_send_image.png")
-            await channel.send(message, file=channel_img)
-            await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=embed, file=log_img)
+        if len(ctx.message.attachments) > 0:
+            attachments = []
+            for attachment in ctx.message.attachments:
+                attch = await attachment.to_file()
+                attachments.append(attch)
+            await channel.send(message, files=attachments[:10])  # Discord only allows 10 attachments per message
+            await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=embed, files=attachments[:10])
         else:
             await channel.send(message)
             await self.bot.logs_channel.send(f"Message sent in {channel} by {ctx.author}.", embed=embed)
@@ -669,13 +671,13 @@ class Utility(commands.Cog):
         }
         if ctx.invoked_with == "invites":
             embed = discord.Embed(title="Guild invites available via this command")
-            embed.description = """FlagBrew: `.flagbrew`
-            Nintendo Homebrew: `.nintendohomebrew`/`.nh`
-            DS(i)Mode Hacking: `.dsimode`/`.twlmenu`
-            Reswitched: `.reswitched`/`.rs`
-            Project Pokemon: `.projectpokemon`/`.pporg`
-            PKHeX Development Projects: `.pkhexdev`, `.pdp`
-            Nanquitas's Playground: `.nanquitas`/`.cheathelp`"""
+            embed.description = ("FlagBrew: `.flagbrew`\n"
+                                 "Nintendo Homebrew: `.nintendohomebrew`, `.nh`\n"
+                                 "DS(i)Mode Hacking: `.dsimode`, `.twlmenu`\n"
+                                 "Reswitched: `.reswitched`, `.rs`\n"
+                                 "Project Pokemon: `.projectpokemon`, `.pporg`\n"
+                                 "PKHeX Development Projects: `.pkhexdev`, `.pdp`\n"
+                                 "Nanquitas's Playground: `.nanquitas`, `.cheathelp`")
             ctx.command.reset_cooldown(ctx)
         else:
             embed = discord.Embed()
@@ -800,6 +802,50 @@ class Utility(commands.Cog):
                 with open(f'saves/xmls/{console}.xml', 'wb') as file:
                     file.write(content)
         await ctx.send(f"Downloaded an updated xml for {console}.")
+
+    @commands.command(name='genqr')  # Todo: move to utility.py
+    @commands.has_any_role("Patrons", "FlagBrew Team")
+    async def generate_qr(self, ctx, app, ext):
+        """Generates a Patron QR code for installing via FBI"""
+        if not self.bot.is_mongodb:
+            return await ctx.send("No DB available, cancelling...")
+        async with self.bot.session.get(self.bot.flagbrew_url) as resp:
+            if not resp.status == 200:
+                return await ctx.send("I could not make a connection to flagbrew.org, so this command cannot be used currently.")
+        accepted_apps = {
+            "pksm": "PKSM",
+            "checkpoint": "Checkpoint"
+        }
+        if not app.lower() in accepted_apps.keys():
+            return await ctx.send(f"The application `{app}` is not currently supported. Sorry.")
+        elif not ext.lower() in ("cia", "3dsx"):
+            return await ctx.send("The only supported file types are `CIA` and `3dsx`.")
+        patron_code = self.db['patrons'].find_one({"discord_id": str(ctx.author.id)})
+        if patron_code is None:
+            return await ctx.send("Sorry, you don't have a patron code!")
+        patron_code = patron_code['code']
+        headers = {
+            "patreon": patron_code
+        }
+        async with self.bot.session.get(f"{self.bot.flagbrew_url}api/v2/patreon/update-check/{accepted_apps[app.lower()]}", headers=headers) as commit_resp:
+            commit = await commit_resp.json()
+        commit_sha = commit['hash']
+        url = f"{self.bot.flagbrew_url}api/v2/patreon/update-qr/{accepted_apps[app.lower()]}/{commit_sha}/{ext.lower()}"
+        async with self.bot.session.get(url=url, headers=headers) as resp:
+            if not resp.status == 200:
+                return await ctx.send("Failed to get the QR.")
+            qr_bytes = await resp.read()
+            qr = discord.File(io.BytesIO(qr_bytes), 'patron_qr.png')
+            embed = discord.Embed(title=f"Patron Build for {accepted_apps[app.lower()]}")
+            embed.add_field(name="Direct Download", value=f"[Here]({self.bot.flagbrew_url}api/v2/patreon/update/{patron_code}/{accepted_apps[app.lower()]}/{commit_sha}/{ext})")
+            embed.add_field(name="File Type", value=ext.upper())
+            embed.set_footer(text=f"Commit Hash: {commit_sha}")
+            embed.set_image(url="attachment://patron_qr.png")
+            try:
+                await ctx.author.send(embed=embed, file=qr)
+            except discord.Forbidden:
+                return await ctx.send(f"Failed to DM you {ctx.author.mention}. Are your DMs closed?")
+            await ctx.send(f"{ctx.author.mention} I have DM'd you the QR code.")
 
 
 async def setup(bot):

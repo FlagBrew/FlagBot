@@ -14,6 +14,8 @@ import pymongo
 import aiohttp
 import concurrent
 import psutil
+import multiprocessing
+from datetime import datetime
 from exceptions import PKHeXMissingArgs
 from discord.ext import commands
 
@@ -69,35 +71,43 @@ os.chdir(dir_path)
 if not is_using_cmd_args:  # handles pulling the config/args needed for creating the bot object
     prefix = config.prefix
     token = config.token
-    default_activity = discord.Activity(name=config.default_activity, type=discord.ActivityType.watching)
 elif not is_using_env_args:
     token, prefix = cmd_args[0:2]
     prefix = prefix.replace(" ", "").split(",")
-    default_activity = discord.Activity(name=cmd_args[2], type=discord.ActivityType.watching)
 else:
     token = os.getenv("TOKEN")
     prefix = os.getenv("PREFIX")
-    default_activity = discord.Activity(name=os.getenv("DEF_ACT"), type=discord.ActivityType.watching)
+
+activity_types = {
+    "watching": discord.ActivityType.watching,
+    "listening": discord.ActivityType.listening,
+    "playing": discord.ActivityType.playing
+}
+
+activity = None
+
+if os.path.exists('saves/persistent_vars.json'):
+    with open('saves/persistent_vars.json', 'r') as file:
+        persistent_vars = json.load(file)
+        if persistent_vars["activity"]["name"] is not None:
+            activity = discord.Activity(name=persistent_vars["activity"]["name"], type=activity_types[persistent_vars["activity"]["type"]])
 
 intents = discord.Intents().all()
 intents.members = True
 intents.presences = True
 intents.message_content = True
 help_cmd = commands.DefaultHelpCommand(show_parameter_descriptions=False)
-bot = commands.Bot(command_prefix=prefix, description=description, activity=default_activity, intents=intents, help_command=help_cmd)
+bot = commands.Bot(command_prefix=prefix, description=description, activity=activity, intents=intents, help_command=help_cmd)
 
 if not is_using_cmd_args:  # handles setting up the bot vars
     bot.is_mongodb = config.is_mongodb
-    bot.api_url = config.api_url
     bot.flagbrew_url = config.flagbrew_url
-    bot.star_count = config.star_count
 elif not is_using_env_args:
-    bot.is_mongodb, bot.api_url, bot.flagbrew_url = cmd_args[3:6]
+    bot.is_mongodb = cmd_args[6]
+    bot.flagbrew_url = cmd_args[10]
 else:
     bot.is_mongodb = os.getenv("IS_MONGODB")
-    bot.api_url = os.getenv("API_URL")
     bot.flagbrew_url = os.getenv("FLAGBREW_URL")
-    bot.star_count = os.getenv("STAR_COUNT")
 bot.gpss_url = bot.flagbrew_url
 
 if not os.path.exists('saves/warns.json'):
@@ -136,7 +146,9 @@ if bot.is_mongodb:
         db_username = config.db_username
         db_password = config.db_password
     elif not is_using_env_args:
-        db_address = cmd_args[6]
+        db_address = cmd_args[7]
+        db_username = cmd_args[8]
+        db_password = cmd_args[9]
     else:
         db_address = os.getenv("DB_ADDRESS")
         db_username = os.getenv("DB_USERNAME")
@@ -170,8 +182,9 @@ if not is_using_cmd_args:
     bot.ready = False
     bot.is_beta = config.is_beta
 elif not is_using_env_args:
-    bot.site_secret, bot.github_user, bot.github_pass, bot.is_beta = cmd_args[7:11]
-    bot.star_count = cmd_args[11]
+    bot.site_secret = cmd_args[2]
+    bot.github_user, bot.github_pass = cmd_args[4:6]
+    bot.is_beta = cmd_args[3]
     bot.ready = False
 else:
     bot.site_secret = os.getenv("SECRET")
@@ -312,12 +325,31 @@ async def on_ready():
     bot.pie = await bot.fetch_user(307233052650635265)
     bot.allen = await bot.fetch_user(211923158423306243)
     bot.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
+
+    if not bot.is_beta:
+        async with bot.session.get("https://api.github.com/repos/FlagBrew/FlagBot/commits/master") as resp:
+            commit = await resp.json()
+            commit_url = commit['html_url']
+            commit_message = commit['commit']['message']
+            commit_date = datetime.strptime(commit['commit']['author']['date'], "%Y-%m-%dT%H:%M:%SZ")
+            commit_author = commit['commit']['author']['name']
+        if bot.persistent_vars_dict['last_commit'] != commit["sha"]:
+            embed = discord.Embed(title="New commit merged!")
+            embed.description = f"Committed on {discord.utils.format_dt(commit_date)} by {commit_author}"
+            embed.add_field(name="Commit message", value=f"```{commit_message}```", inline=False)
+            embed.add_field(name="Commit URL", value=f"[Click here]({commit_url})", inline=False)
+            bot.persistent_vars_dict['last_commit'] = commit["sha"]
+            with open('saves/persistent_vars.json', 'w') as file:
+                json.dump(bot.persistent_vars_dict, file, indent=4)
+            await bot.bot_channel.send(embed=embed)
+
     bot.ready = True
 
 
 # loads extensions
 cogs = [
     'addons.events',
+    'addons.gpss',
     'addons.info',
     'addons.meta',
     'addons.mod',
@@ -379,6 +411,7 @@ async def reload(ctx):
     addon_dict = {
         "DevTools": "devtools",  # not loaded by default...
         "Events": "events",
+        "gpss": "gpss",
         "Info": "info",
         "Meta": "meta",
         "Moderation": "mod",
@@ -448,8 +481,10 @@ async def about(ctx):
     """Information about the bot"""
     embed = discord.Embed()
     embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in the FlagBrew server.\n"
-                         "You can view the source code [here](https://github.com/GriffinG1/FlagBot).\n"
+                         "You can view the source code [here](https://github.com/FlagBrew/FlagBot).\n"
                          f"Written by {bot.creator.mention}.")
+    embed.add_field(name="PKHeX.Core Commit", value=f"`{bot.persistent_vars_dict['pkhex_core_commit']}`")
+    embed.add_field(name="AutoMod.Core Commit", value=f"`{bot.persistent_vars_dict['alm_core_commit']}`")
     embed.set_author(name="GriffinG1", url='https://github.com/GriffinG1', icon_url='https://avatars0.githubusercontent.com/u/28538707')
     total_mem = psutil.virtual_memory().total / float(1 << 30)
     used_mem = psutil.Process().memory_info().rss / float(1 << 20)
@@ -457,12 +492,32 @@ async def about(ctx):
     await ctx.send(embed=embed)
 
 
+@bot.command(name='uccv', hidden=True)
+async def update_core_commit_vars(ctx, pkhex_core_commit: str, alm_core_commit: str = ""):
+    """Changes PKHeX and ALM core commit values in persistent_vars to provided"""
+    if ctx.author not in (bot.creator, bot.allen):
+        raise commands.CheckFailure()
+    if pkhex_core_commit == bot.persistent_vars_dict["pkhex_core_commit"] and alm_core_commit == bot.persistent_vars_dict["alm_core_commit"]:
+        return await ctx.send("No change in commits.")
+    elif alm_core_commit == "":
+        alm_core_commit = bot.persistent_vars_dict["alm_core_commit"]  # pkhex updates more often than alm, allow alm to not need to be updated
+    bot.persistent_vars_dict["pkhex_core_commit"] = pkhex_core_commit
+    bot.persistent_vars_dict["alm_core_commit"] = alm_core_commit
+    with open('saves/persistent_vars.json', 'w') as file:
+        json.dump(bot.persistent_vars_dict, file, indent=4)
+    await ctx.send(f"Updated saved commit values to `{pkhex_core_commit}` and `{alm_core_commit}`!")
+
+
 # Execute
-async def main():
+async def main(manager):
     print('Bot directory: ', dir_path)
     async with bot:
         await setup_cogs(bot)
+        bot.manager = manager
         await bot.start(token)
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(main())
+if __name__ == '__main__':
+    manager = multiprocessing.Manager()
+
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(main(manager))

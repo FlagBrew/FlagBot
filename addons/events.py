@@ -88,21 +88,21 @@ class Events(commands.Cog):
             await message.author.ban()
             await message.channel.send(f"{message.author} was banned for attempting to spam user mentions.")
 
-        # auto restart on update
-        if message.channel.id == 672536257934655529:
-            if message.webhook_id == 482998461646766080 and "new commits" in message.embeds[0].title:
-                sys.exit(0)
-
         # log dm messages
         if not isinstance(message.channel, discord.threads.Thread) and isinstance(message.channel, discord.abc.PrivateChannel) and not message.author == self.bot.guild.me:
-            if not message.content:
+            if message.content == "" and len(message.attachments) == 0:
                 return
             guild = self.bot.get_guild(self.bot.flagbrew_id)
             member = guild.get_member(message.author.id)
             if 885261003544223744 in (role.id for role in member.roles):
                 return
-            embed = discord.Embed(description=message.content)
-            await self.bot.dm_logs_channel.send(f"New DM received from {message.author} | {message.author.id}.", embed=embed)
+            attachments = []
+            if len(message.attachments) > 0:
+                for attachment in message.attachments:
+                    attch = await attachment.to_file()
+                    attachments.append(attch)
+            embed = discord.Embed(description=message.content) if message.content != "" else None
+            await self.bot.dm_logs_channel.send(f"New DM received from {message.author} | {message.author.id}.", embed=embed, files=attachments)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
@@ -268,7 +268,7 @@ class Events(commands.Cog):
                     if len(before.activities) == 0 or len(after.activities) == 0:
                         return
                     await self.bot.err_logs_channel.send(f"Failed to log activity for user `{before}` (`{before.id}`) with before activity list of `{before.activities}` and after activity list of `{after.activities}`. Cause?")
-                    await self.bot.err_logs_channel.send(discord.Embed(description=e))
+                    await self.bot.err_logs_channel.send(embed=discord.Embed(description=e))
 
             # Handle custom activities
             if len(aft_custom) + len(bef_custom) > 0 and not bef_custom == aft_custom:
@@ -288,7 +288,7 @@ class Events(commands.Cog):
                     pass
                 except Exception as e:
                     await self.bot.err_logs_channel.send(f"Failed to log activity for user `{before}` (`{before.id}`) with before activity list of `{before.activities}` and after activity list of `{after.activities}`. Cause?")
-                    await self.bot.err_logs_channel.send(discord.Embed(description=e))
+                    await self.bot.err_logs_channel.send(embed=discord.Embed(description=e))
 
     async def process_reactions(self, reaction):
         positive_votes = 0

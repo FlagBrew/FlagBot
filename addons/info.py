@@ -54,7 +54,6 @@ class Info(commands.Cog):
         embed = discord.Embed.from_dict(current_faq)
         embed.title = "Frequently Asked Questions"
         embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()}"
-        embed.title += f" #{faq_num}"
         await channel.send(embed=embed)
 
     @commands.command(aliases=["releases", "latest"])
@@ -389,13 +388,48 @@ class Info(commands.Cog):
             "Sun and Moon": "Cosmog, Lunala, Necrozma, Solgaleo, all 4 Tapus, and all 7 Ultra Beasts",
             "Ultra Sun and Ultra Moon": "Cosmog, Lunala, Necrozma, Solgaleo, all 4 Tapus, and Zygarde",
             "Let's Go Eevee and Pikachu": "Partner Eevee and Partner Pikachu",
-            "Sword and Shield (Base Game)": "The gift Charmander, Eternatus, All 3 starters, the gift Toxel, the battle tower Type: Null, the Wedgehurst Slowpoke, Zacian, and Zamazenta",
+            "Sword and Shield (Base Game)": "The gift Charmander, Eternatus, all 3 starters, the gift Toxel, the battle tower Type: Null, the Wedgehurst Slowpoke, Zacian, and Zamazenta",
             "Sword and Shield (Isle of Armour)": "Every gift Pokemon",
-            "Sword and Shield (The Crown Tundra)": "Galarian Articuno, Calyrex, the gift Cosmog, Glastrier, Keldeo, Galarian Moltres, the gift Poipole, Spectrier, and Galarian Zapdos"
+            "Sword and Shield (The Crown Tundra)": "Galarian Articuno, Calyrex, the gift Cosmog, Glastrier, Keldeo, Galarian Moltres, the gift Poipole, Spectrier, and Galarian Zapdos",
+            "Brilliant Diamond and Shining Pearl": "The gift Jirachi and the gift Mew",
+            "Legends Arceus": "All 3 starters, Arceus, Azelf, Cresselia, Darkrai, Dialga, Enamorus, Giratina, Heatran, Landorus, Manaphy, Mesprit, Palkia, Phione, Regigigas, Shaymin, Thundurus, Tornadus, Uxie, all forced encounters in requests and missions, and the gift Alolan Vulpix",
+            "Scarlet and Violet": 'All 3 starters, all Gimmighoul, both Koraidon, both Miraidon, the 4 Sub-Legends, the 6 former Titans, and the Artazon Sunflora\n*There are also a handful of fixed symbol encounters, such as the Squawkabilly on top of your house, that are shiny locked. These are not listed here for brevity.*'
         }
+        permanently_unavailable = [
+            "All Gen 4 and 5 non-shiny event Pokemon (with very few exceptions)",
+            "All Hat Pikachu (except Partner Cap)",
+            "Ash-Greninja",
+            "Calyrex",
+            "Chi-Yu",
+            "Chien-Pao",
+            "Cosmoem",
+            "Cosmog",
+            "Enamorus",
+            "Gholdengo",
+            "Gigantamax Melmetal",
+            "Gimmighoul",
+            "Glastrier",
+            "Hoopa",
+            "Keldeo",
+            "Koraidon",
+            "Kubfu",
+            "Magearna (Standard and Original Color)",
+            "Marshadow",
+            "Meloetta",
+            "Miraidon",
+            "Spectrier",
+            "Ting-Lu",
+            "Urshifu (Both Forms)",
+            "Victini",
+            "Vivillon (Poké Ball Pattern)",
+            "Volcanion",
+            "Wo-Chien",
+            "Zarude (Both Forms)"
+        ]
         embed = discord.Embed(title="Shiny Locked Encounters", description="[Source](https://www.serebii.net/games/shiny.shtml)")
         for key, val in encs.items():
             embed.add_field(name=key, value=val, inline=False)
+        embed.add_field(name="Never Been Available Shiny", value=", ".join(permanently_unavailable))
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -413,22 +447,22 @@ class Info(commands.Cog):
     async def banrisks(self, ctx):
         """Posts current known NS ban risks"""
         ban_info = {
-            "guaranteed": """\u2022 Piracy of any sort (**If you're wondering whether something counts, the answer is almost certainly yes.**)
-                \u2022 Homebrew NSPs: See above.
-                \u2022 Changing user icon through homebrew
-                \u2022 Sketchy eShop behavior""",
-            "semi": """\u2022 Modding online games, except in some niche circumstances
-                \u2022 Cheating in online games
-                \u2022 Clearing error logs after they've been uploaded to Nintendo (this extends to using both emummc and sysmmc online, due to mismatched logs)""",
-            "no": """\u2022 Atmosphere, online or offline
-                \u2022 Most homebrew, online or offline
-                \u2022 Custom themes
-                \u2022 Custom sysmodules (sys-ftpd-light, missioncontrol, fizeau, etc.)
-                \u2022 Mods/cheating in offline games
-                \u2022 Overclocking with sys-clk (just don't do it competitively, for all of our sakes)
-                \u2022 emummc""",
-            "unknown": """\u2022 Modifying PRODINFO, or using the experimental PRODINFO dummying included in Atmosphere 0.11.2 and later.
-                \u2022 Using sys-tweak to change game icons (which may be sent to Nintendo)"""
+            "guaranteed": ("\u2022 Piracy of any sort (**If you're wondering whether something counts, the answer is almost certainly yes.**)\n"
+                           "\u2022 Homebrew NSPs: See above.\n"
+                           "\u2022 Changing user icon through homebrew\n"
+                           "\u2022 Sketchy eShop behavior"),
+            "semi": ("\u2022 Modding online games, except in some niche circumstances\n"
+                     "\u2022 Cheating in online games\n"
+                     "\u2022 Clearing error logs after they've been uploaded to Nintendo (this extends to using both emummc and sysmmc online, due to mismatched logs)"),
+            "no": ("\u2022 Atmosphere, online or offline\n"
+                   "\u2022 Most homebrew, online or offline\n"
+                   "\u2022 Custom themes\n"
+                   "\u2022 Custom sysmodules (sys-ftpd-light, missioncontrol, fizeau, etc.)\n"
+                   "\u2022 Mods/cheating in offline games\n"
+                   "\u2022 Overclocking with sys-clk (just don't do it competitively, for all of our sakes)\n"
+                   "\u2022 emummc"),
+            "unknown": ("\u2022 Modifying PRODINFO, or using the experimental PRODINFO dummying included in Atmosphere 0.11.2 and later.\n"
+                        "\u2022 Using sys-tweak to change game icons (which may be sent to Nintendo)")
         }
         last_updated = datetime.strptime("2021-12-02", "%Y-%m-%d")
         embed = discord.Embed(title="Current known Nintendo Switch ban risks", description=f"Last updated on: {discord.utils.format_dt(last_updated, style='D')}")
@@ -445,14 +479,14 @@ class Info(commands.Cog):
         """Information about legality versus legitimacy"""
         embed = discord.Embed(title="Terms used by genners")
         embed.description = "**Note**: All in the context of the official release (not emulated, no ROM hacks, etc.)"
-        embed.add_field(name="Legitimacy", value="""**Legit**: Obtained by legitimate means, no save editing involved
-            **Illegitimate**: Obtained by means that are not intended (cheats, save editing, etc.)""")
-        embed.add_field(name="Legality", value="""**Legal**: Has fully legal values, obtained either in game or via save editing
-            **Illegal**: Not a legal pokemon, any value of the pokemon isn't possible to obtain in game""")
-        embed.add_field(name="Examples", value="""**Legal and legit**: Pokemon I hatched from the daycare without any cheats or save edits
-            **Legal and not legit**: Pokemon I generated via PKHeX or PKSM
-            **Illegal and legit**: Void glitch Arceus or other pokemon obtained legitimately via a glitch
-            **Illegal and not legitimate**: Shiny Victini (a shiny locked Pokemon)""", inline=False)
+        embed.add_field(name="Legitimacy", value=("**Legit**: Obtained by legitimate means, no save editing involved\n"
+                                                  "**Illegitimate**: Obtained by means that are not intended (cheats, save editing, etc.)"))
+        embed.add_field(name="Legality", value=("**Legal**: Has fully legal values, obtained either in game or via save editing\n"
+                                                "**Illegal**: Not a legal pokemon, any value of the pokemon isn't possible to obtain in game"))
+        embed.add_field(name="Examples", value=("**Legal and legit**: Pokemon I hatched from the daycare without any cheats or save edits\n"
+                                                "**Legal and not legit**: Pokemon I generated via PKHeX or PKSM\n"
+                                                "**Illegal and legit**: Void glitch Arceus or other pokemon obtained legitimately via a glitch\n"
+                                                "**Illegal and not legitimate**: Shiny Victini (a shiny locked Pokemon)"), inline=False)
         embed.add_field(name="But I can trade this fine? Why is it illegal?", value="GameFreak has famously bad hack checks. The shiny victini example mentioned above can trade.", inline=False)
         embed.set_footer(text="Info taken and modified from thecommondude#8240's pin in PKHeX Development Project #general-pkhex")
         await ctx.send(embed=embed)
