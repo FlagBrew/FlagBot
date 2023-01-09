@@ -326,7 +326,7 @@ async def on_ready():
     bot.allen = await bot.fetch_user(211923158423306243)
     bot.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
 
-    if bot.is_beta:
+    if not bot.is_beta:
         async with bot.session.get("https://api.github.com/repos/FlagBrew/FlagBot/commits") as resp:
             commits = await resp.json()
             commit_data = []
