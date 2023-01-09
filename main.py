@@ -326,22 +326,32 @@ async def on_ready():
     bot.allen = await bot.fetch_user(211923158423306243)
     bot.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
 
-    if not bot.is_beta:
-        async with bot.session.get("https://api.github.com/repos/FlagBrew/FlagBot/commits/master") as resp:
-            commit = await resp.json()
-            commit_url = commit['html_url']
-            commit_message = commit['commit']['message']
-            commit_date = datetime.strptime(commit['commit']['author']['date'], "%Y-%m-%dT%H:%M:%SZ")
-            commit_author = commit['commit']['author']['name']
-        if bot.persistent_vars_dict['last_commit'] != commit["sha"]:
-            embed = discord.Embed(title="New commit merged!")
-            embed.description = f"Committed on {discord.utils.format_dt(commit_date)} by {commit_author}"
-            embed.add_field(name="Commit message", value=f"```{commit_message}```", inline=False)
-            embed.add_field(name="Commit URL", value=f"[Click here]({commit_url})", inline=False)
-            bot.persistent_vars_dict['last_commit'] = commit["sha"]
-            with open('saves/persistent_vars.json', 'w') as file:
-                json.dump(bot.persistent_vars_dict, file, indent=4)
-            await bot.bot_channel.send(embed=embed)
+    if bot.is_beta:
+        async with bot.session.get("https://api.github.com/repos/FlagBrew/FlagBot/commits") as resp:
+            commits = await resp.json()
+            commit_data = []
+            breakout = False
+            for commit in commits:
+                if bot.persistent_vars_dict['last_commit'] == commit["sha"]:
+                    breakout = True
+                    break
+                commit_data.append({
+                    "author": commit['commit']['author']['name'],
+                    "date": datetime.strptime(commit['commit']['author']['date'], "%Y-%m-%dT%H:%M:%SZ"),
+                    "message": commit['commit']['message'],
+                    "sha": commit["sha"],
+                    "url": commit['html_url']
+                })
+            embed = discord.Embed(title=f"New commit{'s' if len(commit_data) > 1 else ''} merged!", description="")
+            for commit in commit_data:
+                line_break = commit['message'].find('\n')
+                message = commit['message'][:line_break] if line_break != -1 else commit['message']
+                embed.description += f"**[{commit['sha'][:7]}]({commit['url']})** - **{commit['author']}** - {discord.utils.format_dt(commit['date'])}\n```{message}```\n"
+            if not breakout:
+                bot.persistent_vars_dict['last_commit'] = commit_data[0]['sha']
+                with open('saves/persistent_vars.json', 'w') as file:
+                    json.dump(bot.persistent_vars_dict, file, indent=4)
+                await bot.bot_channel.send(embed=embed)
 
     bot.ready = True
 
