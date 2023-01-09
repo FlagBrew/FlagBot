@@ -24,6 +24,7 @@ game_version_dict = {
     "8": GameVersion.SWSH,
     "BDSP": GameVersion.BD,  # Can't use BDSP here due to varying amounts of internal validation
     "PLA": GameVersion.PLA,
+    "9": GameVersion.SV
 }
 
 entity_context_dict = {
@@ -37,7 +38,8 @@ entity_context_dict = {
     "LGPE": EntityContext.Gen7b,
     "8": EntityContext.Gen8,
     "BDSP": EntityContext.Gen8a,
-    "PLA": EntityContext.Gen8b
+    "PLA": EntityContext.Gen8b,
+    "9": EntityContext.Gen9
 }
 
 extension_version_dict = {
@@ -53,7 +55,8 @@ extension_version_dict = {
     "PB7": "LGPE",
     "PK8": "8",
     "PB8": "BDSP",
-    "PA8": "PLA"
+    "PA8": "PLA",
+    "PK9": "9"
 }
 
 pokemon_egg_groups = [
@@ -117,3 +120,5 @@ def personal_table_switcher(generation):
         return PersonalTable.BDSP
     elif generation == "PLA":
         return PersonalTable.LA
+    elif generation == "9":
+        return PersonalTable.SV

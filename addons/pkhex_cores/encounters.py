@@ -40,7 +40,7 @@ def encounter_and_move_parser(csharp_pokemon, csharp_moves_list, gen, special):
         if gen not in reg_gen:
             continue
         loc = get_string_from_regex("(?<=.{8}).+?(?=:)", encounter)  # Get location
-        games = get_string_from_regex("([\t ][A-Z , a-z 0-9]{1,100}$|Any)", encounter)  # Get games for location
+        games = get_string_from_regex("([\t ][A-Z , a-z 0-10]{1,100}$|Any)", encounter)  # Get games for location
         games = games.replace(" ", "").replace(":", "").strip()
         if not special and any(iter_gen for iter_gen in ("BD", "SP", "PLA", "GG", "GE", "GO", "GP") if iter_gen in (game for game in games.split(','))):
             continue
@@ -51,7 +51,7 @@ def encounter_and_move_parser(csharp_pokemon, csharp_moves_list, gen, special):
         elif special == "LGPE" and not any(iter_gen for iter_gen in ("GO", "GG", "GP", "GE") if iter_gen in (game for game in games.split(','))):
             continue
         elif not special and "Gen" in games:
-            games = re.sub(",Gen[0-9]{1,2}", "", games)
+            games = re.sub(",Gen[0-10]{1,2}", "", games)
         games_list = games.split(',')
         locations.append(
             {
@@ -86,6 +86,7 @@ def encounter_and_move_parser(csharp_pokemon, csharp_moves_list, gen, special):
 
 
 def get_encounters(pokemon, generation: str, moves: list = None):
+    pokemon = pokemon.replace(" ", "")
     pokemon_id = [int(item) for item in Enum.GetValues(Species) if Enum.GetName(Species, item) == pokemon]
     if len(pokemon_id) == 0:
         return 400
@@ -107,6 +108,7 @@ def get_encounters(pokemon, generation: str, moves: list = None):
 
 
 def get_moves(pokemon, generation: str, moves: list):
+    pokemon = pokemon.replace(" ", "")
     pokemon_id = [int(item) for item in Enum.GetValues(Species) if Enum.GetName(Species, item) == pokemon]
     if len(pokemon_id) == 0:
         return 400
