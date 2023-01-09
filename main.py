@@ -330,10 +330,8 @@ async def on_ready():
         async with bot.session.get("https://api.github.com/repos/FlagBrew/FlagBot/commits") as resp:
             commits = await resp.json()
             commit_data = []
-            breakout = False
             for commit in commits:
                 if bot.persistent_vars_dict['last_commit'] == commit["sha"]:
-                    breakout = True
                     break
                 commit_data.append({
                     "author": commit['commit']['author']['name'],
@@ -347,7 +345,7 @@ async def on_ready():
                 line_break = commit['message'].find('\n')
                 message = commit['message'][:line_break] if line_break != -1 else commit['message']
                 embed.description += f"**[{commit['sha'][:7]}]({commit['url']})** - **{commit['author']}** - {discord.utils.format_dt(commit['date'])}\n```{message}```\n"
-            if not breakout:
+            if len(commit_data) > 0:
                 bot.persistent_vars_dict['last_commit'] = commit_data[0]['sha']
                 with open('saves/persistent_vars.json', 'w') as file:
                     json.dump(bot.persistent_vars_dict, file, indent=4)
