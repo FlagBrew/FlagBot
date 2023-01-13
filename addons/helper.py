@@ -72,6 +72,9 @@ def faq_decorator(func):
             faq_item = "4"
 
         # PKSM FAQ items
+        elif ctx.invoked_with == "helplegal":
+            faq_doc = "pksm"
+            faq_item = "1"
         elif ctx.invoked_with in ("lgpe", "swsh", "bdsp", "pla", "scvi", "switchsupport"):
             faq_doc = "pksm"
             faq_item = "2"

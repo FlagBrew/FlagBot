@@ -133,6 +133,7 @@ class Info(commands.Cog):
         'rules',  # 4 - toggling roles
 
         # PKSM FAQ items
+        "helplegal",  # 1 - legality
         "lgpe", "swsh", "bdsp", "pla", "scvi", "switchsupport",  # 2 - switch support
         "emulator",  # 3 - emulator cross-use
         "scripts", "universal",  # 4 - how do universal scripts work
