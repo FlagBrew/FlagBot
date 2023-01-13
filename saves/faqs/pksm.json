@@ -1,13 +1,10 @@
 [
     {
-        "image": {
-            "url": "https://cdn.discordapp.com/attachments/385034577636491264/714051889595023420/unknown.png"
-        },
         "fields": [
             {
-                "inline": false,
-                "name": "1. How can I check my pokemon's legality?",
-                "value": "Go to the **edit pokemon** screen, then go to the **misc** screen. Click on the wireless icon. Congrats, you've accessed the legality checker.\n\n**Bonus**: If you press the button in the bottom left after running a legality check, the server will *attempt* to legalize your pokemon. Conditions apply, please see the below image for more info.\n\n**Please note**: the legality checker requires a network connection.\n\n**Alternative**: If you have an Android device, you can use the [GPSS Mobile app](https://play.google.com/store/apps/details?id=com.flagbrew.gpss_mobile) to check your pokemon's legality. Follow the same steps for doing a legality check, but instead of clicking the wireless icon, click the icon in the top right. Then follow the on-screen prompts."
+                "inline": true,
+                "name": "1. How can I check and legalize my pokemon?",
+                "value": "The info outlined in this entry is the majority of legality help we will provide here. Please do your own research using resources like Serebii, Bulbapedia, or the ProjectPokemon forums or discord instead.\n\n**Please note**: All of these functions require an internet connection of some kind.\n\n**How do I check if my pokemon is legal?**\nWhile editing a pokemon, go to the `misc` screen and then either click on the wireless icon or press `Y`. You will then be shown a legality report describing if your pokemon is legal, or what problems exist with it.\n\n**How do I fix legality issues?**\nOnce you're on the legality report screen, click the button in the bottom left. The server will then *attempt* to legalize your pokemon. This is not a guarantee, and requires the following values to be legal in combination: `Ability`, `Item`, `Level`, `Moves`, `Nature`, `Shininess`. If there's an illegal combination of these, the server will not be able to legalize your pokemon."
             }
         ],
         "type": "rich"
