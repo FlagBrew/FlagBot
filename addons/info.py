@@ -53,7 +53,7 @@ class Info(commands.Cog):
         current_faq = loaded_faq[faq_num - 1]
         embed = discord.Embed.from_dict(current_faq)
         embed.title = "Frequently Asked Questions"
-        embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()}"
+        embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()} #{faq_num}"
         await channel.send(embed=embed)
 
     @commands.command(aliases=["releases", "latest"])
@@ -126,19 +126,37 @@ class Info(commands.Cog):
 
     faq_aliases = [  # putting this here to make keeping track ez, as well as updates
         'rtfm',  # general usage
-        'vc',  # general faq #1 - vc support
-        'entitled',  # general faq #2 - new releases
-        'rules',  # general faq #4 - toggling roles
-        "lgpe", "swsh", "bdsp", "pla", "scvi", "switchsupport",  # pksm faq #2 - switch support
-        "emulator",  # pksm faq #3 - emulator cross-use
-        "sendpkx",  # pksm faq #7 - sending pkx files
-        "wc3", "gen3events",  # pksm faq #9 - gen 3 events
-        "romhacks",  # pksm faq #10 - rom hack support
-        "addcode", "fixcheat",  # checkpoint faq #1 - pls add cheat
-        "wheregame",  # checkpoint faq #2 - missing games
-        "pkcrash",  # checkpoint faq #4 - cheat crash in pkmn games
-        "updatedb",  # checkpoint faq #6 - how to update the cheat db
+
+        # General FAQ items
+        'vc',  # 1 - vc support
+        'entitled',  # 2 - new releases
+        'rules',  # 4 - toggling roles
+
+        # PKSM FAQ items
+        "helplegal",  # 1 - legality
+        "lgpe", "swsh", "bdsp", "pla", "scvi", "switchsupport",  # 2 - switch support
+        "emulator",  # 3 - emulator cross-use
+        "scripts", "universal",  # 4 - how do universal scripts work
+        "badqr",  # 6 - why QR no worky
+        "sendpkx",  # 7 - sending pkx files
+        "wc3",  # 9 - gen 3 events
+        "romhacks",  # 10 - rom hack support
+        "azure",  # 11
+
+        # Checkpoint FAQ items
+        "addcode", "fixcheat",  # 1 - pls add cheat
+        "wheregame",  # 2 - missing games
+        "applet",  # 3 - applet mode issues
+        "pkcrash",  # 4 - cheat crash in pkmn games
+        "updatedb",  # 6 - how to update the cheat db
     ]
+
+    @commands.command(aliases=['faqaliases', 'faqalias', 'lfaq'])
+    async def list_faq_aliases(self, ctx):
+        """Lists all available aliases for the faq command."""
+        embed = discord.Embed(title="FAQ Aliases")
+        embed.description = f"`{'`, `'.join(self.faq_aliases)}`"
+        await ctx.send(embed=embed)
 
     @commands.command(aliases=faq_aliases)
     @helper.spam_limiter
@@ -184,7 +202,7 @@ class Info(commands.Cog):
             for faq_arr in loaded_faq:
                 temp_emb = discord.Embed.from_dict(faq_arr)
                 for field in temp_emb.fields:
-                    embed.add_field(name=field.name, value=field.value, inline=False)
+                    embed.add_field(name=f"**{loaded_faq.index(faq_arr)+1}**: " + field.name, value=field.value, inline=False)
             if ctx.author.id in self.bot.dm_list:
                 await ctx.message.delete()
                 try:
@@ -353,9 +371,7 @@ class Info(commands.Cog):
             "Ball\n"
             "PP Ups\n"
             "Reset Moves (Move 1 is set to Pound, and moves 2 through 4 are cleared)\n"
-            "Randomize PIDs"
-        )
-        beta_types = (
+            "Randomize PIDs\n"
             "Set Met Date\n"
             "Set Egg Date\n"
             "Remove All Ribbons (Untested)"
@@ -363,9 +379,7 @@ class Info(commands.Cog):
         embed = discord.Embed(title="Batch Editor Information")
         embed.description = "Please keep in mind that the script will affect *everything* in the boxes of the loaded save, or of the selected bank."
         embed.add_field(name="Editing Types", value=edit_types)
-        if len(beta_types) > 0:
-            embed.add_field(name="Beta Types", value=f"**These batch edit options are not included in the latest release. You can get the beta version of the script from the pins in <#389780983869603852>**.\n\n{beta_types}", inline=False)
-        embed.set_footer(text="Please note that LGPE and SWSH have not yet been tested.")
+        embed.set_footer(text="Please note that LGPE and SWSH have not yet been tested. Generation 1 and 2 games are not supported.")
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["shinylocked"])

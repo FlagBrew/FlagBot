@@ -6,7 +6,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "1. How can I check my pokemon's legality?",
+                "name": "How can I check my pokemon's legality?",
                 "value": "Go to the **edit pokemon** screen, then go to the **misc** screen. Click on the wireless icon. Congrats, you've accessed the legality checker.\n\n**Bonus**: If you press the button in the bottom left after running a legality check, the server will *attempt* to legalize your pokemon. Conditions apply, please see the below image for more info.\n\n**Please note**: the legality checker requires a network connection.\n\n**Alternative**: If you have an Android device, you can use the [GPSS Mobile app](https://play.google.com/store/apps/details?id=com.flagbrew.gpss_mobile) to check your pokemon's legality. Follow the same steps for doing a legality check, but instead of clicking the wireless icon, click the icon in the top right. Then follow the on-screen prompts."
             }
         ],
@@ -16,7 +16,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "2. When are we getting PKSM on Switch?",
+                "name": "When are we getting PKSM on Switch?",
                 "value": "PKSM on Switch is currently blocked by the lack of a team UI/Asset Designer. Until someone is willing to make the assets and help design the UI needed for a Switch release of PKSM, PKSM will not be ported to Switch.\nKeep an eye on [this issue](https://github.com/FlagBrew/PKSM/issues/1175) if you would like to see any updates, and go to <#298009996338135041> if you would like to provide help.\n\nAlternatively, for LGPE and SWSH, you can [bridge their saves](https://github.com/FlagBrew/PKSM/wiki/Basics#loading-a-save-over-a-network) from Checkpoint on Switch. Please note that SWSH support is unstable. SWSH, BDSP, and PLA all have trouble due to variablity in the save sizes for these games. There are currently no plans for SCVI support.\n\n**Please note** that repeatedly bringing up this topic without attempting to provide help with UI/Asset design will be met with moderator action."
             }
         ],
@@ -26,7 +26,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "3. I'm attempting to use a save that was used in an emulator at some point, and it won't load. What do I do?",
+                "name": "I'm attempting to use a save that was used in an emulator at some point, and it won't load. What do I do?",
                 "value": "There is likely an extra 122 bytes at the end of your file. You can check this by right clicking it on a computer, and checking the size (it should be `524,288 bytes`). Back the file up, then delete the last 122 bytes using [a hex editor](https://mh-nexus.de/en/hxd/)."
             }
         ],
@@ -36,7 +36,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "4. How can I edit my trainer data?",
+                "name": "How can I edit my trainer data?",
                 "value": "There's a script you can use: `Scripts` > press `Y` > `Edit Trainer Info.c`. Just follow the on-screen prompts from there."
             }
         ],
@@ -46,7 +46,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "5. PKSM is erroring with Archive::init on launch, how can I fix it?",
+                "name": "PKSM is erroring with Archive::init on launch, how can I fix it?",
                 "value": "Backup and immediately restore PKSM's ExtData using [Checkpoint](https://github.com/FlagBrew/Checkpoint/releases)."
             }
         ],
@@ -56,7 +56,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "6. Why doesn't PKSM scan this QR?",
+                "name": "Why doesn't PKSM scan this QR?",
                 "value": "**GPSS**: QRs from the [GPSS](https://flagbrew.org/gpss) (or <#586728153985056801>) have to be scanned in the GPSS section of PKSM. This can be accessed by opening `Storage`, then selecting the wifi button on the bottom screen, then pressing `X`.\n**PKX/PB7**: The file you're scanning *must* be of the same generation as the currently loaded save. This scanner is accessed by opening `Editor`, then pressing `L + R`. *Please note*: PK7 files are very finicky due to their size, and as such may need multiple tries.\n**Wonder Card**: These are scanned by opening `Events`, then pressing `L + R`."
             }
         ],
@@ -66,7 +66,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "7. Why doesn't ServePKX work? How can I send pokemon to PKSM from my PC now?",
+                "name": "Why doesn't ServePKX work? How can I send pokemon to PKSM from my PC now?",
                 "value": "ServePKX has been deprecated as of PKSM v6. There are three ways you can send pokemon to PKSM from PC now.\n**1**: (*Recommended*) Upload the pokemon to the GPSS using either the `.gpsspost` command in <#379201279479513100>, or through architdate's [Auto Legality Plugin](https://github.com/architdate/PKHeX-Plugins) for PKHeX.\n**2**: Create a QR code from the pkx file using PKHeX. Then, scan the QR code by opening `Editor` and pressing `L + R`.\n**3**: Place the pkx files you want to add at `/3ds/PKSM/inject/` and run the universal `injector.c` script."
             }
         ],
@@ -76,7 +76,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "8. Can I transfer mons from PKSM directly to Bank or Home?",
+                "name": "Can I transfer mons from PKSM directly to Bank or Home?",
                 "value": "No. This would require direct interaction with Nintendo's servers, which would doubtlessly end in a C&D against PKSM (and possibly all of FlagBrew's other projects), which would then lead to the death of PKSM."
             }
         ],
@@ -86,7 +86,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "9. How do I use Generation 3 wondercards?",
+                "name": "How do I use Generation 3 wondercards?",
                 "value": "Gen 3 events do not exist as wondercards, outside of the unsupported (fake) wc3 format. There are two different methods for accessing gen 3 events, depending on what they require.\n**1**: For any events that directly give you a pokemon, you will want to use the universal `injector.c` script by putting the pk3 file, found from [EventsGallery](https://github.com/ProjectPokemon/EventsGallery), at `/3ds/PKSM/inject/` and then running the script.\n**2**: For events that give you an item so you can get a pokemon (ex the Old Sea Map), you'll want to use the beta scripts pinned in <#389780983869603852>. This can be done by putting the script at `/3ds/PKSM/scripts/universal/`, then running it in PKSM."
             }
         ],
@@ -96,7 +96,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "10. Does PKSM work with rom hacks?",
+                "name": "Does PKSM work with rom hacks?",
                 "value": "No. PKSM is only designed to work with the official, unmodified games. If the rom hack does not alter the standard save format, then PKSM *might* work with saves from it, with no guarantees. We will not be adding official support for any rom hacks."
             }
         ],
@@ -109,7 +109,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "11. How can I inject the Azure Flute?",
+                "name": "How can I inject the Azure Flute?",
                 "value": "The Azure Flute can be found on one of the last pages, with a JPN name. Refer to the attached image."
             }
         ],
