@@ -158,12 +158,12 @@ class pkhex(commands.Cog):
         else:
             if int(generation) not in range(1, 9):
                 return await ctx.send(f"There is no generation {generation}.")
-        forms = pokeinfo_module.get_pokemon_forms(pokemon.capitalize(), generation.lower())
+        forms = pokeinfo_module.get_pokemon_forms(pokemon.title(), generation.lower())
         if forms == 400:
             return await ctx.send("Are you sure that's a real pokemon?")
         elif len(forms) == 0:
-            return await ctx.send(f"No forms available for `{pokemon.capitalize()}`.")
-        await ctx.send(f"Available forms for {pokemon.capitalize()}: `{'`, `'.join(forms)}`.")
+            return await ctx.send(f"No forms available for `{pokemon.title()}`.")
+        await ctx.send(f"Available forms for {pokemon.title()}: `{'`, `'.join(forms)}`.")
 
     @commands.command(name='pokeinfo', aliases=['pi'])
     @restricted_to_bot
@@ -197,7 +197,7 @@ class pkhex(commands.Cog):
             except TypeError:
                 raise commands.MissingRequiredArgument((inspect.Parameter(name='generation', kind=inspect.Parameter.POSITIONAL_ONLY)))
             else:
-                if int(generation) not in range(1, 9):
+                if int(generation) not in range(1, 10):
                     return await ctx.send(f"There is no generation {generation}.")
             species_form_pair_or_url = species_form_pair_or_url.split('-')
             pokemon = "flabébé" if species_form_pair_or_url[0].lower() == "flabebe" else species_form_pair_or_url[0].lower()
@@ -213,7 +213,7 @@ class pkhex(commands.Cog):
                         form += "-" + species_form_pair_or_url.pop(1)
                     else:
                         form = "c-" + form
-            pokeinfo = pokeinfo_module.get_base_info(pokemon.capitalize(), form.title() if form else form, generation.upper(), shiny)
+            pokeinfo = pokeinfo_module.get_base_info(pokemon.title(), form.title() if form else form, generation.upper(), shiny)
             if pokeinfo == 400:
                 return await ctx.send("Are you sure that's a real pokemon (or proper form)?")
             elif pokeinfo == 500:
@@ -298,7 +298,7 @@ class pkhex(commands.Cog):
         moves = moves.split("|")
         if not moves:
             return await ctx.send("No moves provided, or the data provided was in an incorrect format.\n```Example: .learns pikachu | quick attack | hail```")
-        encounters = encounters_module.get_moves(pokemon.capitalize(), generation, moves)
+        encounters = encounters_module.get_moves(pokemon.title(), generation, moves)
         if encounters == 400:
             return await ctx.send("Something you sent was invalid. Please double check your data and try again.")
         elif encounters == 500:
@@ -322,12 +322,12 @@ class pkhex(commands.Cog):
             if generation.lower() not in ("bdsp", "pla", "lgpe"):
                 return await ctx.send(f"There is no generation {generation}.")
         else:
-            if int(generation) not in range(1, 9):
+            if int(generation) not in range(1, 10):
                 return await ctx.send(f"There is no generation {generation}.")
         if moves:
             moves = moves.replace("| ", "|").replace(" |", "|").replace(" | ", "|")
             moves = moves.split("|")
-        encounters = encounters_module.get_encounters(pokemon.capitalize(), generation.upper(), moves)
+        encounters = encounters_module.get_encounters(pokemon.title(), generation.upper(), moves)
         if encounters == 400:
             return await ctx.send("Something you sent was invalid. Please double check your data and try again.")
         elif encounters == 500:
@@ -336,12 +336,14 @@ class pkhex(commands.Cog):
         for encounter in encounters:
             field_values = ""
             for location in encounter["location"]:
-                games = (helper.game_dict[x] if x in helper.game_dict.keys() else x for x in location["games"])
+                games = (helper.game_dict[game] if game in helper.game_dict.keys() else game for game in location["games"])
                 games_str = ", ".join(games)
                 games_str = games_str.replace("GG", "LGPE")
                 if encounter["encounter_type"] == "Egg":
                     field_values += f"{games_str} as **egg**.\n"
                 elif not location["name"] == "":
+                    if len(field_values) + len(f"{games_str} in **{location['name']}**.\n") > 1024:
+                        break
                     field_values += f"{games_str} in **{location['name']}**.\n"
                 elif generation == 1:
                     field_values += f"{games_str} in **Unknown**.\n"
@@ -384,7 +386,7 @@ class pkhex(commands.Cog):
             if generation.lower() not in ("bdsp", "pla", "lgpe"):
                 return await ctx.send(f"There is no generation {generation}.")
         else:
-            if int(generation) not in range(1, 9):
+            if int(generation) not in range(1, 10):
                 return await ctx.send(f"There is no generation {generation}.")
         showdown_set = showdown_set.replace('`', '')
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew

@@ -159,7 +159,10 @@ game_dict = {
     "BD": "Brilliant Diamond",
     "SP": "Shining Pearl",
     "PLA": "Legends Arceus",
-    "LA": "Legends Arceus"  # Not sure if this is used anywhere, adding for safety.
+    "LA": "Legends Arceus",  # Not sure if this is used anywhere, adding for safety.
+    "SL": "Scarlet",
+    "VL": "Violet",
+    "SV": "Scarlet, Violet",  # Need to do this because of Silver
 }
 
 default_forms = {

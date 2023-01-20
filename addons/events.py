@@ -200,19 +200,22 @@ class Events(commands.Cog):
             await self.bot.logs_channel.send(embed=embed)
 
         # Handle timeout application logging - can't easily log expiry rn so not gonna do that
-        elif not before.is_timed_out() and after.is_timed_out:
+        elif not before.is_timed_out() and after.is_timed_out():
             async for timeout in after.guild.audit_logs(limit=20, action=discord.AuditLogAction.member_update):  # 20 to handle multiple staff timeouts in quick succession
-                if not timeout.after.timed_out_until:
-                    return
-                elif timeout.target == after:
-                    if timeout.reason:
-                        reason = timeout.reason
+                try:
+                    if not timeout.after.timed_out_until:
+                        return
+                    elif timeout.target == after:
+                        if timeout.reason:
+                            reason = timeout.reason
+                        else:
+                            reason = "No reason was given. Please do that in the future!"
+                        admin = timeout.user
+                        break
                     else:
-                        reason = "No reason was given. Please do that in the future!"
-                    admin = timeout.user
-                    break
-                else:
-                    return
+                        return
+                except AttributeError:
+                    return  # Weird bug where AuditLogDiff has no timed_out_until attribute
             embed = discord.Embed(title=f"{after} timed out")
             embed.add_field(name="Member", value=f"{after.mention} ({after.id})")
             embed.add_field(name="Timed out by", value=admin)

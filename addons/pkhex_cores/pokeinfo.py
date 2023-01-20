@@ -31,6 +31,7 @@ def get_pokemon_forms(pokemon, generation):
 
 
 def get_base_info(pokemon, form, generation: str, shiny: bool = False):
+    pokemon = pokemon.replace(" ", "")
     if pokemon.lower() in ('jangmo', 'hakamo', 'kommo') and species_form_pair[1] == "o":
         pokemon += '-o'
         species_form_pair.pop(1)
@@ -43,7 +44,7 @@ def get_base_info(pokemon, form, generation: str, shiny: bool = False):
     pokemon_id = [int(item) for item in Enum.GetValues(Species) if Enum.GetName(Species, item) == pokemon]
     if len(pokemon_id) == 0:
         return 400
-    elif (generation == "1" and pokemon_id[0] > 151) or (generation == "2" and pokemon_id[0] > 251) or (generation == "3" and pokemon_id[0] > 386) or (generation in ("4", "BDSP") and pokemon_id[0] > 493) or (generation == "5" and pokemon_id[0] > 649) or (generation == "6" and pokemon_id[0] > 721) or (generation == "7" and pokemon_id[0] > 809) or (generation == "LGPE" and pokemon_id[0] > 251 and pokemon_id[0] not in (808, 809)) or (generation == "8" and pokemon_id[0] > 896) or (generation == "PLA" and pokemon_id[0] not in pkhex_helper.pla_species):
+    elif (generation == "1" and pokemon_id[0] > 151) or (generation == "2" and pokemon_id[0] > 251) or (generation == "3" and pokemon_id[0] > 386) or (generation in ("4", "BDSP") and pokemon_id[0] > 493) or (generation == "5" and pokemon_id[0] > 649) or (generation == "6" and pokemon_id[0] > 721) or (generation == "7" and pokemon_id[0] > 809) or (generation == "LGPE" and pokemon_id[0] > 251 and pokemon_id[0] not in (808, 809)) or (generation == "8" and pokemon_id[0] > 896) or (generation == "PLA" and pokemon_id[0] not in pkhex_helper.pla_species or (generation == "9" and pokemon_id[0] > 1008)):
         return 500
     csharp_pokemon = UInt16(pokemon_id[0])
     csharp_form_num = Byte(0)
@@ -162,7 +163,7 @@ def generate_qr(file):
     pokemon = EntityFormat.GetFromBytes(file)
     species_name = Enum.GetName(Species, UInt16(pokemon.Species))
     generation = pkhex_helper.extension_version_dict[pokemon.Extension.upper()]
-    if generation in ("1", "2", "LGPE", "8", "BDSP", "PLA"):
+    if generation in ("1", "2", "LGPE", "8", "BDSP", "PLA", "9"):
         return 501
     if pokemon.Species <= 0 or ((generation == "3" and pokemon.Species > 386) or (generation in ("4", "BDSP") and pokemon.Species > 493) or (generation == "5" and pokemon.Species > 649) or (generation == "6" and pokemon.Species > 721) or (generation == "7" and pokemon.Species > 809)):
         return 500

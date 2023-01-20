@@ -3,7 +3,7 @@
         "fields": [
             {
                 "inline": true,
-                "name": "1. How can I check and legalize my pokemon?",
+                "name": "How can I check and legalize my pokemon?",
                 "value": "The info outlined in this entry is the majority of legality help we will provide here. Please do your own research using resources like Serebii, Bulbapedia, or the ProjectPokemon forums or discord instead.\n\n**Please note**: All of these functions require an internet connection of some kind.\n\n**How do I check if my pokemon is legal?**\nWhile editing a pokemon, go to the `misc` screen and then either click on the wireless icon or press `Y`. You will then be shown a legality report describing if your pokemon is legal, or what problems exist with it.\n\n**How do I fix legality issues?**\nOnce you're on the legality report screen, click the button in the bottom left. The server will then *attempt* to legalize your pokemon. This is not a guarantee, and requires the following values to be legal in combination: `Ability`, `Item`, `Level`, `Moves`, `Nature`, `Shininess`. If there's an illegal combination of these, the server will not be able to legalize your pokemon."
             }
         ],
@@ -13,7 +13,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "2. When are we getting PKSM on Switch?",
+                "name": "When are we getting PKSM on Switch?",
                 "value": "PKSM Switch development is in progress, but a large roadblock is the lack of a team UI/Asset Designer.\nYou can track development progress by looking at [this project board](https://github.com/FlagBrew/PKSM/projects/7). If you would like to help with the development, please go to <#1061401136466247833>.\n\nAlternatively, for LGPE and SWSH, you can [bridge their saves](https://github.com/FlagBrew/PKSM/wiki/Basics#loading-a-save-over-a-network) from Checkpoint on Switch. Please note that SWSH support is unstable. SWSH, BDSP, and PLA all have trouble due to variablity in the save sizes for these games. There are currently no plans for SCVI support.\n\n**Please note** that repeatedly bringing up this topic without attempting to provide developmental/UI help will be met with moderator action."
             }
         ],
@@ -23,7 +23,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "3. I'm attempting to use a save that was used in an emulator at some point, and it won't load. What do I do?",
+                "name": "I'm attempting to use a save that was used in an emulator at some point, and it won't load. What do I do?",
                 "value": "There is likely an extra 122 bytes at the end of your file. You can check this by right clicking it on a computer, and checking the size (it should be `524,288 bytes`). Back the file up, then delete the last 122 bytes using [a hex editor](https://mh-nexus.de/en/hxd/)."
             }
         ],
@@ -33,7 +33,7 @@
         "fields": [
             {
                 "inline": true,
-                "name": "4. What are Universal scripts? What's available?",
+                "name": "What are Universal scripts? What's available?",
                 "value": "There are multiple scripts available in PKSM that can be used on most supported games (Generation 1 and 2 currently do not have scripts). You can access these scripts by pressing `Y` on the scripts menu. Below are some notable universal scripts\n`batch-edit.c` - Allows mass edits. Use `.batchedit` to see more info.\n`Edit Trainer Info.c` - Allows editing your trainer info.\n`injector.c` - Injects a single pkx file in `~/3ds/PKSM/inject/`\n`legal-living-dex.c` - Generates a legal living dex for the loaded save. Requires an internet connection\n`save-language.c` - Changes the language of the selected save. Useful for when you accidentally change your save language with event injection."
             }
         ],
@@ -43,7 +43,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "5. PKSM is erroring with Archive::init on launch, how can I fix it?",
+                "name": "PKSM is erroring with Archive::init on launch, how can I fix it?",
                 "value": "Backup and immediately restore PKSM's ExtData using [Checkpoint](https://github.com/FlagBrew/Checkpoint/releases)."
             }
         ],
@@ -53,7 +53,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "6. Why doesn't PKSM scan this QR?",
+                "name": "Why doesn't PKSM scan this QR?",
                 "value": "**GPSS**: QRs from the [GPSS](https://flagbrew.org/gpss) (or <#586728153985056801>) have to be scanned in the GPSS section of PKSM. This can be accessed by opening `Storage`, then selecting the wifi button on the bottom screen, then pressing `X`.\n**PKX/PB7**: The file you're scanning *must* be of the same generation as the currently loaded save. This scanner is accessed by opening `Editor`, then pressing `L + R`. *Please note*: PK7 files are very finicky due to their size, and as such may need multiple tries.\n**Wonder Card**: These are scanned by opening `Events`, then pressing `L + R`."
             }
         ],
@@ -63,7 +63,7 @@
         "fields": [
             {
                 "inline": true,
-                "name": "7. How can I send Pokemon to PKSM from my PC?",
+                "name": "How can I send Pokemon to PKSM from my PC?",
                 "value": "**1**: (*Recommended*) Upload the pokemon to the GPSS using either the `.gpsspost` command in <#379201279479513100>, or through architdate's [Auto Legality Plugin](https://github.com/architdate/PKHeX-Plugins) for PKHeX.\n**2**: Create a QR code from the pkx file using PKHeX by right clicking on the sprite while viewing a Pokemon, and selecting `QR!`. Then, scan the QR code by opening `Editor` and pressing `L + R`.\n**3**: Place the pkx files you want to add at `/3ds/PKSM/inject/` and run the universal `injector.c` script."
             }
         ],
@@ -73,7 +73,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "8. Can I transfer mons from PKSM directly to Bank or Home?",
+                "name": "Can I transfer mons from PKSM directly to Bank or Home?",
                 "value": "No. This would require direct interaction with Nintendo's servers, which would doubtlessly end in a C&D against PKSM (and possibly all of FlagBrew's other projects), which would then lead to the death of PKSM."
             }
         ],
@@ -83,7 +83,7 @@
         "fields": [
             {
                 "inline": true,
-                "name": "9. How do I use Generation 3 wondercards?",
+                "name": "How do I use Generation 3 wondercards?",
                 "value": "Gen 3 events do not exist as wondercards, outside of the unsupported (fake) wc3 format. There are two different methods for accessing gen 3 events, depending on what they require.\n**1**: For any events that directly give you a pokemon, you will want to use the universal `injector.c` script by putting the pk3 file, found from [EventsGallery](https://github.com/ProjectPokemon/EventsGallery), at `/3ds/PKSM/inject/` and then running the script.\n**2**: For events that give you an item so you can get a pokemon (ex the Old Sea Map), you'll want to use the dedicated scripts available."
             }
         ],
@@ -93,7 +93,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "10. Does PKSM work with rom hacks?",
+                "name": "Does PKSM work with rom hacks?",
                 "value": "No. PKSM is only designed to work with the official, unmodified games. If the rom hack does not alter the standard save format, then PKSM *might* work with saves from it, with no guarantees. We will not be adding official support for any rom hacks."
             }
         ],
@@ -106,7 +106,7 @@
         "fields": [
             {
                 "inline": false,
-                "name": "11. How can I inject the Azure Flute?",
+                "name": "How can I inject the Azure Flute?",
                 "value": "The Azure Flute can be found on one of the last pages, with a JPN name. Refer to the attached image."
             }
         ],

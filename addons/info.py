@@ -53,7 +53,7 @@ class Info(commands.Cog):
         current_faq = loaded_faq[faq_num - 1]
         embed = discord.Embed.from_dict(current_faq)
         embed.title = "Frequently Asked Questions"
-        embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()}"
+        embed.title += f" - {'PKSM' if faq_doc.lower() == 'pksm' else faq_doc.title()} #{faq_num}"
         await channel.send(embed=embed)
 
     @commands.command(aliases=["releases", "latest"])
@@ -202,7 +202,7 @@ class Info(commands.Cog):
             for faq_arr in loaded_faq:
                 temp_emb = discord.Embed.from_dict(faq_arr)
                 for field in temp_emb.fields:
-                    embed.add_field(name=field.name, value=field.value, inline=False)
+                    embed.add_field(name=f"**{loaded_faq.index(faq_arr)+1}**: " + field.name, value=field.value, inline=False)
             if ctx.author.id in self.bot.dm_list:
                 await ctx.message.delete()
                 try:
