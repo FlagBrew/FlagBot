@@ -36,7 +36,7 @@ class gpss(commands.Cog):
                 pkmn_data = get_pokemon_file_info(pkx)
                 if pkmn_data == 400:
                     return
-                filename = resp_json["pokemon"]["pokemon"]["species"] + f" Code_{code}"
+                filename = pkmn_data["species"] + f" Code_{code}"
                 if pkmn_data["generation"].lower() == "lgpe":
                     filename += ".pb7"
                 elif pkmn_data["generation"].lower() == "bdsp":
@@ -58,10 +58,9 @@ class gpss(commands.Cog):
                 embed.set_thumbnail(url=pkmn_data["species_sprite_url"])
                 embed.colour = discord.Colour.green() if pkmn_data["is_legal"] else discord.Colour.red()
                 try:
-                    await ctx.send(embed=embed)
+                    await msg.edit(embed=embed, content=None)
                 except Exception as exception:
-                    return await ctx.send(f"There was an error showing the data for this pokemon. {self.bot.creator.mention}, {self.bot.pie.mention}, or {self.bot.allen.mention} please check this out!\n{ctx.author.mention} please do not delete the file. Exception below.\n\n```{exception}```")
-                return await msg.edit(embed=embed, content=None)
+                    await ctx.send(f"There was an error showing the data for this pokemon. {self.bot.creator.mention}, {self.bot.pie.mention}, or {self.bot.allen.mention} please check this out!\n{ctx.author.mention} please do not delete the file. Exception below.\n\n```{exception}```")
         except aiohttp.ContentTypeError:
             await msg.edit(content=f"There was no pokemon on the GPSS with the code `{code}`.")
 

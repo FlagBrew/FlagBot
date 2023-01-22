@@ -19,6 +19,42 @@ async def check_mute_expiry(mutes_dict, member):
     return diff.total_seconds() < 0  # Return False if expired, else True
 
 
+def embed_fields(embed, data):
+    embed.add_field(name="Species", value=data["species"])
+    embed.add_field(name="Level", value=data["level"])
+    embed.add_field(name="Nature", value=data["nature"])
+    if (data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(data["generation"]) > 2:
+        embed.add_field(name="Ability", value=data["ability"])
+    else:
+        embed.add_field(name="Ability", value="N/A")
+    ot = data["ot"]
+    sid = data["sid"]
+    tid = data["tid"]
+    if (data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(data["generation"]) > 2:
+        embed.add_field(name="Original Trainer", value=f"{ot}\n({tid}/{sid})")
+    else:
+        embed.add_field(name="Original Trainer", value=f"{ot}\n({tid})")
+    if "ht" in data.keys() and not data["ht"] == "":
+        embed.add_field(name="Handling Trainer", value=data["ht"])
+    if ((data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(data["generation"]) > 2) and not data["met_loc"] == "":
+        embed.add_field(name="Met Location", value=data["met_loc"])
+    if (data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(data["generation"]) > 2:
+        if data["version"] == "":
+            return 400
+        embed.add_field(name="Origin Game", value=data["version"])
+    else:
+        embed.add_field(name="Origin Game", value="N/A")
+    embed.add_field(name="Captured In", value=data["ball"])
+    if data["held_item"] != "(None)":
+        embed.add_field(name="Held Item", value=data["held_item"])
+    stats = data["stats"]
+    embed.add_field(name="EVs", value=f"**HP**: {stats[0]['ev']}\n**Atk**: {stats[1]['ev']}\n**Def**: {stats[2]['ev']}\n**SpAtk**: {stats[3]['ev']}\n**SpDef**: {stats[4]['ev']}\n**Spd**: {stats[5]['ev']}")
+    embed.add_field(name="IVs", value=f"**HP**: {stats[0]['iv']}\n**Atk**: {stats[1]['iv']}\n**Def**: {stats[2]['iv']}\n**SpAtk**: {stats[3]['iv']}\n**SpDef**: {stats[4]['iv']}\n**Spd**: {stats[5]['iv']}")
+    moves = data["moves"]
+    embed.add_field(name="Moves", value=f"**1**: {moves[0]}\n**2**: {moves[1]}\n**3**: {moves[2]}\n**4**: {moves[3]}")
+    return embed
+
+
 def spam_limiter(func):
     @functools.wraps(func)
     async def wrapper(*args, **kwargs):
