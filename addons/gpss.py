@@ -5,8 +5,9 @@ import io
 import base64
 import validators
 from exceptions import PKHeXMissingArgs
-from addons.helper import restricted_to_bot
+from addons.helper import restricted_to_bot, embed_fields
 from discord.ext import commands
+from addons.pkhex_cores.pokeinfo import get_pokemon_file_info
 
 
 class gpss(commands.Cog):
@@ -30,61 +31,36 @@ class gpss(commands.Cog):
         try:
             async with self.bot.session.get(self.bot.flagbrew_url + "api/v2/gpss/view/" + code) as resp:
                 resp_json = await resp.json()
-                code_data = resp_json["pokemon"]
-                pkmn_data = code_data["pokemon"]
-                filename = pkmn_data["species"] + f" Code_{code}"
-                if pkmn_data["generation"] == "LGPE":
+                pk64 = resp_json["pokemon"]["base_64"].encode("ascii")
+                pkx = base64.decodebytes(pk64)
+                pkmn_data = get_pokemon_file_info(pkx)
+                if pkmn_data == 400:
+                    return
+                filename = resp_json["pokemon"]["pokemon"]["species"] + f" Code_{code}"
+                if pkmn_data["generation"].lower() == "lgpe":
                     filename += ".pb7"
-                elif pkmn_data["generation"] == "BDSP":
+                elif pkmn_data["generation"].lower() == "bdsp":
                     filename += ".pb8"
-                elif pkmn_data["generation"] == "PLA":
+                elif pkmn_data["generation"].lower() == "pla":
                     filename += ".pa8"
                 else:
                     filename += ".pk" + pkmn_data["generation"]
-                pk64 = code_data["base_64"].encode("ascii")
-                pkx = base64.decodebytes(pk64)
                 pkmn_file = discord.File(io.BytesIO(pkx), filename)
                 await asyncio.sleep(1)
                 log_msg = await upload_channel.send(f"Pokemon fetched from the GPSS by {ctx.author}", file=pkmn_file)
-                embed = discord.Embed(description=f"[GPSS Page]({self.bot.gpss_url + 'gpss/' + code}) | [Download link]({log_msg.attachments[0].url})")
-                embed.add_field(name="Species", value=pkmn_data["species"])
-                embed.add_field(name="Level", value=pkmn_data["level"])
-                embed.add_field(name="Nature", value=pkmn_data["nature"])
-                if (pkmn_data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(pkmn_data["generation"]) > 2:
-                    embed.add_field(name="Ability", value=pkmn_data["ability"])
-                else:
-                    embed.add_field(name="Ability", value="N/A")
-                ot = pkmn_data["ot"]
-                sid = pkmn_data["sid"]
-                tid = pkmn_data["tid"]
-                if (pkmn_data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(pkmn_data["generation"]) > 2:
-                    embed.add_field(name="Original Trainer", value=f"{ot}\n({tid}/{sid})")
-                else:
-                    embed.add_field(name="Original Trainer", value=f"{ot}\n({tid})")
-                if "ht" in pkmn_data.keys() and not pkmn_data["ht"] == "":
-                    embed.add_field(name="Handling Trainer", value=pkmn_data["ht"])
-                else:
-                    embed.add_field(name="Handling Trainer", value="N/A")
-                if ((pkmn_data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(pkmn_data["generation"]) > 2) and not pkmn_data["met_data"]["location"] == "":
-                    embed.add_field(name="Met Location", value=pkmn_data["met_data"]["location"])
-                else:
-                    embed.add_field(name="Met Location", value="N/A")
-                if (pkmn_data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(pkmn_data["generation"]) > 2:
-                    if pkmn_data["version"] == "":
-                        return await ctx.send(f"Something in that pokemon is *very* wrong. Please do not try to check that code again.\n\n{self.bot.pie.mention}: Mon was gen3+ and missing origin game. Code: `{code}`")
-                    embed.add_field(name="Origin Game", value=pkmn_data["version"])
-                else:
-                    embed.add_field(name="Origin Game", value="N/A")
-                embed.add_field(name="Captured In", value=pkmn_data["ball"])
-                if pkmn_data["held_item"] != "(None)":
-                    embed.add_field(name="Held Item", value=pkmn_data["held_item"])
-                stats = pkmn_data["stats"]
-                embed.add_field(name="EVs", value=f"**HP**: {stats[0]['stat_ev']}\n**Atk**: {stats[1]['stat_ev']}\n**Def**: {stats[2]['stat_ev']}\n**SpAtk**: {stats[3]['stat_ev']}\n**SpDef**: {stats[4]['stat_ev']}\n**Spd**: {stats[5]['stat_ev']}")
-                embed.add_field(name="IVs", value=f"**HP**: {stats[0]['stat_iv']}\n**Atk**: {stats[1]['stat_iv']}\n**Def**: {stats[2]['stat_iv']}\n**SpAtk**: {stats[3]['stat_iv']}\n**SpDef**: {stats[4]['stat_iv']}\n**Spd**: {stats[5]['stat_iv']}")
-                moves = pkmn_data["moves"]
-                embed.add_field(name="Moves", value=f"**1**: {moves[0]['name']}\n**2**: {moves[1]['name']}\n**3**: {moves[2]['name']}\n**4**: {moves[3]['name']}")
-                embed.title = f"Data for {pkmn_data['nickname']} ({pkmn_data['gender']})"
-                embed.set_thumbnail(url=pkmn_data["sprites"]["species"])
+                embed = discord.Embed(
+                    title=f"Data for {pkmn_data['nickname']} ({pkmn_data['gender']})",
+                    description=f"[GPSS Page]({self.bot.gpss_url + 'gpss/' + code}) | [Download link]({log_msg.attachments[0].url})"
+                )
+                embed = embed_fields(embed, pkmn_data)
+                if embed == 400:
+                    return await ctx.send(f"{ctx.author.mention} Something in that pokemon is *very* wrong. Your request has been canceled. Please do not try that mon again.")
+                embed.set_thumbnail(url=pkmn_data["species_sprite_url"])
+                embed.colour = discord.Colour.green() if pkmn_data["is_legal"] else discord.Colour.red()
+                try:
+                    await ctx.send(embed=embed)
+                except Exception as exception:
+                    return await ctx.send(f"There was an error showing the data for this pokemon. {self.bot.creator.mention}, {self.bot.pie.mention}, or {self.bot.allen.mention} please check this out!\n{ctx.author.mention} please do not delete the file. Exception below.\n\n```{exception}```")
                 return await msg.edit(embed=embed, content=None)
         except aiohttp.ContentTypeError:
             await msg.edit(content=f"There was no pokemon on the GPSS with the code `{code}`.")
