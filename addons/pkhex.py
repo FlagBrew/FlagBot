@@ -44,15 +44,17 @@ class pkhex(commands.Cog):
                 await ctx.send("The file seems to have been deleted, so I can't complete the task.")
                 return 400
             file = io_bytes.getvalue()
+            extension = atch.filename[-4:]
         else:
+            extension = data.strip("?raw=true")[-4:]
             if not validators.url(data):
                 await ctx.send("That's not a real link!")
                 return 400
-            elif func not in ("pokemon_info", "legality_check") and data.strip("?raw=true")[-4:-1] not in (".pk", ".pb", ".pa"):
+            elif func not in ("pokemon_info", "legality_check") and extension[:-1] not in (".pk", ".pb", ".pa"):
                 await ctx.send("That isn't a valid `pkx`, `pbx`, or `pa8` file!")
                 return 400
-            elif data.strip("raw=true")[-4:-1] not in (".pk", ".xk", ".ck", ".pb", ".pa"):
-                await ctx.send("That isn't a valid `pkx`, `xk3`, `ck3`, `pbx`, or `pa8` file!")
+            elif extension[:-1] not in (".pk", ".pb", ".pa"):
+                await ctx.send("That isn't a valid `pkx`, `pbx`, or `pa8` file!")
                 return 400
             try:
                 async with self.bot.session.get(data) as resp:
@@ -61,13 +63,13 @@ class pkhex(commands.Cog):
                 await ctx.send("The provided data was not valid.")
                 return 400
         if func == "pokemon_info":
-            return_data = pokeinfo_module.get_pokemon_file_info(file)
+            return_data = pokeinfo_module.get_pokemon_file_info(file, extension)
         elif func == "generate_qr":
-            return_data = pokeinfo_module.generate_qr(file)
+            return_data = pokeinfo_module.generate_qr(file, extension)
         elif func == "legality_check":
-            return_data = legality_module.get_legality_report(file)
+            return_data = legality_module.get_legality_report(file, extension)
         elif func == "legalize":
-            return_data = legality_module.legalize_pokemon(file, self.bot.manager)
+            return_data = legality_module.legalize_pokemon(file, self.bot.manager, extension)
         if return_data == 200:
             await ctx.send("That Pokemon is legal!")
             return 400

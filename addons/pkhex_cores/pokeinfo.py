@@ -100,8 +100,9 @@ def get_base_info(pokemon, form, generation: str, shiny: bool = False):
     return base_pokemon
 
 
-def get_pokemon_file_info(file):
-    pokemon = EntityFormat.GetFromBytes(file)
+def get_pokemon_file_info(file, extension):
+    context = pkhex_helper.get_context_from_extension(extension)
+    pokemon = EntityFormat.GetFromBytes(file, context)
     if pokemon is None:  # Invalid file
         return 400
     generation = pkhex_helper.extension_version_dict[pokemon.Extension.upper()]
@@ -159,8 +160,9 @@ def get_pokemon_file_info(file):
     return pokemon_info
 
 
-def generate_qr(file):
-    pokemon = EntityFormat.GetFromBytes(file)
+def generate_qr(file, extension):
+    context = pkhex_helper.get_context_from_extension(extension)
+    pokemon = EntityFormat.GetFromBytes(file, context)
     species_name = Enum.GetName(Species, UInt16(pokemon.Species))
     generation = pkhex_helper.extension_version_dict[pokemon.Extension.upper()]
     if generation in ("1", "2", "LGPE", "8", "BDSP", "PLA", "9"):
