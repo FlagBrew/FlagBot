@@ -117,6 +117,8 @@ def convert_pokemon(showdown_set, generation):
     pokemon, result = Legalizer.GetLegalFromSet(blank_sav, regen)
     pokemon_bytes = Convert.ToBase64String(pokemon.DecryptedPartyData)
     pokemon_info = pokeinfo.get_pokemon_file_info(base64.b64decode(pokemon_bytes))
+    if pokemon_info in (400, 500):
+        return {"status": pokemon_info}
     pokemon_info["pokemon"] = pokemon_bytes
     img = pkhex_helper.get_raw_qr_data(pokemon)
     bytes = io.BytesIO()

@@ -357,7 +357,9 @@ class pkhex(commands.Cog):
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         converted = legality_module.convert_pokemon(showdown_set, generation.upper())
         if converted["status"] == 400:
-            await ctx.send(f"Converting that set failed, meaning it is likely illegal. Please review your set.\n```{converted['analysis']}```")
+            return await ctx.send(f"Converting that set failed, meaning it is likely illegal. Please review your set.\n```{converted['analysis']}```")
+        elif converted["status"] == 500:
+            return await ctx.send(f"That species does not exist in Generation {generation.upper()}. Please review your set.\n```\n{showdown_set}```")
         pokemon_decoded = base64.b64decode(converted["pokemon"])
         file_extension = (".pb7" if generation.lower() == "lgpe" else ".pb8" if generation.lower() == "bdsp" else ".pa8" if generation.lower() == "pla" else ".pk" + generation)
         pokemon_file = discord.File(io.BytesIO(pokemon_decoded), "showdownset" + file_extension)
