@@ -267,7 +267,6 @@ async def on_ready():
         try:
             if guild.id in (bot.testing_id, bot.flagbrew_id):
                 bot.guild = guild
-                bot.reload_counter = 0
                 if guild.id == bot.flagbrew_id:
                     bot.logs_channel = discord.utils.get(guild.channels, id=351002624721551371)
                     bot.dm_logs_channel = discord.utils.get(guild.channels, id=695681340510699531)
@@ -414,7 +413,6 @@ async def reload(ctx):
     """Reloads an addon."""
     if ctx.author not in (ctx.guild.owner, bot.creator, bot.allen):
         raise commands.CheckFailure()
-    bot.reload_counter += 1
     errors = ""
     addon_dict = {
         "DevTools": "devtools",  # not loaded by default...
@@ -444,8 +442,6 @@ async def reload(ctx):
         await ctx.send(':white_check_mark: Extensions reloaded.')
     else:
         await ctx.send(errors)
-    if bot.reload_counter == 1:
-        await ctx.send("This is the first reload after I restarted!")
 
 
 @bot.command(name='drid', hidden=True)
@@ -468,7 +464,7 @@ async def ping(ctx):
     await ctx.send(f'🏓 Response time is {ping} milliseconds.')
 
 
-@bot.command(hidden=True)
+@bot.command(hidden=True, aliases=["shutdown"])
 async def restart(ctx):
     """Restarts the bot."""
     if ctx.author not in (ctx.guild.owner, bot.creator, bot.allen):
