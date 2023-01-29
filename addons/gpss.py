@@ -33,18 +33,18 @@ class gpss(commands.Cog):
                 resp_json = await resp.json()
                 pk64 = resp_json["pokemon"]["base_64"].encode("ascii")
                 pkx = base64.decodebytes(pk64)
-                pkmn_data = get_pokemon_file_info(pkx)
+                if resp_json["pokemon"]["generation"].lower() == "lgpe":
+                    extension = ".pb7"
+                elif resp_json["pokemon"]["generation"].lower() == "bdsp":
+                    extension = ".pb8"
+                elif resp_json["pokemon"]["generation"].lower() == "pla":
+                    extension = ".pa8"
+                else:
+                    extension = ".pk" + resp_json["pokemon"]["generation"]
+                pkmn_data = get_pokemon_file_info(pkx, extension)
+                filename = pkmn_data["species"] + f" Code_{code}" + extension
                 if pkmn_data == 400:
                     return
-                filename = pkmn_data["species"] + f" Code_{code}"
-                if pkmn_data["generation"].lower() == "lgpe":
-                    filename += ".pb7"
-                elif pkmn_data["generation"].lower() == "bdsp":
-                    filename += ".pb8"
-                elif pkmn_data["generation"].lower() == "pla":
-                    filename += ".pa8"
-                else:
-                    filename += ".pk" + pkmn_data["generation"]
                 pkmn_file = discord.File(io.BytesIO(pkx), filename)
                 await asyncio.sleep(1)
                 log_msg = await upload_channel.send(f"Pokemon fetched from the GPSS by {ctx.author}", file=pkmn_file)
