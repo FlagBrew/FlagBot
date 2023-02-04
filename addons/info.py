@@ -31,12 +31,14 @@ class Info(commands.Cog):
             self.checkpoint_faq_dict = json.load(file)
 
     async def gen_qr(self, ctx, app):
-        releases = None
+        latest_release = None
         async with aiohttp.ClientSession() as session:
-            url = f"https://api.github.com/repos/FlagBrew/{app}/releases"
+            url = f"https://api.github.com/repos/FlagBrew/{app}/releases/latest"
             async with session.get(url) as resp:
-                releases = await resp.json()
-        for asset in releases[0]["assets"]:
+                latest_release = await resp.json()
+        if not latest_release:
+            return await ctx.send("Failed to get latest release from GitHub.")
+        for asset in latest_release["assets"]:
             if asset["name"] == f"{app}.cia":
                 qr = qrcode.QRCode(version=None)
                 qr.add_data(asset["browser_download_url"])
@@ -45,9 +47,9 @@ class Info(commands.Cog):
                 bytes = io.BytesIO()
                 img.save(bytes, format='PNG')
                 bytes = bytes.getvalue()
-                released_on = releases[0]["published_at"][:10]
-                released_on_dt = datetime.strptime(released_on, "%Y-%m-%d")
-                return bytes, releases[0]["tag_name"], released_on_dt
+                release_date = latest_release["published_at"][:10]
+                release_date_dt = datetime.strptime(release_date, "%Y-%m-%d")
+                return bytes, latest_release["tag_name"], release_date_dt
 
     async def format_faq_embed(self, ctx, faq_num, channel, loaded_faq, faq_doc):
         current_faq = loaded_faq[faq_num - 1]
