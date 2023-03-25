@@ -347,11 +347,11 @@ class Info(commands.Cog):
     @helper.spam_limiter
     async def titleid(self, ctx):
         """Title ID adding info"""
-        embed = discord.Embed(title="How do I access my GBA games?")
+        embed = discord.Embed(title="How do I access my Generation 3 or non-English Generation 1/2 games?")
         embed.description = ("Open PKSM's settings from the game select menu by pressing `x`, and go to **Misc**. Then choose **Title IDs**.\n"
                              "Then, select the game you want to set a custom title ID for, and enter the game's title ID. You can check this in FBI.\n"
                              "Afterwards, select `VC Games` at the top of the game select screen (or hit R).")
-        embed.set_footer(text="Please note: your inject *must* have a save type of 1024kbit. Otherwise, it will not load in PKSM.")
+        embed.set_footer(text="Please note: GBA injects *must* have a save type of 1024kbit. Otherwise, it will not load in PKSM.")
         await ctx.send(embed=embed)
 
     @commands.command()
