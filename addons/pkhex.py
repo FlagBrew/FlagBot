@@ -12,7 +12,7 @@ import addons.helper as helper
 import addons.pkhex_cores.encounters as encounters_module
 import addons.pkhex_cores.pokeinfo as pokeinfo_module
 import addons.pkhex_cores.legality as legality_module
-from addons.helper import restricted_to_bot
+from addons.helper import restricted_to_bot, embed_fields
 from discord.ext import commands
 
 
@@ -44,15 +44,17 @@ class pkhex(commands.Cog):
                 await ctx.send("The file seems to have been deleted, so I can't complete the task.")
                 return 400
             file = io_bytes.getvalue()
+            extension = atch.filename[-4:]
         else:
+            extension = data.strip("?raw=true")[-4:]
             if not validators.url(data):
                 await ctx.send("That's not a real link!")
                 return 400
-            elif func not in ("pokemon_info", "legality_check") and data.strip("?raw=true")[-4:-1] not in (".pk", ".pb", ".pa"):
+            elif func not in ("pokemon_info", "legality_check") and extension[:-1] not in (".pk", ".pb", ".pa"):
                 await ctx.send("That isn't a valid `pkx`, `pbx`, or `pa8` file!")
                 return 400
-            elif data.strip("raw=true")[-4:-1] not in (".pk", ".xk", ".ck", ".pb", ".pa"):
-                await ctx.send("That isn't a valid `pkx`, `xk3`, `ck3`, `pbx`, or `pa8` file!")
+            elif extension[:-1] not in (".pk", ".pb", ".pa"):
+                await ctx.send("That isn't a valid `pkx`, `pbx`, or `pa8` file!")
                 return 400
             try:
                 async with self.bot.session.get(data) as resp:
@@ -61,13 +63,13 @@ class pkhex(commands.Cog):
                 await ctx.send("The provided data was not valid.")
                 return 400
         if func == "pokemon_info":
-            return_data = pokeinfo_module.get_pokemon_file_info(file)
+            return_data = pokeinfo_module.get_pokemon_file_info(file, extension)
         elif func == "generate_qr":
-            return_data = pokeinfo_module.generate_qr(file)
+            return_data = pokeinfo_module.generate_qr(file, extension)
         elif func == "legality_check":
-            return_data = legality_module.get_legality_report(file)
+            return_data = legality_module.get_legality_report(file, extension)
         elif func == "legalize":
-            return_data = legality_module.legalize_pokemon(file, self.bot.manager)
+            return_data = legality_module.legalize_pokemon(file, self.bot.manager, extension)
         if return_data == 200:
             await ctx.send("That Pokemon is legal!")
             return 400
@@ -87,41 +89,6 @@ class pkhex(commands.Cog):
             await ctx.send("This command does not support that generation.")
             return 400
         return return_data
-
-    def embed_fields(self, embed, data):
-        embed.add_field(name="Species", value=data["species"])
-        embed.add_field(name="Level", value=data["level"])
-        embed.add_field(name="Nature", value=data["nature"])
-        if (data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(data["generation"]) > 2:
-            embed.add_field(name="Ability", value=data["ability"])
-        else:
-            embed.add_field(name="Ability", value="N/A")
-        ot = data["ot"]
-        sid = data["sid"]
-        tid = data["tid"]
-        if (data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(data["generation"]) > 2:
-            embed.add_field(name="Original Trainer", value=f"{ot}\n({tid}/{sid})")
-        else:
-            embed.add_field(name="Original Trainer", value=f"{ot}\n({tid})")
-        if "ht" in data.keys() and not data["ht"] == "":
-            embed.add_field(name="Handling Trainer", value=data["ht"])
-        if ((data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(data["generation"]) > 2) and not data["met_loc"] == "":
-            embed.add_field(name="Met Location", value=data["met_loc"])
-        if (data["generation"].lower() in ('bdsp', 'pla', 'lgpe')) or int(data["generation"]) > 2:
-            if data["version"] == "":
-                return 400
-            embed.add_field(name="Origin Game", value=data["version"])
-        else:
-            embed.add_field(name="Origin Game", value="N/A")
-        embed.add_field(name="Captured In", value=data["ball"])
-        if data["held_item"] != "(None)":
-            embed.add_field(name="Held Item", value=data["held_item"])
-        stats = data["stats"]
-        embed.add_field(name="EVs", value=f"**HP**: {stats[0]['ev']}\n**Atk**: {stats[1]['ev']}\n**Def**: {stats[2]['ev']}\n**SpAtk**: {stats[3]['ev']}\n**SpDef**: {stats[4]['ev']}\n**Spd**: {stats[5]['ev']}")
-        embed.add_field(name="IVs", value=f"**HP**: {stats[0]['iv']}\n**Atk**: {stats[1]['iv']}\n**Def**: {stats[2]['iv']}\n**SpAtk**: {stats[3]['iv']}\n**SpDef**: {stats[4]['iv']}\n**Spd**: {stats[5]['iv']}")
-        moves = data["moves"]
-        embed.add_field(name="Moves", value=f"**1**: {moves[0]}\n**2**: {moves[1]}\n**3**: {moves[2]}\n**4**: {moves[3]}")
-        return embed
 
     def list_to_embed(self, embed, input_list):
         for x in input_list:
@@ -258,7 +225,7 @@ class pkhex(commands.Cog):
         if pokeinfo == 400:
             return
         embed = discord.Embed()
-        embed = self.embed_fields(embed, pokeinfo)
+        embed = embed_fields(embed, pokeinfo)
         if embed == 400:
             return await ctx.send(f"{ctx.author.mention} Something in that pokemon is *very* wrong. Your request has been canceled. Please do not try that mon again.")
         embed.title = f"Data for {pokeinfo['nickname']}-{pokeinfo['form'] if pokeinfo['form'] else ''} ({pokeinfo['gender']})"
@@ -392,14 +359,16 @@ class pkhex(commands.Cog):
         upload_channel = await self.bot.fetch_channel(664548059253964847)  # Points to #legalize-log on FlagBrew
         converted = legality_module.convert_pokemon(showdown_set, generation.upper())
         if converted["status"] == 400:
-            await ctx.send(f"Converting that set failed, meaning it is likely illegal. Please review your set.\n```{converted['analysis']}```")
+            return await ctx.send(f"Converting that set failed, meaning it is likely illegal. Please review your set.\n```{converted['analysis']}```")
+        elif converted["status"] == 500:
+            return await ctx.send(f"That species does not exist in Generation {generation.upper()}. Please review your set.\n```\n{showdown_set}```")
         pokemon_decoded = base64.b64decode(converted["pokemon"])
         file_extension = (".pb7" if generation.lower() == "lgpe" else ".pb8" if generation.lower() == "bdsp" else ".pa8" if generation.lower() == "pla" else ".pk" + generation)
         pokemon_file = discord.File(io.BytesIO(pokemon_decoded), "showdownset" + file_extension)
         qr = discord.File(io.BytesIO(converted["qr"]), 'pokemon_qr.png')
         embed = discord.Embed(title=f"Data for {converted['nickname']}{('-' + converted['form']) if converted['form'] else ''} ({converted['gender']})")
         embed.set_thumbnail(url=converted["species_sprite_url"])
-        embed = self.embed_fields(embed, converted)
+        embed = embed_fields(embed, converted)
         log_msg = await upload_channel.send(f"Showdown set converted by {ctx.author}", files=[pokemon_file, qr])
         embed.description = f"[{'PB7' if generation.lower() == 'lgpe' else 'PB8' if generation.lower() == 'bdsp' else 'PA8' if generation.lower() == 'pla' else 'PK' + generation} Download Link]({log_msg.attachments[0].url})\n[QR Code]({log_msg.attachments[1].url})"
         embed.colour = discord.Colour.green() if converted["is_legal"] else discord.Colour.red()

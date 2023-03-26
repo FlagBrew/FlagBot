@@ -10,13 +10,6 @@ import addons.helper as helper
 from discord.ext import commands
 from datetime import datetime
 
-desc_temp = "You can get the latest release of {}."
-desc_pksm = "PKSM [here](https://github.com/FlagBrew/PKSM/releases/latest)"
-desc_checkpoint = "Checkpoint [here](https://github.com/FlagBrew/Checkpoint/releases/latest)"
-desc_pickr = "Pickr [here](https://github.com/FlagBrew/Pickr/releases/latest)"
-desc_2048 = "2048 [here](https://github.com/FlagBrew/2048/releases/latest)"
-readme_temp = "You can read {}'s README [here](https://github.com/FlagBrew/{}/blob/master/README.md)."
-
 
 class Info(commands.Cog):
 
@@ -31,12 +24,14 @@ class Info(commands.Cog):
             self.checkpoint_faq_dict = json.load(file)
 
     async def gen_qr(self, ctx, app):
-        releases = None
+        latest_release = None
         async with aiohttp.ClientSession() as session:
-            url = f"https://api.github.com/repos/FlagBrew/{app}/releases"
+            url = f"https://api.github.com/repos/FlagBrew/{app}/releases/latest"
             async with session.get(url) as resp:
-                releases = await resp.json()
-        for asset in releases[0]["assets"]:
+                latest_release = await resp.json()
+        if not latest_release:
+            return await ctx.send("Failed to get latest release from GitHub.")
+        for asset in latest_release["assets"]:
             if asset["name"] == f"{app}.cia":
                 qr = qrcode.QRCode(version=None)
                 qr.add_data(asset["browser_download_url"])
@@ -45,9 +40,9 @@ class Info(commands.Cog):
                 bytes = io.BytesIO()
                 img.save(bytes, format='PNG')
                 bytes = bytes.getvalue()
-                released_on = releases[0]["published_at"][:10]
-                released_on_dt = datetime.strptime(released_on, "%Y-%m-%d")
-                return bytes, releases[0]["tag_name"], released_on_dt
+                release_date = latest_release["published_at"][:10]
+                release_date_dt = datetime.strptime(release_date, "%Y-%m-%d")
+                return bytes, latest_release["tag_name"], release_date_dt
 
     async def format_faq_embed(self, ctx, faq_num, channel, loaded_faq, faq_doc):
         current_faq = loaded_faq[faq_num - 1]
@@ -59,14 +54,14 @@ class Info(commands.Cog):
     @commands.command(aliases=["releases", "latest"])
     async def release(self, ctx, *, app=""):
         """Returns the latest release for FlagBrew"s projects. If pulling checkpoint or pickr release, you can add "switch" to the end to get one without a qr code for ease of use"""
-        img = 0
-        version = "1.0"
-        released_on = None
+        img = None
+        version = "N/A"
+        release_date = None
         if app.lower().startswith("pksm"):
-            embed = discord.Embed(description=desc_temp.format(desc_pksm))
-            img, version, released_on = await self.gen_qr(self, "PKSM")
+            embed = discord.Embed(description="You can get the latest release of PKSM [here](https://github.com/FlagBrew/PKSM/releases/latest).")
+            img, version, release_date = await self.gen_qr(self, "PKSM")
         elif app.lower().startswith("checkpoint"):
-            embed = discord.Embed(description=desc_temp.format(desc_checkpoint))
+            embed = discord.Embed(description="You can get the latest release of Checkpoint [here](https://github.com/FlagBrew/Checkpoint/releases/latest).")
             str_list = app.lower().split()
             if "switch" not in str_list:
                 # Manual formatting due to 3.8.0 being broken...
@@ -81,42 +76,40 @@ class Info(commands.Cog):
                 bytes = bytes.getvalue()
                 img = bytes
                 version = "3.7.4"
-                released_on = datetime.strptime("2019-12-09", "%Y-%m-%d")
-        elif app.lower().startswith("pickr"):
-            embed = discord.Embed(description=desc_temp.format(desc_pickr))
-            str_list = app.lower().split()
-            if "switch" not in str_list:
-                img, version, released_on = await self.gen_qr(self, "Pickr")
-        elif app.lower().startswith("2048"):
-            embed = discord.Embed(description=desc_temp.format(desc_2048))
+                release_date = datetime.strptime("2019-12-09", "%Y-%m-%d")
+            else:
+                version = "3.8.0"  # Temporary until 3.8.0 is fixed
         else:
-            embed = discord.Embed(description=desc_temp.format(desc_pksm) + "\n" + desc_temp.format(desc_checkpoint) + "\n" + desc_temp.format(desc_pickr) + "\n" + desc_temp.format(desc_2048))
-        if img == 0:
+            embed = discord.Embed(description="You can get the latest release of PKSM [here](https://github.com/FlagBrew/PKSM/releases/latest).\nYou can get the latest release of Checkpoint [here](https://github.com/FlagBrew/Checkpoint/releases/latest).")
+        embed.set_author(name="FlagBrew", url="https://github.com/FlagBrew", icon_url="https://avatars.githubusercontent.com/u/42673825")
+        embed.set_footer(text=f"Version: {version}")
+        if not img:
             return await ctx.send(embed=embed)
         qr_file = discord.File(io.BytesIO(img), filename="qr.png")
         embed.set_image(url="attachment://qr.png")
-        embed.set_footer(text=f"Version: {version}")
-        if released_on:
-            embed.description += f"\nReleased on: {discord.utils.format_dt(released_on, style='D')}"
+        if release_date:
+            embed.description += f"\nReleased on: {discord.utils.format_dt(release_date, style='D')}"
         await ctx.send(file=qr_file, embed=embed)
 
     @commands.command()
     async def readme(self, ctx, app=""):
         """READMEs for FlagBrew's projects."""
+        readme_template = "You can read {}'s README [here](https://github.com/FlagBrew/{}/blob/master/README.md)."
         if app.lower() == "script" or app.lower() == "pksmscript" or app.lower() == "scripts" or app.lower() == "pksmscripts":
-            embed = discord.Embed(description=readme_temp.format("PKSM Scripts", "PKSM-Scripts"))
-        elif app.lower() == "2048":
-            embed = discord.Embed(description=readme_temp.format("2048", "2048"))
-        elif app.lower() == "pickr":
-            embed = discord.Embed(description=readme_temp.format("Pickr", "Pickr"))
+            embed = discord.Embed(description=readme_template.format("PKSM Scripts", "PKSM-Scripts"))
+            author = "SpiredMoth"
         elif app.lower() == "checkpoint":
-            embed = discord.Embed(description=readme_temp.format("Checkpoint", "Checkpoint"))
+            embed = discord.Embed(description=readme_template.format("Checkpoint", "Checkpoint"))
+            author = "LiquidFenrir"
         elif app.lower() == "pksm":
-            embed = discord.Embed(description=readme_temp.format("PKSM", "PKSM"))
+            embed = discord.Embed(description=readme_template.format("PKSM", "PKSM"))
+            author = "piepie62"
         elif app.lower() == "sharkive":
-            embed = discord.Embed(description=readme_temp.format("Sharkive", "Sharkive"))
+            embed = discord.Embed(description=readme_template.format("Sharkive", "Sharkive"))
+            author = "JourneyOver"
         else:
-            return await ctx.send("Input not given or recognized. Available READMEs: `scripts`, `2048`, `pickr`, `checkpoint`, `pksm`, `sharkive`.")
+            return await ctx.send("Input not given or recognized. Available READMEs: `scripts`, `checkpoint`, `pksm`, `sharkive`.")
+        embed.set_author(name=author, url=f"https://github.com/{author}", icon_url="https://avatars.githubusercontent.com/u/42673825")
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['patron'])

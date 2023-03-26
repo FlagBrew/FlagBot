@@ -24,8 +24,9 @@ from System import Enum, UInt16, Convert
 alm_process = None
 
 
-def get_legality_report(file):
-    pokemon = EntityFormat.GetFromBytes(file)
+def get_legality_report(file, extension):
+    context = pkhex_helper.get_context_from_extension(extension)
+    pokemon = EntityFormat.GetFromBytes(file, context)
     if pokemon is None:  # Invalid file
         return 400
     generation = pkhex_helper.extension_version_dict[pokemon.Extension.upper()]
@@ -59,8 +60,9 @@ def cancelThread():
         alm_process.kill()
 
 
-def legalize_pokemon(file, manager):
-    pokemon = EntityFormat.GetFromBytes(file)
+def legalize_pokemon(file, manager, extension):
+    context = pkhex_helper.get_context_from_extension(extension)
+    pokemon = EntityFormat.GetFromBytes(file, context)
     if pokemon is None:  # Invalid file
         return 400
     generation = pkhex_helper.extension_version_dict[pokemon.Extension.upper()]
@@ -116,7 +118,9 @@ def convert_pokemon(showdown_set, generation):
     blank_sav = SaveUtil.GetBlankSAV(pkhex_helper.game_version_dict[generation], "FlagBot")
     pokemon, result = Legalizer.GetLegalFromSet(blank_sav, regen)
     pokemon_bytes = Convert.ToBase64String(pokemon.DecryptedPartyData)
-    pokemon_info = pokeinfo.get_pokemon_file_info(base64.b64decode(pokemon_bytes))
+    pokemon_info = pokeinfo.get_pokemon_file_info(base64.b64decode(pokemon_bytes), pokemon.Extension)
+    if pokemon_info in (400, 500):
+        return {"status": pokemon_info}
     pokemon_info["pokemon"] = pokemon_bytes
     img = pkhex_helper.get_raw_qr_data(pokemon)
     bytes = io.BytesIO()

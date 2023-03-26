@@ -10,7 +10,7 @@ import segno
 sys.path.append(os.getcwd() + r"/addons/pkhex_cores/deps")
 clr.AddReference("PKHeX.Core")
 
-from PKHeX.Core import EntityContext, GameVersion, QRMessageUtil, PersonalTable  # Import classes
+from PKHeX.Core import EntityContext, GameVersion, QRMessageUtil, PersonalTable, EntityFileExtension  # Import classes
 
 game_version_dict = {
     "1": GameVersion.RBY,
@@ -122,3 +122,7 @@ def personal_table_switcher(generation):
         return PersonalTable.LA
     elif generation == "9":
         return PersonalTable.SV
+
+
+def get_context_from_extension(ext):
+    return EntityFileExtension.GetContextFromExtension(ext)
