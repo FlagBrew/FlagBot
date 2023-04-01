@@ -183,6 +183,38 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             await ctx.guild.edit(icon=r_data)
         await ctx.send("Reverted back the channel list.")
 
+    @commands.command()
+    async def speen(self, ctx, *, name: str = None):
+        """Speeeeeeeeeeeeeen"""
+        normal = 'abcdefghijklmnopqrstuvwxyz'
+        rotated90 = 'ᗆϖᴒᗜᗰ╖ᘏェ𝄩ᓚ⌤⌐ᴟᴝoᓀᓄᓓᔕ⊣⊂<ᓬ×⤙𝇙'
+        rotated180 = 'ɑpcqԍɻმμᴉๅĸlɯuobd𝒍ƨϝnʌʍxλz'
+        rotated270 = 'ɒdɔbɘʇϱતiįʞlmnoqpɿƨɈuvwxγz'
+
+        if name is None:
+            name = ctx.author.display_name
+        for char in name.lower():
+            if not char.isalpha():
+                new_name += char
+                continue
+            ind = normal.index(char)
+            if count > 4:
+                count = 1
+            if count == 1:
+                new_name += normal[ind]
+            elif count == 2:
+                new_name += rotated90[ind]
+            elif count == 3:
+                new_name += rotated180[ind]
+            elif count == 4:
+                new_name + rotated270[ind]
+            count += 1
+        try:
+            await ctx.author.edit(nick=new_name)
+        except discord.Forbidden:
+            return await ctx.send("I don't have permission to change your nickname.")
+        await ctx.send(f"Successfully changed your nickname to: `{new_name}`")
+
 
 async def setup(bot):
     await bot.add_cog(Meta(bot))
