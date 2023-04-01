@@ -193,6 +193,8 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
 
         if name is None:
             name = ctx.author.display_name
+        new_name = ''
+        count = 1
         for char in name.lower():
             if not char.isalpha():
                 new_name += char
@@ -207,12 +209,12 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             elif count == 3:
                 new_name += rotated180[ind]
             elif count == 4:
-                new_name + rotated270[ind]
+                new_name += rotated270[ind]
             count += 1
         try:
             await ctx.author.edit(nick=new_name)
         except discord.Forbidden:
-            return await ctx.send("I don't have permission to change your nickname.")
+            return await ctx.send(f"I don't have permission to change your nickname. Here's what it would be: `{new_name}`.")
         await ctx.send(f"Successfully changed your nickname to: `{new_name}`")
 
 

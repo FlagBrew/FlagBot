@@ -489,6 +489,7 @@ async def about(ctx):
                          f"Written by {bot.creator.mention}.")
     embed.add_field(name="PKHeX.Core Commit", value=f"`{bot.persistent_vars_dict['pkhex_core_commit']}`")
     embed.add_field(name="AutoMod.Core Commit", value=f"`{bot.persistent_vars_dict['alm_core_commit']}`")
+    embed.add_field(name="Bot Commit", value=f"[{bot.persistent_vars_dict['last_commit'][:7]}](https://github.com/FlagBrew/FlagBot/commit/{bot.persistent_vars_dict['last_commit']})")
     embed.set_author(name="GriffinG1", url='https://github.com/GriffinG1', icon_url='https://avatars0.githubusercontent.com/u/28538707')
     total_mem = psutil.virtual_memory().total / float(1 << 30)
     used_mem = psutil.Process().memory_info().rss / float(1 << 20)
