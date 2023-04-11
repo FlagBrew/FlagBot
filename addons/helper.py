@@ -135,6 +135,9 @@ def faq_decorator(func):
         elif ctx.invoked_with == "azure":
             faq_doc = "pksm"
             faq_item = "11"
+        elif ctx.invoked_with == "trades":
+            faq_doc = "pksm"
+            faq_item = "12"
 
         # Checkpoint FAQ items
         elif ctx.invoked_with in ("addcode", "fixcheat"):
