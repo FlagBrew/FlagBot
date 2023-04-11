@@ -111,5 +111,15 @@
             }
         ],
         "type": "rich"
+    },
+    {
+        "fields": [
+            {
+                "inline": false,
+                "name": "How do I evolve a trade evo in PKSM?",
+                "value": "Change the species, then add HT (CT in PKSM) info to the pokemon. The value added doesn't matter, as it will change to your save's HT info upon loading in game."
+            }
+        ],
+        "type": "rich"
     }
 ]

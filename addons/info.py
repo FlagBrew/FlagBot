@@ -135,6 +135,7 @@ class Info(commands.Cog):
         "wc3",  # 9 - gen 3 events
         "romhacks",  # 10 - rom hack support
         "azure",  # 11
+        "trades",  # 12 - trade evos
 
         # Checkpoint FAQ items
         "addcode", "fixcheat",  # 1 - pls add cheat
