@@ -4,7 +4,7 @@ import discord
 import secrets
 import qrcode
 import io
-import sys
+import time
 import json
 import addons.helper as helper
 from discord.ext import commands
@@ -267,6 +267,9 @@ class Events(commands.Cog):
                     await self.bot.activity_logs_channel.send(embed=embed)
                 except (discord.Forbidden, discord.DiscordServerError):
                     pass
+                except discord.RateLimited:
+                    await time.sleep(2)
+                    await self.bot.activity_logs_channel.send(embed=embed)
                 except Exception as e:
                     if len(before.activities) == 0 or len(after.activities) == 0:
                         return
