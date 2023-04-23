@@ -6,6 +6,7 @@ import qrcode
 import io
 import time
 import json
+import re
 import addons.helper as helper
 from discord.ext import commands
 from datetime import timedelta
@@ -80,8 +81,8 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if self.bot.is_beta:
-            return
+        # if self.bot.is_beta:
+        #     return
         # auto ban on 15+ pings
         if len(message.mentions) > 15:
             await message.delete()
@@ -102,6 +103,16 @@ class Events(commands.Cog):
                     attch = await attachment.to_file()
                     attachments.append(attch)
             embed = discord.Embed(description=message.content) if message.content != "" else None
+            invites = re.findall(r"(discord\.gg)\/([\w\d]+)", message.content)
+            if invites is not None:
+                for inv in invites:
+                    inv = "/".join(inv)
+                    print(inv)
+                    try:
+                        inv = await self.bot.fetch_invite(inv)
+                    except discord.NotFound:
+                        continue
+                    embed.add_field(name="Invite found in message", value=f"Guild name: `{inv.guild.name}`", inline=False)
             await self.bot.dm_logs_channel.send(f"New DM received from {message.author} | {message.author.id}.", embed=embed, files=attachments)
 
     @commands.Cog.listener()
