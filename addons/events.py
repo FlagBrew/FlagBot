@@ -238,6 +238,8 @@ class Events(commands.Cog):
     async def on_presence_update(self, before, after):
         if not self.bot.ready or self.bot.is_beta:
             return
+        if 1:
+            return  # Temporarily disable this
         blacklist = [
             "Spotify",
             "Google Chrome",
