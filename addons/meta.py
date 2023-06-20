@@ -197,7 +197,7 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             proc = await asyncio.create_subprocess_shell("git pull", stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
         except asyncio.TimeoutError:
             return await message.edit(content="Timed out while pulling from git.")
-        resp = await proc.communicate()
+        resp = "\n".join(list(await proc.communicate()))
         if resp == b'Already up to date.\n':
             return await message.edit(content=f"```{resp.decode('utf-8')}```")
         await message.edit(content=f"Commits pulled!\n```{resp.decode('utf-8')}```")
