@@ -195,12 +195,11 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         message = await ctx.send("Pulling from git...")
         proc = await asyncio.create_subprocess_shell("git pull", stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
         stdout, stderr = await proc.communicate()
-        print(stdout.decode('utf-8'), stderr.decode('utf-8'))
         if stderr:
-            return await message.edit(content=f"Error pulling commits:\n```{stderr.decode('utf-8')}```")
-        elif stdout == b'Already up to date.\n':
+            await self.bot.err_logs_channel.send(f"```Git pull stderr:\n{stderr.decode('utf-8')}```")
+        if stdout == b'Already up to date.\n':
             return await message.edit(content=f"```{stdout.decode('utf-8')}```")
-        await message.edit(content=f"Commits pulled!:\n```{stdout.decode('utf-8')}```")
+        await message.edit(content=f"Commits pulled!\n```{stdout.decode('utf-8')}```")
         await self.bot.session.close()
         await self.bot.close()
 
