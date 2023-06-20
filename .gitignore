@@ -2,12 +2,12 @@
 *.pyc
 .vscode
 config.py
-restart.txt
-warns.json
-faqdm.json
-disabled_commands.json
 addons/devtools.py
-submitted_hashes.json
+saves/xmls/*
+saves/warns.json
+saves/faqdm.json
+saves/disabled_commands.json
+saves/submitted_hashes.json
 saves/mutes.json
 saves/gpss-bans.json
 saves/layout.json
@@ -15,4 +15,3 @@ saves/new_layout.json
 saves/banned_phrases.json
 saves/persistent_vars.json
 saves/role_mentions.json
-saves/xmls/*
