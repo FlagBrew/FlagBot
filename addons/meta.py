@@ -193,13 +193,15 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         if ctx.author not in (self.bot.allen, self.bot.creator):
             raise commands.CheckFailure()
         message = await ctx.send("Pulling from git...")
-        proc = await asyncio.create_subprocess_shell("git pull", stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
-        stdout, stderr = await proc.communicate()
-        if stderr:
-            await self.bot.err_logs_channel.send(f"```Git pull stderr:\n{stderr.decode('utf-8')}```")
-        if stdout == b'Already up to date.\n':
-            return await message.edit(content=f"```{stdout.decode('utf-8')}```")
-        await message.edit(content=f"Commits pulled!\n```{stdout.decode('utf-8')}```")
+        try:
+            proc = await asyncio.create_subprocess_shell("git pull", stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        except asyncio.TimeoutError:
+            return await message.edit(content="Timed out while pulling from git.")
+        resp = await proc.communicate()
+        if resp == b'Already up to date.\n':
+            return await message.edit(content=f"```{resp.decode('utf-8')}```")
+        await message.edit(content=f"Commits pulled!\n```{resp.decode('utf-8')}```")
+        await proc.wait()
         await self.bot.session.close()
         await self.bot.close()
 
