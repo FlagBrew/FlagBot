@@ -1,8 +1,0 @@
-dist: xenial
-language: python
-python:
-  - "3.9"
-script: # stolen from https://github.com/appu1232/Discord-Selfbot/blob/master/.travis.yml
-  - python -m compileall ./main.py
-  - python -m compileall ./addons
-  - python ./main.py --test-run 
