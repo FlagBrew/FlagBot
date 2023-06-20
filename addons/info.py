@@ -115,7 +115,7 @@ class Info(commands.Cog):
     @commands.command(aliases=['patron'])
     async def patreon(self, ctx):
         """Donate here"""
-        await ctx.send("You can donate to FlagBrew on Patreon here: <https://www.patreon.com/FlagBrew>.")
+        await ctx.send("You can donate to FlagBrew on Patreon here: <https://www.patreon.com/FlagBrew>.\nYou can also donate to Allen directly here: <https://ko-fi.com/fmcore>")
 
     faq_aliases = [  # putting this here to make keeping track ez, as well as updates
         'rtfm',  # general usage
