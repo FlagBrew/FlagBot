@@ -200,8 +200,8 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         resp = await proc.communicate()
         resp = "\n".join([x.decode('utf-8') for x in resp])
         if resp == b'Already up to date.\n':
-            return await message.edit(content=f"```{resp.decode('utf-8')}```")
-        await message.edit(content=f"Commits pulled!\n```{resp.decode('utf-8')}```")
+            return await message.edit(content=f"```{resp}```")
+        await message.edit(content=f"Commits pulled!\n```{resp}```")
         await proc.wait()
         await self.bot.session.close()
         await self.bot.close()
