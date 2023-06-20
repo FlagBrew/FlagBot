@@ -91,70 +91,45 @@ def restricted_to_bot(func):
 
 
 def faq_decorator(func):
+    faq_mapping = {
+        # General FAQ Items
+        "vc": ("general", "1"),
+        "entitled": ("general", "2"),
+        "rules": ("general", "4"),
+
+        # PKSM FAQ Items
+        "helplegal": ("pksm", "1"),
+        "lgpe": ("pksm", "2"),
+        "swsh": ("pksm", "2"),
+        "bdsp": ("pksm", "2"),
+        "pla": ("pksm", "2"),
+        "scvi": ("pksm", "2"),
+        "switchsupport": ("pksm", "2"),
+        "emulator": ("pksm", "3"),
+        "scripts": ("pksm", "4"),
+        "universal": ("pksm", "4"),
+        "badqr": ("pksm", "6"),
+        "sendpkx": ("pksm", "7"),
+        "wc3": ("pksm", "9"),
+        "romhacks": ("pksm", "10"),
+        "azure": ("pksm", "11"),
+        "trades": ("pksm", "12"),
+
+        # Checkpoint FAQ Items
+        "addcode": ("checkpoint", "1"),
+        "fixcheat": ("checkpoint", "1"),
+        "wheregame": ("checkpoint", "2"),
+        "applet": ("checkpoint", "3"),
+        "pkcrash": ("checkpoint", "4"),
+        "updatedb": ("checkpoint", "6")
+    }
+
     @functools.wraps(func)
     async def wrapper(self, ctx, faq_doc, faq_item):
-        if ctx.invoked_with in ("faq", "rtfm"):
-            pass
-
-        # General FAQ items
-        elif ctx.invoked_with == "vc":
-            faq_doc = "general"
-            faq_item = "1"
-        elif ctx.invoked_with == "entitled":
-            faq_doc = "general"
-            faq_item = "2"
-        elif ctx.invoked_with == "rules":
-            faq_doc = "general"
-            faq_item = "4"
-
-        # PKSM FAQ items
-        elif ctx.invoked_with == "helplegal":
-            faq_doc = "pksm"
-            faq_item = "1"
-        elif ctx.invoked_with in ("lgpe", "swsh", "bdsp", "pla", "scvi", "switchsupport"):
-            faq_doc = "pksm"
-            faq_item = "2"
-        elif ctx.invoked_with == "emulator":
-            faq_doc = "pksm"
-            faq_item = "3"
-        elif ctx.invoked_with in ("scripts", "universal"):
-            faq_doc = "pksm"
-            faq_item = "4"
-        elif ctx.invoked_with == "badqr":
-            faq_doc = "pksm"
-            faq_item = "6"
-        elif ctx.invoked_with == "sendpkx":
-            faq_doc = "pksm"
-            faq_item = "7"
-        elif ctx.invoked_with == "wc3":
-            faq_doc = "pksm"
-            faq_item = "9"
-        elif ctx.invoked_with == "romhacks":
-            faq_doc = "pksm"
-            faq_item = "10"
-        elif ctx.invoked_with == "azure":
-            faq_doc = "pksm"
-            faq_item = "11"
-        elif ctx.invoked_with == "trades":
-            faq_doc = "pksm"
-            faq_item = "12"
-
-        # Checkpoint FAQ items
-        elif ctx.invoked_with in ("addcode", "fixcheat"):
-            faq_doc = "checkpoint"
-            faq_item = "1"
-        elif ctx.invoked_with == "wheregame":
-            faq_doc = "checkpoint"
-            faq_item = "2"
-        elif ctx.invoked_with == "applet":
-            faq_doc = "checkpoint"
-            faq_item = "3"
-        elif ctx.invoked_with == "pkcrash":
-            faq_doc = "checkpoint"
-            faq_item = "4"
-        elif ctx.invoked_with == "updatedb":
-            faq_doc = "checkpoint"
-            faq_item = "6"
+        if ctx.invoked_with in faq_mapping and ctx.invoked_with not in ("faq", "rtfm"):
+            faq_doc, faq_item = faq_mapping[ctx.invoked_with]
+        elif ctx.invoked_with in ("faq", "rtfm"):
+            faq_doc, faq_item = faq_doc, faq_item
         await func(self=self, ctx=ctx, faq_doc=faq_doc, faq_item=faq_item)
     return wrapper
 
