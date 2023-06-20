@@ -183,6 +183,11 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             await ctx.guild.edit(icon=r_data)
         await ctx.send("Reverted back the channel list.")
 
+    @commands.command()
+    async def nostupid(self, ctx):
+        """This is a clear violation of the no stupid policy"""
+        await ctx.send("https://cdn.discordapp.com/attachments/658726241288847361/1113893566075383818/image.png")
+
 
 async def setup(bot):
     await bot.add_cog(Meta(bot))

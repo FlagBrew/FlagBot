@@ -146,6 +146,9 @@ def faq_decorator(func):
         elif ctx.invoked_with == "wheregame":
             faq_doc = "checkpoint"
             faq_item = "2"
+        elif ctx.invoked_with == "applet":
+            faq_doc = "checkpoint"
+            faq_item = "3"
         elif ctx.invoked_with == "pkcrash":
             faq_doc = "checkpoint"
             faq_item = "4"
