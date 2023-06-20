@@ -199,7 +199,7 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             return await message.edit(content="Timed out while pulling from git.")
         resp = await proc.communicate()
         resp = "\n".join([x.decode('utf-8') for x in resp])
-        if resp == b'Already up to date.\n':
+        if resp.startswith("Already up to date."):
             return await message.edit(content=f"```{resp}```")
         await message.edit(content=f"Commits pulled!\n```{resp}```")
         await proc.wait()
