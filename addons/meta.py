@@ -188,6 +188,22 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         """This is a clear violation of the no stupid policy"""
         await ctx.send("https://cdn.discordapp.com/attachments/658726241288847361/1113893566075383818/image.png")
 
+    @commands.command()
+    async def gitpull(self, ctx):
+        if ctx.author not in (self.bot.allen, self.bot.creator):
+            raise commands.CheckFailure()
+        message = await ctx.send("Pulling from git...")
+        proc = await asyncio.create_subprocess_shell("git pull", stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        stdout, stderr = await proc.communicate()
+        print(stdout.decode('utf-8'), stderr.decode('utf-8'))
+        if stderr:
+            return await message.edit(content=f"Error pulling commits:\n```{stderr.decode('utf-8')}```")
+        elif stdout == b'Already up to date.\n':
+            return await message.edit(content=f"```{stdout.decode('utf-8')}```")
+        await message.edit(content=f"Commits pulled!:\n```{stdout.decode('utf-8')}```")
+        await self.bot.session.close()
+        await self.bot.close()
+
 
 async def setup(bot):
     await bot.add_cog(Meta(bot))
