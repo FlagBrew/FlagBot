@@ -19,6 +19,10 @@ class Warning(commands.Cog):
     async def warn(self, ctx, target: discord.Member, *, reason="No reason was given"):
         """Warns a user. Kicks at 3 and 4 warnings, bans at 5"""
         has_attch = bool(ctx.message.attachments)
+        if target == ctx.message.author:
+            return await ctx.send("You can't warn yourself, obviously")
+        elif any(role for role in self.bot.protected_roles if role in target.roles):
+            return await ctx.send("You can't warn a staff member!")
         try:
             self.bot.warns_dict[str(target.id)]
         except KeyError:
