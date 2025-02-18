@@ -232,7 +232,7 @@ class Info(commands.Cog):
 
     @commands.command(aliases=['readthedocs', 'docs', '<:wikidiot:558815031836540940>'])
     async def wiki(self, ctx, option=""):
-        """Sends wiki link. storage, editor, events, scripts, bag, config, gameid, faq, gpss, hex, bridge, and gbainject are all options"""
+        """Sends wiki link. storage, editor, events, scripts, bag, config, gameid, faq, hex, bridge, and gbainject are all options"""
         option = option.lower()
         if option == "storage":
             extra_info = " entry for the storage feature"
@@ -258,9 +258,6 @@ class Info(commands.Cog):
         elif option == "faq":
             extra_info = " frequently asked questions"
             wiki_link_ext = "/FAQs"
-        elif option == "gpss":
-            extra_info = " entry for the GPSS"
-            wiki_link_ext = "/GPSS"
         elif option == "hex" or option == "hexeditor":
             extra_info = " entry for the hex editor"
             wiki_link_ext = "/Hex-Editor"

@@ -54,7 +54,7 @@
             {
                 "inline": false,
                 "name": "Why doesn't PKSM scan this QR?",
-                "value": "**GPSS**: QRs from the [GPSS](https://flagbrew.org/gpss) (or <#586728153985056801>) have to be scanned in the GPSS section of PKSM. This can be accessed by opening `Storage`, then selecting the wifi button on the bottom screen, then pressing `X`.\n**PKX/PB7**: The file you're scanning *must* be of the same generation as the currently loaded save. This scanner is accessed by opening `Editor`, then pressing `L + R`. *Please note*: PK7 files are very finicky due to their size, and as such may need multiple tries.\n**Wonder Card**: These are scanned by opening `Events`, then pressing `L + R`."
+                "value": "**PKX/PB7**: The file you're scanning *must* be of the same generation as the currently loaded save. This scanner is accessed by opening `Editor`, then pressing `L + R`. *Please note*: PK7 files are very finicky due to their size, and as such may need multiple tries.\n**Wonder Card**: These are scanned by opening `Events`, then pressing `L + R`."
             }
         ],
         "type": "rich"
@@ -64,7 +64,7 @@
             {
                 "inline": true,
                 "name": "How can I send Pokemon to PKSM from my PC?",
-                "value": "**1**: (*Recommended*) Upload the pokemon to the GPSS using either the `.gpsspost` command in <#379201279479513100>, or through architdate's [Auto Legality Plugin](https://github.com/architdate/PKHeX-Plugins) for PKHeX.\n**2**: Create a QR code from the pkx file using PKHeX by right clicking on the sprite while viewing a Pokemon, and selecting `QR!`. Then, scan the QR code by opening `Editor` and pressing `L + R`.\n**3**: Place the pkx files you want to add at `/3ds/PKSM/inject/` and run the universal `injector.c` script."
+                "value": "**1**: Create a QR code from the pkx file using PKHeX by right clicking on the sprite while viewing a Pokemon, and selecting `QR!`. Then, scan the QR code by opening `Editor` and pressing `L + R`.\n**2**: Place the pkx files you want to add at `/3ds/PKSM/inject/` and run the universal `injector.c` script."
             }
         ],
         "type": "rich"
