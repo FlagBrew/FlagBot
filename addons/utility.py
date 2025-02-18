@@ -228,7 +228,7 @@ class Utility(commands.Cog):
     @commands.command(hidden=True)
     async def togglecommand(self, ctx, command):
         """Allows disabling of commands. Restricted to Griffin and Allen"""
-        if ctx.author not in (self.bot.creator, self.bot.allen):
+        if ctx.author not in (self.bot.creator, self.bot.allen, self.bot.bernardo):
             raise commands.errors.CheckFailure()
         elif command == "togglecommand":
             return await ctx.send("This command cannot be disabled.")

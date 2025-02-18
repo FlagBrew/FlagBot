@@ -190,7 +190,7 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
 
     @commands.command()
     async def gitpull(self, ctx):
-        if ctx.author not in (self.bot.allen, self.bot.creator):
+        if ctx.author not in (self.bot.allen, self.bot.creator, self.bot.bernardo):
             raise commands.CheckFailure()
         message = await ctx.send("Pulling from git...")
         try:
