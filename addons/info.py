@@ -112,11 +112,6 @@ class Info(commands.Cog):
         embed.set_author(name=author, url=f"https://github.com/{author}", icon_url="https://avatars.githubusercontent.com/u/42673825")
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['patron'])
-    async def patreon(self, ctx):
-        """Donate here"""
-        await ctx.send("You can donate to FlagBrew on Patreon here: <https://www.patreon.com/FlagBrew>.\nYou can also donate to Allen directly here: <https://ko-fi.com/fmcore>")
-
     faq_aliases = [  # putting this here to make keeping track ez, as well as updates
         'rtfm',  # general usage
 
