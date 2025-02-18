@@ -313,7 +313,8 @@ class Events(commands.Cog):
         auto_thread_joins = [
             self.bot.creator,
             self.bot.allen,
-            self.bot.pie
+            self.bot.pie,
+            self.bot.bernardo
         ]
         for member in auto_thread_joins:
             await thread.add_user(member)

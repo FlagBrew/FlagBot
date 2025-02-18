@@ -81,7 +81,7 @@ def restricted_to_bot(func):
     async def wrapper(*args, **kwargs):
         func_self = args[0]  # assume self is at args[0]
         ctx = args[1]  # and assume ctx is at args[1]
-        if ctx.author in (func_self.bot.allen, func_self.bot.creator, func_self.bot.pie):
+        if ctx.author in (func_self.bot.allen, func_self.bot.creator, func_self.bot.pie, func_self.bot.bernardo):
             pass
         elif ctx.channel not in (func_self.bot.bot_channel, func_self.bot.bot_channel2) and ctx.guild.id == 278222834633801728:
             await ctx.message.delete()
