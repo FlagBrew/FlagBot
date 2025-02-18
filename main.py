@@ -281,7 +281,6 @@ async def on_ready():
                     bot.crash_dump_channel = discord.utils.get(guild.channels, id=721444652481249372)
                     bot.crash_log_channel = discord.utils.get(guild.channels, id=721465461518106624)
                     bot.activity_logs_channel = discord.utils.get(guild.channels, id=723705005122519071)
-                    bot.starboard_channel = discord.utils.get(guild.channels, id=917235490590187531)
                     with open('saves/faqdm.json', 'r') as file:
                         bot.dm_list = json.load(file)
 
@@ -360,7 +359,6 @@ cogs = [
     'addons.mod',
     'addons.pkhex',
     'addons.pyint',
-    'addons.starboard',
     'addons.utility',
     'addons.warns'
 ]
@@ -421,7 +419,6 @@ async def reload(ctx):
         "Moderation": "mod",
         "pkhex": "pkhex",
         "PythonInterpreter": "pyint",
-        "Starboard": "starboard",
         "Utility": "utility",
         "Warning": "warns"
     }
