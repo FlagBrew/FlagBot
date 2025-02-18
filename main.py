@@ -108,7 +108,6 @@ elif not is_using_env_args:
 else:
     bot.is_mongodb = os.getenv("IS_MONGODB")
     bot.flagbrew_url = os.getenv("FLAGBREW_URL")
-bot.gpss_url = bot.flagbrew_url
 
 if not os.path.exists('saves/warns.json'):
     with open('saves/warns.json', 'w') as file:
@@ -127,12 +126,6 @@ if not os.path.exists('saves/mutes.json'):
         json.dump({}, file, indent=4)
 with open('saves/mutes.json', 'r') as file:
     bot.mutes_dict = json.load(file)
-
-if not os.path.exists('saves/gpss-bans.json'):
-    with open('saves/gpss-bans.json', 'w') as file:
-        json.dump([], file, indent=4)
-with open('saves/gpss-bans.json', 'r') as file:
-    bot.gpss_bans_array = json.load(file)
 
 if not os.path.exists('saves/persistent_vars.json'):
     with open('saves/persistent_vars.json', 'w') as file:
@@ -275,7 +268,6 @@ async def on_ready():
                     bot.flagbrew_team_role = discord.utils.get(guild.roles, id=758286639784525845)
                     bot.discord_moderator_role = discord.utils.get(guild.roles, id=396988600480301059)
                     bot.mute_role = discord.utils.get(guild.roles, id=519566020315185163)
-                    bot.gpss_banned_role = discord.utils.get(guild.roles, id=997256131841884241)
                     bot.protected_roles = (discord.utils.get(guild.roles, id=279598900799864832), bot.discord_moderator_role, bot.flagbrew_team_role, discord.utils.get(guild.roles, id=381053929389031424))
                     bot.interpreter_logs_channel = discord.utils.get(guild.channels, id=672553506690826250)
                     bot.crash_dump_channel = discord.utils.get(guild.channels, id=721444652481249372)
@@ -354,7 +346,6 @@ async def on_ready():
 # loads extensions
 cogs = [
     'addons.events',
-    'addons.gpss',
     'addons.info',
     'addons.meta',
     'addons.mod',
@@ -414,7 +405,6 @@ async def reload(ctx):
     addon_dict = {
         "DevTools": "devtools",  # not loaded by default...
         "Events": "events",
-        "gpss": "gpss",
         "Info": "info",
         "Meta": "meta",
         "Moderation": "mod",

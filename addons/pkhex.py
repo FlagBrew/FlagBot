@@ -236,6 +236,7 @@ class pkhex(commands.Cog):
         except Exception as exception:
             return await ctx.send(f"There was an error showing the data for this pokemon. {self.bot.creator.mention}, {self.bot.pie.mention}, or {self.bot.allen.mention} please check this out!\n{ctx.author.mention} please do not delete the file. Exception below.\n\n```{exception}```")
 
+    # TODO: remove all references to the GPSS as it is not online anymore 
     @commands.command(name='qr')
     @restricted_to_bot
     async def gen_pkmn_qr(self, ctx, data=""):
