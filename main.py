@@ -349,7 +349,7 @@ cogs = [
     'addons.info',
     'addons.meta',
     'addons.mod',
-    'addons.pkhex',
+    # 'addons.pkhex',
     'addons.pyint',
     'addons.utility',
     'addons.warns'
@@ -408,7 +408,7 @@ async def reload(ctx):
         "Info": "info",
         "Meta": "meta",
         "Moderation": "mod",
-        "pkhex": "pkhex",
+        # "pkhex": "pkhex",
         "PythonInterpreter": "pyint",
         "Utility": "utility",
         "Warning": "warns"
@@ -473,8 +473,8 @@ async def about(ctx):
     embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in the FlagBrew server.\n"
                          "You can view the source code [here](https://github.com/FlagBrew/FlagBot).\n"
                          f"Written by {bot.creator.mention}.")
-    embed.add_field(name="PKHeX.Core Commit", value=f"`{bot.persistent_vars_dict['pkhex_core_commit']}`")
-    embed.add_field(name="AutoMod.Core Commit", value=f"`{bot.persistent_vars_dict['alm_core_commit']}`")
+    # embed.add_field(name="PKHeX.Core Commit", value=f"`{bot.persistent_vars_dict['pkhex_core_commit']}`")
+    # embed.add_field(name="AutoMod.Core Commit", value=f"`{bot.persistent_vars_dict['alm_core_commit']}`")
     embed.add_field(name="Bot Commit", value=f"[{bot.persistent_vars_dict['last_commit'][:7]}](https://github.com/FlagBrew/FlagBot/commit/{bot.persistent_vars_dict['last_commit']})")
     embed.set_author(name="GriffinG1", url='https://github.com/GriffinG1', icon_url='https://avatars0.githubusercontent.com/u/28538707')
     total_mem = psutil.virtual_memory().total / float(1 << 30)
@@ -483,7 +483,7 @@ async def about(ctx):
     await ctx.send(embed=embed)
 
 
-@bot.command(name='uccv', hidden=True)
+@bot.command(name='uccv', hidden=True, enabled=False)  # disabled due to pkhex core being inactive
 async def update_core_commit_vars(ctx, pkhex_core_commit: str, alm_core_commit: str = ""):
     """Changes PKHeX and ALM core commit values in persistent_vars to provided"""
     if ctx.author not in (bot.creator, bot.allen, bot.bernardo):
