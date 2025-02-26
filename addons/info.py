@@ -68,7 +68,7 @@ class Info(commands.Cog):
                 # img, version = await self.gen_qr(self, "Checkpoint")
                 embed.description += "\nCheckpoint 3.8.0 is currently broken on 3DS. Please use 3.7.4 found [here](https://github.com/FlagBrew/Checkpoint/releases/tag/v3.7.4)."
                 qr = qrcode.QRCode(version=None)
-                qr.add_data("https://cdn.discordapp.com/attachments/377425394866847744/942325638960934952/qr.png")
+                qr.add_data("https://github.com/BernardoGiordano/Checkpoint/releases/download/v3.7.4/Checkpoint.cia")
                 qr.make(fit=True)
                 qr_img = qr.make_image(fill_color="black", back_color="white")
                 bytes = io.BytesIO()
