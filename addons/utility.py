@@ -267,8 +267,8 @@ class Utility(commands.Cog):
         elif message is None and len(ctx.message.attachments) == 0:
             return await ctx.send("You must provide a message or attachment.")
         embed = discord.Embed()
-        if len(message.content) > 0:
-            embed.description = message.content
+        if len(message) > 0:
+            embed.description = message
         if len(ctx.message.attachments) > 0:
             attachments = []
             for attachment in ctx.message.attachments:
