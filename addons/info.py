@@ -112,40 +112,20 @@ class Info(commands.Cog):
         embed.set_author(name=author, url=f"https://github.com/{author}", icon_url="https://avatars.githubusercontent.com/u/42673825")
         await ctx.send(embed=embed)
 
-    faq_aliases = [  # putting this here to make keeping track ez, as well as updates
-        'rtfm',  # general usage
-
-        # General FAQ items
-        'vc',  # 1 - vc support
-        'entitled',  # 2 - new releases
-        'rules',  # 4 - toggling roles
-
-        # PKSM FAQ items
-        "helplegal",  # 1 - legality
-        "lgpe", "swsh", "bdsp", "pla", "scvi", "switchsupport",  # 2 - switch support
-        "emulator",  # 3 - emulator cross-use
-        "scripts", "universal",  # 4 - how do universal scripts work
-        "badqr",  # 6 - why QR no worky
-        "sendpkx",  # 7 - sending pkx files
-        "wc3",  # 9 - gen 3 events
-        "romhacks",  # 10 - rom hack support
-        "azure",  # 11
-        "trades",  # 12 - trade evos
-
-        # Checkpoint FAQ items
-        "addcode", "fixcheat",  # 1 - pls add cheat
-        "wheregame",  # 2 - missing games
-        "applet",  # 3 - applet mode issues
-        "pkcrash",  # 4 - cheat crash in pkmn games
-        "updatedb",  # 6 - how to update the cheat db
-    ]
-
     @commands.command(aliases=['faqaliases', 'faqalias', 'lfaq'])
     async def list_faq_aliases(self, ctx):
         """Lists all available aliases for the faq command."""
         embed = discord.Embed(title="FAQ Aliases")
-        embed.description = f"`{'`, `'.join(self.faq_aliases)}`"
+        # embed.description = f"`{'`, `'.join(self.faq_aliases)}`"
+        for group in helper.faq_mapping:
+            for title in group:
+                embed.add_field(name=title, value=f"`{'`, `'.join(group[title])}`", inline=False)
         await ctx.send(embed=embed)
+            
+    faq_aliases = []
+    for group in helper.faq_mapping:
+        for title in group:
+            faq_aliases.extend(group[title])
 
     @commands.command(aliases=faq_aliases)
     @helper.spam_limiter

@@ -6,6 +6,52 @@ from datetime import datetime
 from discord.ext import commands
 
 
+faq_mapping = [
+    {
+        # General FAQ Items
+        "general": {    
+            "vc": 1,
+            "entitled": 2,
+            "rules": 4,
+        }
+    },
+    {
+        # PKSM FAQ Items
+        "pksm": {
+            "helplegal": 1,
+            "lgpe": 2,
+            "swsh": 2,
+            "bdsp": 2,
+            "pla": 2,
+            "scvi": 2,
+            "switchsupport": 2,
+            "emulator": 3,
+            "scripts": 4,
+            "universal": 4,
+            "badqr": 6,
+            "sendpkx": 6,
+            "wc3": 8,
+            "romhacks": 9,
+            "azure": 10,
+            "trades": 11,
+            "gpss": 12,
+            "apiurl": 12,
+        }
+    },
+    {
+        # Checkpoint FAQ Items
+        "checkpoint": {
+            "addcode": 1,
+            "fixcheat": 1,
+            "wheregame": 2,
+            "applet": 3,
+            "pkcrash": 4,
+            "updatedb": 6
+        }
+    }
+]
+
+
 async def check_mute_expiry(mutes_dict, member):
     if not str(member.id) in mutes_dict.keys():
         return None
@@ -91,43 +137,15 @@ def restricted_to_bot(func):
 
 
 def faq_decorator(func):
-    faq_mapping = {
-        # General FAQ Items
-        "vc": ("general", "1"),
-        "entitled": ("general", "2"),
-        "rules": ("general", "4"),
-
-        # PKSM FAQ Items
-        "helplegal": ("pksm", "1"),
-        "lgpe": ("pksm", "2"),
-        "swsh": ("pksm", "2"),
-        "bdsp": ("pksm", "2"),
-        "pla": ("pksm", "2"),
-        "scvi": ("pksm", "2"),
-        "switchsupport": ("pksm", "2"),
-        "emulator": ("pksm", "3"),
-        "scripts": ("pksm", "4"),
-        "universal": ("pksm", "4"),
-        "badqr": ("pksm", "6"),
-        "sendpkx": ("pksm", "7"),
-        "wc3": ("pksm", "9"),
-        "romhacks": ("pksm", "10"),
-        "azure": ("pksm", "11"),
-        "trades": ("pksm", "12"),
-
-        # Checkpoint FAQ Items
-        "addcode": ("checkpoint", "1"),
-        "fixcheat": ("checkpoint", "1"),
-        "wheregame": ("checkpoint", "2"),
-        "applet": ("checkpoint", "3"),
-        "pkcrash": ("checkpoint", "4"),
-        "updatedb": ("checkpoint", "6")
-    }
-
     @functools.wraps(func)
     async def wrapper(self, ctx, faq_doc, faq_item):
-        if ctx.invoked_with in faq_mapping and ctx.invoked_with not in ("faq", "rtfm"):
-            faq_doc, faq_item = faq_mapping[ctx.invoked_with]
+        if ctx.invoked_with not in ("faq", "rtfm"):
+            index = 0
+            for doc in faq_mapping:
+                if ctx.invoked_with in list(list(val.keys()) for val in doc.values())[0]:
+                    faq_doc = list(doc.keys())[0]
+                    faq_item = str(faq_mapping[index][faq_doc][ctx.invoked_with])
+                index += 1
         elif ctx.invoked_with in ("faq", "rtfm"):
             faq_doc, faq_item = faq_doc, faq_item
         await func(self=self, ctx=ctx, faq_doc=faq_doc, faq_item=faq_item)
