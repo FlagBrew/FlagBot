@@ -71,7 +71,7 @@ class PythonInterpreter(commands.Cog):
                 else:
                     await ctx.send(result)
                     await self.bot.interpreter_logs_channel.send(f"Result: {result}")
-                    for user in (self.bot.creator, self.bot.allen, self.bot.pie):
+                    for user in (self.bot.creator, self.bot.bernardo):
                         await user.send(f"Result: {result}")
 
     @commands.group(hidden=True)
