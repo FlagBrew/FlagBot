@@ -14,6 +14,7 @@ import validators
 import lxml.etree
 import math
 import addons.helper as helper
+import asyncio
 
 
 class Utility(commands.Cog):
@@ -52,8 +53,10 @@ class Utility(commands.Cog):
         """Allows user to toggle update roles. Available roles: see #welcome-and-rules, as well as 'bot'"""
         user = ctx.message.author
         role = role.lower()
-        if role not in ('3ds', 'switch', 'bot'):
+        if role not in ('3ds', 'switch', 'bot', 'flagbrew'):
             return await ctx.send(f"{user.mention} That isn't a toggleable role!")
+        if role == 'flagbrew':  # temp code for conversion
+            role = '3ds'
         had_role = await self.toggleroles(ctx, discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict[role])), user)
         if had_role:
             info_string = f"You will no longer be pinged for {role} updates."
@@ -733,6 +736,25 @@ class Utility(commands.Cog):
                 with open(f'saves/xmls/{console}.xml', 'wb') as file:
                     file.write(content)
         await ctx.send(f"Downloaded an updated xml for {console}.")
+
+    @commands.command()
+    @commands.has_any_role("Discord Moderator", "FlagBrew Team")
+    async def convert_update_roles(self, ctx):
+        """Temp command to convert 3ds updates to flagbrew updates, assign to all users with switch updates, and delete the switch updates role"""
+        ds_updates = ctx.guild.get_role(635910411312562189)
+        switch_updates = ctx.guild.get_role(635910676539506699)
+
+        await ds_updates.edit(name="FlagBrew Updates")
+        c = 0
+        tc = 0
+        for member in switch_updates.members:
+            if c >= 50:
+                await asyncio.sleep(1)  # Discord rate limits to 50 role changes per second, lets be safe
+                c = 0
+            await member.add_roles(ds_updates)
+            c += 1
+            tc += 1
+        print(f"Added {tc} members to the FlagBrew Updates role. Total switch updates members: {len(switch_updates.members)}. If this number is not the same, something went wrong. Otherwise, you can now delete the Switch Updates role.")
 
 
 async def setup(bot):
