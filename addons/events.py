@@ -145,7 +145,8 @@ class Events(commands.Cog):
                 embed.add_field(name="Jump URL", value=f"[Here]({before.jump_url})", inline=False)
                 if before.reference is not None:
                     ref = before.reference.resolved
-                    embed.add_field(name="Replied To:", value=f"[{ref.author}]({ref.jump_url}) ({ref.author.id})")
+                    if not ref:  # Weird bug where the resolved reference is None. Will look into this later
+                        embed.add_field(name="Replied To:", value=f"[{ref.author}]({ref.jump_url}) ({ref.author.id})")
                 if "file" in locals():
                     return await self.bot.logs_channel.send(f"Message by {before.author} ({before.author.id}) edited in channel {before.channel.mention}:", embed=embed, file=file)
                 await self.bot.logs_channel.send(f"Message by {before.author} ({before.author.id}) edited in channel {before.channel.mention}:", embed=embed)
