@@ -145,7 +145,7 @@ class Info(commands.Cog):
         faq_item = [item for item in faq_item if not item == ""]  # stupid? yes! do i care? no! (removes any blank entries which can cause errors w/ loop)
         last_index = -1  # used to ensure that faq entries used are next to each other during invoke
         invoked_faqs = []  # used to track faq entries to send
-        usage_dm = (self.bot.creator, self.bot.pie)  # Handles DMs on full command usage outside bot-channel
+        usage_dm = (self.bot.creator)  # Handles DMs on full command usage outside bot-channel
 
         # Handle specific FAQ entries display
         for faq_num in faq_item:

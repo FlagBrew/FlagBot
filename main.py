@@ -310,8 +310,6 @@ async def on_ready():
     bot.testing_logs_channel = discord.utils.get(testing_guild.channels, id=723665111469916242)
 
     bot.creator = await bot.fetch_user(177939404243992578)
-    bot.pie = await bot.fetch_user(307233052650635265)
-    bot.allen = await bot.fetch_user(211923158423306243)
     bot.bernardo = await bot.fetch_user(178851164538929163)
     bot.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
 
@@ -373,7 +371,7 @@ async def setup_cogs(bot):
 @bot.command(hidden=True)
 async def load(ctx, *, module):
     """Loads an addon"""
-    if ctx.author not in (ctx.guild.owner, bot.creator, bot.allen, bot.bernardo):
+    if ctx.author not in (bot.creator, bot.bernardo):
         raise commands.CheckFailure()
     try:
         await bot.load_extension(f"addons.{module}")
@@ -386,7 +384,7 @@ async def load(ctx, *, module):
 @bot.command(hidden=True)
 async def unload(ctx, *, module):
     """Unloads an addon"""
-    if ctx.author not in (ctx.guild.owner, bot.creator, bot.allen, bot.bernardo):
+    if ctx.author not in (bot.creator, bot.bernardo):
         raise commands.CheckFailure()
     try:
         await bot.unload_extension(f"addons.{module}")
@@ -399,7 +397,7 @@ async def unload(ctx, *, module):
 @bot.command(hidden=True)
 async def reload(ctx):
     """Reloads an addon."""
-    if ctx.author not in (ctx.guild.owner, bot.creator, bot.allen, bot.bernardo):
+    if ctx.author not in (bot.creator, bot.bernardo):
         raise commands.CheckFailure()
     errors = ""
     addon_dict = {
@@ -453,7 +451,7 @@ async def ping(ctx):
 @bot.command(hidden=True, aliases=["shutdown"])
 async def restart(ctx):
     """Restarts the bot."""
-    if ctx.author not in (ctx.guild.owner, bot.creator, bot.allen, bot.bernardo):
+    if ctx.author not in (ctx.guild.owner, bot.creator, bot.bernardo):
         raise commands.CheckFailure()
     if not bot.is_beta:
         await ctx.send("Restarting...")
@@ -486,7 +484,7 @@ async def about(ctx):
 @bot.command(name='uccv', hidden=True, enabled=False)  # disabled due to pkhex core being inactive
 async def update_core_commit_vars(ctx, pkhex_core_commit: str, alm_core_commit: str = ""):
     """Changes PKHeX and ALM core commit values in persistent_vars to provided"""
-    if ctx.author not in (bot.creator, bot.allen, bot.bernardo):
+    if ctx.author not in (bot.creator, bot.bernardo):
         raise commands.CheckFailure()
     if pkhex_core_commit == bot.persistent_vars_dict["pkhex_core_commit"] and alm_core_commit == bot.persistent_vars_dict["alm_core_commit"]:
         return await ctx.send("No change in commits.")
