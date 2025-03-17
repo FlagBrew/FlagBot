@@ -754,7 +754,12 @@ class Utility(commands.Cog):
             await member.add_roles(ds_updates)
             c += 1
             tc += 1
-        print(f"Added {tc} members to the FlagBrew Updates role. Total switch updates members: {len(switch_updates.members)}. If this number is not the same, something went wrong. Otherwise, you can now delete the Switch Updates role.")
+        self.role_mentions_dict.pop("switch")
+        self.role_mentions_dict["flagbrew"] = ds_updates.id
+        self.role_mentions_dict.pop("3ds")
+        with open("saves/role_mentions.json", "w") as file:
+            json.dump(self.role_mentions_dict, file, indent=4)
+        print(f"Added {tc} members to the FlagBrew Updates role. Total switch updates members: {len(switch_updates.members)}. If this number is not the same, something went wrong. Otherwise, you can now delete the Switch Updates role.\nRole mentions dict and file have been updated.")
 
 
 async def setup(bot):
