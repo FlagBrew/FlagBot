@@ -252,7 +252,10 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         except Exception as e:
             return await ctx.send(f"An error occurred while trying to get the wiki thread and message. Please ensure the thread ID has been set via the top-level command and there's a message set.\n\n```{e}```")
         embed = msg.embeds[0]
-        embed.description += f"\n- {item}"
+        if not item.startswith("- "):
+            embed.description += f"\n- {item}"
+        else:
+            embed.description += f"\n{item}"
         await msg.edit(embed=embed)
         await ctx.send("Successfully added the item to the wiki post.", reference=msg)
     
@@ -266,15 +269,9 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             return await ctx.send(f"An error occurred while trying to get the wiki thread and message. Please ensure the thread ID has been set via the top-level command and there's a message set.\n\n```{e}```")
         embed = msg.embeds[0]
         items = embed.description.split("\n")
-        for iter in items:
-            print(iter)
-            if iter == f"- {item}" or iter == item:
-                try:
-                    items.remove(f"- {iter}")
-                except ValueError:
-                    items.remove(iter)
-                break
-        embed.description = "\n- ".join(items)
+        if not f"- {item}" in items:
+            return await ctx.send("The item you're trying to delete isn't there.")
+        embed.description = "\n".join(items)
         await msg.edit(embed=embed)
         await ctx.send("Successfully removed the item from the wiki post.", reference=msg)
 
