@@ -66,13 +66,19 @@ class PythonInterpreter(commands.Cog):
                 if len(str(result)) > 1900:
                     await ctx.send("Large output:", file=discord.File(io.BytesIO(result.encode("utf-8")), filename="output.txt"))
                     await self.bot.interpreter_logs_channel.send("Large Result:", file=discord.File(io.BytesIO(result.encode("utf-8")), filename="output.txt"))
-                    for user in (self.bot.creator, self.bot.allen, self.bot.pie):
-                        await user.send("Large Result:", file=discord.File(io.BytesIO(result.encode("utf-8")), filename="output.txt"))
+                    for user in (self.bot.creator, self.bot.bernardo):
+                        try:
+                            await user.send("Large Result:", file=discord.File(io.BytesIO(result.encode("utf-8")), filename="output.txt"))
+                        except discord.Forbidden:
+                            pass
                 else:
                     await ctx.send(result)
                     await self.bot.interpreter_logs_channel.send(f"Result: {result}")
                     for user in (self.bot.creator, self.bot.bernardo):
-                        await user.send(f"Result: {result}")
+                        try:
+                            await user.send(f"Result: {result}")
+                        except discord.Forbidden:
+                            pass
 
     @commands.group(hidden=True)
     @commands.has_any_role("Bot Dev", "FlagBrew Team", "Discord Moderator")
@@ -83,8 +89,11 @@ class PythonInterpreter(commands.Cog):
         log_msg = self.cleanup_code(msg).replace('`', r'\`')
         if not log_msg[0:3] == '```':
             log_msg = '```' + log_msg + '```'
-        for user in (self.bot.creator, self.bot.allen, self.bot.pie):
-            await user.send(f"Interpreter used by {ctx.author} in {ctx.channel.mention}:\n{log_msg}")
+        for user in (self.bot.creator, self.bot.bernardo):
+            try:
+                await user.send(f"Interpreter used by {ctx.author} in {ctx.channel.mention}:\n{log_msg}")
+            except discord.Forbidden:
+                pass
         env = {
             'bot': self.bot,
             'ctx': ctx,
@@ -101,8 +110,8 @@ class PythonInterpreter(commands.Cog):
     @commands.command()
     @commands.has_any_role("Discord Moderator", "Bot Dev")
     async def togglepy(self, ctx):
-        """Toggles the python interpreter. Bot creator and allen only"""
-        if ctx.author not in (self.bot.creator, self.bot.allen):
+        """Toggles the python interpreter. Bot creator and bernardo only"""
+        if ctx.author not in (self.bot.creator, self.bot.bernardo):
             raise commands.errors.CheckFailure()
         pycmd = self.bot.get_command('py')
         if pycmd.enabled:
@@ -116,7 +125,7 @@ class PythonInterpreter(commands.Cog):
     @commands.has_any_role("Discord Moderator", "Bot Dev")
     async def banphrase(self, ctx, phrase):
         """Bans a phrase from the interpreter"""
-        if ctx.author not in (self.bot.creator, self.bot.allen):
+        if ctx.author not in (self.bot.creator, self.bot.bernardo):
             raise commands.errors.CheckFailure()
         if phrase in self.banned_phrases:
             return await ctx.send(f"`{phrase}` is already banned!")
@@ -129,7 +138,7 @@ class PythonInterpreter(commands.Cog):
     @commands.has_any_role("Discord Moderator", "Bot Dev")
     async def unbanphrase(self, ctx, phrase):
         """Unbans a phrase from the interpreter"""
-        if ctx.author not in (self.bot.creator, self.bot.allen):
+        if ctx.author not in (self.bot.creator, self.bot.bernardo):
             raise commands.errors.CheckFailure()
         if phrase not in self.banned_phrases:
             return await ctx.send(f"`{phrase}` isn't a banned phrase!")
