@@ -205,6 +205,98 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
         await self.bot.session.close()
         await self.bot.close()
 
+    @commands.group()
+    @commands.has_any_role("Admin", "FlagBrew Team")
+    async def wiki_thread(self, ctx):
+        """Command handler for wiki thread top-level post. Will change the thread ID to ctx channel if no subcommand is passed"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send("Possible subcommands: `create_post`, `edit_post`, `add_item`, `delete_item`, `display`, and `raw_display`.")
+            self.bot.persistent_vars_dict["wiki_thread"] = ctx.channel.id
+            with open("saves/persistent_vars.json", "w") as file:
+                json.dump(self.bot.persistent_vars_dict, file, indent=4)
+            return await ctx.send(f"Successfully set the wiki thread to {ctx.channel.mention}.")
+
+    @wiki_thread.command()
+    async def create_post(self, ctx, *, content):
+        """Creates the top level post in the wiki thread, pins it, and adds the message id to the persistent vars"""
+        try:
+            wiki_thread = ctx.guild.get_thread(self.bot.persistent_vars_dict["wiki_thread"])
+        except Exception as e:
+            return await ctx.send(f"An error occurred while trying to get the wiki thread. Please ensure the thread ID has been set via the top-level command.\n\n```{e}```")
+        embed = discord.Embed(title="Wiki To-Do List", description=content)
+        msg = await wiki_thread.send(embed=embed)
+        await msg.pin()
+        self.bot.persistent_vars_dict["wiki_post"] = msg.id
+        with open("saves/persistent_vars.json", "w") as file:
+            json.dump(self.bot.persistent_vars_dict, file, indent=4)
+        
+    @wiki_thread.command()
+    @commands.has_any_role("Admin", "Bot Dev")
+    async def edit_post(self, ctx, *, content):
+        """Edits the top level post in the wiki thread. Required for removing items"""
+        try:
+            wiki_thread = ctx.guild.get_thread(self.bot.persistent_vars_dict["wiki_thread"])
+            msg = await wiki_thread.fetch_message(self.bot.persistent_vars_dict["wiki_post"])
+        except Exception as e:
+            return await ctx.send(f"An error occurred while trying to get the wiki thread and message. Please ensure the thread ID has been set via the top-level command and there's a message set.\n\n```{e}```")
+        embed = discord.Embed(title="Wiki To-Do List", description=content)
+        await msg.edit(embed=embed)
+        await ctx.send("Successfully edited the wiki post.", reference=msg)
+
+    @wiki_thread.command()
+    async def add_item(self, ctx, *, item):
+        """Adds an individual item to the wiki thread"""
+        try:
+            wiki_thread = ctx.guild.get_thread(self.bot.persistent_vars_dict["wiki_thread"])
+            msg = await wiki_thread.fetch_message(self.bot.persistent_vars_dict["wiki_post"])
+        except Exception as e:
+            return await ctx.send(f"An error occurred while trying to get the wiki thread and message. Please ensure the thread ID has been set via the top-level command and there's a message set.\n\n```{e}```")
+        embed = msg.embeds[0]
+        embed.description += f"\n- {item}"
+        await msg.edit(embed=embed)
+        await ctx.send("Successfully added the item to the wiki post.", reference=msg)
+    
+    @wiki_thread.command()
+    async def delete_item(self, ctx, *, item):
+        """Deletes an individual item from the wiki thread. Item must be an exact match"""
+        try:
+            wiki_thread = ctx.guild.get_thread(self.bot.persistent_vars_dict["wiki_thread"])
+            msg = await wiki_thread.fetch_message(self.bot.persistent_vars_dict["wiki_post"])
+        except Exception as e:
+            return await ctx.send(f"An error occurred while trying to get the wiki thread and message. Please ensure the thread ID has been set via the top-level command and there's a message set.\n\n```{e}```")
+        embed = msg.embeds[0]
+        items = embed.description.split("\n")
+        for iter in items:
+            print(iter)
+            if iter == f"- {item}" or iter == item:
+                try:
+                    items.remove(f"- {iter}")
+                except ValueError:
+                    items.remove(iter)
+                break
+        embed.description = "\n- ".join(items)
+        await msg.edit(embed=embed)
+        await ctx.send("Successfully removed the item from the wiki post.", reference=msg)
+
+    @wiki_thread.command()
+    async def display(self, ctx):
+        """Displays the wiki thread's top-level post. Will not auto-update if the post is edited"""
+        try:
+            wiki_thread = ctx.guild.get_thread(self.bot.persistent_vars_dict["wiki_thread"])
+            msg = await wiki_thread.fetch_message(self.bot.persistent_vars_dict["wiki_post"])
+        except Exception as e:
+            return await ctx.send(f"An error occurred while trying to get the wiki thread and message. Please ensure the thread ID has been set via the top-level command and there's a message set.\n\n```{e}```")
+        await ctx.send(embed=msg.embeds[0])
+
+    @wiki_thread.command()
+    async def raw_display(self, ctx):
+        """Displays the wiki thread's top-level post in raw text. Will not auto-update if the post is edited"""
+        try:
+            wiki_thread = ctx.guild.get_thread(self.bot.persistent_vars_dict["wiki_thread"])
+            msg = await wiki_thread.fetch_message(self.bot.persistent_vars_dict["wiki_post"])
+        except Exception as e:
+            return await ctx.send(f"An error occurred while trying to get the wiki thread and message. Please ensure the thread ID has been set via the top-level command and there's a message set.\n\n```{e}```")
+        await ctx.send(f"```{msg.embeds[0].description}```")
 
 async def setup(bot):
     await bot.add_cog(Meta(bot))
