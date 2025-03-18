@@ -261,7 +261,7 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
     
     @wiki_thread.command()
     async def delete_item(self, ctx, *, item):
-        """Deletes an individual item from the wiki thread. Item must be an exact match"""
+        """Deletes an individual item from the wiki thread. Item must be an exact match, or the index of the item to delete"""
         try:
             wiki_thread = ctx.guild.get_thread(self.bot.persistent_vars_dict["wiki_thread"])
             msg = await wiki_thread.fetch_message(self.bot.persistent_vars_dict["wiki_post"])
@@ -269,11 +269,16 @@ class Meta(commands.Cog, command_attrs=dict(hidden=True)):
             return await ctx.send(f"An error occurred while trying to get the wiki thread and message. Please ensure the thread ID has been set via the top-level command and there's a message set.\n\n```{e}```")
         embed = msg.embeds[0]
         items = embed.description.split("\n")
-        if not f"- {item}" in items:
+        if item.isnumeric():
+            removed = items.pop(int(item) - 1)
+        elif f"- {item}" in items:
+            items.remove(f"- {item}")
+            removed = {item}
+        else:
             return await ctx.send("The item you're trying to delete isn't there.")
         embed.description = "\n".join(items)
         await msg.edit(embed=embed)
-        await ctx.send("Successfully removed the item from the wiki post.", reference=msg)
+        await ctx.send(f"Successfully removed the item {removed} from the wiki post.", reference=msg)
 
     @wiki_thread.command()
     async def display(self, ctx):
