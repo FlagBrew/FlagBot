@@ -257,6 +257,8 @@ class Utility(commands.Cog):
         embed = discord.Embed()
         if len(message) > 0:
             embed.description = message
+        else:
+            embed.description = "Attachment(s) only"
         if len(ctx.message.attachments) > 0:
             attachments = []
             for attachment in ctx.message.attachments:
@@ -284,7 +286,11 @@ class Utility(commands.Cog):
         elif message is None and len(ctx.message.attachments) == 0:
             return await ctx.send("You need to provide a message or attachment to send.")
         message = message.replace("@everyone", "`everyone`").replace("@here", "`here`")
-        embed = discord.Embed(description=message)
+        embed = discord.Embed()
+        if len(message) > 0:
+            embed.description = message
+        else:
+            embed.description = "Attachment(s) only"
         if len(ctx.message.attachments) > 0:
             attachments = []
             for attachment in ctx.message.attachments:
