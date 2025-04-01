@@ -53,7 +53,7 @@ class Info(commands.Cog):
 
     @commands.command(aliases=["releases", "latest"])
     async def release(self, ctx, *, app=""):
-        """Returns the latest release for FlagBrew"s projects. If pulling checkpoint or pickr release, you can add "switch" to the end to get one without a qr code for ease of use"""
+        """Returns the latest release for FlagBrew"s projects."""
         img = None
         version = "N/A"
         release_date = None
@@ -62,23 +62,7 @@ class Info(commands.Cog):
             img, version, release_date = await self.gen_qr(self, "PKSM")
         elif app.lower().startswith("checkpoint"):
             embed = discord.Embed(description="You can get the latest release of Checkpoint [here](https://github.com/FlagBrew/Checkpoint/releases/latest).")
-            str_list = app.lower().split()
-            if "switch" not in str_list:
-                # Manual formatting due to 3.8.0 being broken...
-                # img, version = await self.gen_qr(self, "Checkpoint")
-                embed.description += "\nCheckpoint 3.8.0 is currently broken on 3DS. Please use 3.7.4 found [here](https://github.com/FlagBrew/Checkpoint/releases/tag/v3.7.4)."
-                qr = qrcode.QRCode(version=None)
-                qr.add_data("https://github.com/BernardoGiordano/Checkpoint/releases/download/v3.7.4/Checkpoint.cia")
-                qr.make(fit=True)
-                qr_img = qr.make_image(fill_color="black", back_color="white")
-                bytes = io.BytesIO()
-                qr_img.save(bytes, format='PNG')
-                bytes = bytes.getvalue()
-                img = bytes
-                version = "3.7.4"
-                release_date = datetime.strptime("2019-12-09", "%Y-%m-%d")
-            else:
-                version = "3.8.0"  # Temporary until 3.8.0 is fixed
+            img, version, release_date = await self.gen_qr(self, "Checkpoint")
         else:
             embed = discord.Embed(description="You can get the latest release of PKSM [here](https://github.com/FlagBrew/PKSM/releases/latest).\nYou can get the latest release of Checkpoint [here](https://github.com/FlagBrew/Checkpoint/releases/latest).")
         embed.set_author(name="FlagBrew", url="https://github.com/FlagBrew", icon_url="https://avatars.githubusercontent.com/u/42673825")
