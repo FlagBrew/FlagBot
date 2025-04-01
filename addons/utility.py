@@ -582,7 +582,7 @@ class Utility(commands.Cog):
         guild_invites = {
             "FlagBrew": "https://discord.gg/bGKEyfY",
             "Nintendo Homebrew": "https://discord.gg/C29hYvh",
-            "DS(i) Mode Hacking": "https://discord.gg/yD3spjv",
+            "DS(i) Mode Hacking": "https://discord.gg/fCzqcWteC4",
             "Reswitched": "https://discord.gg/ZdqEhed",
             "Project Pokemon": "https://discord.gg/66PzPgD",
             "PKHeX Development Projects": "https://discord.gg/tDMvSRv",
