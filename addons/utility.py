@@ -581,7 +581,7 @@ class Utility(commands.Cog):
         embed.add_field(name="Added On", value=f"{discord.utils.format_dt(emote.created_at)}", inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['flagbrew', 'nintendohomebrew', 'nh', 'dsimode', 'twlmenu', 'reswitched', 'rs', 'projectpokemon', 'pporg', 'pkhexdev', 'pdp', 'nanquitas', 'cheathelp'])
+    @commands.command(aliases=['flagbrew', 'nintendohomebrew', 'nh', 'dsimode', 'twlmenu', 'reswitched', 'rs', 'projectpokemon', 'pporg', 'pkhexdev', 'pdp'])
     @commands.cooldown(rate=1, per=10.0, type=commands.BucketType.channel)
     async def invites(self, ctx):
         """Invoke with the guild name to get that guild's invite. Use '.invites' to see the full list. 10 second cooldown"""
@@ -590,9 +590,8 @@ class Utility(commands.Cog):
             "Nintendo Homebrew": "https://discord.gg/C29hYvh",
             "DS(i) Mode Hacking": "https://discord.gg/fCzqcWteC4",
             "Reswitched": "https://discord.gg/ZdqEhed",
-            "Project Pokemon": "https://discord.gg/66PzPgD",
-            "PKHeX Development Projects": "https://discord.gg/tDMvSRv",
-            "Nanquitas's Playground": "https://discord.gg/z4ZMh27"
+            "Project Pokemon": "https://discord.gg/zypw5CSbSn",
+            "PKHeX Development Projects": "https://discord.gg/tDMvSRv"
         }
         if ctx.invoked_with == "invites":
             embed = discord.Embed(title="Guild invites available via this command")
@@ -601,8 +600,7 @@ class Utility(commands.Cog):
                                  "DS(i)Mode Hacking: `.dsimode`, `.twlmenu`\n"
                                  "Reswitched: `.reswitched`, `.rs`\n"
                                  "Project Pokemon: `.projectpokemon`, `.pporg`\n"
-                                 "PKHeX Development Projects: `.pkhexdev`, `.pdp`\n"
-                                 "Nanquitas's Playground: `.nanquitas`, `.cheathelp`")
+                                 "PKHeX Development Projects: `.pkhexdev`, `.pdp`")
             ctx.command.reset_cooldown(ctx)
         else:
             embed = discord.Embed()
@@ -624,9 +622,6 @@ class Utility(commands.Cog):
             elif ctx.invoked_with in ('pkhexdev', 'pdp'):
                 invite = await self.bot.fetch_invite(guild_invites["PKHeX Development Projects"])
                 embed.add_field(name="Guild Description", value="PKHeX-Plugins and SysBot hosting support. Do not go here for non-dev base PKHeX support", inline=False)
-            elif ctx.invoked_with in ('nanquitas', 'cheathelp'):
-                invite = await self.bot.fetch_invite(guild_invites["Nanquitas's Playground"])
-                embed.add_field(name="Guild Description", value="Nanquitas's server, go here for cheat creation support", inline=False)
             embed.title = f"Guild info and invite for {invite.guild.name}"
             embed.add_field(name="Member Count", value=str(invite.approximate_member_count))
             embed.add_field(name="Landing Channel", value=invite.channel.name)
