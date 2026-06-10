@@ -53,7 +53,7 @@ class Utility(commands.Cog):
         """Allows user to toggle update roles. Available roles: see #welcome-and-rules, as well as 'bot'"""
         user = ctx.message.author
         role = role.lower()
-        if role not in ('bot', 'flagbrew'):
+        if role not in ('bot', 'flagbrew', 'art'):
             return await ctx.send(f"{user.mention} That isn't a toggleable role!")
         had_role = await self.toggleroles(ctx, discord.utils.get(ctx.guild.roles, id=int(self.role_mentions_dict[role])), user)
         if had_role:
