@@ -164,6 +164,8 @@ class Info(commands.Cog):
                     pass  # Bot blocked, or api bug
             elif ctx.channel not in (self.bot.bot_channel, self.bot.testing_channel, self.bot.bot_channel2) and not ctx.guild.id == 378420595190267915:
                 for user in usage_dm:
+                    if user is None:
+                        continue
                     try:
                         await user.send(f"Full faq command was attempted to be used in {ctx.channel.mention} by {ctx.author}\n\nHyperlink to command invoke: {ctx.message.jump_url}")
                     except discord.Forbidden:
