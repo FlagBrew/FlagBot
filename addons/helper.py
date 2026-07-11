@@ -41,12 +41,9 @@ faq_mapping = [
     {
         # Checkpoint FAQ Items
         "checkpoint": {
-            "addcode": 1,
-            "fixcheat": 1,
-            "wheregame": 2,
-            "applet": 3,
-            "pkcrash": 4,
-            "updatedb": 6
+            "wheregame": 1,
+            "applet": 2,
+            "cheats": 3,
         }
     }
 ]
